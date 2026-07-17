@@ -1,0 +1,9 @@
+.env
+*.env
+!.env.example
+__pycache__/
+*.pyc
+.cache/
+.test-data/
+data/*.sqlite3
+data/*.sqlite3-*
