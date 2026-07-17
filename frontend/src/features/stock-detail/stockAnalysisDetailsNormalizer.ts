@@ -5,6 +5,7 @@ import type {
   RelativeStrengthItem,
   RiskPlan,
   StockAnalysisAggregate,
+  HistoryData,
   StockLeadershipSignal,
   StockRatingItem,
   SupportResistanceResponse,
@@ -30,6 +31,12 @@ export type StockAnalysisDetails = {
   supportResistance?: SupportResistanceResponse;
   trendline?: TrendlineResponse;
   volumeAnalysis?: VolumeAnalysis;
+  chartHistory?: HistoryData;
+  snapshotStatus?: string | null;
+  snapshotRefreshing?: boolean;
+  snapshotDataMode?: string | null;
+  snapshotTestData?: boolean;
+  snapshotMockData?: boolean;
 };
 
 type StockAnalysisAggregateWithLegacySignals = StockAnalysisAggregate & {
@@ -55,7 +62,18 @@ export function normalizeStockAnalysisDetails(aggregate: StockAnalysisAggregateW
     patterns: aggregate.patterns?.patterns ?? undefined,
     relativeStrength: aggregate.relativeStrength ?? undefined,
     stockRating: aggregate.stockRating ?? undefined,
+    chartHistory: isUnsafeSnapshotChart(aggregate) ? undefined : aggregate.chartHistory ?? aggregate.chart?.history ?? undefined,
+    snapshotStatus: aggregate.snapshot_status ?? null,
+    snapshotRefreshing: Boolean(aggregate.snapshot_refreshing || aggregate.snapshot_status === 'initializing'),
+    snapshotDataMode: aggregate.snapshot_data_mode ?? null,
+    snapshotTestData: Boolean(aggregate.snapshot_test_data),
+    snapshotMockData: Boolean(aggregate.snapshot_mock_data),
   };
+}
+
+function isUnsafeSnapshotChart(aggregate: StockAnalysisAggregateWithLegacySignals): boolean {
+  const mode = (aggregate.snapshot_data_mode ?? '').toLowerCase();
+  return aggregate.snapshot_test_data === true || aggregate.snapshot_mock_data === true || mode === 'test' || mode === 'mock';
 }
 
 export function normalizeMultiTimeframeSignals(value: unknown): MultiTimeframeTechnicalSignals | undefined {

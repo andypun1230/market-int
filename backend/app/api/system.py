@@ -17,6 +17,7 @@ from app.services.service_cache import (
 )
 from app.services.market_data_repository import get_market_data_repository
 from app.services.workload_manager import get_workload_status
+from app.stock_snapshots.service import get_stock_snapshot_service
 
 router = APIRouter()
 
@@ -52,6 +53,8 @@ async def cleanup_market_data_cache() -> dict[str, object]:
 async def invalidate_market_data_cache(
     prefix: str | None = Query(default=None),
     domain: str | None = Query(default=None),
+    stock_snapshots: str | None = Query(default="incompatible"),
+    symbol: str | None = Query(default=None),
 ) -> dict[str, object]:
     """Invalidate a safe subset of layered market-data cache records."""
     cache = get_market_data_repository().cache
@@ -62,7 +65,27 @@ async def invalidate_market_data_cache(
         deleted = cache.invalidate(prefix)
     else:
         deleted = cache.invalidate()
-    return {"deleted": deleted, "prefix": prefix, "domain": domain, "status": get_market_data_repository().get_cache_status()}
+    stock_deleted: dict[str, int] | None = None
+    stock_service = get_stock_snapshot_service()
+    if symbol:
+        stock_deleted = stock_service.clear_symbol(symbol)
+    elif stock_snapshots == "all":
+        stock_deleted = stock_service.clear_all()
+    elif stock_snapshots == "test":
+        stock_deleted = stock_service.clear_namespace("test")
+    elif stock_snapshots == "mock":
+        stock_deleted = stock_service.clear_namespace("mock")
+    elif stock_snapshots in {None, "incompatible"}:
+        stock_deleted = stock_service.clear_incompatible()
+    return {
+        "deleted": deleted,
+        "stock_snapshots_deleted": stock_deleted,
+        "prefix": prefix,
+        "domain": domain,
+        "stock_snapshots": stock_snapshots,
+        "symbol": symbol,
+        "status": get_market_data_repository().get_cache_status(),
+    }
 
 
 @router.get("/system/provider-cache")

@@ -8,9 +8,9 @@ from app.services.liquidity_dashboard import analyze_symbol_liquidity
 from app.services.multi_timeframe import analyze_multi_timeframe
 from app.services.options_intelligence import analyze_symbol_options
 from app.services.pattern_detection import detect_patterns
-from app.services.relative_strength import build_relative_strength
+from app.services.relative_strength import calculate_rs_score
 from app.services.risk import calculate_risk_plan
-from app.services.stock_rating import build_stock_ratings
+from app.services.stock_rating import calculate_stock_rating
 from app.services.support_resistance import calculate_support_resistance
 from app.services.timeframe_signal_service import build_multi_timeframe_technical_signals
 from app.services.trendline import analyze_trendline
@@ -26,8 +26,8 @@ def build_stock_analysis(symbol: str) -> dict[str, Any]:
         "riskPlan": lambda: calculate_risk_plan(normalized),
         "multiTimeframe": lambda: analyze_multi_timeframe(normalized),
         "patterns": lambda: detect_patterns(normalized),
-        "relativeStrength": lambda: find_symbol_item(build_relative_strength().items, normalized),
-        "stockRating": lambda: find_symbol_item(build_stock_ratings().items, normalized),
+        "relativeStrength": lambda: calculate_rs_score(normalized),
+        "stockRating": lambda: calculate_stock_rating(normalized),
         "options": lambda: analyze_symbol_options(normalized),
         "liquidity": lambda: analyze_symbol_liquidity(normalized),
     }
@@ -42,7 +42,7 @@ def build_stock_analysis(symbol: str) -> dict[str, Any]:
                 result[key] = to_jsonable(value)
             except Exception as exc:
                 result["partial"] = True
-                result["errors"][key] = f"{type(exc).__name__}: {exc}"
+                result["errors"][key] = safe_error_summary(exc)
                 result[key] = None
 
     try:
@@ -57,7 +57,7 @@ def build_stock_analysis(symbol: str) -> dict[str, Any]:
         result["multiTimeframeSignals"] = multi_timeframe_signals
     except Exception as exc:
         result["partial"] = True
-        result["errors"]["multiTimeframeSignals"] = f"{type(exc).__name__}: {exc}"
+        result["errors"]["multiTimeframeSignals"] = safe_error_summary(exc)
         result["multiTimeframeSignals"] = None
 
     try:
@@ -70,17 +70,23 @@ def build_stock_analysis(symbol: str) -> dict[str, Any]:
         ))
     except Exception as exc:
         result["partial"] = True
-        result["errors"]["leadershipSignal"] = f"{type(exc).__name__}: {exc}"
+        result["errors"]["leadershipSignal"] = safe_error_summary(exc)
         result["leadershipSignal"] = None
 
     return result
 
 
-def find_symbol_item(items: list[Any], symbol: str) -> Any | None:
-    for item in items:
-        if getattr(item, "symbol", "").upper() == symbol:
-            return item
-    return None
+def safe_error_summary(error: Exception) -> dict[str, str]:
+    category = getattr(error, "category", None)
+    if category:
+        return {
+            "category": str(category),
+            "message": "Data dependency unavailable.",
+        }
+    return {
+        "category": "calculation_error",
+        "message": "Section unavailable due to a recoverable calculation error.",
+    }
 
 
 def to_jsonable(value: object) -> Any:

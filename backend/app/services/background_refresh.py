@@ -19,6 +19,7 @@ _stop_event = threading.Event()
 _lock = threading.RLock()
 _worker_semaphore: threading.BoundedSemaphore | None = None
 _running_jobs: dict[str, dict[str, Any]] = {}
+_worker_threads: dict[str, threading.Thread] = {}
 _last_completed: dict[str, dict[str, Any]] = {}
 _last_errors: dict[str, dict[str, Any]] = {}
 _job_tiers: dict[str, str] = {}
@@ -59,6 +60,37 @@ def start_background_refresh_coordinator() -> None:
 
 def stop_background_refresh_coordinator() -> None:
     _stop_event.set()
+    thread = _scheduler_thread
+    if thread is not None and thread.is_alive():
+        thread.join(timeout=2.0)
+
+
+def wait_for_background_tasks(timeout_seconds: float = 5.0) -> bool:
+    deadline = time.monotonic() + max(0.0, timeout_seconds)
+    while True:
+        with _lock:
+            threads = [thread for thread in _worker_threads.values() if thread.is_alive()]
+            running = bool(_running_jobs)
+        if not threads and not running:
+            return True
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        for thread in threads:
+            thread.join(timeout=min(0.1, remaining))
+
+
+def reset_background_refresh_state(timeout_seconds: float = 5.0) -> bool:
+    global _scheduler_thread, _worker_semaphore
+    stop_background_refresh_coordinator()
+    drained = wait_for_background_tasks(timeout_seconds)
+    with _lock:
+        _running_jobs.clear()
+        _worker_threads.clear()
+        _job_tiers.clear()
+        _worker_semaphore = None
+        _scheduler_thread = None
+    return drained
 
 
 def submit_background_task(name: str, fn: RefreshFn, tier: str = TIER_2_DAILY_MARKET_STRUCTURE) -> bool:
@@ -81,6 +113,7 @@ def submit_background_task(name: str, fn: RefreshFn, tier: str = TIER_2_DAILY_MA
             name=f"market-refresh-{name}",
             daemon=True,
         )
+        _worker_threads[name] = thread
         thread.start()
         return True
 
@@ -91,6 +124,9 @@ def queue_refresh(scope: str = "core") -> dict[str, Any]:
         if submit_background_task("refresh:tier1-quotes", refresh_tier1_realtime, TIER_1_REALTIME):
             queued.append("refresh:tier1-quotes")
     if scope in {"snapshots", "full", "all"}:
+        if submit_background_task("refresh:market-snapshot", refresh_market_snapshot, TIER_2_DAILY_MARKET_STRUCTURE):
+            queued.append("refresh:market-snapshot")
+    if scope in {"full", "all"}:
         if submit_background_task("refresh:market-core", refresh_market_core_snapshot, TIER_2_DAILY_MARKET_STRUCTURE):
             queued.append("refresh:market-core")
         if submit_background_task("refresh:home-dashboard", refresh_home_dashboard, TIER_2_DAILY_MARKET_STRUCTURE):
@@ -156,6 +192,7 @@ def _run_job(name: str, fn: RefreshFn) -> None:
     finally:
         with _lock:
             _running_jobs.pop(name, None)
+            _worker_threads.pop(name, None)
 
 
 def _run_job_with_semaphore(name: str, fn: RefreshFn) -> None:
@@ -259,6 +296,13 @@ def refresh_market_core_snapshot() -> dict[str, Any]:
     )
     save_market_core_snapshot(snapshot)
     return snapshot
+
+
+def refresh_market_snapshot() -> dict[str, Any]:
+    from app.snapshots.service import get_market_snapshot_service
+
+    snapshot = get_market_snapshot_service().build_now()
+    return snapshot.model_dump() if snapshot is not None else {"status": "unavailable"}
 
 
 def refresh_home_dashboard() -> dict[str, Any]:

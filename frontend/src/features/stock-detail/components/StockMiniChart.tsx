@@ -38,9 +38,13 @@ type ChartPoint = StockMiniChartPoint & {
 };
 
 export function StockMiniChart({
+  allowNetworkFallback = false,
+  history,
   quote,
   symbol,
 }: {
+  allowNetworkFallback?: boolean;
+  history?: HistoryData | null;
   quote?: StockMiniChartQuoteInput | null;
   symbol: string;
 }) {
@@ -49,10 +53,15 @@ export function StockMiniChart({
   const [historyByRange, setHistoryByRange] = useState<Partial<Record<StockMiniChartRange, HistoryData>>>({});
   const [loadingRange, setLoadingRange] = useState<StockMiniChartRange | null>('1M');
   const [errorByRange, setErrorByRange] = useState<Partial<Record<StockMiniChartRange, string>>>({});
+  const snapshotHistoryByRange = useMemo(() => history ? buildHistoryByRange(history) : {}, [history]);
+  const effectiveHistoryByRange = history ? snapshotHistoryByRange : historyByRange;
 
   useEffect(() => {
     let cancelled = false;
-    if (historyByRange[selectedRange]) {
+    if (history) {
+      return undefined;
+    }
+    if (!allowNetworkFallback || historyByRange[selectedRange]) {
       return undefined;
     }
 
@@ -79,19 +88,19 @@ export function StockMiniChart({
     return () => {
       cancelled = true;
     };
-  }, [historyByRange, selectedRange, symbol]);
+  }, [allowNetworkFallback, history, historyByRange, selectedRange, symbol]);
 
-  const displayRange = historyByRange[selectedRange] ? selectedRange : visibleRange;
+  const displayRange = history ? selectedRange : effectiveHistoryByRange[selectedRange] ? selectedRange : visibleRange;
   const model = useMemo(
     () => buildStockMiniChartModel({
-      history: historyByRange[displayRange],
+      history: effectiveHistoryByRange[displayRange],
       quote,
       range: displayRange,
       symbol,
     }),
-    [displayRange, historyByRange, quote, symbol],
+    [displayRange, effectiveHistoryByRange, quote, symbol],
   );
-  const requestedLabel = loadingRange === selectedRange && selectedRange !== displayRange
+  const requestedLabel = !history && allowNetworkFallback && loadingRange === selectedRange && selectedRange !== displayRange
     ? `Loading ${selectedRange}...`
     : null;
   const isBackgroundLoading = Boolean(requestedLabel);
@@ -102,7 +111,7 @@ export function StockMiniChart({
       <ChartSummary model={model} requestedLabel={requestedLabel} />
       <PriceChart
         error={selectedError ?? null}
-        loading={!historyByRange[displayRange] && loadingRange === selectedRange}
+        loading={!history && allowNetworkFallback && !effectiveHistoryByRange[displayRange] && loadingRange === selectedRange}
         model={model}
         muted={isBackgroundLoading}
       />
@@ -114,12 +123,12 @@ export function StockMiniChart({
             key={range}
             onPress={() => {
               setSelectedRange(range);
-              if (historyByRange[range]) {
+              if (effectiveHistoryByRange[range]) {
                 setVisibleRange(range);
                 setLoadingRange(null);
                 return;
               }
-              setLoadingRange(range);
+              setLoadingRange(allowNetworkFallback ? range : null);
             }}
             style={[styles.rangeButton, selectedRange === range && styles.rangeButtonSelected]}>
             <Text style={[styles.rangeText, selectedRange === range && styles.rangeTextSelected]}>{range}</Text>
@@ -128,6 +137,19 @@ export function StockMiniChart({
       </View>
     </View>
   );
+}
+
+function buildHistoryByRange(history: HistoryData): Partial<Record<StockMiniChartRange, HistoryData>> {
+  return stockMiniChartRanges.reduce<Partial<Record<StockMiniChartRange, HistoryData>>>((accumulator, range) => {
+    const candles = history.candles.slice(-stockMiniChartRangeDays[range]);
+    accumulator[range] = {
+      ...history,
+      candles,
+      requested_days: stockMiniChartRangeDays[range],
+      returned_candles: candles.length,
+    };
+    return accumulator;
+  }, {});
 }
 
 function ChartSummary({
@@ -145,7 +167,7 @@ function ChartSummary({
         <View style={styles.summaryTitleBlock}>
           <Text style={styles.chartTitle}>Price History</Text>
           <Text style={styles.chartSubtitle}>
-            {requestedLabel ?? `${model.range} · ${getProvenanceLabel(model.provenance.dataStatus)}`}
+            {requestedLabel ?? `${model.range} · ${getProvenanceLabel(model.provenance.dataStatus, model.provenance.provider)}`}
           </Text>
         </View>
         <View accessibilityLabel={`Period performance ${formatPercent(model.stats.changePercent)}`} style={styles.performanceBlock}>
@@ -453,7 +475,7 @@ function directionLabel(direction: ReturnType<typeof getChartDirection>) {
 }
 
 function buildAccessibleSummary(model: StockMiniChartModel) {
-  return `${model.symbol} ${model.range} price history. Period change ${formatPercent(model.stats.changePercent)} from ${formatCurrency(model.stats.startPrice)} to ${formatCurrency(model.stats.endPrice)}. High ${formatCurrency(model.stats.high)}. Low ${formatCurrency(model.stats.low)}. ${getProvenanceLabel(model.provenance.dataStatus)}.`;
+  return `${model.symbol} ${model.range} price history. Period change ${formatPercent(model.stats.changePercent)} from ${formatCurrency(model.stats.startPrice)} to ${formatCurrency(model.stats.endPrice)}. High ${formatCurrency(model.stats.high)}. Low ${formatCurrency(model.stats.low)}. ${getProvenanceLabel(model.provenance.dataStatus, model.provenance.provider)}.`;
 }
 
 function formatTooltipDate(timestamp: string) {

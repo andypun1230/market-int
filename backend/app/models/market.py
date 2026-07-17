@@ -493,6 +493,13 @@ class RelativeStrengthItem(BaseModel):
     fallback_used: bool | None = None
     as_of: str | None = None
     history_quality_score: int | None = None
+    comparisons_requested: List[str] | None = None
+    comparisons_available: List[str] | None = None
+    comparisons_missing: List[str] | None = None
+    coverage_ratio: float | None = None
+    degraded: bool | None = None
+    degradation_reason: str | None = None
+    confidence_state: str | None = None
 
 
 class RelativeStrengthResponse(BaseModel):
@@ -651,13 +658,42 @@ class FearGreedComponent(BaseModel):
     score: int
     status: str
     explanation: str
+    source: str | None = None
+    source_timestamp: str | None = None
+    data_state: str | None = None
+    confidence: int | None = None
+    missing: bool | None = None
+    warnings: List[str] | None = None
 
 
 class FearGreedResponse(BaseModel):
-    score: int
+    score: int | None
     status: str
     components: List[FearGreedComponent]
     summary: str
+    title: str | None = None
+    subtitle: str | None = None
+    source: str | None = None
+    source_type: str | None = None
+    fetched_at: str | None = None
+    source_timestamp: str | None = None
+    previous_close: int | None = None
+    one_week_ago: int | None = None
+    one_month_ago: int | None = None
+    one_year_ago: int | None = None
+    stale: bool | None = None
+    confidence: int | None = None
+    parser_version: str | None = None
+    cache_status: str | None = None
+    partial: bool | None = None
+    coverage_percent: float | None = None
+    coverage_components: int | None = None
+    required_components: int | None = None
+    overall_mode: str | None = None
+    dependencies_requested: int | None = None
+    dependencies_available: int | None = None
+    dependencies_missing: List[str] | None = None
+    degraded_reasons: List[str] | None = None
 
 
 class ProbabilityItem(BaseModel):

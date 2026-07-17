@@ -82,12 +82,24 @@ from app.services.sector_dashboard import build_sector_dashboard
 from app.services.sectors import build_market_sectors
 from app.services.sectors_summary import build_sectors_summary
 from app.services.stock_rating import build_stock_ratings
-from app.services.stock_analysis_aggregate import build_stock_analysis
 from app.services.support_resistance import calculate_support_resistance
 from app.services.trendline import analyze_trendline, analyze_watchlist_trendlines
 from app.services.volume_analysis import analyze_volume, build_volume_analysis
 from app.services.watchlist import build_market_watchlist, build_user_watchlist_item
 from app.services.watchlist_summary import build_watchlist_summary
+from app.snapshots.readers import (
+    get_core_snapshot_from_snapshot,
+    get_decision_dashboard_from_snapshot,
+    get_fear_greed_from_snapshot,
+    get_health_from_snapshot,
+    get_regime_from_snapshot,
+    get_risk_from_snapshot,
+    latest_snapshot_response,
+    snapshot_details_payload,
+)
+from app.snapshots.service import get_market_snapshot_service
+from app.stock_snapshots.readers import snapshot_response
+from app.stock_snapshots.service import get_stock_snapshot_service
 
 router = APIRouter()
 
@@ -105,7 +117,7 @@ async def get_market_brief() -> BriefResponse:
 @router.get("/market/regime", response_model=RegimeResponse)
 async def get_market_regime() -> RegimeResponse:
     """Return stubbed regime metrics."""
-    return build_market_regime()
+    return get_regime_from_snapshot()
 
 
 @router.get("/market/sectors", response_model=SectorsResponse)
@@ -138,26 +150,26 @@ async def get_market_watchlist() -> WatchlistResponse:
 @router.get("/market/risk", response_model=RiskResponse)
 async def get_market_risk() -> RiskResponse:
     """Return stubbed market risk dashboard data."""
-    return build_market_risk()
+    return get_risk_from_snapshot()
 
 
 @router.get("/market/health", response_model=MarketHealthResponse)
 async def get_market_health() -> MarketHealthResponse:
     """Return a composite market health score from existing mock engines."""
-    return calculate_market_health()
+    return get_health_from_snapshot()
 
 
 @router.get("/market/core-snapshot")
 async def get_market_core_snapshot() -> dict[str, object]:
     """Return critical market data for fast initial dashboard rendering."""
     record_client_activity("market")
-    return build_market_core_snapshot()
+    return get_core_snapshot_from_snapshot()
 
 
 @router.get("/market/decision-dashboard", response_model=DecisionDashboardResponse)
 async def get_market_decision_dashboard() -> DecisionDashboardResponse:
     """Return practical daily decision guidance from existing mock engines."""
-    return build_decision_dashboard()
+    return get_decision_dashboard_from_snapshot()
 
 
 @router.get("/market/probabilities", response_model=ProbabilityResponse)
@@ -205,7 +217,36 @@ async def get_market_cap_rotation() -> MarketCapRotationResponse:
 @router.get("/market/fear-greed", response_model=FearGreedResponse)
 async def get_market_fear_greed() -> FearGreedResponse:
     """Return a deterministic Fear & Greed component model."""
-    return build_fear_greed_index()
+    return get_fear_greed_from_snapshot()
+
+
+@router.get("/market/snapshot/latest")
+async def get_latest_market_snapshot() -> dict[str, object]:
+    """Return the latest prepared market snapshot without provider calls."""
+    record_client_activity("market")
+    return latest_snapshot_response()
+
+
+@router.get("/market/snapshot/status")
+async def get_market_snapshot_status() -> dict[str, object]:
+    """Return safe diagnostics for market snapshot freshness and refresh state."""
+    return get_market_snapshot_service().get_status()
+
+
+@router.get("/market/snapshot/{snapshot_id}")
+async def get_market_snapshot_by_id(snapshot_id: str) -> dict[str, object]:
+    """Return an immutable market snapshot by ID."""
+    snapshot = get_market_snapshot_service().get_snapshot(snapshot_id)
+    if snapshot is None:
+        return {"status": "unavailable", "snapshot_id": snapshot_id}
+    return snapshot.model_dump()
+
+
+@router.post("/market/snapshot/refresh")
+async def refresh_market_snapshot() -> dict[str, object]:
+    """Queue a market snapshot refresh for development/internal use."""
+    queued = get_market_snapshot_service().trigger_background_refresh()
+    return {"queued": queued, "status": get_market_snapshot_service().get_status()}
 
 
 @router.get("/market/sentiment", response_model=MarketSentimentResponse)
@@ -419,23 +460,77 @@ async def get_watchlist_summary() -> dict[str, object]:
 
 @router.get("/market/stock-analysis/{symbol}")
 async def get_market_stock_analysis(symbol: str) -> dict[str, object]:
-    """Return aggregated detail analysis for one symbol with partial-failure tolerance."""
+    """Return fast-read stock detail analysis from a per-symbol snapshot."""
     record_client_activity("watchlist")
-    return await run_in_threadpool(build_stock_analysis, symbol)
+    return get_stock_snapshot_service().get_analysis_payload(symbol)
+
+
+@router.get("/market/stock-snapshot/{symbol}")
+async def get_market_stock_snapshot(symbol: str) -> dict[str, object]:
+    """Return the latest persisted per-symbol stock analysis snapshot."""
+    record_client_activity("watchlist")
+    service = get_stock_snapshot_service()
+    snapshot = service.get_latest_snapshot(symbol)
+    if snapshot is None:
+        refresh_started = service.trigger_background_refresh(symbol)
+        return {
+            "status": "initializing",
+            "source_state": "initializing",
+            "symbol": symbol.upper(),
+            "snapshot_id": None,
+            "refresh_started": refresh_started or service.is_refreshing(symbol),
+        }
+    response = snapshot_response(snapshot)
+    response["refresh_in_progress"] = service.is_refreshing(symbol)
+    return response
+
+
+@router.get("/market/stock-snapshot/{symbol}/status")
+async def get_market_stock_snapshot_status(symbol: str) -> dict[str, object]:
+    """Return stock snapshot freshness and refresh status for one symbol."""
+    return get_stock_snapshot_service().get_status(symbol)
+
+
+@router.post("/market/stock-snapshot/{symbol}/refresh")
+async def refresh_market_stock_snapshot(symbol: str) -> dict[str, object]:
+    """Trigger a background stock snapshot refresh for one symbol."""
+    started = get_stock_snapshot_service().trigger_background_refresh(symbol)
+    return {"status": "queued" if started else "deduped", "symbol": symbol.upper(), "refresh_started": started}
+
+
+@router.delete("/market/stock-snapshot/{symbol}")
+async def clear_market_stock_snapshot(symbol: str) -> dict[str, object]:
+    """Clear persisted stock snapshots for one symbol."""
+    deleted = get_stock_snapshot_service().clear_symbol(symbol)
+    return {"status": "cleared", "symbol": symbol.upper(), "deleted": deleted}
+
+
+@router.delete("/market/stock-snapshots")
+async def clear_market_stock_snapshots(mode: str = Query(default="incompatible")) -> dict[str, object]:
+    """Clear incompatible, test/mock namespace, or all persisted stock snapshots."""
+    service = get_stock_snapshot_service()
+    if mode == "all":
+        deleted = service.clear_all()
+    elif mode in {"test", "mock"}:
+        deleted = service.clear_namespace(mode)
+    else:
+        mode = "incompatible"
+        deleted = service.clear_incompatible()
+    return {"status": "cleared", "mode": mode, "deleted": deleted}
 
 
 @router.get("/market/details/decision")
 async def get_market_decision_details() -> dict[str, object]:
     """Return grouped decision details for the Market detail modal."""
     record_client_activity("market")
-    return await run_in_threadpool(build_market_decision_details)
+    return snapshot_details_payload("decision")
 
 
 @router.get("/market/details/institutional")
 async def get_market_institutional_details() -> dict[str, object]:
     """Return grouped institutional details on demand."""
     record_client_activity("institutional")
-    return await run_in_threadpool(build_market_institutional_details)
+    return snapshot_details_payload("institutional")
 
 
 @router.get("/market/details/structure")
@@ -443,7 +538,7 @@ async def get_market_structure_details() -> dict[str, object]:
     """Return grouped market-structure details on demand."""
     record_client_activity("market")
     record_client_activity("sectors")
-    return await run_in_threadpool(build_market_structure_details)
+    return snapshot_details_payload("structure")
 
 
 @router.get("/user/watchlist/{ticker}")

@@ -1,0 +1,216 @@
+{
+  "config": {
+    "HISTORY_DATA_PROVIDER": "polygon",
+    "MARKET_DATA_ALLOW_MOCK_FALLBACK": "false",
+    "MARKET_DATA_HISTORY_COORDINATOR_CONCURRENCY": "2",
+    "MARKET_DATA_PERSISTENT_CACHE_ENABLED": "true",
+    "QUOTE_DATA_PROVIDER": "finnhub"
+  },
+  "mode": "cold-cache",
+  "rounds": [
+    {
+      "aggregate_503_count": 0,
+      "cache_status": {
+        "status_error": "TimeoutError: timed out"
+      },
+      "elapsed_ms": 270023,
+      "failures": [
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45002,
+          "path": "/market/risk",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45004,
+          "path": "/market/core-snapshot",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45006,
+          "path": "/market/regime",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45007,
+          "path": "/market/health",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45007,
+          "path": "/market/fear-greed",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 55953,
+          "path": "/home/dashboard",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45004,
+          "path": "/market/details/structure",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45004,
+          "path": "/market/details/institutional",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45005,
+          "path": "/market/details/decision",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45008,
+          "path": "/market/decision-dashboard",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45004,
+          "path": "/watchlist/summary",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45004,
+          "path": "/market/stock-analysis/NVDA",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45004,
+          "path": "/market/live/history/SPY?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45001,
+          "path": "/market/live/history/QQQEW?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45003,
+          "path": "/market/live/history/QQQ?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45002,
+          "path": "/market/live/history/RSP?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45003,
+          "path": "/market/live/history/DIA?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45004,
+          "path": "/market/live/history/SPX?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45001,
+          "path": "/market/live/history/RUT?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45002,
+          "path": "/market/live/history/IXIC?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45001,
+          "path": "/market/live/history/SPY?days=60",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45001,
+          "path": "/market/live/history/QQQ?days=60",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45001,
+          "path": "/market/live/history/DJI?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45002,
+          "path": "/market/live/history/DIA?days=60",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45002,
+          "path": "/market/live/history/SPX?days=60",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45002,
+          "path": "/market/live/history/QQQEW?days=60",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 45003,
+          "path": "/market/live/history/RSP?days=60",
+          "status_code": 599
+        }
+      ],
+      "http_500_count": 27,
+      "http_503_count": 0,
+      "max_elapsed_ms": 55953,
+      "request_count": 27,
+      "statuses": {
+        "/home/dashboard": 599,
+        "/market/core-snapshot": 599,
+        "/market/decision-dashboard": 599,
+        "/market/details/decision": 599,
+        "/market/details/institutional": 599,
+        "/market/details/structure": 599,
+        "/market/fear-greed": 599,
+        "/market/health": 599,
+        "/market/live/history/DIA?days=240": 599,
+        "/market/live/history/DIA?days=60": 599,
+        "/market/live/history/DJI?days=240": 599,
+        "/market/live/history/IXIC?days=240": 599,
+        "/market/live/history/QQQ?days=240": 599,
+        "/market/live/history/QQQ?days=60": 599,
+        "/market/live/history/QQQEW?days=240": 599,
+        "/market/live/history/QQQEW?days=60": 599,
+        "/market/live/history/RSP?days=240": 599,
+        "/market/live/history/RSP?days=60": 599,
+        "/market/live/history/RUT?days=240": 599,
+        "/market/live/history/SPX?days=240": 599,
+        "/market/live/history/SPX?days=60": 599,
+        "/market/live/history/SPY?days=240": 599,
+        "/market/live/history/SPY?days=60": 599,
+        "/market/regime": 599,
+        "/market/risk": 599,
+        "/market/stock-analysis/NVDA": 599,
+        "/watchlist/summary": 599
+      }
+    }
+  ]
+}

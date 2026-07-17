@@ -113,12 +113,13 @@ function capRotation(overrides: Partial<MarketCapRotationResponse> = {}): Market
   };
 }
 
-function fearGreed(score: number, status = fearGreedStatus(score)): FearGreedResponse {
+function fearGreed(score: number | null, status = score === null ? 'Unavailable' : fearGreedStatus(score), overrides: Partial<FearGreedResponse> = {}): FearGreedResponse {
   return {
     components: [],
     score,
     status,
     summary: `${status} sentiment conditions.`,
+    ...overrides,
   };
 }
 
@@ -156,6 +157,11 @@ function run() {
   assert(fearGreedStatus(70) === 'Greed', 'greed threshold maps');
   assert(gaugeMarkerPercent(120) === 100 && gaugeMarkerPercent(-10) === 0, 'gauge marker is bounded');
   assert(buildFearGreed(fearGreed(80)).status === 'Extreme Greed', 'fear greed model accepts dynamic score');
+  assert(buildFearGreed(fearGreed(39, 'Fear', { source: 'CNN', source_type: 'official', title: 'CNN Fear & Greed Index' })).sourceLabel === 'Source: CNN', 'official CNN source label is visible');
+  const estimateModel = buildFearGreed(fearGreed(63, 'Greed', { source_type: 'estimated', coverage_components: 6, required_components: 7, confidence: 58 }));
+  assert(estimateModel.title === 'Fear & Greed Estimate', 'estimate title is distinct from official CNN title');
+  assert(estimateModel.coverageLabel === '6/7', 'estimate coverage is shown');
+  assert(buildFearGreed(fearGreed(null)).score === null, 'unavailable state does not show a precise score');
 
   const changes = buildChanges(base.comparison.items);
   assert(changes.groups.some((group) => group.direction === 'improving' && group.items.some((item) => item.startsWith('Breadth +6'))), 'improving factors are grouped with deltas');

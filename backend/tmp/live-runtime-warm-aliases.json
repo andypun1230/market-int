@@ -1,0 +1,211 @@
+{
+  "config": {
+    "HISTORY_DATA_PROVIDER": "polygon",
+    "MARKET_DATA_ALLOW_MOCK_FALLBACK": "false",
+    "MARKET_DATA_HISTORY_COORDINATOR_CONCURRENCY": "2",
+    "MARKET_DATA_PERSISTENT_CACHE_ENABLED": "true",
+    "QUOTE_DATA_PROVIDER": "finnhub"
+  },
+  "mode": "warm-cache",
+  "rounds": [
+    {
+      "aggregate_503_count": 0,
+      "cache_status": {
+        "history_request_coordinator": {
+          "deduplicated": 0,
+          "enabled": true,
+          "failed": 0,
+          "inflight_keys": 0,
+          "max_concurrency": 2,
+          "max_queue_depth": 1,
+          "max_running": 2,
+          "queue_timeouts": 0,
+          "queued": 0,
+          "retries": 0,
+          "running": 0,
+          "started": 3,
+          "succeeded": 3
+        },
+        "hit_count": 82,
+        "items": 31,
+        "keys": [
+          "history:polygon:AAPL:D:260",
+          "history:polygon:AMD:D:260",
+          "history:polygon:ARM:D:260",
+          "history:polygon:AVGO:D:260",
+          "history:polygon:CRM:D:260",
+          "history:polygon:DIA:D:240",
+          "history:polygon:DIS:D:260",
+          "history:polygon:GOOGL:D:260",
+          "history:polygon:INTC:D:260",
+          "history:polygon:IWM:D:240",
+          "history:polygon:META:D:260",
+          "history:polygon:MSFT:D:260",
+          "history:polygon:MU:D:260",
+          "history:polygon:NFLX:D:260",
+          "history:polygon:NVDA:D:260",
+          "history:polygon:NVDA:D:365",
+          "history:polygon:ORCL:D:260",
+          "history:polygon:QQEW:D:240",
+          "history:polygon:QQQ:D:240",
+          "history:polygon:RSP:D:240",
+          "history:polygon:SOXX:D:240",
+          "history:polygon:SPY:D:240",
+          "history:polygon:T:D:260",
+          "quote:finnhub:ARM",
+          "quote:finnhub:DIA",
+          "quote:finnhub:IWM",
+          "quote:finnhub:MU",
+          "quote:finnhub:NVDA",
+          "quote:finnhub:QQQ",
+          "quote:finnhub:SNDK",
+          "quote:finnhub:SPY"
+        ],
+        "miss_count": 73,
+        "persistent": {
+          "corrupt_entries": 0,
+          "database_size_bytes": 23764992,
+          "database_size_mb": 22.664,
+          "domain_counts": {
+            "daily_history": 275,
+            "quotes": 54
+          },
+          "enabled": true,
+          "entries": 329,
+          "expired_entries": 11,
+          "fresh_entries": 283,
+          "healthy": true,
+          "last_cleanup_at": null,
+          "newest_entry_age_seconds": 0,
+          "oldest_entry_age_seconds": 557,
+          "provider_counts": {
+            "finnhub": 19,
+            "generated_test_data": 143,
+            "mock": 123,
+            "polygon": 44
+          },
+          "read_errors": 0,
+          "stale_entries": 35,
+          "write_errors": 0
+        },
+        "persistent_hit_count": 32,
+        "provider_routing": {
+          "capabilities": {
+            "finnhub": {
+              "daily_history_access_state": "restricted",
+              "last_restricted_at": null,
+              "notes": [
+                "Finnhub quote access is available.",
+                "Daily candles returned HTTP 403 under the configured plan."
+              ],
+              "provider": "finnhub",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": false,
+              "supports_daily_history": false,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "generated_test_data": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Generated deterministic test data."
+              ],
+              "provider": "generated_test_data",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": true,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "mock": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Deterministic mock data."
+              ],
+              "provider": "mock",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": true,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "polygon": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Polygon/Massive daily stock aggregate history provider.",
+                "Internal provider id remains polygon."
+              ],
+              "provider": "polygon",
+              "quote_access_state": "unavailable",
+              "restriction_reason": null,
+              "supports_batch_quotes": false,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": false
+            }
+          },
+          "configured_history_provider": "polygon",
+          "configured_quote_provider": "finnhub"
+        },
+        "repository_metrics": {
+          "background_refresh_failures": 0,
+          "background_refreshes": 5,
+          "fallback_active": false,
+          "provider_calls": 8,
+          "unavailable_results": 0
+        },
+        "stale_hit_count": 9,
+        "write_count": 8
+      },
+      "elapsed_ms": 3606,
+      "failures": [],
+      "http_500_count": 0,
+      "http_503_count": 0,
+      "max_elapsed_ms": 1836,
+      "request_count": 27,
+      "statuses": {
+        "/home/dashboard": 200,
+        "/market/core-snapshot": 200,
+        "/market/decision-dashboard": 200,
+        "/market/details/decision": 200,
+        "/market/details/institutional": 200,
+        "/market/details/structure": 200,
+        "/market/fear-greed": 200,
+        "/market/health": 200,
+        "/market/live/history/DIA?days=240": 200,
+        "/market/live/history/DIA?days=60": 200,
+        "/market/live/history/DJI?days=240": 200,
+        "/market/live/history/IXIC?days=240": 200,
+        "/market/live/history/QQQ?days=240": 200,
+        "/market/live/history/QQQ?days=60": 200,
+        "/market/live/history/QQQEW?days=240": 200,
+        "/market/live/history/QQQEW?days=60": 200,
+        "/market/live/history/RSP?days=240": 200,
+        "/market/live/history/RSP?days=60": 200,
+        "/market/live/history/RUT?days=240": 200,
+        "/market/live/history/SPX?days=240": 200,
+        "/market/live/history/SPX?days=60": 200,
+        "/market/live/history/SPY?days=240": 200,
+        "/market/live/history/SPY?days=60": 200,
+        "/market/regime": 200,
+        "/market/risk": 200,
+        "/market/stock-analysis/NVDA": 200,
+        "/watchlist/summary": 200
+      }
+    }
+  ]
+}

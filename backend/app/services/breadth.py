@@ -11,7 +11,7 @@ from app.services.service_cache import get_or_compute, get_service_ttl
 
 def get_breadth_universe_symbols() -> list[str]:
     universe = os.getenv("BREADTH_UNIVERSE", "core").lower()
-    max_symbols = int(os.getenv("BREADTH_MAX_SYMBOLS", "120"))
+    max_symbols = int(os.getenv("BREADTH_MAX_SYMBOLS", str(default_breadth_max_symbols())))
 
     if universe == "custom":
         custom_symbols = [
@@ -151,10 +151,30 @@ def get_breadth_status(percent_above_50ema: float) -> str:
 def build_cache_key(prefix: str) -> str:
     return (
         f"{prefix}:{os.getenv('BREADTH_UNIVERSE', 'core')}:"
-        f"{os.getenv('BREADTH_MAX_SYMBOLS', '120')}:"
+        f"{os.getenv('BREADTH_MAX_SYMBOLS', str(default_breadth_max_symbols()))}:"
         f"{os.getenv('BREADTH_HISTORY_DAYS', '260')}"
     )
 
 
 def get_breadth_ttl() -> int:
     return int(os.getenv("BREADTH_CACHE_TTL_SECONDS", "900"))
+
+
+def default_breadth_max_symbols() -> int:
+    if is_live_without_mock_fallback():
+        return int_env("BREADTH_LIVE_MAX_SYMBOLS", 15)
+    return 120
+
+
+def is_live_without_mock_fallback() -> bool:
+    provider_mode = (os.getenv("DATA_PROVIDER") or os.getenv("MARKET_DATA_PROVIDER") or "").lower()
+    history_provider = (os.getenv("HISTORY_DATA_PROVIDER") or os.getenv("HISTORY_PROVIDER") or "").lower()
+    allow_fallback = os.getenv("MARKET_DATA_ALLOW_MOCK_FALLBACK", "true").lower() in {"1", "true", "yes", "on"}
+    return not allow_fallback and (provider_mode in {"live", "auto", "finnhub", "polygon", "massive"} or history_provider in {"polygon", "massive"})
+
+
+def int_env(name: str, default: int) -> int:
+    try:
+        return int(os.getenv(name, str(default)))
+    except ValueError:
+        return default

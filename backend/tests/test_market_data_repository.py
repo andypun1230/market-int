@@ -5,6 +5,7 @@ import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
 
+from app.cache.market_data_cache import build_history_cache_key
 from app.providers.finnhub_provider import normalize_finnhub_candles
 from app.providers.models import CandleData, HistoryData, ProviderCapabilities, ProviderHealth, QuoteData
 from app.providers.symbols import normalize_market_symbol
@@ -81,6 +82,7 @@ class FakeProvider:
         self.delay = delay
         self.quote_calls = 0
         self.history_calls = 0
+        self.history_symbols: list[str] = []
 
     def get_quote(self, symbol: str) -> QuoteData:
         self.quote_calls += 1
@@ -95,6 +97,7 @@ class FakeProvider:
 
     def get_history(self, symbol: str, resolution: str = "D", days: int = 240) -> HistoryData:
         self.history_calls += 1
+        self.history_symbols.append(symbol)
         if self.fail:
             raise RuntimeError("provider down")
         return history_data(symbol)
@@ -119,8 +122,36 @@ class MarketDataRepositoryTests(unittest.TestCase):
     def test_symbol_normalization(self) -> None:
         self.assertEqual(normalize_market_symbol(" spy "), "SPY")
         self.assertEqual(normalize_market_symbol("DJI", apply_alias=True), "DIA")
+        self.assertEqual(normalize_market_symbol("NDX", apply_alias=True), "QQQ")
         with self.assertRaises(ValueError):
             normalize_market_symbol("")
+
+    def test_ndx_history_routes_to_qqq_before_provider_and_cache(self) -> None:
+        provider = FakeProvider()
+        cache = MemoryMarketDataCache()
+        repo = MarketDataRepository(provider=provider, data_provider="polygon", cache=cache)
+
+        history = repo.get_history("NDX", days=110)
+
+        self.assertEqual(provider.history_symbols, ["QQQ"])
+        self.assertEqual(history.symbol, "QQQ")
+        self.assertEqual(history.requested_symbol, "NDX")
+        self.assertEqual(history.provider_symbol, "QQQ")
+        self.assertIn(build_history_cache_key("fake", "QQQ", "D", 110), cache.status()["keys"])
+        self.assertNotIn("NDX", ",".join(cache.status()["keys"]))
+
+    def test_ndx_and_qqq_history_share_cache_key(self) -> None:
+        provider = FakeProvider()
+        repo = MarketDataRepository(provider=provider, data_provider="polygon", cache=MemoryMarketDataCache())
+
+        ndx = repo.get_history("NDX", days=110)
+        qqq = repo.get_history("QQQ", days=110)
+
+        self.assertEqual(provider.history_symbols, ["QQQ"])
+        self.assertEqual(ndx.requested_symbol, "NDX")
+        self.assertEqual(qqq.requested_symbol, "QQQ")
+        self.assertEqual(qqq.source_state, "cached")
+        self.assertEqual(qqq.provider_symbol, "QQQ")
 
     def test_cache_hit_does_not_refetch_quote(self) -> None:
         provider = FakeProvider()

@@ -113,6 +113,7 @@ import {
 } from '@/features/market/weightComparison';
 import { useMarketDashboard } from '@/hooks/useMarketDashboard';
 import { getLiveHistory } from '@/services/api';
+import { areTestScenariosEnabled } from '@/services/runtimeConfig';
 import type {
   HistoryData,
   DecisionDashboardResponse,
@@ -626,11 +627,10 @@ function MacroTab() {
   const [histories, setHistories] = useState<Partial<Record<string, HistoryData>>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const testScenariosEnabled = areTestScenariosEnabled();
   const macroScenario = useMemo(() => (
-    typeof __DEV__ !== 'undefined' && __DEV__
-      ? buildMacroMockScenario(selectedScenario)
-      : null
-  ), [selectedScenario]);
+    testScenariosEnabled ? buildMacroMockScenario(selectedScenario) : null
+  ), [selectedScenario, testScenariosEnabled]);
   const model = useMemo(
     () => buildMacroDashboardViewModel(histories, timeframe, Intl.DateTimeFormat().resolvedOptions().timeZone, macroScenario),
     [histories, macroScenario, timeframe],
@@ -2385,9 +2385,7 @@ function BreadthDetails({
   weightConcentration: ReturnType<typeof buildConcentrationBreadthSignal>;
 }) {
   const [selectedMockScenario, setSelectedMockScenario] = useState<BreadthMockScenarioKey>('healthyBull');
-  const mockScenario = typeof __DEV__ !== 'undefined' && __DEV__
-    ? buildBreadthMockScenario(selectedMockScenario)
-    : null;
+  const mockScenario = areTestScenariosEnabled() ? buildBreadthMockScenario(selectedMockScenario) : null;
   const activeBreadth = mockScenario?.breadth ?? breadth;
   const activeIndexes = mockScenario?.indexes ?? indexes;
   const baseDashboard = buildBreadthDashboard(activeBreadth, activeIndexes);
@@ -2994,8 +2992,8 @@ function DecisionFearGreedCard({ data }: { data: FearGreedViewModel }) {
     <View style={styles.decisionPanel}>
       <View style={styles.sectionHeaderRow}>
         <View>
-          <Text style={styles.detailSectionTitle}>Fear & Greed Index</Text>
-          <Text style={styles.helperInline}>Sentiment gauge</Text>
+          <Text style={styles.detailSectionTitle}>{data.title}</Text>
+          <Text style={styles.helperInline}>{data.subtitle}</Text>
         </View>
         <StatusBadge label={data.status} tone={getDecisionTone(data.tone)} />
       </View>
@@ -3019,12 +3017,17 @@ function DecisionFearGreedCard({ data }: { data: FearGreedViewModel }) {
           </View>
         </>
       ) : (
-        <Text style={styles.healthUnavailableText}>Fear & Greed score unavailable.</Text>
+        <Text style={styles.healthUnavailableText}>Latest verified reading could not be retrieved.</Text>
       )}
+      <Text style={styles.helperInline}>
+        {[data.sourceLabel, data.updatedLabel, data.coverageLabel ? `Coverage: ${data.coverageLabel}` : null, data.confidence !== null ? `Confidence: ${data.confidence}%` : null]
+          .filter(Boolean)
+          .join(' · ')}
+      </Text>
       <Text style={styles.bodyText}>{data.interpretation}</Text>
       <CompactDisclosure
         title="How this is calculated"
-        items={['This is an APInvest proxy built from internal sentiment components such as market momentum, breadth, options tone, volatility, and risk appetite. It is not the official CNN Fear & Greed Index and does not use external CNN data.']}
+        items={data.components.length ? data.components : ['No official or sufficiently covered estimated components are currently available.']}
       />
     </View>
   );

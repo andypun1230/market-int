@@ -35,5 +35,12 @@ export function formatProviderName(provider?: string | null) {
   if (!provider) {
     return 'Unavailable';
   }
+  const normalized = provider.toLowerCase();
+  if (normalized === 'polygon' || normalized === 'massive') {
+    return 'Polygon / Massive';
+  }
+  if (normalized === 'generated_test_data' || normalized === 'test') {
+    return 'Test Data';
+  }
   return provider.replace(/_/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase());
 }

@@ -1,0 +1,98 @@
+{
+  "cache_hits": {
+    "snapshot_storage": true
+  },
+  "compare_excluded_from_initial_readiness": true,
+  "duplicate_requests": [],
+  "errors": [],
+  "failures": [],
+  "first_usable_render_readiness_ms": 18,
+  "full_primary_analysis_readiness_ms": 18,
+  "history_requests_by_window": {
+    "chart_period_switch": [],
+    "selected": [
+      450
+    ]
+  },
+  "mode": "test:warm,restart",
+  "provider_calls": {
+    "provider_guard": "passed",
+    "warm_history_calls": 0,
+    "warm_quote_calls": 0
+  },
+  "refresh_duration_ms": null,
+  "restart_persistence": {
+    "after_snapshot_id": "stock-validation-1784310116",
+    "before_snapshot_id": "stock-validation-1784310116",
+    "same_snapshot_id": true
+  },
+  "section_statuses": {
+    "chart": "complete",
+    "executive_summary": "complete",
+    "leadership": "partial",
+    "overall_assessment": "complete",
+    "pattern": "complete",
+    "rating": "complete",
+    "relative_strength": "complete",
+    "risk": "complete",
+    "signals": "partial",
+    "support_resistance": "complete",
+    "trend": "complete",
+    "volume": "complete"
+  },
+  "symbols": [
+    "AAPL",
+    "NVDA",
+    "ARM",
+    "SNDK",
+    "MU"
+  ],
+  "timeouts": [],
+  "warm_reads": [
+    {
+      "elapsed_ms": 18,
+      "path": "/market/stock-analysis/NVDA",
+      "snapshot_id": "stock-validation-1784310116",
+      "snapshot_status": "partial",
+      "source_state": "test",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 5,
+      "path": "/market/stock-snapshot/NVDA",
+      "snapshot_id": "stock-validation-1784310116",
+      "snapshot_status": "partial",
+      "source_state": "test",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 3,
+      "path": "/market/stock-snapshot/NVDA/status",
+      "snapshot_id": "stock-validation-1784310116",
+      "snapshot_status": "partial",
+      "source_state": null,
+      "status_code": 200,
+      "target_ms": 500
+    }
+  ],
+  "warm_seed": {
+    "section_statuses": {
+      "chart": "complete",
+      "executive_summary": "complete",
+      "leadership": "partial",
+      "overall_assessment": "complete",
+      "pattern": "complete",
+      "rating": "complete",
+      "relative_strength": "complete",
+      "risk": "complete",
+      "signals": "partial",
+      "support_resistance": "complete",
+      "trend": "complete",
+      "volume": "complete"
+    },
+    "snapshot_id": "stock-validation-1784310116",
+    "status": "partial"
+  }
+}

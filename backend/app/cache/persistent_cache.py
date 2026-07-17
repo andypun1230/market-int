@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import sqlite3
 import threading
 import time
@@ -14,10 +15,11 @@ logger = logging.getLogger(__name__)
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 CACHE_DIR = BACKEND_ROOT / ".cache"
-DB_PATH = CACHE_DIR / "market_cache.sqlite3"
+DEFAULT_DB_PATH = CACHE_DIR / "market_cache.sqlite3"
+DB_PATH = DEFAULT_DB_PATH
 
 _lock = threading.RLock()
-_initialized = False
+_initialized_paths: set[str] = set()
 
 
 @dataclass
@@ -35,12 +37,12 @@ class PersistentCacheResult:
 
 
 def initialize_persistent_cache() -> None:
-    global _initialized
+    db_path = get_db_path()
     with _lock:
-        if _initialized:
+        if str(db_path) in _initialized_paths:
             return
         try:
-            CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            db_path.parent.mkdir(parents=True, exist_ok=True)
             with connect() as connection:
                 connection.execute("PRAGMA journal_mode=WAL")
                 connection.execute("PRAGMA synchronous=NORMAL")
@@ -58,13 +60,22 @@ def initialize_persistent_cache() -> None:
                     """
                 )
                 connection.commit()
-            _initialized = True
+            _initialized_paths.add(str(db_path))
         except Exception as exc:  # pragma: no cover - defensive only
             logger.warning("Persistent cache unavailable: %s: %s", type(exc).__name__, exc)
 
 
 def connect() -> sqlite3.Connection:
-    return sqlite3.connect(DB_PATH, timeout=5, check_same_thread=False)
+    return sqlite3.connect(get_db_path(), timeout=5, check_same_thread=False)
+
+
+def get_db_path() -> Path:
+    configured = (
+        os.getenv("PERSISTENT_CACHE_DB_PATH")
+        or os.getenv("MARKET_DATA_CACHE_DB_PATH")
+        or os.getenv("MARKET_DATA_SQLITE_PATH")
+    )
+    return Path(configured).expanduser() if configured else DEFAULT_DB_PATH
 
 
 def get_persistent_value(key: str, allow_stale: bool = False) -> PersistentCacheResult | None:
@@ -193,7 +204,7 @@ def get_persistent_cache_status() -> dict[str, Any]:
         "expired_items": sum(1 for row in rows if row[3] <= now),
         "oldest_item_age": round(max(ages), 2) if ages else None,
         "newest_item_age": round(min(ages), 2) if ages else None,
-        "database_path": str(DB_PATH),
+        "database_path": str(get_db_path()),
     }
 
 

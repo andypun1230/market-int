@@ -1,0 +1,125 @@
+{
+  "build": {
+    "duration_ms": 0,
+    "section_statuses": {
+      "breadth": "partial",
+      "core": "complete",
+      "decision": "complete",
+      "fear_greed": "complete",
+      "health": "complete",
+      "home": "complete",
+      "indexes": "complete",
+      "leadership": "complete",
+      "regime": "complete",
+      "risk": "complete",
+      "risk_dashboard": "complete"
+    },
+    "snapshot_id": "market-validation-1784310114",
+    "status": "partial",
+    "synthetic": true
+  },
+  "failures": [],
+  "mode": "test:warm",
+  "read_latency": [
+    {
+      "elapsed_ms": 14,
+      "path": "/market/snapshot/latest",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 300
+    },
+    {
+      "elapsed_ms": 2,
+      "path": "/home/dashboard",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 1,
+      "path": "/market/core-snapshot",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 1,
+      "path": "/market/regime",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 1,
+      "path": "/market/health",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 0,
+      "path": "/market/risk",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 1,
+      "path": "/market/fear-greed",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 4,
+      "path": "/market/decision-dashboard",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 8,
+      "path": "/market/details/decision",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 800
+    },
+    {
+      "elapsed_ms": 12,
+      "path": "/market/details/structure",
+      "snapshot_id": "market-validation-1784310114",
+      "status_code": 200,
+      "target_ms": 800
+    }
+  ],
+  "status": {
+    "enabled": true,
+    "latest_snapshot_id": "market-validation-1784310114",
+    "latest_status": "partial",
+    "metrics": {
+      "background_refreshes_triggered": 1,
+      "builds_completed": 0,
+      "builds_failed": 0,
+      "builds_started": 1,
+      "read_count": 14
+    },
+    "refresh_in_progress": true,
+    "snapshot_age_seconds": 0.08,
+    "storage": {
+      "healthy": true,
+      "latest": {
+        "published_at": "2026-07-17T17:41:54.496934+00:00",
+        "snapshot_id": "market-validation-1784310114",
+        "status": "partial"
+      },
+      "snapshot_count": 1,
+      "state": {
+        "last_build_completed_at": "2026-07-17T17:41:54.496938+00:00",
+        "last_build_error": "",
+        "last_build_started_at": "2026-07-17T17:41:54.525864+00:00",
+        "last_successful_snapshot_id": "market-validation-1784310114",
+        "latest_snapshot_id": "market-validation-1784310114"
+      }
+    }
+  }
+}

@@ -45,10 +45,14 @@ class CandleData(BaseModel):
     low: float
     close: float
     volume: float
+    vwap: float | None = None
+    transactions: int | None = None
 
 
 class HistoryData(BaseModel):
     symbol: str
+    requested_symbol: str | None = None
+    provider_symbol: str | None = None
     candles: list[CandleData]
     timeframe: str
     source: str

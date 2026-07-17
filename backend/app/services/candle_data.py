@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
 from typing import Any
 
+from app.providers.finnhub_provider import ProviderRequestError
 from app.providers.history_validation import validate_history
 from app.providers.models import CandleData, HistoryData
 from app.providers.selector import get_market_data_provider
@@ -11,7 +13,13 @@ def get_symbol_history(
     resolution: str = "D",
     minimum_candles: int | None = None,
 ) -> tuple[HistoryData, dict[str, Any]]:
-    history = get_market_data_provider().get_history(symbol.upper(), resolution=resolution, days=days)
+    normalized = symbol.upper()
+    try:
+        history = get_market_data_provider().get_history(normalized, resolution=resolution, days=days)
+    except Exception as exc:
+        history = unavailable_history(normalized, resolution, days, exc)
+    if history is None:
+        history = unavailable_history(normalized, resolution, days, None)
     validation = validate_history(history, minimum_candles or min(60, days))
     return history, validation
 
@@ -44,6 +52,28 @@ def candles_to_dicts(candles: list[CandleData]) -> list[dict[str, Any]]:
         }
         for candle in candles
     ]
+
+
+def unavailable_history(symbol: str, resolution: str, days: int, error: BaseException | None) -> HistoryData:
+    now = datetime.now(timezone.utc).isoformat()
+    category = error.category if isinstance(error, ProviderRequestError) else type(error).__name__ if error is not None else "empty_history"
+    return HistoryData(
+        symbol=symbol,
+        candles=[],
+        timeframe=resolution,
+        source="unavailable",
+        is_live=False,
+        is_stale=False,
+        fallback_used=False,
+        as_of=now,
+        requested_days=days,
+        returned_candles=0,
+        error_message="History dependency unavailable.",
+        provider="unavailable",
+        source_state="unavailable",
+        fetched_at=now,
+        fallback_reason=category,
+    )
 
 
 def build_history_metadata(history: HistoryData, validation: dict[str, Any]) -> dict[str, Any]:

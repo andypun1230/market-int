@@ -6,6 +6,10 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
 import {
+  loadComparisonHistories,
+  type CompareCoverageMetadata,
+} from '@/features/stock-detail/compare/compareHistoryLoader';
+import {
   buildStockComparisonDashboard,
   resolveStockThemeContext,
   stockCompareTimeframeDays,
@@ -16,7 +20,6 @@ import {
   type StockComparisonChartSeries,
   type StockComparisonDashboardViewModel,
 } from '@/features/stock-detail/compare/stockCompareModel';
-import { getLiveHistory } from '@/services/api';
 import type { HistoryData, VolumeAnalysis, WatchlistItem } from '@/types/market';
 
 const CHART_HEIGHT = 178;
@@ -45,8 +48,8 @@ export function StockCompareSections({
 }) {
   const [timeframe, setTimeframe] = useState<StockCompareTimeframe>('1M');
   const [histories, setHistories] = useState<Record<string, HistoryData | null>>({});
+  const [coverage, setCoverage] = useState<CompareCoverageMetadata | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const symbol = stock.ticker.toUpperCase();
   const themeContext = useMemo(() => resolveStockThemeContext(symbol), [symbol]);
   const requestedSymbols = useMemo(
@@ -62,26 +65,64 @@ export function StockCompareSections({
           return null;
         }
         setLoading(true);
-        setError(null);
-        return Promise.allSettled(
-          requestedSymbols.map(async (requestedSymbol) => {
-            const history = await getLiveHistory(requestedSymbol, 'D', stockCompareTimeframeDays[timeframe]);
-            return [requestedSymbol, history] as const;
-          }),
-        );
+        setCoverage(null);
+        return loadComparisonHistories(requestedSymbols, {
+          days: stockCompareTimeframeDays[timeframe],
+          onUpdate: (state) => {
+            if (cancelled) {
+              return;
+            }
+            setHistories(state.histories);
+            setCoverage(state.coverage);
+          },
+          resolution: 'D',
+        });
       })
-      .then((results) => {
-        if (!results || cancelled) {
+      .then((state) => {
+        if (!state || cancelled) {
+          return null;
+        }
+        setHistories(state.histories);
+        setCoverage(state.coverage);
+        if (state.coverage.partial && state.coverage.peers_available.length) {
+          return delay(8_000).then(() => {
+            if (cancelled) {
+              return null;
+            }
+            return loadComparisonHistories(requestedSymbols, {
+              days: stockCompareTimeframeDays[timeframe],
+              onUpdate: (retryState) => {
+                if (cancelled) {
+                  return;
+                }
+                setHistories(retryState.histories);
+                setCoverage(retryState.coverage);
+              },
+              resolution: 'D',
+            });
+          });
+        }
+        return state;
+      })
+      .then((state) => {
+        if (!state || cancelled) {
           return;
         }
-        const next: Record<string, HistoryData | null> = {};
-        results.forEach((result, index) => {
-          const requestedSymbol = requestedSymbols[index];
-          next[requestedSymbol] = result.status === 'fulfilled' ? result.value[1] : null;
-        });
-        setHistories(next);
-        const failures = results.filter((result) => result.status === 'rejected').length;
-        setError(failures ? `${failures} comparison source${failures === 1 ? '' : 's'} unavailable.` : null);
+        setHistories(state.histories);
+        setCoverage(state.coverage);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCoverage({
+            coverage_ratio: 0,
+            partial: true,
+            peers_available: [],
+            peers_requested: requestedSymbols,
+            peers_unavailable: requestedSymbols,
+            refreshing: false,
+            unavailable_reasons: Object.fromEntries(requestedSymbols.map((requestedSymbol) => [requestedSymbol, 'history unavailable'])),
+          });
+        }
       })
       .finally(() => {
         if (!cancelled) {
@@ -107,8 +148,7 @@ export function StockCompareSections({
   return (
     <View style={styles.stack}>
       <CompareTimeframeSelector timeframe={timeframe} onChange={setTimeframe} />
-      {loading ? <Text style={styles.helperText}>Loading comparison history...</Text> : null}
-      {error ? <Text style={styles.warningText}>{error}</Text> : null}
+      <CompareLoadState coverage={coverage} loading={loading} />
       <BenchmarkComparisonCard model={model} />
       <PerformanceSummaryCard model={model} />
       <RelativeStrengthCard model={model} />
@@ -117,6 +157,41 @@ export function StockCompareSections({
       <LeadershipReadCard model={model} />
     </View>
   );
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function CompareLoadState({
+  coverage,
+  loading,
+}: {
+  coverage: CompareCoverageMetadata | null;
+  loading: boolean;
+}) {
+  if (loading && !coverage?.peers_available.length) {
+    return (
+      <View style={styles.loadingStack}>
+        <View style={styles.loadingBar} />
+        <View style={[styles.loadingBar, styles.loadingBarShort]} />
+      </View>
+    );
+  }
+  if (coverage?.refreshing && coverage.peers_available.length) {
+    return <Text style={styles.helperText}>Some comparisons are still loading.</Text>;
+  }
+  if (coverage?.partial && coverage.peers_available.length) {
+    return (
+      <Text style={styles.warningText}>
+        {coverage.peers_available.length} of {coverage.peers_requested.length} comparison histories loaded.
+      </Text>
+    );
+  }
+  if (coverage && !coverage.peers_available.length) {
+    return <Text style={styles.warningText}>Comparison history unavailable.</Text>;
+  }
+  return null;
 }
 
 function CompareTimeframeSelector({
@@ -386,6 +461,7 @@ function PeerComparisonCard({ model }: { model: StockComparisonDashboardViewMode
 }
 
 function PeerRow({ peer }: { peer: PeerComparisonViewModel }) {
+  const unavailable = peer.periodReturn === null;
   return (
     <View style={[styles.peerRow, peer.isSelectedStock && styles.peerRowSelected]}>
       <View style={styles.peerHeader}>
@@ -393,13 +469,17 @@ function PeerRow({ peer }: { peer: PeerComparisonViewModel }) {
         <Text style={[styles.peerReturn, { color: returnColor(peer.periodReturn) }]}>{formatSignedPercent(peer.periodReturn)}</Text>
         <StatusBadge label={peerStateLabel(peer.relativeStrength)} tone={peerTone(peer.relativeStrength)} />
       </View>
-      <View style={styles.peerMetaGrid}>
-        <Info label="Trend" value={peer.trend} />
-        <Info label="Momentum" value={peer.momentum} />
-        {peer.volume !== 'N/A' ? <Info label="Volume" value={peer.volume} /> : null}
-        <Info label="Setup" value={peer.setup} />
-        <Info label="From High" value={formatSignedPercent(peer.distanceFromHigh)} />
-      </View>
+      {unavailable ? (
+        <Text style={styles.emptyText}>History unavailable for this peer.</Text>
+      ) : (
+        <View style={styles.peerMetaGrid}>
+          <Info label="Trend" value={peer.trend} />
+          <Info label="Momentum" value={peer.momentum} />
+          {peer.volume !== 'N/A' ? <Info label="Volume" value={peer.volume} /> : null}
+          <Info label="Setup" value={peer.setup} />
+          <Info label="From High" value={formatSignedPercent(peer.distanceFromHigh)} />
+        </View>
+      )}
     </View>
   );
 }
@@ -833,6 +913,18 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.pill,
     height: 2,
     position: 'absolute',
+  },
+  loadingBar: {
+    backgroundColor: Theme.colors.backgroundMuted,
+    borderRadius: Theme.radii.pill,
+    height: 10,
+    width: '100%',
+  },
+  loadingBarShort: {
+    width: '62%',
+  },
+  loadingStack: {
+    gap: Spacing.one,
   },
   medianRow: {
     paddingTop: Spacing.one,

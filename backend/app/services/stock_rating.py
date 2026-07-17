@@ -108,6 +108,13 @@ def calculate_sector_strength(sector: str) -> int:
     return 50
 
 
+def safe_calculate_sector_strength(sector: str) -> int:
+    try:
+        return calculate_sector_strength(sector)
+    except Exception:
+        return 50
+
+
 def calculate_risk_control(symbol: str) -> int:
     risk_plan = calculate_risk_plan(symbol)
 
@@ -197,7 +204,7 @@ def calculate_stock_rating(symbol: str) -> StockRatingItem:
     risk_plan = calculate_risk_plan(normalized_symbol)
     support_resistance = calculate_support_resistance(normalized_symbol)
     trendline = analyze_trendline(normalized_symbol)
-    sector_strength = calculate_sector_strength(SYMBOL_SECTOR[normalized_symbol])
+    sector_strength = safe_calculate_sector_strength(SYMBOL_SECTOR.get(normalized_symbol, "Market"))
     regime = build_market_regime()
     institutional_bias = calculate_institutional_bias()
     multi_timeframe = analyze_multi_timeframe(normalized_symbol)

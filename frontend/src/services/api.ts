@@ -21,6 +21,7 @@ import {
   MarketCapRotationResponse,
   MarketHealthResponse,
   MarketCoreSnapshot,
+  MarketSnapshotResponse,
   MarketRegime,
   MarketSentimentResponse,
   MoneyFlowResponse,
@@ -253,12 +254,24 @@ export function getTrendline(symbol: string) {
   return request<TrendlineResponse>(`/market/trendline/${symbol}`);
 }
 
-export function getStockAnalysis(symbol: string) {
+export function getStockAnalysis(symbol: string, options: { bypassCache?: boolean } = {}) {
   const normalizedSymbol = symbol.toUpperCase();
+  const fetcher = () => request<StockAnalysisAggregate>(`/market/stock-analysis/${normalizedSymbol}`, { timeoutMs: 10_000 });
+  if (options.bypassCache) {
+    return fetcher();
+  }
   return cachedRequest(
     `stock-analysis:v3:${normalizedSymbol}`,
-    () => request<StockAnalysisAggregate>(`/market/stock-analysis/${normalizedSymbol}`, { timeoutMs: 10_000 }),
+    fetcher,
     300_000,
+  );
+}
+
+export function getStockSnapshot(symbol: string) {
+  const normalizedSymbol = symbol.toUpperCase();
+  return request<{ status: string; analysis?: StockAnalysisAggregate; snapshot?: unknown }>(
+    `/market/stock-snapshot/${normalizedSymbol}`,
+    { timeoutMs: 5_000 },
   );
 }
 
@@ -307,6 +320,14 @@ export function getMarketCoreSnapshot() {
     'market-core-snapshot',
     () => request<MarketCoreSnapshot>('/market/core-snapshot', { timeoutMs: 5000 }),
     60_000,
+  );
+}
+
+export function getLatestMarketSnapshot() {
+  return cachedRequest(
+    'market-snapshot-latest',
+    () => request<MarketSnapshotResponse>('/market/snapshot/latest', { timeoutMs: 2_000 }),
+    30_000,
   );
 }
 
@@ -506,15 +527,25 @@ export function getLiveQuote(symbol: string) {
 }
 
 export function getLiveHistory(symbol: string, resolution = 'D', days = 240) {
-  const normalizedSymbol = symbol.toUpperCase();
+  const normalizedSymbol = normalizeProviderHistorySymbol(symbol);
   return cachedRequest(
     `live-history:v3:${normalizedSymbol}:${resolution}:${days}`,
     () => request<HistoryData>(
-      `/market/live/history/${normalizedSymbol}?resolution=${encodeURIComponent(resolution)}&days=${days}`,
+      `/market/live/history/${encodeURIComponent(normalizedSymbol)}?resolution=${encodeURIComponent(resolution)}&days=${days}`,
       { timeoutMs: 10_000 },
     ).then((history) => assertCompatibleHistoryRange(history, days)),
     300_000,
   );
+}
+
+function normalizeProviderHistorySymbol(symbol: string): string {
+  const normalized = symbol.trim().toUpperCase();
+  return {
+    DJI: 'DIA',
+    IXIC: 'QQQ',
+    RUT: 'IWM',
+    SPX: 'SPY',
+  }[normalized] ?? normalized;
 }
 
 function assertCompatibleHistoryRange(history: HistoryData, requestedDays: number): HistoryData {

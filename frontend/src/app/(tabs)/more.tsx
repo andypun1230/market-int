@@ -58,7 +58,7 @@ const PREFERENCES: MoreRow[] = [
 ];
 
 const ABOUT: MoreRow[] = [
-  { description: 'Current data mode, provider status, and calculation limits.', href: '/data-sources', title: 'Data Sources', value: 'Test Data' },
+  { description: 'Current data mode, provider status, and calculation limits.', href: '/data-sources', title: 'Data Sources', value: 'Providers' },
   { description: 'Important educational-use and market-data limitations.', href: '/disclaimer', title: 'Financial Disclaimer' },
   { description: 'Local preferences, watchlist storage, Market Copilot, and downloads.', href: '/privacy', title: 'Privacy' },
   { description: 'Version, build, environment, and backend status.', href: '/about', title: 'About', value: '1.0.0' },

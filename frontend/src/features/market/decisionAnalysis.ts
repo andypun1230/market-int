@@ -88,10 +88,17 @@ export type MarketCapRotationViewModel = {
 };
 
 export type FearGreedViewModel = {
+  components: string[];
+  confidence: number | null;
+  coverageLabel: string | null;
   interpretation: string;
   score: number | null;
+  sourceLabel: string;
   status: string;
+  subtitle: string;
+  title: string;
   tone: DecisionTone;
+  updatedLabel: string | null;
 };
 
 export type DecisionChangeViewModel = {
@@ -289,20 +296,44 @@ export function buildMarketCapRotation(capRotation: MarketCapRotationResponse | 
 
 export function buildFearGreed(fearGreed: FearGreedResponse | null): FearGreedViewModel {
   const score = validNumber(fearGreed?.score);
+  const sourceType = fearGreed?.source_type ?? null;
+  const title = fearGreed?.title ?? (sourceType === 'official' ? 'CNN Fear & Greed Index' : sourceType === 'estimated' ? 'Fear & Greed Estimate' : 'Fear & Greed unavailable');
+  const subtitle = fearGreed?.subtitle ?? (sourceType === 'official' ? 'Source: CNN' : sourceType === 'estimated' ? 'Based on CNN methodology' : 'Latest verified reading could not be retrieved');
+  const coverage = validNumber(fearGreed?.coverage_components);
+  const required = validNumber(fearGreed?.required_components) ?? 7;
+  const components = (fearGreed?.components ?? []).map((component) => {
+    const state = component.missing ? 'missing' : component.data_state ?? 'unknown';
+    const confidence = validNumber(component.confidence);
+    return `${component.label}: ${component.missing ? 'Unavailable' : `${component.score} · ${component.status}`} · ${state}${component.source ? ` · ${component.source}` : ''}${confidence !== null ? ` · confidence ${confidence}%` : ''}`;
+  });
   if (score === null) {
     return {
+      components,
+      confidence: validNumber(fearGreed?.confidence),
+      coverageLabel: coverage !== null ? `${coverage}/${required}` : null,
       interpretation: 'Fear & Greed data unavailable.',
       score: null,
+      sourceLabel: sourceType === 'estimated' ? 'Estimate unavailable' : 'Latest verified reading could not be retrieved',
       status: 'Unavailable',
+      subtitle,
+      title,
       tone: 'neutral',
+      updatedLabel: formatTimestampLabel(fearGreed?.source_timestamp ?? fearGreed?.fetched_at ?? null),
     };
   }
-  const status = fearGreed?.status ?? fearGreedStatus(score);
+  const status = fearGreed?.status ?? 'Unavailable';
   return {
+    components,
+    confidence: validNumber(fearGreed?.confidence),
+    coverageLabel: coverage !== null ? `${coverage}/${required}` : null,
     interpretation: fearGreedInterpretation(status),
     score,
+    sourceLabel: sourceType === 'official' ? 'Source: CNN' : sourceType === 'estimated' ? 'Based on CNN methodology' : 'Source unavailable',
     status,
+    subtitle,
+    title,
     tone: fearGreedTone(status),
+    updatedLabel: formatTimestampLabel(fearGreed?.source_timestamp ?? fearGreed?.fetched_at ?? null),
   };
 }
 
@@ -350,6 +381,17 @@ export function fearGreedStatus(score: number) {
     return 'Greed';
   }
   return 'Extreme Greed';
+}
+
+function formatTimestampLabel(value?: string | null) {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return `Updated ${date.toLocaleString()}`;
 }
 
 export function gaugeMarkerPercent(score: number | null) {

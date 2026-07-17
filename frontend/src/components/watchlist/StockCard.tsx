@@ -176,12 +176,13 @@ export function StockCard({
         title={stock.ticker}
         visible={detailsVisible}>
         {detailState.loading ? <SectionSummary>Loading detailed analysis...</SectionSummary> : null}
+        {detailState.data?.snapshotStatus === 'initializing' ? <SectionSummary>Preparing live history...</SectionSummary> : null}
         {detailState.error ? <SectionSummary>{detailState.error}</SectionSummary> : null}
         <AskCopilotButton
           context={copilotContext}
           prompt={`Explain ${stock.ticker}'s current setup and main risk.`}
         />
-        <StockDetailHeader model={overviewModel} />
+        <StockDetailHeader chartHistory={detailState.data?.chartHistory} model={overviewModel} />
         <TabbedDetailPanel
           initialKey="overview"
           tabs={[

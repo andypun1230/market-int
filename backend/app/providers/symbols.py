@@ -5,6 +5,11 @@ import re
 
 SYMBOL_ALIASES = {
     "DJI": "DIA",
+    "IXIC": "QQQ",
+    "NDX": "QQQ",
+    "QQQEW": "QQEW",
+    "RUT": "IWM",
+    "SPX": "SPY",
 }
 INVALID_SYMBOL_PLACEHOLDERS = {"INVALID", "INVALID_SYMBOL", "BAD_SYMBOL"}
 

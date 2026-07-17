@@ -26,6 +26,7 @@ from app.cache.market_data_cache import (
     build_history_cache_key,
     build_quote_cache_key,
 )
+from app.services.history_request_coordinator import get_history_request_coordinator
 
 
 @dataclass
@@ -162,18 +163,23 @@ class MarketDataRepository(MarketDataProvider):
         )
 
     def get_history(self, symbol: str, resolution: str = "D", days: int = 240) -> HistoryData:
+        requested_symbol = normalize_market_symbol(symbol, apply_alias=False)
         normalized = normalize_market_symbol(symbol, apply_alias=True)
         normalized_resolution = resolution.upper()
         safe_days = max(1, min(int(days), 1500))
         provider_name = self.get_provider_name_for("daily_history")
         key = build_history_cache_key(provider_name, normalized, normalized_resolution, safe_days)
-        return self._get_or_compute(
+        compatible = self._get_compatible_history_cache(provider_name, normalized, normalized_resolution, safe_days, key)
+        if compatible is not None:
+            return mark_history_symbol_metadata(compatible, requested_symbol=requested_symbol, provider_symbol=normalized)
+        result = self._get_or_compute(
             key,
             self.history_ttl_seconds,
             lambda: self._fetch_history(normalized, normalized_resolution, safe_days),
             mark_cached_history,
             domain="daily_history",
         )
+        return mark_history_symbol_metadata(result, requested_symbol=requested_symbol, provider_symbol=normalized)
 
     def get_provider_health(self) -> ProviderHealth:
         health = self.get_provider_for("quotes").get_provider_health()
@@ -213,6 +219,7 @@ class MarketDataRepository(MarketDataProvider):
             "fallback_active": self.fallback_active,
             "unavailable_results": self.unavailable_count,
         }
+        status["history_request_coordinator"] = get_history_request_coordinator().status()
         status["provider_routing"] = self.router.status() if not self._explicit_provider else {"mode": "explicit_provider"}
         return status
 
@@ -226,14 +233,14 @@ class MarketDataRepository(MarketDataProvider):
         return self.get_provider_name_for("daily_history")
 
     def get_provider_for(self, domain: str) -> MarketDataProvider:
-        if self._explicit_provider:
+        if self._explicit_provider or self.data_provider in {"test", "generated_test_data", "mock"}:
             return self.primary_provider
         if domain == "daily_history":
             return self.router.get_provider_for("daily_history")
         return self.router.get_provider_for("quotes")
 
     def get_provider_name_for(self, domain: str) -> str:
-        if self._explicit_provider:
+        if self._explicit_provider or self.data_provider in {"test", "generated_test_data", "mock"}:
             return self.primary_provider.get_provider_health().provider
         return self.router.get_provider_name_for("daily_history" if domain == "daily_history" else "quotes")
 
@@ -296,8 +303,15 @@ class MarketDataRepository(MarketDataProvider):
         provider_name = self.get_provider_name_for("daily_history")
         try:
             provider = self.get_provider_for("daily_history")
-            self.provider_call_count += 1
-            history = provider.get_history(symbol, resolution=resolution, days=days)
+            def fetch() -> HistoryData:
+                self.provider_call_count += 1
+                return provider.get_history(symbol, resolution=resolution, days=days)
+
+            if provider_name in {"polygon", "massive"}:
+                key = f"{provider_name}:{symbol}:{resolution}:{days}"
+                history = get_history_request_coordinator().run(key, fetch)
+            else:
+                history = fetch()
             self.fallback_active = False
             self.last_successful_history_request = now_iso()
             return annotate_history(history, provider=provider.get_provider_health().provider, source_state=source_state_from_provider(provider_name, history))
@@ -341,6 +355,17 @@ class MarketDataRepository(MarketDataProvider):
             return self.cache.get_stale(key)
         return CacheLookupResult(None, False, False, "unsupported")
 
+    def _get_compatible_history_cache(self, provider: str, symbol: str, resolution: str, days: int, key: str) -> HistoryData | None:
+        if not self.cache_enabled or not isinstance(self.cache, LayeredMarketDataCache):
+            return None
+        cached, age = self.cache.get(key)
+        if cached is not None:
+            return mark_cached_history(cached, age or 0)
+        found, found_age, _source_key = self.cache.find_history_covering(provider, symbol, resolution, days)
+        if found is None:
+            return None
+        return mark_cached_history(found, found_age or 0)
+
     def _set_cache_value(self, key: str, result: Any, ttl: int, *, domain: str) -> None:
         if isinstance(self.cache, LayeredMarketDataCache):
             self.cache.set(
@@ -364,6 +389,10 @@ class MarketDataRepository(MarketDataProvider):
         def refresh() -> None:
             try:
                 result = compute()
+                if getattr(result, "fallback_used", False) or getattr(result, "source_state", None) == "mock":
+                    inflight.error = RuntimeError("Background refresh returned fallback data; preserving stale cache.")
+                    self.background_refresh_failure_count += 1
+                    return
                 self._set_cache_value(key, result, ttl, domain=domain)
                 inflight.result = result
                 self.background_refresh_count += 1
@@ -381,21 +410,39 @@ class MarketDataRepository(MarketDataProvider):
 
 _repository_lock = threading.RLock()
 _repository: MarketDataRepository | None = None
+_repository_signature: tuple[str | None, ...] | None = None
 
 
 def get_market_data_repository() -> MarketDataRepository:
-    global _repository
+    global _repository, _repository_signature
     with _repository_lock:
         provider_mode = os.getenv("DATA_PROVIDER") or os.getenv("MARKET_DATA_PROVIDER") or "test"
-        if _repository is None or _repository.data_provider != provider_mode.lower():
+        signature = repository_config_signature(provider_mode)
+        if (
+            _repository is None
+            or _repository.data_provider != provider_mode.lower()
+            or _repository_signature != signature
+        ):
             _repository = MarketDataRepository(data_provider=provider_mode)
+            _repository_signature = signature
         return _repository
 
 
 def reset_market_data_repository() -> None:
-    global _repository
+    global _repository, _repository_signature
     with _repository_lock:
         _repository = None
+        _repository_signature = None
+
+
+def repository_config_signature(provider_mode: str) -> tuple[str | None, ...]:
+    return (
+        provider_mode.lower(),
+        (os.getenv("MARKET_DATA_PROVIDER") or "").lower(),
+        (os.getenv("QUOTE_DATA_PROVIDER") or os.getenv("QUOTE_PROVIDER") or "").lower(),
+        (os.getenv("HISTORY_DATA_PROVIDER") or os.getenv("HISTORY_PROVIDER") or "").lower(),
+        (os.getenv("MARKET_DATA_ALLOW_MOCK_FALLBACK") or "").lower(),
+    )
 
 
 def build_provider_for_mode(provider_name: str) -> MarketDataProvider:
@@ -406,6 +453,10 @@ def build_provider_for_mode(provider_name: str) -> MarketDataProvider:
         return MockMarketDataProvider()
     if normalized in {"finnhub", "live", "auto"}:
         return FinnhubMarketDataProvider()
+    if normalized in {"polygon", "massive"}:
+        from app.providers.polygon_provider import PolygonMarketDataProvider
+
+        return PolygonMarketDataProvider()
     return GeneratedTestMarketDataProvider()
 
 
@@ -439,6 +490,7 @@ def annotate_history(
 ) -> HistoryData:
     return history.model_copy(update={
         "provider": provider,
+        "provider_symbol": history.provider_symbol or history.symbol,
         "requested_provider": original_provider or provider,
         "source_state": source_state,
         "fetched_at": now_iso(),
@@ -446,6 +498,14 @@ def annotate_history(
         "cache_age_seconds": None,
         "fallback_reason": fallback_reason,
         "original_provider": original_provider,
+    })
+
+
+def mark_history_symbol_metadata(history: HistoryData, *, requested_symbol: str, provider_symbol: str) -> HistoryData:
+    return history.model_copy(update={
+        "requested_symbol": requested_symbol,
+        "provider_symbol": provider_symbol,
+        "symbol": provider_symbol,
     })
 
 

@@ -1,4 +1,7 @@
 import {
+  normalizeComparisonSymbols,
+} from '../src/features/stock-detail/compare/compareHistoryLoader';
+import {
   buildEqualWeightComposite,
   buildStockComparisonDashboard,
   buildThemeBenchmark,
@@ -276,6 +279,15 @@ function runTests() {
 
   const fiveSessions = selectComparisonWindow(deduplicateDailyHistory(history('RANGE', [1, 2, 3, 4, 5, 6, 7])), '1W');
   assert(fiveSessions.length === 5, '1W timeframe selects five sessions');
+  const normalizedCompareSymbols = normalizeComparisonSymbols(['NVDA', 'SPX', 'AMD', 'SPX', 'RUT', 'IXIC']);
+  assert(
+    normalizedCompareSymbols.map((item) => item.displaySymbol).join(',') === 'NVDA,SPX,AMD,RUT,IXIC',
+    'compare loader preserves requested display order and deduplicates symbols',
+  );
+  assert(
+    normalizedCompareSymbols.map((item) => item.providerSymbol).join(',') === 'NVDA,SPY,AMD,IWM,QQQ',
+    'compare loader maps unsupported index labels to provider-supported ETF proxies',
+  );
   assert(formatDataSourceLabel('generated_test_data') === 'Test data', 'generated_test_data label is user-facing');
   assert(formatDataSourceLabel('mock') === 'Mock data', 'mock label is user-facing');
   assert(formatDataSourceLabel('mixed') === 'Mixed sources', 'mixed label is user-facing');

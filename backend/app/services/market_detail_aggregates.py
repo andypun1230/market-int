@@ -168,9 +168,22 @@ def build_partial(tasks: dict[str, Callable[[], Any]]) -> dict[str, Any]:
             result[key] = to_jsonable(fn())
         except Exception as exc:
             result["partial"] = True
-            result["errors"][key] = f"{type(exc).__name__}: {exc}"
+            result["errors"][key] = safe_error_summary(exc)
             result[key] = None
     return result
+
+
+def safe_error_summary(error: Exception) -> dict[str, str]:
+    category = getattr(error, "category", None)
+    if category:
+        return {
+            "category": str(category),
+            "message": "Data dependency unavailable.",
+        }
+    return {
+        "category": "calculation_error",
+        "message": "Section unavailable due to a recoverable calculation error.",
+    }
 
 
 def get_detail_ttl() -> int:

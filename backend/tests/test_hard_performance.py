@@ -91,12 +91,10 @@ class HardPerformanceTests(unittest.TestCase):
         ), patch("app.services.stock_analysis_aggregate.calculate_risk_plan", return_value={"symbol": "MU"}), patch(
             "app.services.stock_analysis_aggregate.analyze_multi_timeframe", return_value={"symbol": "MU"}
         ), patch("app.services.stock_analysis_aggregate.detect_patterns", return_value={"patterns": []}), patch(
-            "app.services.stock_analysis_aggregate.build_relative_strength"
-        ) as rs, patch("app.services.stock_analysis_aggregate.build_stock_ratings") as ratings, patch(
+            "app.services.stock_analysis_aggregate.calculate_rs_score", return_value={"symbol": "MU"}
+        ), patch("app.services.stock_analysis_aggregate.calculate_stock_rating", return_value={"symbol": "MU"}), patch(
             "app.services.stock_analysis_aggregate.analyze_symbol_options", return_value={"symbol": "MU"}
         ), patch("app.services.stock_analysis_aggregate.analyze_symbol_liquidity", return_value={"symbol": "MU"}):
-            rs.return_value.items = []
-            ratings.return_value.items = []
             result = build_stock_analysis("MU")
 
         self.assertTrue(result["partial"])

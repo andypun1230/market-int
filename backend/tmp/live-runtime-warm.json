@@ -1,0 +1,246 @@
+{
+  "config": {
+    "HISTORY_DATA_PROVIDER": "polygon",
+    "MARKET_DATA_ALLOW_MOCK_FALLBACK": "false",
+    "MARKET_DATA_HISTORY_COORDINATOR_CONCURRENCY": "2",
+    "MARKET_DATA_PERSISTENT_CACHE_ENABLED": "true",
+    "QUOTE_DATA_PROVIDER": "finnhub"
+  },
+  "mode": "warm-cache",
+  "rounds": [
+    {
+      "aggregate_503_count": 0,
+      "cache_status": {
+        "history_request_coordinator": {
+          "deduplicated": 0,
+          "enabled": true,
+          "failed": 7,
+          "inflight_keys": 0,
+          "max_concurrency": 2,
+          "max_queue_depth": 1,
+          "max_running": 2,
+          "queue_timeouts": 0,
+          "queued": 0,
+          "retries": 16,
+          "running": 0,
+          "started": 12,
+          "succeeded": 5
+        },
+        "hit_count": 40,
+        "items": 17,
+        "keys": [
+          "history:polygon:AAPL:D:260",
+          "history:polygon:DIA:D:240",
+          "history:polygon:DIS:D:260",
+          "history:polygon:GLD:D:240",
+          "history:polygon:GOOGL:D:260",
+          "history:polygon:IEF:D:240",
+          "history:polygon:IWM:D:240",
+          "history:polygon:META:D:260",
+          "history:polygon:MSFT:D:260",
+          "history:polygon:NFLX:D:260",
+          "history:polygon:NVDA:D:260",
+          "history:polygon:NVDA:D:365",
+          "history:polygon:QQQ:D:240",
+          "history:polygon:RSP:D:240",
+          "history:polygon:SPY:D:240",
+          "history:polygon:T:D:260",
+          "history:polygon:TLT:D:240"
+        ],
+        "miss_count": 84,
+        "persistent": {
+          "corrupt_entries": 0,
+          "database_size_bytes": 23764992,
+          "database_size_mb": 22.664,
+          "domain_counts": {
+            "daily_history": 271,
+            "quotes": 54
+          },
+          "enabled": true,
+          "entries": 325,
+          "expired_entries": 3,
+          "fresh_entries": 274,
+          "healthy": true,
+          "last_cleanup_at": null,
+          "newest_entry_age_seconds": 56,
+          "oldest_entry_age_seconds": 471,
+          "provider_counts": {
+            "finnhub": 19,
+            "generated_test_data": 143,
+            "mock": 123,
+            "polygon": 40
+          },
+          "read_errors": 0,
+          "stale_entries": 48,
+          "write_errors": 0
+        },
+        "persistent_hit_count": 27,
+        "provider_routing": {
+          "capabilities": {
+            "finnhub": {
+              "daily_history_access_state": "restricted",
+              "last_restricted_at": null,
+              "notes": [
+                "Finnhub quote access is available.",
+                "Daily candles returned HTTP 403 under the configured plan."
+              ],
+              "provider": "finnhub",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": false,
+              "supports_daily_history": false,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "generated_test_data": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Generated deterministic test data."
+              ],
+              "provider": "generated_test_data",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": true,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "mock": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Deterministic mock data."
+              ],
+              "provider": "mock",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": true,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "polygon": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Polygon/Massive daily stock aggregate history provider.",
+                "Internal provider id remains polygon."
+              ],
+              "provider": "polygon",
+              "quote_access_state": "unavailable",
+              "restriction_reason": null,
+              "supports_batch_quotes": false,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": false
+            }
+          },
+          "configured_history_provider": "polygon",
+          "configured_quote_provider": "finnhub"
+        },
+        "repository_metrics": {
+          "background_refresh_failures": 0,
+          "background_refreshes": 8,
+          "fallback_active": false,
+          "provider_calls": 36,
+          "unavailable_results": 7
+        },
+        "stale_hit_count": 8,
+        "write_count": 13
+      },
+      "elapsed_ms": 95089,
+      "failures": [
+        {
+          "body_excerpt": "{\"status\":\"unavailable\",\"source_state\":\"unavailable\",\"category\":\"unavailable\",\"message\":\"Market data is unavailable for this request.\",\"path\":\"/market/live/history/QQQEW\"}",
+          "elapsed_ms": 14303,
+          "path": "/market/live/history/QQQEW?days=240",
+          "status_code": 503
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 29998,
+          "path": "/market/stock-analysis/NVDA",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 30001,
+          "path": "/market/live/history/USO?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 30004,
+          "path": "/market/live/history/UUP?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 30002,
+          "path": "/market/live/history/HYG?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "TimeoutError: timed out",
+          "elapsed_ms": 30002,
+          "path": "/market/live/history/SPX?days=240",
+          "status_code": 599
+        },
+        {
+          "body_excerpt": "{\"status\":\"unavailable\",\"source_state\":\"unavailable\",\"category\":\"unavailable\",\"message\":\"Market data is unavailable for this request.\",\"path\":\"/market/live/history/QQQEW\"}",
+          "elapsed_ms": 12392,
+          "path": "/market/live/history/QQQEW?days=60",
+          "status_code": 503
+        }
+      ],
+      "http_500_count": 7,
+      "http_503_count": 2,
+      "max_elapsed_ms": 38386,
+      "request_count": 33,
+      "statuses": {
+        "/home/dashboard": 200,
+        "/market/core-snapshot": 200,
+        "/market/decision-dashboard": 200,
+        "/market/details/decision": 200,
+        "/market/details/institutional": 200,
+        "/market/details/structure": 200,
+        "/market/fear-greed": 200,
+        "/market/health": 200,
+        "/market/live/history/DIA?days=240": 200,
+        "/market/live/history/DIA?days=60": 200,
+        "/market/live/history/DJI?days=240": 200,
+        "/market/live/history/GLD?days=240": 200,
+        "/market/live/history/HYG?days=240": 599,
+        "/market/live/history/IEF?days=240": 200,
+        "/market/live/history/IEF?days=60": 200,
+        "/market/live/history/IXIC?days=240": 200,
+        "/market/live/history/QQQ?days=240": 200,
+        "/market/live/history/QQQ?days=60": 200,
+        "/market/live/history/QQQEW?days=240": 503,
+        "/market/live/history/QQQEW?days=60": 503,
+        "/market/live/history/RSP?days=240": 200,
+        "/market/live/history/RSP?days=60": 200,
+        "/market/live/history/RUT?days=240": 200,
+        "/market/live/history/SPX?days=240": 599,
+        "/market/live/history/SPY?days=240": 200,
+        "/market/live/history/SPY?days=60": 200,
+        "/market/live/history/TLT?days=240": 200,
+        "/market/live/history/USO?days=240": 599,
+        "/market/live/history/UUP?days=240": 599,
+        "/market/regime": 200,
+        "/market/risk": 200,
+        "/market/stock-analysis/NVDA": 599,
+        "/watchlist/summary": 200
+      }
+    }
+  ]
+}

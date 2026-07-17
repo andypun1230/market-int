@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 
 from app.models.market import SectorEtfItem, SectorEtfResponse
 from app.providers.mock_provider import MockMarketDataProvider
@@ -192,7 +193,7 @@ def _build_sector_etf_dashboard_uncached() -> SectorEtfResponse:
     spy_return_20d = calculate_return_from_history(spy_history, 20)
     items = [
         build_sector_etf_item(provider, item, spy_return_20d, days)
-        for item in SECTOR_ETFS
+        for item in get_sector_etfs_for_runtime()
     ]
     leaders = sorted(items, key=lambda item: item.relative_strength_score, reverse=True)[:2]
     coverage_percent = round(
@@ -279,6 +280,8 @@ def safe_get_quote(provider: object, symbol: str) -> QuoteData:
     try:
         return provider.get_quote(symbol)
     except Exception:
+        if is_live_without_mock_fallback():
+            return unavailable_quote(symbol)
         return mark_mock_fallback(MockMarketDataProvider().get_quote(symbol))
 
 
@@ -286,7 +289,72 @@ def safe_get_history(provider: object, symbol: str, days: int) -> HistoryData:
     try:
         return provider.get_history(symbol, resolution="D", days=days)
     except Exception:
+        if is_live_without_mock_fallback():
+            return unavailable_history(symbol, days)
         return mark_mock_fallback(MockMarketDataProvider().get_history(symbol, resolution="D", days=days))
+
+
+def get_sector_etfs_for_runtime() -> list[dict]:
+    if not is_live_without_mock_fallback():
+        return SECTOR_ETFS
+    limit = int_env("SECTOR_ETF_LIVE_MAX_SYMBOLS", 4)
+    return SECTOR_ETFS[:max(1, min(limit, len(SECTOR_ETFS)))]
+
+
+def is_live_without_mock_fallback() -> bool:
+    provider_mode = (os.getenv("DATA_PROVIDER") or os.getenv("MARKET_DATA_PROVIDER") or "").lower()
+    history_provider = (os.getenv("HISTORY_DATA_PROVIDER") or os.getenv("HISTORY_PROVIDER") or "").lower()
+    allow_fallback = os.getenv("MARKET_DATA_ALLOW_MOCK_FALLBACK", "true").lower() in {"1", "true", "yes", "on"}
+    return not allow_fallback and (provider_mode in {"live", "auto", "finnhub", "polygon", "massive"} or history_provider in {"polygon", "massive"})
+
+
+def unavailable_quote(symbol: str) -> QuoteData:
+    now = datetime.now(timezone.utc).isoformat()
+    return QuoteData(
+        symbol=symbol,
+        price=0.0,
+        change=0.0,
+        change_percent=0.0,
+        open=None,
+        high=None,
+        low=None,
+        previous_close=None,
+        volume=None,
+        timestamp=now,
+        source="unavailable",
+        is_live=False,
+        is_stale=False,
+        fallback_used=False,
+        provider="unavailable",
+        source_state="unavailable",
+        fetched_at=now,
+    )
+
+
+def unavailable_history(symbol: str, days: int) -> HistoryData:
+    now = datetime.now(timezone.utc).isoformat()
+    return HistoryData(
+        symbol=symbol,
+        candles=[],
+        timeframe="D",
+        source="unavailable",
+        is_live=False,
+        is_stale=False,
+        fallback_used=False,
+        as_of=now,
+        requested_days=days,
+        returned_candles=0,
+        provider="unavailable",
+        source_state="unavailable",
+        fetched_at=now,
+    )
+
+
+def int_env(name: str, default: int) -> int:
+    try:
+        return int(os.getenv(name, str(default)))
+    except ValueError:
+        return default
 
 
 def calculate_return_from_history(history: HistoryData, lookback: int) -> float:

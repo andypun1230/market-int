@@ -1,0 +1,43 @@
+{
+  "config": {
+    "HISTORY_DATA_PROVIDER": "polygon",
+    "MARKET_DATA_ALLOW_MOCK_FALLBACK": "false",
+    "MARKET_DATA_HISTORY_COORDINATOR_CONCURRENCY": "2",
+    "MARKET_DATA_PERSISTENT_CACHE_ENABLED": "true",
+    "QUOTE_DATA_PROVIDER": "finnhub"
+  },
+  "mode": "warm-cache",
+  "rounds": [
+    {
+      "aggregate_503_count": 0,
+      "cache_status": {
+        "http_status": 200,
+        "status_error": "{\"items\":15,\"keys\":[\"history:polygon:DIA:D:240\",\"history:polygon:IWM:D:240\",\"history:polygon:NVDA:D:240\",\"history:polygon:NVDA:D:365\",\"history:polygon:QQQ:D:240\",\"history:polygon:SOXX:D:240\",\"history:polygon:SPY:D:240\",\"quote:finnhub:ARM\",\""
+      },
+      "elapsed_ms": 2064,
+      "failures": [],
+      "http_500_count": 0,
+      "http_503_count": 0,
+      "max_elapsed_ms": 1994,
+      "request_count": 16,
+      "statuses": {
+        "/home/dashboard": 200,
+        "/market/core-snapshot": 200,
+        "/market/decision-dashboard": 200,
+        "/market/details/decision": 200,
+        "/market/details/institutional": 200,
+        "/market/details/structure": 200,
+        "/market/fear-greed": 200,
+        "/market/health": 200,
+        "/market/live/history/QQQ?days=240": 200,
+        "/market/live/history/QQQ?days=60": 200,
+        "/market/live/history/SPY?days=240": 200,
+        "/market/live/history/SPY?days=60": 200,
+        "/market/regime": 200,
+        "/market/risk": 200,
+        "/market/stock-analysis/NVDA": 200,
+        "/watchlist/summary": 200
+      }
+    }
+  ]
+}

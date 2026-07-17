@@ -347,13 +347,42 @@ export type FearGreedComponent = {
   score: number;
   status: string;
   explanation: string;
+  source?: string | null;
+  source_timestamp?: string | null;
+  data_state?: string | null;
+  confidence?: number | null;
+  missing?: boolean | null;
+  warnings?: string[] | null;
 };
 
 export type FearGreedResponse = {
-  score: number;
+  score: number | null;
   status: string;
   components: FearGreedComponent[];
   summary: string;
+  title?: string | null;
+  subtitle?: string | null;
+  source?: string | null;
+  source_type?: 'official' | 'estimated' | string | null;
+  fetched_at?: string | null;
+  source_timestamp?: string | null;
+  previous_close?: number | null;
+  one_week_ago?: number | null;
+  one_month_ago?: number | null;
+  one_year_ago?: number | null;
+  stale?: boolean | null;
+  confidence?: number | null;
+  parser_version?: string | null;
+  cache_status?: string | null;
+  partial?: boolean | null;
+  coverage_percent?: number | null;
+  coverage_components?: number | null;
+  required_components?: number | null;
+  overall_mode?: string | null;
+  dependencies_requested?: number | null;
+  dependencies_available?: number | null;
+  dependencies_missing?: string[] | null;
+  degraded_reasons?: string[] | null;
 };
 
 export type ProbabilityItem = {
@@ -707,6 +736,9 @@ export type MarketCoreSnapshot = {
   top_industry_group?: IndustryGroupItem | null;
   as_of?: string | null;
   overall_mode?: string | null;
+  snapshot_id?: string | null;
+  snapshot_status?: string | null;
+  snapshot_age_seconds?: number | null;
 } & CacheMetadata;
 
 export type HomeDashboardResponse = {
@@ -730,7 +762,38 @@ export type HomeDashboardResponse = {
       fallback_used?: boolean | null;
     }[];
   };
+  snapshot_id?: string | null;
+  snapshot_status?: string | null;
+  snapshot_age_seconds?: number | null;
 } & CacheMetadata;
+
+export type MarketSnapshotSection = {
+  status: 'complete' | 'partial' | 'stale' | 'unavailable' | string;
+  calculated_at: string;
+  source_state?: string | null;
+  coverage_ratio?: number | null;
+  dependencies_requested?: number | null;
+  dependencies_available?: number | null;
+  dependencies_missing?: string[] | null;
+  warnings?: string[] | null;
+  duration_ms?: number | null;
+  payload?: unknown;
+};
+
+export type MarketSnapshotResponse = {
+  snapshot_id?: string | null;
+  status: 'complete' | 'partial' | 'stale' | 'unavailable' | 'initializing' | string;
+  age_seconds?: number | null;
+  published_at?: string | null;
+  market_timestamp?: string | null;
+  input_coverage?: Record<string, unknown> | null;
+  source_summary?: Record<string, unknown> | null;
+  freshness?: Record<string, unknown> | null;
+  warnings?: string[] | null;
+  missing_dependencies?: string[] | null;
+  sections?: Record<string, MarketSnapshotSection>;
+  refresh_state?: Record<string, unknown> | null;
+};
 
 export type DailyReport = {
   date: string;
@@ -818,6 +881,13 @@ export type AIChatResponse = {
 
 export type StockAnalysisAggregate = {
   symbol: string;
+  chart?: {
+    history?: HistoryData | null;
+    canonical_days?: number | null;
+    windows?: Partial<Record<string, HistoryData>>;
+    source_history_days?: number | null;
+  } | null;
+  chartHistory?: HistoryData | null;
   supportResistance?: SupportResistanceResponse | null;
   trendline?: TrendlineResponse | null;
   volumeAnalysis?: VolumeAnalysis | null;
@@ -832,6 +902,18 @@ export type StockAnalysisAggregate = {
   liquidity?: SymbolLiquidityResponse | null;
   partial?: boolean;
   errors?: Record<string, string>;
+  snapshot_id?: string | null;
+  snapshot_status?: string | null;
+  snapshot_source_state?: string | null;
+  snapshot_data_mode?: string | null;
+  snapshot_test_data?: boolean | null;
+  snapshot_mock_data?: boolean | null;
+  snapshot_history_provider?: string | null;
+  snapshot_quote_provider?: string | null;
+  snapshot_schema_version?: number | null;
+  snapshot_age_seconds?: number | null;
+  snapshot_refreshing?: boolean | null;
+  compare_included?: boolean | null;
 };
 
 export type TimeframeSignalName =
@@ -1152,6 +1234,8 @@ export type CandleData = {
   low: number;
   close: number;
   volume: number;
+  vwap?: number | null;
+  transactions?: number | null;
 };
 
 export type HistoryData = {

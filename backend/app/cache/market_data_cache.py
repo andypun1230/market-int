@@ -7,7 +7,7 @@ import sqlite3
 import threading
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -284,6 +284,19 @@ class SQLiteMarketCache:
             self.write_errors += 1
             return 0
 
+    def keys_for_prefix(self, prefix: str) -> list[str]:
+        self.initialize()
+        try:
+            with self._lock, self._connect() as connection:
+                rows = connection.execute(
+                    "SELECT key FROM market_data_cache WHERE key LIKE ?",
+                    (f"{prefix}%",),
+                ).fetchall()
+            return [str(row[0]) for row in rows]
+        except Exception:
+            self.read_errors += 1
+            return []
+
     def cleanup(self) -> dict[str, Any]:
         self.initialize()
         now = to_iso(time.time())
@@ -445,6 +458,25 @@ class LayeredMarketDataCache:
                 self._memory.pop(key, None)
         return self.persistent.clear_domain(domain)
 
+    def find_history_covering(self, provider: str, symbol: str, resolution: str, days: int) -> tuple[Any | None, int | None, str | None]:
+        prefix = f"history:{provider}:{symbol}:{resolution}:"
+        with self._lock:
+            keys = {key for key in self._memory if key.startswith(prefix)}
+        keys.update(self.persistent.keys_for_prefix(prefix))
+        candidates = sorted(
+            (key for key in keys if history_cache_days(key) >= days),
+            key=history_cache_days,
+        )
+        requested_key = build_history_cache_key(provider, symbol, resolution, days)
+        for candidate in candidates:
+            if candidate == requested_key:
+                continue
+            value, age = self.get(candidate)
+            if value is None or not is_cache_value_compatible(requested_key, value):
+                continue
+            return narrow_history_value(value, days), age, candidate
+        return None, None, None
+
     def cleanup(self) -> dict[str, Any]:
         now = time.time()
         with self._lock:
@@ -479,6 +511,54 @@ def build_quote_cache_key(provider: str, symbol: str) -> str:
 
 def build_history_cache_key(provider: str, symbol: str, resolution: str, days: int) -> str:
     return f"history:{provider}:{symbol}:{resolution}:{days}"
+
+
+def history_cache_days(key: str) -> int:
+    parts = key.split(":")
+    if len(parts) < 5:
+        return 0
+    try:
+        return int(parts[4])
+    except ValueError:
+        return 0
+
+
+def narrow_history_value(value: Any, days: int) -> Any:
+    if not isinstance(value, HistoryData):
+        return value
+    candles = value.candles
+    if candles:
+        narrowed = candles_for_days(candles, days)
+    else:
+        narrowed = candles
+    return value.model_copy(update={"candles": narrowed, "requested_days": days, "returned_candles": len(narrowed)})
+
+
+def candles_for_days(candles: list[Any], days: int) -> list[Any]:
+    if not candles:
+        return candles
+    last_timestamp = getattr(candles[-1], "timestamp", "")
+    last_date = _parse_candle_timestamp(str(last_timestamp))
+    if last_date is None:
+        return candles[-max(1, days):]
+    cutoff = last_date - timedelta(days=max(1, days) + 2)
+    narrowed = [
+        candle for candle in candles
+        if (_parse_candle_timestamp(getattr(candle, "timestamp", "")) or datetime.min.replace(tzinfo=timezone.utc)) >= cutoff
+    ]
+    if narrowed:
+        return narrowed[-max(1, days):]
+    return candles[-max(1, days):]
+
+
+def _parse_candle_timestamp(value: str) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            return parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc)
+    except ValueError:
+        return None
 
 
 def domain_from_cache_key(key: str) -> str:

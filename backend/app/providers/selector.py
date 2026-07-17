@@ -121,7 +121,6 @@ def get_provider_status() -> dict[str, object]:
     provider = get_market_data_repository()
     health = provider.get_provider_health()
     quote_health = health.model_dump()
-    history_health = health.model_dump()
     test_data = get_test_data_status()
     selected = get_selected_provider_name()
     active = health.provider
@@ -133,6 +132,7 @@ def get_provider_status() -> dict[str, object]:
     capabilities = routing.get("capabilities", {}) if isinstance(routing, dict) else {}
     history_capability = capabilities.get(configured_history, {}) if isinstance(capabilities, dict) else {}
     quote_capability = capabilities.get(configured_quote, {}) if isinstance(capabilities, dict) else {}
+    history_health = get_safe_provider_health(configured_history)
 
     return {
         "mode": selected.upper(),
@@ -250,7 +250,28 @@ def build_provider(provider_name: str) -> MarketDataProvider:
         from app.providers.finnhub_provider import FinnhubMarketDataProvider
 
         return FinnhubMarketDataProvider()
-    return GeneratedTestMarketDataProvider()
+    if provider_name in {"polygon", "massive"}:
+        from app.providers.polygon_provider import PolygonMarketDataProvider
+
+        return PolygonMarketDataProvider()
+    raise ValueError(f"Unsupported market data provider: {provider_name}")
+
+
+def get_safe_provider_health(provider_name: str) -> dict[str, object]:
+    try:
+        return build_provider(provider_name).get_provider_health().model_dump()
+    except Exception as exc:
+        return {
+            "provider": provider_name,
+            "enabled": False,
+            "configured": False,
+            "reachable": False,
+            "last_successful_request": None,
+            "last_error": type(exc).__name__,
+            "fallback_active": False,
+            "status": "unavailable",
+            "message": "Provider health unavailable.",
+        }
 
 
 def get_env_provider(name: str, default: str = "mock") -> str:

@@ -229,16 +229,17 @@ export function formatPercent(value?: number | null): string {
   return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
 }
 
-export function getProvenanceLabel(status: StockMiniChartDataStatus): string {
+export function getProvenanceLabel(status: StockMiniChartDataStatus, provider?: string | null): string {
+  const providerLabel = formatProviderLabel(provider);
   switch (status) {
     case 'live':
-      return 'Live history';
+      return providerLabel ? `Live · ${providerLabel}` : 'Live history';
     case 'test':
       return 'Test Data';
     case 'cached':
-      return 'Cached history';
+      return providerLabel ? `Cached · ${providerLabel}` : 'Cached history';
     case 'stale':
-      return 'Stale history';
+      return providerLabel ? `Stale · ${providerLabel}` : 'Stale history';
     case 'fallback':
       return 'Fallback history';
     case 'mock':
@@ -248,6 +249,23 @@ export function getProvenanceLabel(status: StockMiniChartDataStatus): string {
     default:
       return 'History unavailable';
   }
+}
+
+function formatProviderLabel(provider?: string | null): string | null {
+  const value = (provider ?? '').toLowerCase();
+  if (!value) {
+    return null;
+  }
+  if (value.includes('polygon') || value.includes('massive')) {
+    return 'Polygon';
+  }
+  if (value.includes('finnhub')) {
+    return 'Finnhub';
+  }
+  if (value.includes('generated_test_data') || value === 'test') {
+    return 'Test Data';
+  }
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function getDataStatus(history?: HistoryData | null, quote?: StockMiniChartQuoteInput | null): StockMiniChartDataStatus {

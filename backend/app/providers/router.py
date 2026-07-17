@@ -4,10 +4,21 @@ import os
 import threading
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Literal
+
+try:
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover
+    load_dotenv = None
 
 from app.providers.base import MarketDataProvider
 from app.providers.finnhub_provider import ProviderRequestError
+
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
+ENV_PATH = BACKEND_ROOT / ".env"
+if load_dotenv is not None:
+    load_dotenv(dotenv_path=ENV_PATH)
 
 ProviderDomain = Literal["quotes", "daily_history"]
 AccessState = Literal["available", "restricted", "unavailable", "unknown"]
@@ -97,6 +108,32 @@ class ProviderCapabilityRegistry:
                 notes=notes,
                 restriction_reason=restriction,
             )
+        if name in {"polygon", "massive"}:
+            configured = bool(os.getenv("POLYGON_API_KEY") or os.getenv("HISTORY_DATA_API_KEY"))
+            history_override = os.getenv("POLYGON_DAILY_HISTORY_ACCESS_STATE")
+            history_state: AccessState = "available" if configured else "unavailable"
+            notes = [
+                "Polygon/Massive daily stock aggregate history provider.",
+                "Internal provider id remains polygon.",
+            ]
+            if history_override in {"available", "restricted", "unavailable", "unknown"}:
+                history_state = history_override  # type: ignore[assignment]
+                notes.append("Capability overridden by POLYGON_DAILY_HISTORY_ACCESS_STATE.")
+            restriction = self._get_restriction("polygon", "daily_history")
+            if restriction:
+                history_state = "restricted"
+                notes.append(restriction)
+            return DomainCapability(
+                provider="polygon",
+                supports_quotes=False,
+                supports_batch_quotes=False,
+                supports_daily_history=history_state == "available",
+                supports_intraday_history=False,
+                quote_access_state="unavailable",
+                daily_history_access_state=history_state,
+                notes=notes,
+                restriction_reason=restriction,
+            )
         return DomainCapability(
             provider=name,
             supports_quotes=False,
@@ -163,7 +200,7 @@ class MarketDataProviderRouter:
         self.capability_registry.mark_restricted(provider_name, domain, reason)
 
     def status(self) -> dict[str, object]:
-        providers = sorted({self.quote_provider_name, self.history_provider_name, "finnhub", "mock", "generated_test_data"})
+        providers = sorted({self.quote_provider_name, self.history_provider_name, "finnhub", "polygon", "mock", "generated_test_data"})
         return {
             "configured_quote_provider": self.quote_provider_name,
             "configured_history_provider": self.history_provider_name,
@@ -185,6 +222,8 @@ def normalize_provider_name(provider_name: str | None) -> str:
         return value
     if value == "live":
         return "finnhub"
+    if value == "massive":
+        return "polygon"
     return value
 
 

@@ -58,6 +58,7 @@ import { SectorThemeFilterPanel } from '@/features/sectors/components/SectorThem
 import { SectorThemeSearchModal } from '@/features/sectors/components/SectorThemeSearchModal';
 import { createTestSectorThemeRepository } from '@/features/sectors/repository/sectorThemeRepository';
 import { useSectorUiPreferences } from '@/features/sectors/state/sectorUiPreferences';
+import { areTestScenariosEnabled } from '@/services/runtimeConfig';
 import type {
   SectorActiveCategory,
   SectorActiveSection,
@@ -93,6 +94,7 @@ const CONTENT_OPTIONS: Record<SectorActiveCategory, { key: SectorActiveSection; 
 };
 
 export default function SectorsScreen() {
+  const testScenariosEnabled = areTestScenariosEnabled();
   const [sectorPreferences, updateSectorPreferences] = useSectorUiPreferences();
   const activeSection = sectorPreferences.activeSection;
   const [comparisonVisible, setComparisonVisible] = useState(false);
@@ -183,23 +185,25 @@ export default function SectorsScreen() {
   );
 
   return (
-    <AppScreen title="Sectors" subtitle="Interface-development test data for sector and theme rotation visuals.">
+    <AppScreen title="Sectors" subtitle={testScenariosEnabled ? 'Interface-development test data for sector and theme rotation visuals.' : 'Sector and theme rotation views.'}>
       <View style={styles.stack}>
-        <View style={styles.disclosureCard}>
-          <View style={styles.disclosureHeader}>
-            <TestDataBadge />
-            <Text style={styles.seedText}>Seed {seed}</Text>
+        {testScenariosEnabled ? (
+          <View style={styles.disclosureCard}>
+            <View style={styles.disclosureHeader}>
+              <TestDataBadge />
+              <Text style={styles.seedText}>Seed {seed}</Text>
+            </View>
+            <Text style={styles.disclosureText}>
+              Test data for interface development. These values are deterministic and are not current market data.
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setSeedVersion((version) => version + 1)}
+              style={({ pressed }) => [styles.regenerateButton, pressed && styles.pressedButton]}>
+              <Text style={styles.regenerateText}>Regenerate Test Data</Text>
+            </Pressable>
           </View>
-          <Text style={styles.disclosureText}>
-            Test data for interface development. These values are deterministic and are not current market data.
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setSeedVersion((version) => version + 1)}
-            style={({ pressed }) => [styles.regenerateButton, pressed && styles.pressedButton]}>
-            <Text style={styles.regenerateText}>Regenerate Test Data</Text>
-          </Pressable>
-        </View>
+        ) : null}
 
         <AskCopilotButton
           context={copilotContext}

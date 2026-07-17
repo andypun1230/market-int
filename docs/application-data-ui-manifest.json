@@ -1,0 +1,1473 @@
+{
+  "failure_strings_to_check": [
+    "Setup summary unavailable",
+    "Chart unavailable",
+    "Signal summary unavailable",
+    "History unavailable",
+    "Fetch request has been cancelled",
+    "HTTP 500",
+    "Internal Server Error",
+    "ProviderRequestError",
+    "undefined",
+    "NaN"
+  ],
+  "generated_at": "2026-07-17T17:41:44.973880+00:00",
+  "inventory": [
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "main.health_check",
+      "frontend_api": "health",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/health",
+      "provider_domain": "none",
+      "required_fields": [
+        "status"
+      ],
+      "response_model": "dict",
+      "screen": "System",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 3
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "providers.selector.get_provider_status",
+      "frontend_api": "getProviderStatus",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/system/provider-status",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "configured_quote_provider",
+        "configured_history_provider",
+        "fallback_enabled"
+      ],
+      "response_model": "dict",
+      "screen": "Data Sources",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_data_repository.get_cache_status",
+      "frontend_api": "getMarketDataCacheStatus",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market-data/cache/status",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "provider_routing"
+      ],
+      "response_model": "dict",
+      "screen": "Data Sources",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "service_cache.get_service_cache_status",
+      "frontend_api": "getServiceCacheStatus",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/system/service-cache",
+      "provider_domain": "none",
+      "required_fields": [
+        "items",
+        "hit_count",
+        "miss_count"
+      ],
+      "response_model": "dict",
+      "screen": "Data Usage",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "breadth.get_universe_status",
+      "frontend_api": "getUniverseStatus",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/system/universe-status",
+      "provider_domain": "none",
+      "required_fields": [
+        "breadth_universe"
+      ],
+      "response_model": "dict",
+      "screen": "Data Sources",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "home_dashboard.build_home_dashboard",
+      "frontend_api": "getHomeDashboard",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [
+        "risk_summary"
+      ],
+      "partial_supported": true,
+      "path": "/home/dashboard",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "core",
+        "watchlist_summary"
+      ],
+      "response_model": "HomeDashboardResponse",
+      "screen": "Home",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 8
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_core_snapshot.build_market_core_snapshot",
+      "frontend_api": "getMarketCoreSnapshot",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [
+        "breadth_summary",
+        "top_sector",
+        "top_industry_group"
+      ],
+      "partial_supported": true,
+      "path": "/market/core-snapshot",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "indexes",
+        "market_health",
+        "decision_summary",
+        "as_of"
+      ],
+      "response_model": "MarketCoreSnapshot",
+      "screen": "Market Overview",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 8
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_data.get_index_snapshots",
+      "frontend_api": "getMarketIndexes",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/indexes",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "indexes"
+      ],
+      "response_model": "IndexesResponse",
+      "screen": "Market Indexes",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "breadth.calculate_market_breadth",
+      "frontend_api": "getMarketBreadth",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/breadth",
+      "provider_domain": "history",
+      "required_fields": [
+        "market",
+        "sectors"
+      ],
+      "response_model": "SectorBreadthResponse",
+      "screen": "Market Breadth",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_health.calculate_market_health",
+      "frontend_api": "getMarketHealth",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/health",
+      "provider_domain": "history",
+      "required_fields": [
+        "overall_score",
+        "status",
+        "components",
+        "summary"
+      ],
+      "response_model": "MarketHealthResponse",
+      "screen": "Market Health",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "decision_intelligence.build_decision_dashboard",
+      "frontend_api": "getDecisionDashboard",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/decision-dashboard",
+      "provider_domain": "history",
+      "required_fields": [
+        "aggressiveness",
+        "playbook",
+        "decision_confidence"
+      ],
+      "response_model": "DecisionDashboardResponse",
+      "screen": "Market Decision",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_detail_aggregates.build_market_decision_details",
+      "frontend_api": "getMarketDecisionDetails",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/details/decision",
+      "provider_domain": "history",
+      "required_fields": [
+        "decisionDashboard",
+        "probabilities",
+        "comparison",
+        "riskDashboard"
+      ],
+      "response_model": "dict",
+      "screen": "Market Decision",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_detail_aggregates.build_market_institutional_details",
+      "frontend_api": "getMarketInstitutionalDetails",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/details/institutional",
+      "provider_domain": "intelligence",
+      "required_fields": [
+        "sentiment",
+        "moneyFlow",
+        "institutional",
+        "options",
+        "liquidity"
+      ],
+      "response_model": "dict",
+      "screen": "Market Institutional",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_detail_aggregates.build_market_structure_details",
+      "frontend_api": "getMarketStructureDetails",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/details/structure",
+      "provider_domain": "history",
+      "required_fields": [
+        "breadth",
+        "sectors",
+        "industryGroups",
+        "industryRotation",
+        "leadership"
+      ],
+      "response_model": "dict",
+      "screen": "Market Structure",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "sector_dashboard.build_sector_dashboard",
+      "frontend_api": "getSectorDashboard",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/sector-dashboard",
+      "provider_domain": "history",
+      "required_fields": [
+        "sectors",
+        "themes"
+      ],
+      "response_model": "SectorDashboardResponse",
+      "screen": "Sectors",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "sectors_summary.build_sectors_summary",
+      "frontend_api": "getSectorsSummary",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/sectors/summary",
+      "provider_domain": "history",
+      "required_fields": [
+        "top_sectors",
+        "top_industry_groups",
+        "rotation_summary"
+      ],
+      "response_model": "SectorsSummaryResponse",
+      "screen": "Sectors",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "sectors.build_market_sectors",
+      "frontend_api": "getMarketSectors",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/sectors",
+      "provider_domain": "history",
+      "required_fields": [
+        "leaders",
+        "summary"
+      ],
+      "response_model": "SectorsResponse",
+      "screen": "Sectors Legacy",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "industry_groups.build_industry_groups",
+      "frontend_api": "getIndustryGroups",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/industry-groups",
+      "provider_domain": "history",
+      "required_fields": [
+        "items"
+      ],
+      "response_model": "IndustryGroupResponse",
+      "screen": "Themes Legacy",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "industry_rotation.build_industry_rotation_dashboard",
+      "frontend_api": "getIndustryRotation",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/industry-rotation",
+      "provider_domain": "history",
+      "required_fields": [
+        "sectors",
+        "summary"
+      ],
+      "response_model": "IndustryRotationResponse",
+      "screen": "Themes Rotation",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "sector_etfs.build_sector_etf_dashboard",
+      "frontend_api": "getSectorEtfs",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/sector-etfs",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "items"
+      ],
+      "response_model": "SectorEtfResponse",
+      "screen": "Sector ETFs",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "watchlist_summary.build_watchlist_summary",
+      "frontend_api": "getWatchlistSummary",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/watchlist/summary",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "items"
+      ],
+      "response_model": "WatchlistSummaryResponse",
+      "screen": "Watchlist",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 8
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "relative_strength.build_relative_strength",
+      "frontend_api": "getRelativeStrength",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/relative-strength",
+      "provider_domain": "history",
+      "required_fields": [
+        "items",
+        "summary"
+      ],
+      "response_model": "RelativeStrengthResponse",
+      "screen": "Watchlist Signals",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "stock_rating.build_stock_ratings",
+      "frontend_api": "getStockRatings",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/stock-ratings",
+      "provider_domain": "history",
+      "required_fields": [
+        "items",
+        "summary"
+      ],
+      "response_model": "StockRatingResponse",
+      "screen": "Watchlist Overview",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_sentiment.build_market_sentiment_dashboard",
+      "frontend_api": "getMarketSentiment",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/sentiment",
+      "provider_domain": "intelligence",
+      "required_fields": [
+        "score",
+        "status",
+        "summary"
+      ],
+      "response_model": "MarketSentimentResponse",
+      "screen": "Market Institutional",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "money_flow.build_money_flow_dashboard",
+      "frontend_api": "getMoneyFlow",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/money-flow",
+      "provider_domain": "intelligence",
+      "required_fields": [
+        "score",
+        "status",
+        "summary"
+      ],
+      "response_model": "MoneyFlowResponse",
+      "screen": "Market Institutional",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "institutional_dashboard.build_institutional_dashboard",
+      "frontend_api": "getMarketInstitutional",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/institutional",
+      "provider_domain": "intelligence",
+      "required_fields": [
+        "score",
+        "status",
+        "summary"
+      ],
+      "response_model": "InstitutionalDashboardResponse",
+      "screen": "Market Institutional",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "options_intelligence.build_options_intelligence",
+      "frontend_api": "getOptionsIntelligence",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/options",
+      "provider_domain": "intelligence",
+      "required_fields": [
+        "score",
+        "status",
+        "summary"
+      ],
+      "response_model": "OptionsIntelligenceResponse",
+      "screen": "Market Institutional",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "liquidity_dashboard.build_liquidity_dashboard",
+      "frontend_api": "getLiquidityDashboard",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/liquidity",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "score",
+        "status",
+        "summary"
+      ],
+      "response_model": "LiquidityDashboardResponse",
+      "screen": "Market Institutional",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "analysis.build_market_analysis",
+      "frontend_api": "market analysis context",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/analysis/market",
+      "provider_domain": "history",
+      "required_fields": [
+        "market_health",
+        "summary_points",
+        "ai_prompt_context"
+      ],
+      "response_model": "MarketAnalysisResponse",
+      "screen": "Copilot Context",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_data_repository.get_quote",
+      "frontend_api": "getLiveQuote",
+      "live_required": true,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/live/quote/{symbol}",
+      "provider_domain": "quotes",
+      "required_fields": [
+        "symbol",
+        "price",
+        "timestamp",
+        "source"
+      ],
+      "response_model": "QuoteData",
+      "screen": "Stock Detail Quote",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_data_repository.get_history",
+      "frontend_api": "getLiveHistory",
+      "live_required": true,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/live/history/{symbol}?resolution=D&days=260",
+      "provider_domain": "history",
+      "required_fields": [
+        "symbol",
+        "candles",
+        "source",
+        "as_of"
+      ],
+      "response_model": "HistoryData",
+      "screen": "Stock Detail Chart",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "market_data_repository.get_history",
+      "frontend_api": "getLiveHistory",
+      "live_required": true,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/live/history/{symbol}?resolution=D&days=60",
+      "provider_domain": "history",
+      "required_fields": [
+        "symbol",
+        "candles",
+        "source",
+        "as_of"
+      ],
+      "response_model": "HistoryData",
+      "screen": "Stock Detail Chart 1M",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "support_resistance.calculate_support_resistance",
+      "frontend_api": "getSupportResistance",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/support-resistance/{symbol}",
+      "provider_domain": "history",
+      "required_fields": [
+        "symbol",
+        "current_price",
+        "support_zones",
+        "resistance_zones"
+      ],
+      "response_model": "SupportResistanceResponse",
+      "screen": "Stock Detail Technical",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "trendline.analyze_trendline",
+      "frontend_api": "getTrendline",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/trendline/{symbol}",
+      "provider_domain": "history",
+      "required_fields": [
+        "symbol",
+        "summary"
+      ],
+      "response_model": "TrendlineResponse",
+      "screen": "Stock Detail Technical",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "volume_analysis.analyze_volume",
+      "frontend_api": "getVolumeAnalysisBySymbol",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/volume/{symbol}",
+      "provider_domain": "history",
+      "required_fields": [
+        "symbol",
+        "status",
+        "summary"
+      ],
+      "response_model": "VolumeAnalysis",
+      "screen": "Stock Detail Signals",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "risk.calculate_risk_plan",
+      "frontend_api": "getRiskPlanBySymbol",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/risk-plans/{symbol}",
+      "provider_domain": "history",
+      "required_fields": [
+        "symbol",
+        "current_price",
+        "risk_level",
+        "summary"
+      ],
+      "response_model": "RiskPlan",
+      "screen": "Stock Detail Risk",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 12
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "pattern_detection.detect_patterns",
+      "frontend_api": "getMarketPatternsBySymbol",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/patterns/{symbol}",
+      "provider_domain": "none",
+      "required_fields": [
+        "patterns"
+      ],
+      "response_model": "PatternResponse",
+      "screen": "Stock Detail Signals",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "options_intelligence.analyze_symbol_options",
+      "frontend_api": "getOptionsIntelligenceBySymbol",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/options/{symbol}",
+      "provider_domain": "intelligence",
+      "required_fields": [
+        "symbol",
+        "status",
+        "summary"
+      ],
+      "response_model": "SymbolOptionsIntelligence",
+      "screen": "Stock Detail Signals",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "liquidity_dashboard.analyze_symbol_liquidity",
+      "frontend_api": "getLiquidityDashboardBySymbol",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/market/liquidity/{symbol}",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "symbol",
+        "status",
+        "summary"
+      ],
+      "response_model": "SymbolLiquidityResponse",
+      "screen": "Stock Detail Signals",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 10.0
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "stock_snapshots.service.get_stock_snapshot_service",
+      "frontend_api": "getStockAnalysis",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [
+        "supportResistance",
+        "trendline",
+        "volumeAnalysis",
+        "riskPlan",
+        "relativeStrength",
+        "stockRating",
+        "multiTimeframeSignals",
+        "patterns",
+        "options",
+        "liquidity",
+        "leadershipSignal",
+        "errors",
+        "chartHistory"
+      ],
+      "partial_supported": true,
+      "path": "/market/stock-analysis/{symbol}",
+      "provider_domain": "quotes+history",
+      "required_fields": [
+        "symbol",
+        "partial",
+        "snapshot_status"
+      ],
+      "response_model": "StockAnalysisAggregate",
+      "screen": "Stock Detail Aggregate",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 5
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "analysis.build_stock_analysis",
+      "frontend_api": "stock analysis context",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [],
+      "partial_supported": true,
+      "path": "/analysis/stock/{symbol}",
+      "provider_domain": "history",
+      "required_fields": [
+        "symbol",
+        "stock_rating",
+        "relative_strength",
+        "risk_plan"
+      ],
+      "response_model": "StockAnalysisResponse",
+      "screen": "Copilot Stock Context",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 15
+    }
+  ],
+  "manual_required": [
+    "Simulator visual rendering",
+    "Rapid tab-switch cancellation behavior",
+    "Screenshot capture on native UI failures"
+  ],
+  "overall_result": "PASS WITH CONDITIONS",
+  "screen_matrix": {
+    "Copilot Context": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Copilot Stock Context": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 25,
+      "SKIP": 0
+    },
+    "Data Sources": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 3,
+      "SKIP": 0
+    },
+    "Data Usage": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Home": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Market Breadth": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Market Decision": {
+      "FAIL": 0,
+      "PARTIAL": 1,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Market Health": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Market Indexes": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Market Institutional": {
+      "FAIL": 0,
+      "PARTIAL": 1,
+      "PASS": 5,
+      "SKIP": 0
+    },
+    "Market Overview": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Market Structure": {
+      "FAIL": 0,
+      "PARTIAL": 1,
+      "PASS": 0,
+      "SKIP": 0
+    },
+    "Sector ETFs": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Sectors": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 2,
+      "SKIP": 0
+    },
+    "Sectors Legacy": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Stock Detail Aggregate": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 25,
+      "SKIP": 0
+    },
+    "Stock Detail Chart": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 25,
+      "SKIP": 0
+    },
+    "Stock Detail Chart 1M": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 25,
+      "SKIP": 0
+    },
+    "Stock Detail Quote": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 25,
+      "SKIP": 0
+    },
+    "Stock Detail Risk": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 25,
+      "SKIP": 0
+    },
+    "Stock Detail Signals": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 100,
+      "SKIP": 0
+    },
+    "Stock Detail Technical": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 50,
+      "SKIP": 0
+    },
+    "System": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Themes Legacy": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Themes Rotation": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Watchlist": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Watchlist Overview": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    },
+    "Watchlist Signals": {
+      "FAIL": 0,
+      "PARTIAL": 0,
+      "PASS": 1,
+      "SKIP": 0
+    }
+  }
+}

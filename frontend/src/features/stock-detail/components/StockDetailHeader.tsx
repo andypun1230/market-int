@@ -8,8 +8,9 @@ import {
 } from '@/features/stock-detail/stockDetailSemanticColors';
 import type { StockDetailOverviewModel } from '@/features/stock-detail/stockDetailPresenter';
 import { StockMiniChart } from '@/features/stock-detail/components/StockMiniChart';
+import type { HistoryData } from '@/types/market';
 
-export function StockDetailHeader({ model }: { model: StockDetailOverviewModel }) {
+export function StockDetailHeader({ chartHistory, model }: { chartHistory?: HistoryData | null; model: StockDetailOverviewModel }) {
   const changeTone = getChangeTone(model.quote.changePercent);
 
   return (
@@ -33,6 +34,7 @@ export function StockDetailHeader({ model }: { model: StockDetailOverviewModel }
       </View>
 
       <StockMiniChart
+        history={chartHistory}
         quote={{
           price: model.quote.price,
           source: model.quote.source,

@@ -137,8 +137,6 @@ def _build_market_analysis_uncached() -> dict[str, Any]:
 
 def build_stock_analysis(symbol: str) -> dict[str, Any]:
     normalized_symbol = symbol.upper()
-    if normalized_symbol not in WATCHLIST_SYMBOLS:
-        raise ValueError(f"Unsupported analysis symbol: {normalized_symbol}")
 
     stock_rating = calculate_stock_rating(normalized_symbol)
     relative_strength = calculate_rs_score(normalized_symbol)

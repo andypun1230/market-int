@@ -5,15 +5,30 @@ from app.services.service_cache import get_or_compute, get_service_ttl
 WATCHLIST_SYMBOLS = ["MU", "NVDA", "ARM", "SNDK"]
 
 SYMBOL_SECTOR = {
+    "AAPL": "Technology",
+    "AMD": "Semiconductors",
+    "DIA": "Industrials",
+    "DJI": "Industrials",
+    "IWM": "Small Caps",
+    "MSFT": "Technology",
     "MU": "Semiconductors",
     "NVDA": "Semiconductors",
+    "QQQ": "Technology",
+    "SOXX": "Semiconductors",
+    "SPY": "Market",
     "ARM": "Semiconductors",
     "SNDK": "Technology",
+    "TSLA": "Consumer Discretionary",
+    "XLK": "Technology",
 }
 
 SECTOR_BENCHMARK = {
+    "Consumer Discretionary": "XLY",
+    "Industrials": "XLI",
+    "Market": "SPY",
     "Semiconductors": "SOXX",
     "Software": "IGV",
+    "Small Caps": "IWM",
     "Technology": "XLK",
 }
 
@@ -61,6 +76,35 @@ def get_provider_closes(symbol: str, days: int = 240) -> tuple[list[float], dict
     return closes, metadata
 
 
+def try_get_provider_closes(symbol: str, days: int = 240) -> tuple[list[float], dict]:
+    try:
+        return get_provider_closes(symbol, days)
+    except Exception as exc:
+        return [], unavailable_history_metadata(symbol, exc)
+
+
+def unavailable_history_metadata(symbol: str, error: Exception) -> dict:
+    category = getattr(error, "category", "unavailable")
+    return {
+        "data_source": "unavailable",
+        "history_source": "unavailable",
+        "provider": None,
+        "requested_provider": None,
+        "source_state": "unavailable",
+        "analysis_is_live": False,
+        "history_is_live": False,
+        "history_is_stale": False,
+        "fallback_used": False,
+        "fallback_reason": f"history unavailable ({category})",
+        "cache_hit": False,
+        "cache_age_seconds": None,
+        "as_of": None,
+        "history_quality_score": 0,
+        "history_warnings": [],
+        "history_errors": [f"{symbol.upper()} history unavailable ({category})"],
+    }
+
+
 def get_relative_strength_history(symbol: str, benchmark: str) -> list[float]:
     stock_closes, _ = get_provider_closes(symbol, 60)
     benchmark_closes, _ = get_provider_closes(benchmark, 60)
@@ -102,25 +146,46 @@ def get_status(overall_rs_score: int) -> str:
 
 def calculate_rs_score(symbol: str) -> RelativeStrengthItem:
     normalized_symbol = symbol.upper()
-    sector = SYMBOL_SECTOR[normalized_symbol]
-    sector_benchmark = SECTOR_BENCHMARK[sector]
+    sector = SYMBOL_SECTOR.get(normalized_symbol, "Market")
+    sector_benchmark = SECTOR_BENCHMARK.get(sector, "SPY")
     stock_closes, stock_metadata = get_provider_closes(normalized_symbol, 240)
-    spy_closes, spy_metadata = get_provider_closes("SPY", 240)
-    qqq_closes, qqq_metadata = get_provider_closes("QQQ", 240)
-    sector_closes, sector_metadata = get_provider_closes(sector_benchmark, 240)
+    spy_closes, spy_metadata = try_get_provider_closes("SPY", 240)
+    qqq_closes, qqq_metadata = try_get_provider_closes("QQQ", 240)
+    sector_closes, sector_metadata = try_get_provider_closes(sector_benchmark, 240)
     return_5d = calculate_return(stock_closes, 5)
     return_20d = calculate_return(stock_closes, 20)
     return_60d = calculate_return(stock_closes, 59)
     benchmark_return_20d = calculate_return(spy_closes, 20)
     qqq_return_20d = calculate_return(qqq_closes, 20)
     sector_return_20d = calculate_return(sector_closes, 20)
-    rs_vs_spy = score_relative_outperformance(return_20d, benchmark_return_20d)
-    rs_vs_qqq = score_relative_outperformance(return_20d, qqq_return_20d)
-    rs_vs_sector = score_relative_outperformance(return_20d, sector_return_20d)
-    overall_rs_score = round((rs_vs_spy * 0.4) + (rs_vs_qqq * 0.3) + (rs_vs_sector * 0.3))
+    rs_vs_spy = score_comparison(return_20d, benchmark_return_20d, spy_closes)
+    rs_vs_qqq = score_comparison(return_20d, qqq_return_20d, qqq_closes)
+    rs_vs_sector = score_comparison(return_20d, sector_return_20d, sector_closes)
+    overall_rs_score = weighted_available_score(
+        [
+            (rs_vs_spy, 0.4, spy_closes),
+            (rs_vs_qqq, 0.3, qqq_closes),
+            (rs_vs_sector, 0.3, sector_closes),
+        ]
+    )
     all_metadata = [stock_metadata, spy_metadata, qqq_metadata, sector_metadata]
     fallback_used = any(item.get("fallback_used") for item in all_metadata)
-    analysis_is_live = all(item.get("analysis_is_live") for item in all_metadata)
+    analysis_is_live = bool(stock_metadata.get("analysis_is_live")) and any(
+        item.get("analysis_is_live") for item in [spy_metadata, qqq_metadata, sector_metadata]
+    )
+    unavailable_benchmarks = [
+        label
+        for label, closes in [("SPY", spy_closes), ("QQQ", qqq_closes), (sector_benchmark, sector_closes)]
+        if not closes
+    ]
+    comparisons_requested = ["SPY", "QQQ", sector_benchmark]
+    comparisons_available = [
+        label
+        for label, closes in [("SPY", spy_closes), ("QQQ", qqq_closes), (sector_benchmark, sector_closes)]
+        if closes
+    ]
+    coverage_ratio = round(len(comparisons_available) / len(comparisons_requested), 2) if comparisons_requested else 0.0
+    degraded = bool(unavailable_benchmarks)
 
     return RelativeStrengthItem(
         symbol=normalized_symbol,
@@ -139,6 +204,11 @@ def calculate_rs_score(symbol: str) -> RelativeStrengthItem:
         explanation=(
             f"{normalized_symbol} is {get_status(overall_rs_score).lower()} versus SPY, "
             f"QQQ, and its {sector.lower()} benchmark over the last 20 and 60 sessions."
+            if not unavailable_benchmarks
+            else (
+                f"{normalized_symbol} relative strength uses available market comparisons; "
+                f"missing benchmark history: {', '.join(unavailable_benchmarks)}."
+            )
         ),
         data_source=build_source_label(all_metadata),
         analysis_is_live=analysis_is_live,
@@ -148,7 +218,36 @@ def calculate_rs_score(symbol: str) -> RelativeStrengthItem:
             item.get("history_quality_score") or 0
             for item in all_metadata
         ),
+        comparisons_requested=comparisons_requested,
+        comparisons_available=comparisons_available,
+        comparisons_missing=unavailable_benchmarks,
+        coverage_ratio=coverage_ratio,
+        degraded=degraded,
+        degradation_reason=(
+            f"Missing benchmark history: {', '.join(unavailable_benchmarks)}"
+            if unavailable_benchmarks
+            else None
+        ),
+        confidence_state=(
+            "full" if coverage_ratio == 1
+            else "partial" if coverage_ratio >= 0.5
+            else "limited"
+        ),
     )
+
+
+def score_comparison(stock_return: float, benchmark_return: float, benchmark_closes: list[float]) -> int:
+    if not benchmark_closes:
+        return 50
+    return score_relative_outperformance(stock_return, benchmark_return)
+
+
+def weighted_available_score(scores: list[tuple[int, float, list[float]]]) -> int:
+    available = [(score, weight) for score, weight, closes in scores if closes]
+    if not available:
+        return 50
+    total_weight = sum(weight for _, weight in available)
+    return round(sum(score * weight for score, weight in available) / total_weight)
 
 
 def rank_relative_strength() -> list[RelativeStrengthItem]:
