@@ -35,6 +35,7 @@ from app.models.market import (
 )
 from app.snapshots.models import MarketSnapshot, SnapshotSection, now_iso
 from app.snapshots.service import get_market_snapshot_service, snapshot_age_seconds
+from app.services.market_data import canonicalize_index_payloads
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -65,7 +66,11 @@ def get_section_payload(name: str) -> Any:
     if snapshot is None:
         return None
     section = snapshot.sections.get(name)
-    return section.payload if section else None
+    if not section:
+        return None
+    if name == "indexes":
+        return canonicalize_index_payloads(section.payload)
+    return section.payload
 
 
 def get_home_dashboard_from_snapshot() -> dict[str, Any]:
@@ -224,11 +229,20 @@ def initializing_core_snapshot() -> dict[str, Any]:
 def decorate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     snapshot = get_market_snapshot_service().get_latest_snapshot()
     result = dict(payload)
+    normalize_embedded_indexes(result)
     if snapshot:
         result["snapshot_id"] = snapshot.snapshot_id
         result["snapshot_status"] = snapshot.status
         result["snapshot_age_seconds"] = snapshot_age_seconds(snapshot)
     return result
+
+
+def normalize_embedded_indexes(payload: dict[str, Any]) -> None:
+    if isinstance(payload.get("indexes"), list):
+        payload["indexes"] = canonicalize_index_payloads(payload["indexes"])
+    core = payload.get("core")
+    if isinstance(core, dict) and isinstance(core.get("indexes"), list):
+        core["indexes"] = canonicalize_index_payloads(core["indexes"])
 
 
 def fallback_regime() -> RegimeResponse:

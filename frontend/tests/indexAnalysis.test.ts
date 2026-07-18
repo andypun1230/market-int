@@ -84,40 +84,41 @@ function run() {
   assert(orderlyPullback.state === 'orderly_pullback', 'down day on light volume maps to orderly pullback');
 
   const invalidDjiVolume = classifyVolumeConfirmation(
-    snapshot({ change_percent: 1.5, symbol: 'DJI', volume: 7_000_000 }),
+    snapshot({ change_percent: 1.5, symbol: 'DIA', volume: 7_000_000 }),
     [
       candle(0, 100, 200_000_000),
       candle(1, 101, 210_000_000),
       candle(2, 102, 1_000_000),
     ],
-    'DJI',
+    'DIA',
   );
-  assert(invalidDjiVolume.state === 'unavailable', 'incompatible DJI volume ratio is rejected');
-  assert(invalidDjiVolume.sourceStatus === 'incompatible', 'invalid DJI volume is marked incompatible');
+  assert(invalidDjiVolume.state === 'unavailable', 'incompatible DIA volume ratio is rejected');
+  assert(invalidDjiVolume.sourceStatus === 'incompatible', 'invalid DIA volume is marked incompatible');
 
-  const djiProxyVolume = classifyVolumeConfirmation(
-    snapshot({ change_percent: 1.5, symbol: 'DJI', volume: 7_000_000 }),
-    history('DJI', [100, 101, 102], 8_000_000).candles,
-    'DJI',
+  const diaProxyVolume = classifyVolumeConfirmation(
+    snapshot({ change_percent: 1.5, symbol: 'DIA', volume: 7_000_000 }),
+    history('DIA', [100, 101, 102], 8_000_000).candles,
+    'DIA',
   );
-  assert(djiProxyVolume.sourceStatus === 'proxy', 'DJI volume uses a disclosed proxy when compatible');
-  assert(djiProxyVolume.sourceLabel === 'DIA volume proxy', 'DIA proxy is labelled');
+  assert(diaProxyVolume.sourceStatus === 'proxy', 'DIA volume uses a disclosed proxy when compatible');
+  assert(diaProxyVolume.sourceLabel === 'Dow Jones ETF proxy volume', 'DIA proxy is labelled');
 
   const analyses = analyzeIndexes(
     [
       snapshot({ symbol: 'SPY', price: 108 }),
       snapshot({ symbol: 'QQQ', price: 130 }),
-      snapshot({ symbol: 'DJI', price: 39000, ema_20: 38000, ema_50: 37000, ema_200: 36000 }),
+      snapshot({ symbol: 'DIA', price: 39000, ema_20: 38000, ema_50: 37000, ema_200: 36000 }),
       snapshot({ symbol: 'IWM', price: 210 }),
     ],
     {
-      DJI: history('DJI', [100, 100.5, 101]),
+      DIA: history('DIA', [100, 100.5, 101]),
+      IWM: history('IWM', [100, 99, 98]),
       QQQ: history('QQQ', [100, 103, 106]),
       SPY: history('SPY', [100, 101, 102]),
     },
     '1W',
   );
-  assert(analyses.length === 3, 'IWM is excluded from display analysis');
+  assert(analyses.length === 4, 'core display analysis includes SPY, QQQ, IWM, and DIA');
   assert(deriveLeadershipRead(analyses).title === 'Growth Leadership', 'QQQ leadership is detected');
   assert(deriveMarketLeadershipTrend(analyses).title === 'Growth Leadership', 'merged leadership/trend keeps leadership label');
   assert(buildIndexTrendSummary(analyses).length > 0, 'trend summary handles valid analyses');

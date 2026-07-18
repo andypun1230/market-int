@@ -1,6 +1,6 @@
 {
   "base_url": null,
-  "generated_at": "2026-07-17T17:41:44.970189+00:00",
+  "generated_at": "2026-07-18T09:15:00.681946+00:00",
   "inventory": [
     {
       "allowed_source_states": [
@@ -277,6 +277,39 @@
       "test_required": true,
       "tier": "required",
       "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "breadth.snapshot_service.latest",
+      "frontend_api": "getLatestBreadthSnapshot",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [
+        "snapshot_id",
+        "coverage",
+        "market_date"
+      ],
+      "partial_supported": true,
+      "path": "/market/breadth/snapshot/latest",
+      "provider_domain": "none",
+      "required_fields": [
+        "status"
+      ],
+      "response_model": "BreadthSnapshot",
+      "screen": "Market Breadth",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 3
     },
     {
       "allowed_source_states": [
@@ -1301,7 +1334,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1346,7 +1379,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 101,
+      "elapsed_ms": 44,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1355,13 +1388,13 @@
       "provider": null,
       "required_failures": [],
       "screen": "Data Sources",
-      "source_state": "mock",
+      "source_state": "unavailable",
       "status": "PASS",
       "symbol": null,
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HomeDashboardResponse",
@@ -1391,7 +1424,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 41,
+      "elapsed_ms": 46,
       "http_status": 200,
       "method": "GET",
       "name": "IndexesResponse",
@@ -1406,7 +1439,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 475,
+      "elapsed_ms": 17,
       "http_status": 200,
       "method": "GET",
       "name": "SectorBreadthResponse",
@@ -1421,7 +1454,26 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 194,
+      "http_status": 200,
+      "method": "GET",
+      "name": "BreadthSnapshot",
+      "optional_failures": [
+        "missing optional field: snapshot_id",
+        "missing optional field: coverage",
+        "missing optional field: market_date"
+      ],
+      "path": "/market/breadth/snapshot/latest",
+      "provider": null,
+      "required_failures": [],
+      "screen": "Market Breadth",
+      "source_state": "unavailable",
+      "status": "PARTIAL",
+      "symbol": null,
+      "warnings": []
+    },
+    {
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "MarketHealthResponse",
@@ -1451,7 +1503,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 5,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1471,7 +1523,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1492,7 +1544,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1513,7 +1565,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 498,
+      "elapsed_ms": 758,
       "http_status": 200,
       "method": "GET",
       "name": "SectorDashboardResponse",
@@ -1528,7 +1580,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 7,
+      "elapsed_ms": 9,
       "http_status": 200,
       "method": "GET",
       "name": "SectorsSummaryResponse",
@@ -1543,7 +1595,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 82,
       "http_status": 200,
       "method": "GET",
       "name": "SectorsResponse",
@@ -1558,7 +1610,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "IndustryGroupResponse",
@@ -1573,7 +1625,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 42,
       "http_status": 200,
       "method": "GET",
       "name": "IndustryRotationResponse",
@@ -1603,22 +1655,22 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 19,
+      "elapsed_ms": 12,
       "http_status": 200,
       "method": "GET",
       "name": "WatchlistSummaryResponse",
       "optional_failures": [],
       "path": "/watchlist/summary",
-      "provider": null,
+      "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Watchlist",
-      "source_state": null,
+      "source_state": "mock",
       "status": "PASS",
       "symbol": null,
       "warnings": []
     },
     {
-      "elapsed_ms": 37,
+      "elapsed_ms": 45,
       "http_status": 200,
       "method": "GET",
       "name": "RelativeStrengthResponse",
@@ -1633,7 +1685,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 104,
+      "elapsed_ms": 194,
       "http_status": 200,
       "method": "GET",
       "name": "StockRatingResponse",
@@ -1648,7 +1700,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "MarketSentimentResponse",
@@ -1663,7 +1715,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "MoneyFlowResponse",
@@ -1678,7 +1730,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "InstitutionalDashboardResponse",
@@ -1693,7 +1745,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "OptionsIntelligenceResponse",
@@ -1708,7 +1760,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 16,
       "http_status": 200,
       "method": "GET",
       "name": "LiquidityDashboardResponse",
@@ -1723,7 +1775,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 114,
+      "elapsed_ms": 83,
       "http_status": 200,
       "method": "GET",
       "name": "MarketAnalysisResponse",
@@ -1738,7 +1790,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -1803,21 +1855,6 @@
       "method": "GET",
       "name": "QuoteData",
       "optional_failures": [],
-      "path": "/market/live/quote/DJI",
-      "provider": "generated_test_data",
-      "required_failures": [],
-      "screen": "Stock Detail Quote",
-      "source_state": "cached",
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 0,
-      "http_status": 200,
-      "method": "GET",
-      "name": "QuoteData",
-      "optional_failures": [],
       "path": "/market/live/quote/IWM",
       "provider": "generated_test_data",
       "required_failures": [],
@@ -1858,7 +1895,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 0,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2008,7 +2045,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 0,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2128,7 +2165,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2178,21 +2215,6 @@
       "method": "GET",
       "name": "HistoryData",
       "optional_failures": [],
-      "path": "/market/live/history/DJI?resolution=D&days=260",
-      "provider": "generated_test_data",
-      "required_failures": [],
-      "screen": "Stock Detail Chart",
-      "source_state": "cached",
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 2,
-      "http_status": 200,
-      "method": "GET",
-      "name": "HistoryData",
-      "optional_failures": [],
       "path": "/market/live/history/IWM?resolution=D&days=260",
       "provider": "generated_test_data",
       "required_failures": [],
@@ -2203,7 +2225,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2218,7 +2240,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2278,7 +2300,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 7,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2308,7 +2330,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2413,7 +2435,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2473,7 +2495,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2548,22 +2570,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
-      "http_status": 200,
-      "method": "GET",
-      "name": "HistoryData",
-      "optional_failures": [],
-      "path": "/market/live/history/DJI?resolution=D&days=60",
-      "provider": "generated_test_data",
-      "required_failures": [],
-      "screen": "Stock Detail Chart 1M",
-      "source_state": "cached",
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 2,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2668,7 +2675,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2928,21 +2935,6 @@
       "method": "GET",
       "name": "SupportResistanceResponse",
       "optional_failures": [],
-      "path": "/market/support-resistance/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Stock Detail Technical",
-      "source_state": null,
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 2,
-      "http_status": 200,
-      "method": "GET",
-      "name": "SupportResistanceResponse",
-      "optional_failures": [],
       "path": "/market/support-resistance/IWM",
       "provider": null,
       "required_failures": [],
@@ -3028,7 +3020,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3043,7 +3035,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3303,21 +3295,6 @@
       "method": "GET",
       "name": "TrendlineResponse",
       "optional_failures": [],
-      "path": "/market/trendline/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Stock Detail Technical",
-      "source_state": null,
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 2,
-      "http_status": 200,
-      "method": "GET",
-      "name": "TrendlineResponse",
-      "optional_failures": [],
       "path": "/market/trendline/IWM",
       "provider": null,
       "required_failures": [],
@@ -3403,7 +3380,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3418,7 +3395,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3448,7 +3425,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3670,21 +3647,6 @@
       "source_state": null,
       "status": "PASS",
       "symbol": "DIA",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 2,
-      "http_status": 200,
-      "method": "GET",
-      "name": "VolumeAnalysis",
-      "optional_failures": [],
-      "path": "/market/volume/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Stock Detail Signals",
-      "source_state": null,
-      "status": "PASS",
-      "symbol": "DJI",
       "warnings": []
     },
     {
@@ -4053,21 +4015,6 @@
       "method": "GET",
       "name": "RiskPlan",
       "optional_failures": [],
-      "path": "/market/risk-plans/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Stock Detail Risk",
-      "source_state": null,
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 4,
-      "http_status": 200,
-      "method": "GET",
-      "name": "RiskPlan",
-      "optional_failures": [],
       "path": "/market/risk-plans/IWM",
       "provider": null,
       "required_failures": [],
@@ -4093,7 +4040,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 7,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4108,7 +4055,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 7,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4123,7 +4070,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 21,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4138,7 +4085,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 7,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4153,7 +4100,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 3,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4168,7 +4115,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 3,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4183,7 +4130,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4198,7 +4145,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4213,7 +4160,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 7,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4420,21 +4367,6 @@
       "source_state": null,
       "status": "PASS",
       "symbol": "DIA",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 0,
-      "http_status": 200,
-      "method": "GET",
-      "name": "PatternResponse",
-      "optional_failures": [],
-      "path": "/market/patterns/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Stock Detail Signals",
-      "source_state": null,
-      "status": "PASS",
-      "symbol": "DJI",
       "warnings": []
     },
     {
@@ -4803,21 +4735,6 @@
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
       "optional_failures": [],
-      "path": "/market/options/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Stock Detail Signals",
-      "source_state": "mock",
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 0,
-      "http_status": 200,
-      "method": "GET",
-      "name": "SymbolOptionsIntelligence",
-      "optional_failures": [],
       "path": "/market/options/IWM",
       "provider": null,
       "required_failures": [],
@@ -5113,7 +5030,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 11,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5128,7 +5045,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 12,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5173,22 +5090,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
-      "http_status": 200,
-      "method": "GET",
-      "name": "SymbolLiquidityResponse",
-      "optional_failures": [],
-      "path": "/market/liquidity/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Stock Detail Signals",
-      "source_state": "mock",
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 1,
+      "elapsed_ms": 0,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5203,7 +5105,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5218,7 +5120,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 0,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5323,7 +5225,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5383,7 +5285,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5503,7 +5405,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 9,
+      "elapsed_ms": 8,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5518,7 +5420,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 57,
+      "elapsed_ms": 53,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5533,7 +5435,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 52,
+      "elapsed_ms": 7,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5548,22 +5450,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 30,
-      "http_status": 200,
-      "method": "GET",
-      "name": "StockAnalysisAggregate",
-      "optional_failures": [],
-      "path": "/market/stock-analysis/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Stock Detail Aggregate",
-      "source_state": null,
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 54,
+      "elapsed_ms": 56,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5578,7 +5465,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 16,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5593,7 +5480,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 7,
+      "elapsed_ms": 22,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5608,7 +5495,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 31,
+      "elapsed_ms": 41,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5623,7 +5510,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 46,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5638,7 +5525,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 27,
+      "elapsed_ms": 28,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5653,7 +5540,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 15,
+      "elapsed_ms": 67,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5668,7 +5555,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 49,
+      "elapsed_ms": 22,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5683,7 +5570,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 44,
+      "elapsed_ms": 23,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5698,7 +5585,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 24,
+      "elapsed_ms": 72,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5728,7 +5615,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 23,
+      "elapsed_ms": 44,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5743,7 +5630,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 81,
+      "elapsed_ms": 41,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5758,7 +5645,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 54,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5773,7 +5660,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 29,
+      "elapsed_ms": 10,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5788,7 +5675,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 62,
+      "elapsed_ms": 75,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5803,7 +5690,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 101,
+      "elapsed_ms": 65,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5818,7 +5705,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 63,
+      "elapsed_ms": 124,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5833,7 +5720,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 24,
+      "elapsed_ms": 47,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5848,7 +5735,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 80,
+      "elapsed_ms": 8,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5863,7 +5750,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 451,
+      "elapsed_ms": 482,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5878,7 +5765,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 39,
+      "elapsed_ms": 43,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5893,7 +5780,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 44,
+      "elapsed_ms": 51,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5908,7 +5795,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 36,
+      "elapsed_ms": 41,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5923,22 +5810,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 36,
-      "http_status": 200,
-      "method": "GET",
-      "name": "StockAnalysisResponse",
-      "optional_failures": [],
-      "path": "/analysis/stock/DJI",
-      "provider": null,
-      "required_failures": [],
-      "screen": "Copilot Stock Context",
-      "source_state": null,
-      "status": "PASS",
-      "symbol": "DJI",
-      "warnings": []
-    },
-    {
-      "elapsed_ms": 35,
+      "elapsed_ms": 41,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5953,7 +5825,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 36,
+      "elapsed_ms": 41,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5968,7 +5840,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 43,
+      "elapsed_ms": 48,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5983,7 +5855,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 43,
+      "elapsed_ms": 48,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5998,7 +5870,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6013,7 +5885,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 43,
+      "elapsed_ms": 48,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6028,7 +5900,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 30,
+      "elapsed_ms": 35,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6043,7 +5915,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 30,
+      "elapsed_ms": 35,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6058,7 +5930,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 36,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6073,7 +5945,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 39,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6088,7 +5960,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 41,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6103,7 +5975,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6118,7 +5990,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6133,7 +6005,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 36,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6148,7 +6020,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 36,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6163,7 +6035,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6178,7 +6050,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6193,7 +6065,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 36,
+      "elapsed_ms": 39,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6208,7 +6080,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6223,7 +6095,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 40,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6241,17 +6113,36 @@
   "summary": {
     "counts": {
       "FAIL": 0,
-      "PARTIAL": 3,
-      "PASS": 326,
+      "PARTIAL": 4,
+      "PASS": 314,
       "SKIP": 0
     },
-    "endpoint_count": 329,
+    "endpoint_count": 318,
     "failed_records": [],
     "http_500_count": 0,
     "overall_result": "PASS WITH CONDITIONS",
     "partial_records": [
       {
-        "elapsed_ms": 5,
+        "elapsed_ms": 194,
+        "http_status": 200,
+        "method": "GET",
+        "name": "BreadthSnapshot",
+        "optional_failures": [
+          "missing optional field: snapshot_id",
+          "missing optional field: coverage",
+          "missing optional field: market_date"
+        ],
+        "path": "/market/breadth/snapshot/latest",
+        "provider": null,
+        "required_failures": [],
+        "screen": "Market Breadth",
+        "source_state": "unavailable",
+        "status": "PARTIAL",
+        "symbol": null,
+        "warnings": []
+      },
+      {
+        "elapsed_ms": 1,
         "http_status": 200,
         "method": "GET",
         "name": "dict",
@@ -6271,7 +6162,7 @@
         "warnings": []
       },
       {
-        "elapsed_ms": 2,
+        "elapsed_ms": 5,
         "http_status": 200,
         "method": "GET",
         "name": "dict",
@@ -6292,7 +6183,7 @@
         "warnings": []
       },
       {
-        "elapsed_ms": 1,
+        "elapsed_ms": 4,
         "http_status": 200,
         "method": "GET",
         "name": "dict",
@@ -6329,7 +6220,7 @@
           "keys": [],
           "persistent": {
             "available": true,
-            "database_path": "/var/folders/pn/xvktlkjx4wx3dqs7wlx7zfhh0000gn/T/app-validation-cache-2ewn2g8w/market_cache.sqlite3",
+            "database_path": "/var/folders/pn/xvktlkjx4wx3dqs7wlx7zfhh0000gn/T/app-validation-cache-_qtqpumx/market_cache.sqlite3",
             "expired_items": 0,
             "fresh_items": 0,
             "items": 0,
@@ -6493,14 +6384,14 @@
           "quotes": true,
           "volume": true
         },
-        "checked_at": "2026-07-17T17:41:40.627261+00:00",
+        "checked_at": "2026-07-18T09:14:56.159583+00:00",
         "configured": true,
         "enabled": true,
         "fallback_active": false,
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-17T17:41:40.627048+00:00",
+        "last_successful_request": "2026-07-18T09:14:56.159370+00:00",
         "message": "Generated test-data provider is active.",
         "provider": "generated_test_data",
         "rate_limit_state": null,
@@ -6540,7 +6431,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-17T17:41:40.628206+00:00",
+        "last_successful_request": "2026-07-18T09:14:56.160764+00:00",
         "message": null,
         "provider": "generated_test_data",
         "rate_limit_state": null,
@@ -6566,7 +6457,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-17T17:41:40.629555+00:00",
+        "last_successful_request": "2026-07-18T09:14:56.161703+00:00",
         "message": null,
         "provider": "market_data",
         "rate_limit_state": null,
@@ -6594,7 +6485,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-17T17:41:40.628907+00:00",
+        "last_successful_request": "2026-07-18T09:14:56.161506+00:00",
         "message": null,
         "provider": "mock-options",
         "rate_limit_state": null,
@@ -6800,14 +6691,14 @@
           "quotes": true,
           "volume": true
         },
-        "checked_at": "2026-07-17T17:41:40.627261+00:00",
+        "checked_at": "2026-07-18T09:14:56.159583+00:00",
         "configured": true,
         "enabled": true,
         "fallback_active": false,
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-17T17:41:40.627048+00:00",
+        "last_successful_request": "2026-07-18T09:14:56.159370+00:00",
         "message": "Generated test-data provider is active.",
         "provider": "generated_test_data",
         "rate_limit_state": null,
@@ -6832,7 +6723,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-17T17:41:40.628633+00:00",
+        "last_successful_request": "2026-07-18T09:14:56.161235+00:00",
         "message": null,
         "provider": "market_proxy",
         "rate_limit_state": null,
@@ -6845,10 +6736,10 @@
       "source": "generated_test_data",
       "test_data": {
         "data_status": "test",
-        "generated_at": "2026-07-17T17:41:03.427148+00:00",
+        "generated_at": "2026-07-18T09:14:24.924479+00:00",
         "is_mock": true,
         "label": "Generated Test Data",
-        "last_regenerated": "2026-07-17T17:41:03.427148+00:00",
+        "last_regenerated": "2026-07-18T09:14:24.924479+00:00",
         "mode": "TEST_DATA",
         "scenario": "balanced_market",
         "scenarios": [
@@ -6892,7 +6783,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-17T17:41:40.628919+00:00",
+        "last_successful_request": "2026-07-18T09:14:56.161518+00:00",
         "message": null,
         "provider": "mock-trade-flow",
         "rate_limit_state": null,
@@ -6904,7 +6795,7 @@
       "trade_flow_provider": "generated_test_data"
     },
     "slow_records": [],
-    "symbol_count": 25,
+    "symbol_count": 24,
     "symbol_failures": {}
   },
   "symbol_registry": [
@@ -6949,26 +6840,13 @@
     },
     {
       "app_symbol": "DIA",
-      "asset_type": "equity_or_etf",
+      "asset_type": "equity",
       "finnhub_symbol": "DIA",
       "history_proxy": false,
       "history_supported": true,
       "polygon_symbol": "DIA",
       "provider_history_symbol": "DIA",
       "proxy_reason": null,
-      "quote_supported": true,
-      "sector": null,
-      "theme": null
-    },
-    {
-      "app_symbol": "DJI",
-      "asset_type": "equity",
-      "finnhub_symbol": "DIA",
-      "history_proxy": true,
-      "history_supported": true,
-      "polygon_symbol": "DIA",
-      "provider_history_symbol": "DIA",
-      "proxy_reason": "ETF proxy for Dow Jones Industrial Average",
       "quote_supported": true,
       "sector": null,
       "theme": null
@@ -7239,7 +7117,6 @@
     "AMD",
     "ARM",
     "DIA",
-    "DJI",
     "IWM",
     "MSFT",
     "MU",

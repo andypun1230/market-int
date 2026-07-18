@@ -6,8 +6,8 @@
   "duplicate_requests": [],
   "errors": [],
   "failures": [],
-  "first_usable_render_readiness_ms": 18,
-  "full_primary_analysis_readiness_ms": 18,
+  "first_usable_render_readiness_ms": 19,
+  "full_primary_analysis_readiness_ms": 19,
   "history_requests_by_window": {
     "chart_period_switch": [],
     "selected": [
@@ -22,8 +22,8 @@
   },
   "refresh_duration_ms": null,
   "restart_persistence": {
-    "after_snapshot_id": "stock-validation-1784310116",
-    "before_snapshot_id": "stock-validation-1784310116",
+    "after_snapshot_id": "stock-validation-1784366120",
+    "before_snapshot_id": "stock-validation-1784366120",
     "same_snapshot_id": true
   },
   "section_statuses": {
@@ -50,9 +50,9 @@
   "timeouts": [],
   "warm_reads": [
     {
-      "elapsed_ms": 18,
+      "elapsed_ms": 19,
       "path": "/market/stock-analysis/NVDA",
-      "snapshot_id": "stock-validation-1784310116",
+      "snapshot_id": "stock-validation-1784366120",
       "snapshot_status": "partial",
       "source_state": "test",
       "status_code": 200,
@@ -61,7 +61,7 @@
     {
       "elapsed_ms": 5,
       "path": "/market/stock-snapshot/NVDA",
-      "snapshot_id": "stock-validation-1784310116",
+      "snapshot_id": "stock-validation-1784366120",
       "snapshot_status": "partial",
       "source_state": "test",
       "status_code": 200,
@@ -70,7 +70,7 @@
     {
       "elapsed_ms": 3,
       "path": "/market/stock-snapshot/NVDA/status",
-      "snapshot_id": "stock-validation-1784310116",
+      "snapshot_id": "stock-validation-1784366120",
       "snapshot_status": "partial",
       "source_state": null,
       "status_code": 200,
@@ -92,7 +92,7 @@
       "trend": "complete",
       "volume": "complete"
     },
-    "snapshot_id": "stock-validation-1784310116",
+    "snapshot_id": "stock-validation-1784366120",
     "status": "partial"
   }
 }

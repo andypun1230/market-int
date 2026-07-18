@@ -170,6 +170,9 @@ def calculate_market_regime() -> RegimeResponse:
             volatility_status=volatility_status,
             distribution_days=institutional_bias.distribution_count,
         ),
+        breadth_snapshot_id=market_breadth.snapshot_id,
+        universe_version=market_breadth.universe_version,
+        market_date=market_breadth.market_date,
     )
 
 

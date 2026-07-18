@@ -1,6 +1,6 @@
 import type { CandleData, HistoryData, IndexSnapshot } from '@/types/market';
 
-export const indexSymbols = ['SPY', 'QQQ', 'DJI'] as const;
+export const indexSymbols = ['SPY', 'QQQ', 'IWM', 'DIA'] as const;
 
 export type IndexSymbol = typeof indexSymbols[number];
 export type IndexTimeframe = '1D' | '1W' | '1M' | '6M' | '1Y';
@@ -106,9 +106,6 @@ export function filterDisplayIndexes(indexes: IndexSnapshot[]) {
 
 export function normalizeIndexSymbol(symbol: string): IndexSymbol | null {
   const upper = symbol.toUpperCase();
-  if (upper === 'DIA') {
-    return 'DJI';
-  }
   return indexSymbols.includes(upper as IndexSymbol) ? upper as IndexSymbol : null;
 }
 
@@ -274,11 +271,11 @@ export function classifyVolumeConfirmation(
 ) {
   const averageVolume = calculateAverageVolume(candles);
   const latestCandle = candles.at(-1) ?? null;
-  const latestVolume = symbol === 'DJI'
+  const latestVolume = symbol === 'DIA'
     ? latestCandle?.volume ?? null
     : snapshot.volume ?? latestCandle?.volume ?? null;
-  const sourceStatus: VolumeSourceStatus = symbol === 'DJI' ? 'proxy' : 'valid';
-  const sourceLabel = symbol === 'DJI' ? 'DIA volume proxy' : 'ETF volume';
+  const sourceStatus: VolumeSourceStatus = symbol === 'DIA' ? 'proxy' : 'valid';
+  const sourceLabel = symbol === 'DIA' ? 'Dow Jones ETF proxy volume' : 'ETF volume';
 
   if (!latestVolume || !averageVolume) {
     return buildVolume('Volume unavailable', null, latestVolume, averageVolume, 'Volume unavailable', 'unavailable', 'unavailable', 'neutral');
@@ -291,7 +288,7 @@ export function classifyVolumeConfirmation(
       null,
       latestVolume,
       averageVolume,
-      symbol === 'DJI' ? 'DIA volume proxy unavailable' : 'Volume unavailable',
+      symbol === 'DIA' ? 'Dow Jones proxy volume unavailable' : 'Volume unavailable',
       'incompatible',
       'unavailable',
       'neutral',
@@ -431,7 +428,7 @@ export function classifyIndexSetup(
 export function buildIndexTrendSummary(analyses: IndexAnalysis[]) {
   const valid = analyses.filter((analysis) => analysis.periodReturn !== null && analysis.trend.state !== 'unavailable');
   if (!valid.length) {
-    return 'Index trend data is unavailable for SPY, QQQ, and DJI.';
+    return 'Index trend data is unavailable for SPY, QQQ, IWM, and DIA.';
   }
   const leader = getLeader(valid);
   const laggard = getLaggard(valid);
@@ -460,28 +457,28 @@ export function deriveLeadershipRead(analyses: IndexAnalysis[]) {
   const allWeak = valid.every((analysis) => (analysis.periodReturn ?? 0) < -0.5);
   if (allWeak) {
     return {
-      explanation: 'All three indexes are negative over the selected period, indicating broad market pressure.',
+      explanation: 'All four core indexes are negative over the selected period, indicating broad market pressure.',
       title: 'Broad Market Pressure',
       tone: 'negative' as SignalTone,
     };
   }
   if (spread < 1) {
     return {
-      explanation: 'SPY, QQQ, and DJI are moving closely together, which is consistent with broad participation.',
+      explanation: 'SPY, QQQ, IWM, and DIA are moving closely together, which is consistent with broad participation.',
       title: 'Broad Participation',
       tone: 'positive' as SignalTone,
     };
   }
   if (leader.symbol === 'QQQ') {
     return {
-      explanation: 'QQQ is outperforming SPY and DJI over the selected period, suggesting stronger growth and technology participation.',
+      explanation: 'QQQ is outperforming the other core indexes over the selected period, suggesting stronger growth and technology participation.',
       title: 'Growth Leadership',
       tone: 'positive' as SignalTone,
     };
   }
-  if (leader.symbol === 'DJI') {
+  if (leader.symbol === 'DIA') {
     return {
-      explanation: 'DJI is outperforming SPY and QQQ, which is consistent with rotation toward value-oriented or industrial leadership.',
+      explanation: 'Dow Jones proxy DIA is outperforming SPY and QQQ, which is consistent with rotation toward value-oriented or industrial leadership.',
       title: 'Value-Oriented Leadership',
       tone: 'positive' as SignalTone,
     };

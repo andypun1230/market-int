@@ -4,6 +4,7 @@ import json
 import os
 import re
 import ssl
+import threading
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -65,6 +66,12 @@ class PolygonMarketDataProvider(MarketDataProvider):
         self.recent_error_count = 0
         self.last_response_time_ms: float | None = None
         self.rate_limit_state: str | None = None
+        self.last_http_status: int | None = None
+        self.last_request_id: str | None = None
+        self.last_retry_after: str | None = None
+        self.request_count = 0
+        self.rate_limit_events = 0
+        self._request_count_lock = threading.Lock()
         self._debug(
             "initialized "
             f"key_loaded={'yes' if self.api_key else 'no'} "
@@ -209,12 +216,19 @@ class PolygonMarketDataProvider(MarketDataProvider):
         attempt = 0
         while True:
             started = time.perf_counter()
+            with self._request_count_lock:
+                self.request_count += 1
+                request_number = self.request_count
             try:
                 self._debug(f"request started page={page} url_without_key={safe_url} attempt={attempt + 1}")
                 request = Request(url, headers={"Accept": "application/json", "User-Agent": "market-intelligence-app/phase-4.3"})
                 with urlopen(request, timeout=self.timeout_seconds, context=self.ssl_context) as response:
                     body = response.read().decode("utf-8")
                     status_code = response.status
+                    self.last_http_status = status_code
+                    headers = getattr(response, "headers", None)
+                    self.last_request_id = request_id_from_headers(headers)
+                    self.last_retry_after = headers.get("Retry-After") if headers is not None else None
                 self._debug(f"response received page={page} status={status_code} body={redact_body(body)}")
                 data = json.loads(body)
                 if not isinstance(data, dict):
@@ -235,6 +249,9 @@ class PolygonMarketDataProvider(MarketDataProvider):
             except HTTPError as exc:
                 duration_ms = (time.perf_counter() - started) * 1000
                 category = categorize_http_error(exc.code)
+                self.last_http_status = exc.code
+                self.last_request_id = request_id_from_headers(exc.headers)
+                self.last_retry_after = exc.headers.get("Retry-After")
                 try:
                     error_body = exc.read().decode("utf-8")
                 except Exception:
@@ -245,12 +262,17 @@ class PolygonMarketDataProvider(MarketDataProvider):
                 )
                 if exc.code == 429:
                     self.rate_limit_state = "rate_limited"
+                    self.rate_limit_events += 1
                 if should_retry_http(exc.code) and attempt < self.max_retries:
                     time.sleep(backoff_seconds(attempt, retry_after=exc.headers.get("Retry-After")))
                     attempt += 1
                     continue
                 self._record_failure(f"{category} from Polygon ({exc.code})", category=category, duration_ms=duration_ms)
-                raise ProviderRequestError(f"Polygon request failed: {category}", category=category) from exc
+                error = ProviderRequestError(f"Polygon request failed: {category}", category=category)
+                error.request_number = request_number
+                error.request_id = self.last_request_id
+                error.retry_after = self.last_retry_after
+                raise error from exc
             except (TimeoutError, URLError) as exc:
                 duration_ms = (time.perf_counter() - started) * 1000
                 self._debug(f"network error page={page} type={type(exc).__name__} reason={safe_exception_text(exc)} url_without_key={safe_url}")
@@ -284,6 +306,17 @@ class PolygonMarketDataProvider(MarketDataProvider):
         self.recent_error_count += 1
         if category == "rate_limited":
             self.rate_limit_state = "rate_limited"
+
+
+def request_id_from_headers(headers: object) -> str | None:
+    getter = getattr(headers, "get", None)
+    if not getter:
+        return None
+    for name in ("X-Request-ID", "Request-ID", "X-Polygon-Request-ID", "X-Amzn-Trace-Id"):
+        value = getter(name)
+        if value:
+            return str(value)
+    return None
 
 
 def normalize_polygon_aggregates(payloads: list[dict[str, Any]], *, requested_days: int) -> list[CandleData]:

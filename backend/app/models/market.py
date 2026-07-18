@@ -44,6 +44,9 @@ class RegimeResponse(BaseModel):
     volatility: VolatilityResponse
     institutional_activity: RegimeInstitutionalActivityResponse
     explanation: str
+    breadth_snapshot_id: str | None = None
+    universe_version: str | None = None
+    market_date: str | None = None
 
 
 class SectorLeader(BaseModel):
@@ -132,8 +135,14 @@ class WatchlistItem(BaseModel):
     change: float | None = None
     change_percent: float | None = None
     data_source: str | None = None
+    provider: str | None = None
+    source_state: str | None = None
+    quote_timestamp: str | None = None
+    saved_at: str | None = None
+    sort_order: int | None = None
     is_live: bool | None = None
     is_stale: bool | None = None
+    stale: bool | None = None
     fallback_used: bool | None = None
     as_of: str | None = None
 
@@ -150,15 +159,28 @@ class RiskResponse(BaseModel):
 
 class IndexSnapshot(BaseModel):
     symbol: str
+    display_symbol: str | None = None
+    provider_symbol: str | None = None
+    display_name: str | None = None
+    asset_type: str | None = None
     price: float
     change: float
     change_percent: float
+    previous_close: float | None = None
     volume: int | float | None
     ema_20: float | None
     ema_50: float | None
     ema_200: float | None
     sma_50: float | None
     rsi_14: float | None
+    trend: str | None = None
+    quote_timestamp: str | None = None
+    history_latest_date: str | None = None
+    quote_provider: str | None = None
+    history_provider: str | None = None
+    source_state: str | None = None
+    stale: bool | None = None
+    warnings: list[str] | None = None
     data_source: str | None = None
     is_live: bool | None = None
     is_stale: bool | None = None
@@ -206,6 +228,15 @@ class MarketBreadthResponse(BaseModel):
     fallback_used: bool | None = None
     as_of: str | None = None
     history_quality_score: int | None = None
+    snapshot_id: str | None = None
+    universe_version: str | None = None
+    market_date: str | None = None
+    coverage_status: str | None = None
+    trend: str | None = None
+    confidence: str | None = None
+    source_state: str | None = None
+    providers: list[str] | None = None
+    warnings: list[str] | None = None
 
 
 class SectorBreadthItem(BaseModel):
@@ -220,6 +251,13 @@ class SectorBreadthItem(BaseModel):
     universe_size: int | None = None
     as_of: str | None = None
     history_quality_score: int | None = None
+    unchanged_stocks: int | None = None
+    percent_above_20ema: float | None = None
+    percent_above_200ema: float | None = None
+    new_52w_highs: int | None = None
+    new_52w_lows: int | None = None
+    breadth_score: float | None = None
+    breadth_status: str | None = None
 
 
 class SectorBreadthResponse(BaseModel):
@@ -593,6 +631,9 @@ class MarketHealthResponse(BaseModel):
     weakening_factors: List[str]
     decision_confidence: Dict[str, Any] | None = None
     data_quality: Dict[str, Any] | None = None
+    breadth_snapshot_id: str | None = None
+    universe_version: str | None = None
+    market_date: str | None = None
 
 
 class SectorEtfItem(BaseModel):

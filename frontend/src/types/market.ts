@@ -31,19 +31,33 @@ export type MarketRegime = {
     follow_through_day: string;
   };
   explanation: string;
+  breadth_snapshot_id?: string | null;
 };
 
 export type IndexSnapshot = {
   symbol: string;
+  display_symbol?: string | null;
+  provider_symbol?: string | null;
+  display_name?: string | null;
+  asset_type?: string | null;
   price: number;
   change: number;
   change_percent: number;
+  previous_close?: number | null;
   volume: number | null;
   ema_20: number | null;
   ema_50: number | null;
   ema_200: number | null;
   sma_50: number | null;
   rsi_14: number | null;
+  trend?: string | null;
+  quote_timestamp?: string | null;
+  history_latest_date?: string | null;
+  quote_provider?: string | null;
+  history_provider?: string | null;
+  source_state?: string | null;
+  stale?: boolean | null;
+  warnings?: string[] | null;
   data_source?: string | null;
   is_live?: boolean | null;
   is_stale?: boolean | null;
@@ -72,6 +86,15 @@ export type MarketBreadth = SourceMetadata & {
   new_52w_lows: number;
   breadth_score?: number | null;
   breadth_status?: string | null;
+  snapshot_id?: string | null;
+  universe_version?: string | null;
+  market_date?: string | null;
+  coverage_status?: 'complete' | 'partial' | 'unavailable' | string | null;
+  trend?: 'improving' | 'stable' | 'deteriorating' | 'unavailable' | string | null;
+  confidence?: 'high' | 'moderate' | 'limited' | string | null;
+  source_state?: string | null;
+  providers?: string[] | null;
+  warnings?: string[] | null;
 };
 
 export type SectorBreadthItem = SourceMetadata & {
@@ -80,6 +103,13 @@ export type SectorBreadthItem = SourceMetadata & {
   advancing_stocks: number;
   declining_stocks: number;
   percent_above_50ema: number;
+  unchanged_stocks?: number | null;
+  percent_above_20ema?: number | null;
+  percent_above_200ema?: number | null;
+  new_52w_highs?: number | null;
+  new_52w_lows?: number | null;
+  breadth_score?: number | null;
+  breadth_status?: string | null;
 };
 
 export type MarketBreadthResponse = {
@@ -221,14 +251,23 @@ export type IndustryGroupResponse = {
 
 export type WatchlistItem = {
   ticker: string;
+  symbol?: string;
+  display_name?: string | null;
   trend: string;
   setup: string;
   support_zone: string;
   risk_flag: string;
+  quote?: QuoteData | null;
   price?: number | null;
   change?: number | null;
   change_percent?: number | null;
   data_source?: string | null;
+  provider?: string | null;
+  source_state?: string | null;
+  quote_timestamp?: string | null;
+  stale?: boolean | null;
+  saved_at?: string | null;
+  sort_order?: number | null;
   is_live?: boolean | null;
   is_stale?: boolean | null;
   fallback_used?: boolean | null;
@@ -250,9 +289,22 @@ export type WatchlistSummaryItem = WatchlistItem & {
 };
 
 export type WatchlistSummaryResponse = {
+  snapshot_id?: string | null;
+  created_at?: string | null;
+  membership_hash?: string | null;
+  status?: string | null;
+  source_state?: string | null;
+  symbols_requested?: string[];
+  symbols_available?: string[];
+  symbols_unavailable?: string[];
+  coverage_ratio?: number | null;
   items: WatchlistSummaryItem[];
+  leaders?: WatchlistSummaryItem[];
+  laggards?: WatchlistSummaryItem[];
+  warnings?: string[];
   summary?: string | null;
   cache_status?: string | null;
+  provider?: string | null;
 };
 
 export type RiskResponse = {
@@ -289,6 +341,7 @@ export type MarketHealthResponse = {
     breadth_coverage_percent?: number | null;
     leadership_coverage_percent?: number | null;
   } | null;
+  breadth_snapshot_id?: string | null;
 };
 
 export type SectorEtfItem = SourceMetadata & {
@@ -731,6 +784,11 @@ export type MarketCoreSnapshot = {
     coverage_percent?: number | null;
     overall_mode?: string | null;
     universe?: string | null;
+    snapshot_id?: string | null;
+    universe_version?: string | null;
+    market_date?: string | null;
+    coverage_status?: string | null;
+    trend?: string | null;
   };
   top_sector?: SectorLeader | null;
   top_industry_group?: IndustryGroupItem | null;
@@ -881,6 +939,8 @@ export type AIChatResponse = {
 
 export type StockAnalysisAggregate = {
   symbol: string;
+  quote?: QuoteData | null;
+  current_price?: number | null;
   chart?: {
     history?: HistoryData | null;
     canonical_days?: number | null;
@@ -1240,6 +1300,8 @@ export type CandleData = {
 
 export type HistoryData = {
   symbol: string;
+  requested_symbol?: string | null;
+  provider_symbol?: string | null;
   candles: CandleData[];
   timeframe: string;
   source: string;

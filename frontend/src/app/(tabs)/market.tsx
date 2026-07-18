@@ -444,10 +444,11 @@ function OverviewTab({
     };
   }, []);
   const indexHistories = useMemo<Partial<Record<IndexSymbol, HistoryData>>>(() => ({
-    DJI: histories.DJI,
+    DIA: histories.DIA,
+    IWM: histories.IWM,
     QQQ: histories.QQQ,
     SPY: histories.SPY,
-  }), [histories.DJI, histories.QQQ, histories.SPY]);
+  }), [histories.DIA, histories.IWM, histories.QQQ, histories.SPY]);
   const indexAnalyses = useMemo(() => analyzeIndexes(indexes, indexHistories, '1M'), [indexHistories, indexes]);
   const weightConcentration = useMemo(
     () => buildConcentrationBreadthSignal(buildWeightComparisonPair('sp500', histories, '1M')),
@@ -583,7 +584,7 @@ function IndexesTab({
         <Text style={styles.detailSectionTitle}>Index Setups</Text>
         {analyses.length ? analyses.map((analysis) => (
           <IndexSetupCard analysis={analysis} key={analysis.symbol} timeframe={timeframe} />
-        )) : <Text style={styles.bodyText}>SPY, QQQ, and DJI snapshots are unavailable.</Text>}
+        )) : <Text style={styles.bodyText}>SPY, QQQ, IWM, and DIA snapshots are unavailable.</Text>}
       </View>
     </View>
   );
@@ -1305,7 +1306,7 @@ function IndexComparisonChart({
         <Text style={styles.helperInline}>{timeframe} normalized return</Text>
       </View>
       <Pressable
-        accessibilityLabel={`SPY, QQQ, and DJI normalized ${timeframe} performance comparison chart.`}
+        accessibilityLabel={`SPY, QQQ, IWM, and DIA normalized ${timeframe} performance comparison chart.`}
         onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
         onPressIn={(event) => {
           if (!allTimes.length || maxTime <= minTime) {
@@ -1847,7 +1848,7 @@ function MarketLeadershipTrendCard({ analyses }: { analyses: IndexAnalysis[] }) 
 }
 
 function IndexVolumeParticipationCard({ analyses }: { analyses: IndexAnalysis[] }) {
-  const orderedAnalyses = ['SPY', 'QQQ', 'DJI']
+  const orderedAnalyses = ['SPY', 'QQQ', 'IWM', 'DIA']
     .map((symbol) => analyses.find((analysis) => analysis.symbol === symbol))
     .filter((analysis): analysis is IndexAnalysis => Boolean(analysis));
 
@@ -1968,7 +1969,7 @@ function indexColor(symbol: IndexSymbol) {
       return Theme.colors.accent;
     case 'QQQ':
       return Theme.colors.purple;
-    case 'DJI':
+    case 'DIA':
       return Theme.colors.success;
     default:
       return Theme.colors.textMuted;
@@ -2406,8 +2407,50 @@ function BreadthDetails({
       <HighLowCard data={dashboard.highLow} />
       <MovingAverageBreadthCard data={dashboard.movingAverageProfile} />
       <BreadthQualityCard data={dashboard.quality} strengthScore={dashboard.composite.score} />
+      <BreadthSnapshotSource market={activeBreadth?.market ?? null} />
+      <SectorBreadthCard sectors={activeBreadth?.sectors ?? []} />
       <BreadthTrendCard />
       <BreadthTakeawayCard dashboard={dashboard} />
+    </View>
+  );
+}
+
+function BreadthSnapshotSource({ market }: { market: MarketBreadthResponse['market'] | null }) {
+  const source = market?.providers?.join(', ') ?? market?.source_state ?? 'unavailable';
+  return (
+    <View style={styles.breadthPanel}>
+      <View style={styles.sectionHeaderRow}>
+        <Text style={styles.detailSectionTitle}>Source Details</Text>
+        <StatusBadge label={market?.coverage_status ?? 'Unavailable'} tone={market?.coverage_status === 'complete' ? 'success' : 'warning'} />
+      </View>
+      <View style={styles.breadthInlineMetrics}>
+        <MiniDecisionMetric label="Universe" value={market?.universe_version ? `${market?.universe ?? 'S&P 100'} · ${market.universe_version}` : market?.universe ?? 'Unavailable'} />
+        <MiniDecisionMetric label="Session" value={market?.market_date ?? market?.as_of ?? 'Unavailable'} />
+      </View>
+      <Text style={styles.bodyText}>Daily breadth through the latest completed session. History provider: {source}.</Text>
+      {market?.warnings?.map((warning) => <Text key={warning} style={styles.helperInline}>{warning}</Text>)}
+    </View>
+  );
+}
+
+function SectorBreadthCard({ sectors }: { sectors: MarketBreadthResponse['sectors'] }) {
+  if (!sectors.length) return null;
+  return (
+    <View style={styles.breadthPanel}>
+      <View style={styles.sectionHeaderRow}>
+        <Text style={styles.detailSectionTitle}>Sector Breadth</Text>
+        <Text style={styles.helperInline}>Stored constituent histories</Text>
+      </View>
+      {sectors.slice(0, 6).map((sector) => {
+        const value = sector.breadth_score ?? sector.percent_above_50ema;
+        return (
+          <View key={sector.sector} style={styles.healthProfileRow}>
+            <Text numberOfLines={1} style={styles.healthProfileLabel}>{sector.sector}</Text>
+            <View style={styles.healthProfileTrack}><View style={[styles.healthProfileFill, breadthFillStyle(toneForNumericScore(value)), { width: `${Math.max(0, Math.min(100, value))}%` }]} /></View>
+            <Text style={styles.healthProfileScore}>{formatBreadthPercent(sector.percent_above_50ema)}</Text>
+          </View>
+        );
+      })}
     </View>
   );
 }

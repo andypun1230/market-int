@@ -1,4 +1,5 @@
 import type { AnalysisDataQuality, RiskPlan, SupportResistanceResponse } from '@/types/market';
+import type { CurrentPriceSelection } from '@/features/stock-detail/currentPrice';
 
 export type RiskPlanTrustState =
   | 'current_compatible'
@@ -74,6 +75,7 @@ export type RiskDashboardModel = {
   riskPercent: number | null;
   downsidePercent: number | null;
   currentPrice: number | null;
+  currentPriceSource: string;
   invalidationLevel: number | null;
   confirmationLevel: number | null;
   supportLevel: number | null;
@@ -88,16 +90,19 @@ export type RiskDashboardModel = {
 };
 
 type BuildRiskDashboardInput = {
+  currentPrice?: CurrentPriceSelection | null;
   riskPlan?: RiskPlan | null;
   supportResistance?: SupportResistanceResponse | null;
 };
 
 export function buildRiskDashboard({
+  currentPrice: selectedCurrentPrice,
   riskPlan,
   supportResistance,
 }: BuildRiskDashboardInput): RiskDashboardModel {
   const trust = assessRiskPlanTrust(riskPlan, supportResistance);
-  const currentPrice = numberOrNull(riskPlan?.current_price ?? supportResistance?.current_price);
+  const currentPrice = numberOrNull(selectedCurrentPrice?.price)
+    ?? numberOrNull(riskPlan?.current_price ?? supportResistance?.current_price);
   const confirmationLevel = numberOrNull(supportResistance?.breakout_level)
     ?? (trust.shouldLeadRiskTab ? numberOrNull(riskPlan?.entry) : null);
   const invalidationLevel = numberOrNull(supportResistance?.stop_reference)
@@ -109,6 +114,7 @@ export function buildRiskDashboard({
     ? buildCurrentRiskLevels({
         confirmationLevel,
         currentPrice,
+        currentPriceSource: selectedCurrentPrice?.sourceLabel ?? 'Reference',
         invalidationLevel,
         supportLevel,
         target1,
@@ -159,6 +165,7 @@ export function buildRiskDashboard({
     atr14: numberOrNull(riskPlan?.atr_14),
     confirmationLevel,
     currentPrice,
+    currentPriceSource: selectedCurrentPrice?.sourceLabel ?? 'Reference',
     decisionContext,
     downsidePercent,
     factors,
@@ -317,6 +324,7 @@ export function assessRiskPlanTrust(
 function buildCurrentRiskLevels({
   confirmationLevel,
   currentPrice,
+  currentPriceSource,
   invalidationLevel,
   supportLevel,
   target1,
@@ -324,6 +332,7 @@ function buildCurrentRiskLevels({
 }: {
   confirmationLevel: number | null;
   currentPrice: number | null;
+  currentPriceSource: string;
   invalidationLevel: number | null;
   supportLevel: number | null;
   target1: number | null;
@@ -333,7 +342,7 @@ function buildCurrentRiskLevels({
     ? 'Already cleared'
     : 'Break above';
   return mergeCloseLevels([
-    buildLevel('current', 'Current Price', currentPrice, 'current', 'Reference'),
+    buildLevel('current', 'Current Price', currentPrice, 'current', currentPriceSource),
     buildLevel('confirmation', 'Confirmation', confirmationLevel, 'confirmation', confirmationDescription),
     buildLevel('target-1', 'Target 1', target1, 'target', 'First target'),
     buildLevel('target-2', 'Target 2', target2, 'target', 'Second target'),

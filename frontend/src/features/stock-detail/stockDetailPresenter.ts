@@ -6,6 +6,7 @@ import type {
   VolumeAnalysis,
   WatchlistItem,
 } from '@/types/market';
+import type { CurrentPriceSelection } from '@/features/stock-detail/currentPrice';
 
 export type StockExecutiveSummarySource = 'backend' | 'rule_based' | 'unavailable';
 export type StockDetailTone = 'success' | 'warning' | 'danger' | 'accent' | 'neutral';
@@ -70,6 +71,7 @@ export type StockDetailOverviewModel = {
 };
 
 type BuildOverviewInput = {
+  currentPrice?: CurrentPriceSelection | null;
   relativeStrength?: RelativeStrengthItem | null;
   riskPlan?: RiskPlan | null;
   stock: WatchlistItem;
@@ -88,6 +90,7 @@ const factorLabels: { key: keyof StockRatingItem['components']; label: string }[
 ];
 
 export function buildStockDetailOverview({
+  currentPrice,
   relativeStrength,
   riskPlan,
   stock,
@@ -100,6 +103,7 @@ export function buildStockDetailOverview({
   const riskLevel = stockRating?.risk_level ?? riskPlan?.risk_level ?? stock.risk_flag ?? 'Unavailable';
   const status = stockRating?.status ?? stock.trend ?? 'Unavailable';
   const source = getSource(stock, stockRating, relativeStrength, riskPlan, supportResistance, volumeAnalysis);
+  const quoteSource = currentPrice ? getCurrentPriceSource(currentPrice) : source;
   const factors = buildFactors(stockRating);
   const watchItems = buildWatchItems(supportResistance, riskPlan, relativeStrength, volumeAnalysis);
   const strengths = sanitizeList(stockRating?.strengths).slice(0, 4);
@@ -115,11 +119,11 @@ export function buildStockDetailOverview({
   return {
     symbol: stock.ticker,
     quote: {
-      price: toNumber(stock.price),
-      change: toNumber(stock.change),
-      changePercent: toNumber(stock.change_percent),
-      source: stock.data_source ?? null,
-      timestamp: stock.as_of ?? null,
+      price: currentPrice?.price ?? toNumber(stock.price),
+      change: currentPrice?.change ?? toNumber(stock.change),
+      changePercent: currentPrice?.changePercent ?? toNumber(stock.change_percent),
+      source: currentPrice?.sourceLabel ?? stock.data_source ?? null,
+      timestamp: currentPrice?.timestamp ?? stock.quote_timestamp ?? stock.as_of ?? null,
     },
     status,
     rating: stockRating?.rating ?? 'Unavailable',
@@ -135,10 +139,24 @@ export function buildStockDetailOverview({
     factors,
     watchItems,
     supportingMetrics: buildSupportingMetrics(stockRating, relativeStrength, riskPlan, supportResistance, volumeAnalysis),
-    sourceLabel: source.label,
-    sourceTone: source.tone,
-    methodology: buildMethodology(source.label),
+    sourceLabel: quoteSource.label,
+    sourceTone: quoteSource.tone,
+    methodology: buildMethodology(quoteSource.label),
   };
+}
+
+function getCurrentPriceSource(currentPrice: CurrentPriceSelection): { label: string; tone: StockDetailTone } {
+  switch (currentPrice.source) {
+    case 'live_quote':
+      return { label: currentPrice.sourceLabel, tone: 'success' };
+    case 'snapshot_quote':
+    case 'snapshot_current_price':
+      return { label: currentPrice.sourceLabel, tone: 'accent' };
+    case 'history_close':
+      return { label: currentPrice.sourceLabel, tone: 'warning' };
+    default:
+      return { label: currentPrice.sourceLabel, tone: 'neutral' };
+  }
 }
 
 export function getAssessment(

@@ -12,6 +12,7 @@ import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { StockCompareSections } from '@/features/stock-detail/compare/components/StockCompareSections';
 import { StockDetailHeader } from '@/features/stock-detail/components/StockDetailHeader';
+import { applyCurrentPrice } from '@/features/stock-detail/currentPrice';
 import { StockOverviewSections } from '@/features/stock-detail/components/StockOverviewSections';
 import { buildStockDetailOverview } from '@/features/stock-detail/stockDetailPresenter';
 import { StockSignalsSections } from '@/features/stock-detail/signals/components/StockSignalsSections';
@@ -66,12 +67,26 @@ export function StockCard({
   const activeSupportResistance = supportResistance ?? detailState.data?.supportResistance;
   const activeTrendline = trendline ?? detailState.data?.trendline;
   const activeVolumeAnalysis = volumeAnalysis ?? detailState.data?.volumeAnalysis;
+  const currentPrice = detailState.data?.currentPrice;
+  const detailStock = useMemo(
+    () => applyCurrentPrice(stock, currentPrice ?? {
+      change: null,
+      changePercent: null,
+      isLive: false,
+      price: null,
+      source: 'unavailable',
+      sourceLabel: 'Price unavailable',
+      timestamp: null,
+    }),
+    [currentPrice, stock],
+  );
   const mainPattern = activePatterns[0];
   const overviewModel = useMemo(
     () => buildStockDetailOverview({
+      currentPrice,
       relativeStrength: activeRelativeStrength,
       riskPlan: activeRiskPlan,
-      stock,
+      stock: detailStock,
       stockRating: activeStockRating,
       supportResistance: activeSupportResistance,
       volumeAnalysis: activeVolumeAnalysis,
@@ -82,18 +97,20 @@ export function StockCard({
       activeStockRating,
       activeSupportResistance,
       activeVolumeAnalysis,
-      stock,
+      detailStock,
+      currentPrice,
     ],
   );
   const technicalModel = useMemo(
     () => buildStockTechnicalViewModel({
+      currentPrice,
       pattern: mainPattern,
-      stock,
+      stock: detailStock,
       supportResistance: activeSupportResistance,
       trendline: activeTrendline,
       volumeAnalysis: activeVolumeAnalysis,
     }),
-    [activeSupportResistance, activeTrendline, activeVolumeAnalysis, mainPattern, stock],
+    [activeSupportResistance, activeTrendline, activeVolumeAnalysis, currentPrice, detailStock, mainPattern],
   );
   const copilotContext = useMemo(
     () => createCopilotContext({
@@ -105,7 +122,7 @@ export function StockCard({
         patterns: activePatterns,
         relativeStrength: activeRelativeStrength,
         riskPlan: activeRiskPlan,
-        stock,
+        stock: detailStock,
         stockRating: activeStockRating,
         supportResistance: activeSupportResistance,
         technical: technicalModel,
@@ -129,7 +146,8 @@ export function StockCard({
       activeVolumeAnalysis,
       classification,
       overviewModel,
-      stock,
+      detailStock,
+      stock.ticker,
       technicalModel,
     ],
   );
@@ -224,6 +242,7 @@ export function StockCard({
               content: (
                 <RiskPlanSection
                   riskPlan={activeRiskPlan}
+                  currentPrice={currentPrice}
                   showTitle
                   supportResistance={activeSupportResistance}
                 />
@@ -234,7 +253,7 @@ export function StockCard({
               label: 'Compare',
               content: (
                 <StockCompareSections
-                  stock={stock}
+                  stock={detailStock}
                   volumeAnalysis={activeVolumeAnalysis}
                 />
               ),

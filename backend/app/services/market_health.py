@@ -135,6 +135,9 @@ def _calculate_market_health_uncached() -> MarketHealthResponse:
         weakening_factors=weakening_factors,
         decision_confidence=decision_confidence.model_dump(),
         data_quality=data_quality,
+        breadth_snapshot_id=getattr(breadth, "snapshot_id", None),
+        universe_version=getattr(breadth, "universe_version", None),
+        market_date=getattr(breadth, "market_date", None),
     )
 
 

@@ -45,7 +45,8 @@ from app.models.market import (
 )
 from app.providers.models import HistoryData, QuoteData
 from app.providers.selector import get_market_data_provider
-from app.services.breadth import calculate_market_breadth, calculate_sector_breadth
+from app.services.breadth import calculate_market_breadth, calculate_sector_breadth, unavailable_market_breadth
+from app.breadth.service import get_breadth_snapshot_service
 from app.services.client_activity import record_client_activity
 from app.services.dashboard_comparison import build_dashboard_comparison
 from app.services.decision_intelligence import build_decision_dashboard
@@ -94,6 +95,7 @@ from app.snapshots.readers import (
     get_health_from_snapshot,
     get_regime_from_snapshot,
     get_risk_from_snapshot,
+    get_section_payload,
     latest_snapshot_response,
     snapshot_details_payload,
 )
@@ -300,12 +302,48 @@ async def get_market_liquidity_by_symbol(symbol: str) -> SymbolLiquidityResponse
 
 @router.get("/market/breadth", response_model=SectorBreadthResponse)
 async def get_market_breadth() -> SectorBreadthResponse:
-    """Return mock market and sector breadth metrics."""
+    """Fast read of the latest immutable breadth snapshot; never fetches constituents."""
     record_client_activity("market")
-    return SectorBreadthResponse(
-        market=calculate_market_breadth(),
-        sectors=calculate_sector_breadth(),
-    )
+    snapshot = get_breadth_snapshot_service().latest()
+    if snapshot is None:
+        return SectorBreadthResponse(market=unavailable_market_breadth(), sectors=[])
+    return SectorBreadthResponse(market=calculate_market_breadth(), sectors=calculate_sector_breadth())
+
+
+@router.get("/market/breadth/snapshot/latest")
+async def get_latest_breadth_snapshot() -> dict:
+    snapshot = get_breadth_snapshot_service().latest()
+    return snapshot.model_dump() if snapshot else {"status": "unavailable", "source_state": "unavailable", "warnings": ["No breadth snapshot has been published."], "refresh_state": get_breadth_snapshot_service().status()}
+
+
+@router.get("/market/breadth/snapshot/status")
+async def get_breadth_snapshot_status() -> dict:
+    return get_breadth_snapshot_service().status()
+
+
+@router.get("/market/breadth/snapshot/{snapshot_id}")
+async def get_breadth_snapshot(snapshot_id: str) -> dict:
+    snapshot = get_breadth_snapshot_service().get(snapshot_id)
+    if snapshot is None:
+        return {"status": "unavailable", "source_state": "unavailable", "snapshot_id": snapshot_id}
+    return snapshot.model_dump()
+
+
+@router.get("/market/breadth/status")
+async def get_breadth_status() -> dict:
+    return get_breadth_snapshot_service().status()
+
+
+@router.post("/market/breadth/snapshot/refresh")
+async def refresh_breadth_snapshot() -> dict:
+    return {"accepted": get_breadth_snapshot_service().trigger_refresh(), "status": get_breadth_snapshot_service().status()}
+
+
+@router.get("/market/breadth/history")
+async def get_breadth_history(metric: str = "breadth_score", days: int = 90, start: str | None = None, end: str | None = None) -> dict:
+    service = get_breadth_snapshot_service()
+    universe = service.builder.security_master.storage.get_active_universe(service.universe_name())
+    return {"universe": universe.universe_id if universe else None, "metric": metric, "items": service.storage.history(universe.universe_id, metric, days, start=start, end=end) if universe else []}
 
 
 @router.get("/market/institutional-activity", response_model=InstitutionalActivityResponse)
@@ -316,7 +354,10 @@ async def get_market_institutional_activity() -> InstitutionalActivityResponse:
 
 @router.get("/market/indexes", response_model=IndexesResponse)
 async def get_market_indexes() -> IndexesResponse:
-    """Return mock index snapshots for the market data engine foundation."""
+    """Return canonical index snapshots from the shared market snapshot when available."""
+    payload = get_section_payload("indexes")
+    if isinstance(payload, list) and payload:
+        return IndexesResponse(indexes=payload)
     return IndexesResponse(indexes=get_index_snapshots())
 
 

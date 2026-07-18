@@ -1,0 +1,102 @@
+ticker,company_name,exchange,sector,industry,active,quote_provider_symbol,history_provider_symbol,asset_type,source,source_effective_date,verified_at
+AAPL,APPLE INC,NASDAQ,Information Technology,,true,AAPL,AAPL,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+ABBV,ABBVIE INC,NYSE,Health Care,,true,ABBV,ABBV,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+ABT,ABBOTT LABORATORIES,NYSE,Health Care,,true,ABT,ABT,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+ACN,ACCENTURE PLC CLASS A,NYSE,Information Technology,,true,ACN,ACN,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+ADBE,ADOBE INC,NASDAQ,Information Technology,,true,ADBE,ADBE,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+AMAT,APPLIED MATERIAL INC,NASDAQ,Information Technology,,true,AMAT,AMAT,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+AMD,ADVANCED MICRO DEVICES INC,NASDAQ,Information Technology,,true,AMD,AMD,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+AMGN,AMGEN INC,NASDAQ,Health Care,,true,AMGN,AMGN,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+AMT,AMERICAN TOWER REIT CORP,NYSE,Real Estate,,true,AMT,AMT,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+AMZN,AMAZON.COM INC,NASDAQ,Consumer Discretionary,,true,AMZN,AMZN,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+AVGO,BROADCOM INC,NASDAQ,Information Technology,,true,AVGO,AVGO,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+AXP,AMERICAN EXPRESS,NYSE,Financials,,true,AXP,AXP,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+BA,BOEING,NYSE,Industrials,,true,BA,BA,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+BAC,BANK OF AMERICA CORP,NYSE,Financials,,true,BAC,BAC,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+BKNG,BOOKING HOLDINGS INC,NASDAQ,Consumer Discretionary,,true,BKNG,BKNG,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+BLK,BLACKROCK INC,NYSE,Financials,,true,BLK,BLK,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+BMY,BRISTOL MYERS SQUIBB,NYSE,Health Care,,true,BMY,BMY,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+BNY,BANK OF NEW YORK MELLON CORP,NYSE,Financials,,true,BNY,BNY,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+BRK.B,BERKSHIRE HATHAWAY INC CLASS B,NYSE,Financials,,true,BRK-B,BRK-B,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+C,CITIGROUP INC,NYSE,Financials,,true,C,C,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+CAT,CATERPILLAR INC,NYSE,Industrials,,true,CAT,CAT,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+CL,COLGATE-PALMOLIVE,NYSE,Consumer Staples,,true,CL,CL,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+CMCSA,COMCAST CORP CLASS A,NASDAQ,Communication,,true,CMCSA,CMCSA,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+COF,CAPITAL ONE FINANCIAL CORP,NYSE,Financials,,true,COF,COF,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+COP,CONOCOPHILLIPS,NYSE,Energy,,true,COP,COP,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+COST,COSTCO WHOLESALE CORP,NASDAQ,Consumer Staples,,true,COST,COST,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+CRM,SALESFORCE INC,NYSE,Information Technology,,true,CRM,CRM,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+CSCO,CISCO SYSTEMS INC,NASDAQ,Information Technology,,true,CSCO,CSCO,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+CVS,CVS HEALTH CORP,NYSE,Health Care,,true,CVS,CVS,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+CVX,CHEVRON CORP,NYSE,Energy,,true,CVX,CVX,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+DE,DEERE,NYSE,Industrials,,true,DE,DE,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+DHR,DANAHER CORP,NYSE,Health Care,,true,DHR,DHR,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+DIS,WALT DISNEY,NYSE,Communication,,true,DIS,DIS,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+DUK,DUKE ENERGY CORP,NYSE,Utilities,,true,DUK,DUK,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+EMR,EMERSON ELECTRIC,NYSE,Industrials,,true,EMR,EMR,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+FDX,FEDEX CORP,NYSE,Industrials,,true,FDX,FDX,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+GD,GENERAL DYNAMICS CORP,NYSE,Industrials,,true,GD,GD,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+GE,GE AEROSPACE,NYSE,Industrials,,true,GE,GE,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+GEV,GE VERNOVA INC,NYSE,Industrials,,true,GEV,GEV,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+GILD,GILEAD SCIENCES INC,NASDAQ,Health Care,,true,GILD,GILD,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+GM,GENERAL MOTORS,NYSE,Consumer Discretionary,,true,GM,GM,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+GOOG,ALPHABET INC CLASS C,NASDAQ,Communication,,true,GOOG,GOOG,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+GOOGL,ALPHABET INC CLASS A,NASDAQ,Communication,,true,GOOGL,GOOGL,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+GS,GOLDMAN SACHS GROUP INC,NYSE,Financials,,true,GS,GS,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+HD,HOME DEPOT INC,NYSE,Consumer Discretionary,,true,HD,HD,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+HONA,HONEYWELL AEROSPACE INC,NASDAQ,Industrials,,true,HONA,HONA,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+IBM,INTERNATIONAL BUSINESS MACHINES CO,NYSE,Information Technology,,true,IBM,IBM,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+INTC,INTEL CORPORATION,NASDAQ,Information Technology,,true,INTC,INTC,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+INTU,INTUIT INC,NASDAQ,Information Technology,,true,INTU,INTU,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+ISRG,INTUITIVE SURGICAL INC,NASDAQ,Health Care,,true,ISRG,ISRG,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+JNJ,JOHNSON & JOHNSON,NYSE,Health Care,,true,JNJ,JNJ,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+JPM,JPMORGAN CHASE & CO,NYSE,Financials,,true,JPM,JPM,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+KO,COCA-COLA,NYSE,Consumer Staples,,true,KO,KO,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+LIN,LINDE PLC,NASDAQ,Materials,,true,LIN,LIN,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+LLY,ELI LILLY,NYSE,Health Care,,true,LLY,LLY,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+LMT,LOCKHEED MARTIN CORP,NYSE,Industrials,,true,LMT,LMT,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+LOW,LOWES COMPANIES INC,NYSE,Consumer Discretionary,,true,LOW,LOW,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+LRCX,LAM RESEARCH CORP,NASDAQ,Information Technology,,true,LRCX,LRCX,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MA,MASTERCARD INC CLASS A,NYSE,Financials,,true,MA,MA,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MCD,MCDONALDS CORP,NYSE,Consumer Discretionary,,true,MCD,MCD,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MDLZ,MONDELEZ INTERNATIONAL INC CLASS A,NASDAQ,Consumer Staples,,true,MDLZ,MDLZ,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MDT,MEDTRONIC PLC,NYSE,Health Care,,true,MDT,MDT,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+META,META PLATFORMS INC CLASS A,NASDAQ,Communication,,true,META,META,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MMM,3M,NYSE,Industrials,,true,MMM,MMM,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MO,ALTRIA GROUP INC,NYSE,Consumer Staples,,true,MO,MO,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MRK,MERCK & CO INC,NYSE,Health Care,,true,MRK,MRK,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MS,MORGAN STANLEY,NYSE,Financials,,true,MS,MS,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MSFT,MICROSOFT CORP,NASDAQ,Information Technology,,true,MSFT,MSFT,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+MU,MICRON TECHNOLOGY INC,NASDAQ,Information Technology,,true,MU,MU,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+NEE,NEXTERA ENERGY INC,NYSE,Utilities,,true,NEE,NEE,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+NFLX,NETFLIX INC,NASDAQ,Communication,,true,NFLX,NFLX,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+NKE,NIKE INC CLASS B,NYSE,Consumer Discretionary,,true,NKE,NKE,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+NOW,SERVICENOW INC,NYSE,Information Technology,,true,NOW,NOW,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+NVDA,NVIDIA CORP,NASDAQ,Information Technology,,true,NVDA,NVDA,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+ORCL,ORACLE CORP,NYSE,Information Technology,,true,ORCL,ORCL,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+PEP,PEPSICO INC,NASDAQ,Consumer Staples,,true,PEP,PEP,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+PFE,PFIZER INC,NYSE,Health Care,,true,PFE,PFE,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+PG,PROCTER & GAMBLE,NYSE,Consumer Staples,,true,PG,PG,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+PLTR,PALANTIR TECHNOLOGIES INC CLASS A,NASDAQ,Information Technology,,true,PLTR,PLTR,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+PM,PHILIP MORRIS INTERNATIONAL INC,NYSE,Consumer Staples,,true,PM,PM,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+QCOM,QUALCOMM INC,NASDAQ,Information Technology,,true,QCOM,QCOM,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+RTX,RTX CORP,NYSE,Industrials,,true,RTX,RTX,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+SBUX,STARBUCKS CORP,NASDAQ,Consumer Discretionary,,true,SBUX,SBUX,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+SCHW,CHARLES SCHWAB CORP,NYSE,Financials,,true,SCHW,SCHW,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+SO,SOUTHERN,NYSE,Utilities,,true,SO,SO,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+SPG,SIMON PROPERTY GROUP REIT INC,NYSE,Real Estate,,true,SPG,SPG,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+T,AT&T INC,NYSE,Communication,,true,T,T,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+TMO,THERMO FISHER SCIENTIFIC INC,NYSE,Health Care,,true,TMO,TMO,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+TMUS,T MOBILE US INC,NASDAQ,Communication,,true,TMUS,TMUS,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+TSLA,TESLA INC,NASDAQ,Consumer Discretionary,,true,TSLA,TSLA,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+TXN,TEXAS INSTRUMENT INC,NASDAQ,Information Technology,,true,TXN,TXN,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+UBER,UBER TECHNOLOGIES INC,NYSE,Industrials,,true,UBER,UBER,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+UNH,UNITEDHEALTH GROUP INC,NYSE,Health Care,,true,UNH,UNH,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+UNP,UNION PACIFIC CORP,NYSE,Industrials,,true,UNP,UNP,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+UPS,UNITED PARCEL SERVICE INC CLASS B,NYSE,Industrials,,true,UPS,UPS,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+USB,US BANCORP,NYSE,Financials,,true,USB,USB,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+V,VISA INC CLASS A,NYSE,Financials,,true,V,V,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+VZ,VERIZON COMMUNICATIONS INC,NYSE,Communication,,true,VZ,VZ,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+WFC,WELLS FARGO,NYSE,Financials,,true,WFC,WFC,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+WMT,WALMART INC,NASDAQ,Consumer Staples,,true,WMT,WMT,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18
+XOM,EXXONMOBIL HOLDINGS CORP,NYSE,Energy,,true,XOM,XOM,equity,BlackRock iShares OEF fund-holdings export,2026-07-16,2026-07-18

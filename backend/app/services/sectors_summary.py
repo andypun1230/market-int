@@ -32,7 +32,8 @@ def _build_sectors_summary_uncached() -> dict[str, Any]:
         "rotation_summary": (
             sectors.get("summary")
             if isinstance(sectors, dict) and sectors.get("summary")
-            else industry_rotation.get("summary") if isinstance(industry_rotation, dict) else None
+            else industry_rotation.get("summary") if isinstance(industry_rotation, dict) and industry_rotation.get("summary")
+            else "Sector rotation summary is unavailable while cached inputs initialize."
         ),
         "return_interval_default": "1d",
         "as_of": first_present(

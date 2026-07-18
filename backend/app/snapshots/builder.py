@@ -10,7 +10,7 @@ from app.services.breadth import calculate_market_breadth
 from app.services.decision_intelligence import build_decision_dashboard
 from app.services.fear_greed import build_fear_greed_index
 from app.services.leadership import build_leadership_dashboard
-from app.services.market_data import get_index_snapshots
+from app.services.market_data import build_index_snapshots_from_inputs
 from app.services.market_health import calculate_market_health
 from app.services.regime import build_market_regime, build_market_risk
 from app.services.risk_dashboard_v2 import build_risk_dashboard_v2
@@ -89,6 +89,7 @@ class MarketSnapshotBuilder:
             source_summary={
                 "source_state": source_state_from_sections(sections),
                 "input_hash": bundle.input_hash(),
+                "breadth_snapshot_id": breadth_snapshot_id(sections),
             },
             freshness={
                 "oldest_input_timestamp": oldest_market_timestamp(bundle),
@@ -106,7 +107,7 @@ class MarketSnapshotBuilder:
 
     def _build_sections(self, bundle: MarketSnapshotInputBundle) -> dict[str, SnapshotSection]:
         builders: dict[str, Callable[[], Any]] = {
-            "indexes": lambda: [item.model_dump() for item in get_index_snapshots()],
+            "indexes": lambda: [item.model_dump() for item in build_index_snapshots_from_inputs(bundle.quotes, bundle.histories)],
             "regime": lambda: build_market_regime().model_dump(),
             "health": lambda: calculate_market_health().model_dump(),
             "breadth": lambda: calculate_market_breadth().model_dump(),
@@ -242,6 +243,11 @@ def compact_breadth(payload: Any) -> dict[str, Any] | None:
         "coverage_percent": payload.get("coverage_percent"),
         "overall_mode": payload.get("overall_mode"),
         "universe": payload.get("universe"),
+        "snapshot_id": payload.get("snapshot_id"),
+        "universe_version": payload.get("universe_version"),
+        "market_date": payload.get("market_date"),
+        "coverage_status": payload.get("coverage_status"),
+        "trend": payload.get("trend"),
     }
 
 
@@ -262,6 +268,11 @@ def oldest_market_timestamp(bundle: MarketSnapshotInputBundle) -> str | None:
     values = [history.as_of for history in bundle.histories.values() if history.as_of]
     values.extend(quote.timestamp for quote in bundle.quotes.values() if quote.timestamp)
     return min(values, default=None)
+
+
+def breadth_snapshot_id(sections: dict[str, SnapshotSection]) -> str | None:
+    payload = sections.get("breadth").payload if sections.get("breadth") else None
+    return payload.get("snapshot_id") if isinstance(payload, dict) else None
 
 
 def source_state_from_sections(sections: dict[str, SnapshotSection]) -> str:

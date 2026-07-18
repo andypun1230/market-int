@@ -5,6 +5,7 @@ import type {
   VolumeAnalysis,
   WatchlistItem,
 } from '@/types/market';
+import type { CurrentPriceSelection } from '@/features/stock-detail/currentPrice';
 
 export type TechnicalSourceStatus =
   | 'live'
@@ -128,6 +129,7 @@ export type StockTechnicalViewModel = {
 };
 
 type BuildTechnicalInput = {
+  currentPrice?: CurrentPriceSelection | null;
   pattern?: DetectedPattern | null;
   stock: WatchlistItem;
   supportResistance?: SupportResistanceResponse | null;
@@ -138,6 +140,7 @@ type BuildTechnicalInput = {
 const MATERIAL_LEVEL_MISMATCH_PERCENT = 8;
 
 export function buildStockTechnicalViewModel({
+  currentPrice,
   pattern,
   stock,
   supportResistance,
@@ -146,7 +149,7 @@ export function buildStockTechnicalViewModel({
 }: BuildTechnicalInput): StockTechnicalViewModel {
   const patternStatus = getPatternStatus(pattern);
   const levelsStatus = getSourceStatus(supportResistance);
-  const quoteStatus = getQuoteStatus(stock);
+  const quoteStatus = getQuoteStatus(stock, currentPrice);
   const detailedMismatchReason = getLevelMismatchReason(pattern, supportResistance);
   const sourcesCompatible = isSourceCompatible(patternStatus, levelsStatus) && !detailedMismatchReason;
   const patternTrust = assessPatternTrust(pattern, patternStatus, sourcesCompatible, detailedMismatchReason);
@@ -154,7 +157,7 @@ export function buildStockTechnicalViewModel({
   const invalidationLevel = supportResistance?.stop_reference ?? null;
   const primarySupport = getPrimarySupport(supportResistance);
   const primaryResistance = getPrimaryResistance(supportResistance);
-  const priceLevels = buildPriceLevels(stock, supportResistance, levelsStatus);
+  const priceLevels = buildPriceLevels(stock, supportResistance, levelsStatus, currentPrice);
   const confirmations = buildConfirmations({ confirmationLevel, pattern: patternTrust.isCurrent ? pattern : null, primarySupport, trendline, volumeAnalysis });
   const invalidations = buildInvalidations({ invalidationLevel, trendline, volumeAnalysis });
   const stance = getTechnicalStance(pattern, trendline, volumeAnalysis, supportResistance);
@@ -353,18 +356,20 @@ export function buildPriceLevels(
   stock: WatchlistItem,
   supportResistance?: SupportResistanceResponse | null,
   status: TechnicalSourceStatus = 'unavailable',
+  currentPrice?: CurrentPriceSelection | null,
 ): TechnicalPriceLevel[] {
   const levels: TechnicalPriceLevel[] = [];
   const resistance = getPrimaryResistance(supportResistance);
   const support = getPrimarySupport(supportResistance);
   addLevel(levels, 'resistance', 'Resistance', resistance, 'resistance', status);
   addLevel(levels, 'confirmation', 'Confirmation', supportResistance?.breakout_level, 'confirmation', status);
-  addLevel(levels, 'current', 'Current price', stock.price ?? supportResistance?.current_price, 'current', getQuoteStatus(stock));
+  const selectedPrice = currentPrice?.price ?? stock.price ?? supportResistance?.current_price;
+  addLevel(levels, 'current', 'Current price', selectedPrice, 'current', getQuoteStatus(stock, currentPrice));
   addLevel(levels, 'support', 'Near support', support, 'support', status);
   addLevel(levels, 'invalidation', 'Invalidation', supportResistance?.stop_reference, 'invalidation', status);
   addLevel(levels, 'ema50', 'EMA50', supportResistance?.moving_average_support?.ema_50, 'ema', status);
   addLevel(levels, 'ema20', 'EMA20', supportResistance?.moving_average_support?.ema_20, 'ema', status);
-  return mergeCloseLevels(levels, stock.price ?? supportResistance?.current_price ?? null).sort((a, b) => b.value - a.value);
+  return mergeCloseLevels(levels, selectedPrice ?? null).sort((a, b) => b.value - a.value);
 }
 
 function buildTechnicalSummary({
@@ -638,7 +643,20 @@ function getSourceStatus(source?: { data_source?: string | null; fallback_used?:
   return source.as_of ? 'cached' : 'unavailable';
 }
 
-function getQuoteStatus(stock: WatchlistItem): TechnicalSourceStatus {
+function getQuoteStatus(stock: WatchlistItem, currentPrice?: CurrentPriceSelection | null): TechnicalSourceStatus {
+  switch (currentPrice?.source) {
+    case 'live_quote':
+      return 'live';
+    case 'snapshot_quote':
+    case 'snapshot_current_price':
+      return 'cached';
+    case 'history_close':
+      return 'historical';
+    case 'unavailable':
+      return 'unavailable';
+    default:
+      break;
+  }
   const dataSource = stock.data_source?.toLowerCase() ?? '';
   if (dataSource.includes('generated_test_data') || dataSource === 'test') {
     return 'test';

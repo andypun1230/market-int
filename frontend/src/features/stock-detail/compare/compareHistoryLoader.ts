@@ -9,6 +9,8 @@ const TRANSIENT_BACKOFF_MS = 350;
 const PROVIDER_SYMBOL_ALIASES: Record<string, string> = {
   DJI: 'DIA',
   IXIC: 'QQQ',
+  NDX: 'QQQ',
+  QQQEW: 'QQEW',
   RUT: 'IWM',
   SPX: 'SPY',
 };

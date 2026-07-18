@@ -55,7 +55,7 @@ export type HomeSummary = {
   yield10Y: HomeMetric | null;
 };
 
-const DISPLAY_INDEXES = ['SPY', 'QQQ', 'IWM', 'DJI'];
+const DISPLAY_INDEXES = ['SPY', 'QQQ', 'IWM', 'DIA'];
 
 export function buildHomeSummary(dashboard: HomeDashboardResponse | null): HomeSummary {
   const core = dashboard?.core ?? null;
@@ -433,7 +433,7 @@ function deriveSourceState(dashboard: HomeDashboardResponse | null): HomeSourceS
 
 function normalizeIndexSymbol(symbol: string) {
   const upper = symbol.toUpperCase();
-  return upper === 'DIA' ? 'DJI' : upper;
+  return upper;
 }
 
 function trendLabel(index: IndexSnapshot) {

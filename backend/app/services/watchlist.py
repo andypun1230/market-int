@@ -3,7 +3,9 @@ from typing import Any, Dict
 from app.models.market import WatchlistItem, WatchlistResponse
 from app.providers.mock_provider import MockMarketDataProvider
 from app.providers.models import QuoteData
-from app.providers.selector import get_market_data_provider, mark_mock_fallback
+from app.providers.selector import mark_mock_fallback
+from app.services.gain_policy import quote_gain
+from app.services.market_data_repository import get_market_data_repository
 from app.services.service_cache import get_or_compute, get_service_ttl
 
 WATCHLIST_ROWS = [
@@ -47,22 +49,22 @@ def build_market_watchlist() -> WatchlistResponse:
 
 
 def _build_market_watchlist_uncached() -> WatchlistResponse:
-    provider = get_market_data_provider()
+    repository = get_market_data_repository()
     tickers = [row["ticker"] for row in WATCHLIST_ROWS]
     quotes_by_symbol = {
         quote.symbol: quote
-        for quote in safe_get_quotes(provider, tickers)
+        for quote in safe_get_quotes(repository, tickers)
     }
 
-    return WatchlistResponse(
-        items=[
-            build_watchlist_item(row, quotes_by_symbol[row["ticker"]])
-            for row in WATCHLIST_ROWS
-        ],
-    )
+    items = []
+    for index, row in enumerate(WATCHLIST_ROWS):
+        quote = quotes_by_symbol.get(row["ticker"])
+        items.append(build_watchlist_item(row, quote, index) if quote else build_unavailable_watchlist_item(row, index))
+    return WatchlistResponse(items=items)
 
 
-def build_watchlist_item(row: dict[str, str], quote: QuoteData) -> WatchlistItem:
+def build_watchlist_item(row: dict[str, str], quote: QuoteData, sort_order: int | None = None) -> WatchlistItem:
+    change, change_percent = quote_gain(quote.price, quote.previous_close)
     return WatchlistItem(
         ticker=row["ticker"],
         trend=row["trend"],
@@ -70,13 +72,41 @@ def build_watchlist_item(row: dict[str, str], quote: QuoteData) -> WatchlistItem
         support_zone=row["support_zone"],
         risk_flag=row["risk_flag"],
         price=quote.price,
-        change=quote.change,
-        change_percent=quote.change_percent,
+        change=change,
+        change_percent=change_percent,
         data_source=quote.source,
+        provider=quote.provider or quote.source,
+        source_state=quote.source_state,
+        quote_timestamp=quote.timestamp,
         is_live=quote.is_live,
         is_stale=quote.is_stale,
+        stale=quote.is_stale,
         fallback_used=quote.fallback_used,
         as_of=quote.timestamp,
+        sort_order=sort_order,
+    )
+
+
+def build_unavailable_watchlist_item(row: dict[str, str], sort_order: int | None = None) -> WatchlistItem:
+    return WatchlistItem(
+        ticker=row["ticker"],
+        trend="Unavailable",
+        setup="Quote unavailable",
+        support_zone="N/A",
+        risk_flag="Unavailable",
+        price=None,
+        change=None,
+        change_percent=None,
+        data_source="unavailable",
+        provider=None,
+        source_state="unavailable",
+        quote_timestamp=None,
+        is_live=False,
+        is_stale=True,
+        stale=True,
+        fallback_used=False,
+        as_of=None,
+        sort_order=sort_order,
     )
 
 

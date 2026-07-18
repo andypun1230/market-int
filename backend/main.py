@@ -20,6 +20,7 @@ from app.services.background_refresh import (
     stop_background_refresh_coordinator,
 )
 from app.snapshots.service import get_market_snapshot_service
+from app.breadth.service import get_breadth_snapshot_service
 from app.stock_snapshots.service import get_stock_snapshot_service
 from app.services.workload_manager import interactive_request
 
@@ -31,13 +32,16 @@ async def lifespan(app: FastAPI):
     initialize_persistent_cache()
     vacuum_expired_entries()
     get_market_snapshot_service().initialize()
+    get_breadth_snapshot_service().initialize()
     get_stock_snapshot_service().initialize()
     start_background_refresh_coordinator()
     get_market_snapshot_service().start_background_refresh()
+    get_breadth_snapshot_service().start_background_refresh()
     try:
         yield
     finally:
         get_market_snapshot_service().stop_background_refresh()
+        get_breadth_snapshot_service().shutdown(wait=True)
         stop_background_refresh_coordinator()
 
 

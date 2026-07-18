@@ -12,6 +12,7 @@ export function useAsyncData<T>(
 ) {
   const { enabled = true } = options;
   const mountedRef = useRef(false);
+  const requestSequenceRef = useRef(0);
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);
@@ -21,13 +22,14 @@ export function useAsyncData<T>(
       return null;
     }
 
+    const requestSequence = ++requestSequenceRef.current;
     setLoading(true);
     setError(null);
 
     try {
       const nextData = await asyncFunction();
 
-      if (mountedRef.current) {
+      if (mountedRef.current && isLatestAsyncDataRequest(requestSequence, requestSequenceRef.current)) {
         setData(nextData);
       }
 
@@ -36,13 +38,13 @@ export function useAsyncData<T>(
       if (isRequestCancelled(asyncError)) {
         return null;
       }
-      if (mountedRef.current) {
+      if (mountedRef.current && isLatestAsyncDataRequest(requestSequence, requestSequenceRef.current)) {
         setError(getErrorMessage(asyncError));
       }
 
       return null;
     } finally {
-      if (mountedRef.current) {
+      if (mountedRef.current && isLatestAsyncDataRequest(requestSequence, requestSequenceRef.current)) {
         setLoading(false);
       }
     }
@@ -65,6 +67,10 @@ export function useAsyncData<T>(
   }, [enabled, refetch]);
 
   return { data, loading, error, refetch };
+}
+
+export function isLatestAsyncDataRequest(requestSequence: number, latestRequestSequence: number) {
+  return requestSequence === latestRequestSequence;
 }
 
 function getErrorMessage(error: unknown) {

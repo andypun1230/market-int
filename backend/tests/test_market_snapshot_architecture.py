@@ -9,6 +9,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 from app.models.market import DecisionDashboardResponse
+from app.providers.models import CandleData, HistoryData, QuoteData
 from app.snapshots.input_planner import MarketSnapshotInputPlanner
 from app.snapshots.models import InputCoverage, MarketSnapshot, SnapshotSection
 from app.snapshots.readers import (
@@ -20,6 +21,7 @@ from app.snapshots.readers import (
 )
 from app.snapshots.service import get_market_snapshot_service, reset_market_snapshot_service
 from app.snapshots.storage import MarketSnapshotStorage
+from app.services.market_data import build_index_snapshots_from_inputs
 from main import app
 
 
@@ -99,6 +101,57 @@ def section(payload, status: str = "complete") -> SnapshotSection:
     )
 
 
+def quote(symbol: str, price: float = 110.0, previous_close: float = 100.0) -> QuoteData:
+    now = datetime.now(timezone.utc).isoformat()
+    return QuoteData(
+        symbol=symbol,
+        price=price,
+        change=999.0,
+        change_percent=999.0,
+        open=previous_close,
+        high=price,
+        low=previous_close,
+        previous_close=previous_close,
+        volume=1000,
+        timestamp=now,
+        source="fake-quote",
+        is_live=True,
+        is_stale=False,
+        fallback_used=False,
+        provider="finnhub",
+        source_state="live",
+    )
+
+
+def history(symbol: str, days: int = 220) -> HistoryData:
+    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    candles = [
+        CandleData(
+            timestamp=(start + timedelta(days=index)).isoformat(),
+            open=90 + index,
+            high=91 + index,
+            low=89 + index,
+            close=90.5 + index,
+            volume=1000 + index,
+        )
+        for index in range(days)
+    ]
+    return HistoryData(
+        symbol=symbol,
+        candles=candles,
+        timeframe="D",
+        source="fake-history",
+        is_live=True,
+        is_stale=False,
+        fallback_used=False,
+        as_of=candles[-1].timestamp,
+        requested_days=days,
+        returned_candles=days,
+        provider="polygon",
+        source_state="live",
+    )
+
+
 class MarketSnapshotArchitectureTests(unittest.TestCase):
     def tearDown(self) -> None:
         reset_market_snapshot_service()
@@ -110,7 +163,105 @@ class MarketSnapshotArchitectureTests(unittest.TestCase):
         self.assertEqual(len(symbols), len(set(symbols)))
         self.assertIn("QQEW", symbols)
         self.assertNotIn("QQQEW", symbols)
+        self.assertIn("DIA", symbols)
+        self.assertNotIn("DJI", symbols)
         self.assertEqual({item.days for item in plan.histories}, {370})
+
+    def test_index_section_uses_canonical_bundle_inputs_and_gain_policy(self) -> None:
+        symbols = ["SPY", "QQQ", "IWM", "DIA"]
+        indexes = build_index_snapshots_from_inputs(
+            {symbol: quote(symbol) for symbol in symbols},
+            {symbol: history(symbol) for symbol in symbols},
+        )
+
+        by_symbol = {item.symbol: item for item in indexes}
+        self.assertEqual(list(by_symbol), symbols)
+        self.assertNotIn("DJI", by_symbol)
+        self.assertEqual(by_symbol["DIA"].display_name, "Dow Jones")
+        self.assertEqual(by_symbol["QQQ"].display_name, "Nasdaq-100")
+        self.assertEqual(by_symbol["SPY"].quote_provider, "finnhub")
+        self.assertEqual(by_symbol["SPY"].history_provider, "polygon")
+        self.assertEqual(by_symbol["SPY"].change, 10.0)
+        self.assertEqual(by_symbol["SPY"].change_percent, 10.0)
+
+    def test_market_indexes_route_reuses_published_snapshot_section(self) -> None:
+        snapshot = make_snapshot("market-test-indexes")
+        index_payload = [
+            {
+                "symbol": "SPY",
+                "display_symbol": "SPY",
+                "provider_symbol": "SPY",
+                "display_name": "S&P 500",
+                "price": 110.0,
+                "change": 10.0,
+                "change_percent": 10.0,
+                "volume": 1000,
+                "ema_20": 105.0,
+                "ema_50": 100.0,
+                "ema_200": 95.0,
+                "sma_50": 100.0,
+                "rsi_14": 55.0,
+                "quote_timestamp": snapshot.created_at,
+                "history_latest_date": snapshot.created_at,
+                "quote_provider": "finnhub",
+                "history_provider": "polygon",
+                "source_state": "live",
+            }
+        ]
+        snapshot.sections["indexes"] = section(index_payload)
+        snapshot.sections["core"].payload["indexes"] = index_payload
+        with tempfile.TemporaryDirectory() as tmp:
+            env = {
+                "MARKET_SNAPSHOT_DB_PATH": str(Path(tmp) / "snapshots.sqlite3"),
+                "MARKET_SNAPSHOT_STARTUP_REFRESH": "false",
+                "BACKGROUND_REFRESH_ENABLED": "false",
+            }
+            with patch.dict(os.environ, env, clear=False):
+                reset_market_snapshot_service()
+                get_market_snapshot_service().storage.publish_snapshot(snapshot)
+                with patch("app.services.market_data.get_index_snapshots", side_effect=AssertionError("duplicate index service called")):
+                    with TestClient(app) as client:
+                        response = client.get("/market/indexes")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["indexes"][0]["symbol"], "SPY")
+        self.assertEqual(payload["indexes"][0]["quote_provider"], "finnhub")
+
+    def test_legacy_snapshot_index_symbols_are_canonicalized_on_read(self) -> None:
+        snapshot = make_snapshot("market-test-legacy-index")
+        legacy_index = {
+            "symbol": "DJI",
+            "price": 390.0,
+            "change": 1.0,
+            "change_percent": 0.25,
+            "volume": 1000,
+            "ema_20": 380.0,
+            "ema_50": 370.0,
+            "ema_200": 360.0,
+            "sma_50": 370.0,
+            "rsi_14": 55.0,
+        }
+        snapshot.sections["indexes"] = section([legacy_index])
+        snapshot.sections["core"].payload["indexes"] = [legacy_index]
+        snapshot.sections["home"].payload["core"]["indexes"] = [legacy_index]
+        with tempfile.TemporaryDirectory() as tmp:
+            env = {
+                "MARKET_SNAPSHOT_DB_PATH": str(Path(tmp) / "snapshots.sqlite3"),
+                "MARKET_SNAPSHOT_STARTUP_REFRESH": "false",
+                "BACKGROUND_REFRESH_ENABLED": "false",
+            }
+            with patch.dict(os.environ, env, clear=False):
+                reset_market_snapshot_service()
+                get_market_snapshot_service().storage.publish_snapshot(snapshot)
+                with TestClient(app) as client:
+                    indexes = client.get("/market/indexes").json()["indexes"]
+                    home = client.get("/home/dashboard").json()["core"]["indexes"]
+                reset_market_snapshot_service()
+
+        self.assertEqual(indexes[0]["symbol"], "DIA")
+        self.assertEqual(indexes[0]["display_name"], "Dow Jones")
+        self.assertEqual(home[0]["symbol"], "DIA")
 
     def test_snapshot_persistence_survives_service_recreation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -160,6 +311,7 @@ class MarketSnapshotArchitectureTests(unittest.TestCase):
                                 "/market/details/structure",
                             ]
                             responses = [client.get(path) for path in paths]
+                reset_market_snapshot_service()
 
         self.assertTrue(all(response.status_code == 200 for response in responses))
         self.assertEqual(responses[0].json()["snapshot_id"], "market-test-warm")
@@ -178,6 +330,7 @@ class MarketSnapshotArchitectureTests(unittest.TestCase):
                 with TestClient(app) as client:
                     response = client.get("/home/dashboard")
                 elapsed_ms = (time.perf_counter() - started) * 1000
+                reset_market_snapshot_service()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["cache_status"], "initializing")

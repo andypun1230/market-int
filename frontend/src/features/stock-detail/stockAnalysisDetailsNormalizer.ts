@@ -9,6 +9,7 @@ import type {
   StockLeadershipSignal,
   StockRatingItem,
   SupportResistanceResponse,
+  QuoteData,
   TimeframeSignalDataStatus,
   TimeframeSignalEvidence,
   TimeframeSignalInput,
@@ -19,8 +20,10 @@ import type {
   TrendlineResponse,
   VolumeAnalysis,
 } from '@/types/market';
+import { selectCurrentPrice, type CurrentPriceSelection } from '@/features/stock-detail/currentPrice';
 
 export type StockAnalysisDetails = {
+  currentPrice: CurrentPriceSelection;
   leadershipSignal?: StockLeadershipSignal;
   multiTimeframe?: MultiTimeframeItem;
   multiTimeframeSignals?: MultiTimeframeTechnicalSignals;
@@ -32,6 +35,8 @@ export type StockAnalysisDetails = {
   trendline?: TrendlineResponse;
   volumeAnalysis?: VolumeAnalysis;
   chartHistory?: HistoryData;
+  liveQuote?: QuoteData | null;
+  snapshotQuote?: QuoteData | null;
   snapshotStatus?: string | null;
   snapshotRefreshing?: boolean;
   snapshotDataMode?: string | null;
@@ -48,21 +53,40 @@ type StockAnalysisAggregateWithLegacySignals = StockAnalysisAggregate & {
   result?: unknown;
 };
 
-export function normalizeStockAnalysisDetails(aggregate: StockAnalysisAggregateWithLegacySignals): StockAnalysisDetails {
+export function normalizeStockAnalysisDetails(
+  aggregate: StockAnalysisAggregateWithLegacySignals,
+  liveQuote?: QuoteData | null,
+): StockAnalysisDetails {
   const multiTimeframeSignals = normalizeMultiTimeframeSignals(extractMultiTimeframeSignals(aggregate));
   const leadershipSignal = normalizeLeadershipSignal(extractLeadershipSignal(aggregate));
+  const chartHistory = isUnsafeSnapshotChart(aggregate) ? undefined : aggregate.chartHistory ?? aggregate.chart?.history ?? undefined;
+  const snapshotQuote = aggregate.quote ?? null;
+  const supportResistance = aggregate.supportResistance ?? undefined;
+  const trendline = aggregate.trendline ?? undefined;
+  const riskPlan = aggregate.riskPlan ?? undefined;
   return {
+    currentPrice: selectCurrentPrice({
+      history: chartHistory,
+      liveQuote,
+      riskPlan,
+      snapshotCurrentPrice: aggregate.current_price,
+      snapshotQuote,
+      supportResistance,
+      trendline,
+    }),
     leadershipSignal,
-    supportResistance: aggregate.supportResistance ?? undefined,
-    trendline: aggregate.trendline ?? undefined,
+    supportResistance,
+    trendline,
     volumeAnalysis: aggregate.volumeAnalysis ?? undefined,
-    riskPlan: aggregate.riskPlan ?? undefined,
+    riskPlan,
     multiTimeframe: aggregate.multiTimeframe ?? undefined,
     multiTimeframeSignals,
     patterns: aggregate.patterns?.patterns ?? undefined,
     relativeStrength: aggregate.relativeStrength ?? undefined,
     stockRating: aggregate.stockRating ?? undefined,
-    chartHistory: isUnsafeSnapshotChart(aggregate) ? undefined : aggregate.chartHistory ?? aggregate.chart?.history ?? undefined,
+    chartHistory,
+    liveQuote,
+    snapshotQuote,
     snapshotStatus: aggregate.snapshot_status ?? null,
     snapshotRefreshing: Boolean(aggregate.snapshot_refreshing || aggregate.snapshot_status === 'initializing'),
     snapshotDataMode: aggregate.snapshot_data_mode ?? null,

@@ -1,4 +1,4 @@
-.PHONY: validate-application-data validate-market-snapshot validate-stock-snapshot
+.PHONY: validate-application-data validate-market-snapshot validate-stock-snapshot validate-phase-4-4a validate-phase-4-4b
 
 validate-application-data:
 	cd backend && python3 -m compileall app main.py
@@ -6,6 +6,7 @@ validate-application-data:
 	cd backend && python3 scripts/validate_phase_4_1.py --mode test
 	cd backend && python3 scripts/validate_phase_4_2.py --mode test
 	cd backend && python3 scripts/validate_phase_4_3.py --mode test
+	cd backend && python3 scripts/validate_phase_4_4b.py --test
 	cd backend && python3 scripts/validate_application_data.py --mode test --json-output ../docs/application-data-integrity-validation.json
 	cd frontend && npx tsc --noEmit
 	cd frontend && npm run lint
@@ -20,3 +21,13 @@ validate-stock-snapshot:
 	cd backend && python3 -m compileall app main.py scripts
 	cd backend && python3 -m unittest tests.test_stock_snapshot_architecture tests.test_api_error_contracts
 	cd backend && python3 scripts/validate_stock_snapshot_performance.py --test --warm --restart --json-output ../docs/stock-snapshot-performance-validation.json
+
+validate-phase-4-4a:
+	cd backend && python3 -m compileall app main.py scripts
+	cd backend && python3 -m unittest tests.test_market_snapshot_architecture tests.test_request_stability tests.test_market_data_repository tests.test_symbol_registry
+	cd backend && python3 scripts/validate_phase_4_4a.py --mode test --warm --json-output ../docs/phase-4.4a-validation.json
+
+validate-phase-4-4b:
+	cd backend && python3 -m compileall app main.py scripts
+	cd backend && python3 -m unittest tests.test_breadth_snapshot
+	cd backend && python3 scripts/validate_phase_4_4b.py --test --json-output ../docs/phase-4.4b-validation.json

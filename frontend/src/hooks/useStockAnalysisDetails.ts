@@ -1,7 +1,8 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import {
   getStockAnalysis,
+  getLiveQuote,
 } from '@/services/api';
 import { clearRequestCache } from '@/services/requestCache';
 import {
@@ -13,24 +14,33 @@ import { useAsyncData } from './useAsyncData';
 
 export function useStockAnalysisDetails(symbol: string, enabled: boolean) {
   const fetchDetails = useCallback(async (): Promise<StockAnalysisDetails> => {
-    const aggregate = await getStockAnalysis(symbol);
-    return normalizeStockAnalysisDetails(aggregate);
+    const [aggregate, liveQuote] = await Promise.all([
+      getStockAnalysis(symbol),
+      getLiveQuote(symbol).catch(() => null),
+    ]);
+    return normalizeStockAnalysisDetails(aggregate, liveQuote);
   }, [symbol]);
 
   const state = useAsyncData(fetchDetails, { enabled });
+  const { data, refetch } = state;
+  const refreshScheduledForRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!enabled || !state.data?.snapshotRefreshing) {
+    if (!enabled || !data?.snapshotRefreshing) {
+      refreshScheduledForRef.current = null;
       return undefined;
     }
+    const refreshKey = `${symbol.toUpperCase()}:${data.snapshotStatus ?? 'initializing'}:${data.currentPrice.price ?? 'none'}`;
+    if (refreshScheduledForRef.current === refreshKey) {
+      return undefined;
+    }
+    refreshScheduledForRef.current = refreshKey;
     const timeout = setTimeout(async () => {
       clearRequestCache(`stock-analysis:v3:${symbol.toUpperCase()}`);
-      const aggregate = await getStockAnalysis(symbol, { bypassCache: true });
-      state.refetch();
-      return normalizeStockAnalysisDetails(aggregate);
+      refetch();
     }, 1250);
     return () => clearTimeout(timeout);
-  }, [enabled, state, state.data?.snapshotRefreshing, symbol]);
+  }, [data?.currentPrice.price, data?.snapshotRefreshing, data?.snapshotStatus, enabled, refetch, symbol]);
 
   return state;
 }

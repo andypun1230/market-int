@@ -522,8 +522,13 @@ export function clearServiceCache(prefix?: string) {
   return postWithoutBody<ServiceCacheStatus>(`/system/service-cache/clear${query}`);
 }
 
-export function getLiveQuote(symbol: string) {
-  return request<QuoteData>(`/market/live/quote/${symbol}`);
+export function getLiveQuote(symbol: string, options: { bypassCache?: boolean } = {}) {
+  const normalizedSymbol = symbol.trim().toUpperCase();
+  const fetcher = () => request<QuoteData>(`/market/live/quote/${encodeURIComponent(normalizedSymbol)}`);
+  if (options.bypassCache) {
+    return fetcher();
+  }
+  return cachedRequest(`live-quote:v1:${normalizedSymbol}`, fetcher, 15_000);
 }
 
 export function getLiveHistory(symbol: string, resolution = 'D', days = 240) {
@@ -543,6 +548,8 @@ function normalizeProviderHistorySymbol(symbol: string): string {
   return {
     DJI: 'DIA',
     IXIC: 'QQQ',
+    NDX: 'QQQ',
+    QQQEW: 'QQEW',
     RUT: 'IWM',
     SPX: 'SPY',
   }[normalized] ?? normalized;

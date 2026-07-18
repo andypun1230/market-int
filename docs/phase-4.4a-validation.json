@@ -1,0 +1,74 @@
+{
+  "aliases": {
+    "DJI": {
+      "elapsed_ms": 1,
+      "provider_symbol": "DIA",
+      "requested_symbol": "DJI",
+      "status_code": 200,
+      "symbol": "DIA"
+    },
+    "IXIC": {
+      "elapsed_ms": 0,
+      "provider_symbol": "QQQ",
+      "requested_symbol": "IXIC",
+      "status_code": 200,
+      "symbol": "QQQ"
+    },
+    "NDX": {
+      "elapsed_ms": 1,
+      "provider_symbol": "QQQ",
+      "requested_symbol": "NDX",
+      "status_code": 200,
+      "symbol": "QQQ"
+    },
+    "QQQEW": {
+      "elapsed_ms": 1,
+      "provider_symbol": "QQEW",
+      "requested_symbol": "QQQEW",
+      "status_code": 200,
+      "symbol": "QQEW"
+    },
+    "RUT": {
+      "elapsed_ms": 1,
+      "provider_symbol": "IWM",
+      "requested_symbol": "RUT",
+      "status_code": 200,
+      "symbol": "IWM"
+    },
+    "SPX": {
+      "elapsed_ms": 2,
+      "provider_symbol": "SPY",
+      "requested_symbol": "SPX",
+      "status_code": 200,
+      "symbol": "SPY"
+    }
+  },
+  "failures": [],
+  "indexes": {
+    "latency": {
+      "/home/dashboard": 18,
+      "/market/core-snapshot": 2,
+      "/market/indexes": 1
+    },
+    "mismatches": [],
+    "snapshot_ids": [
+      "phase-4-4a-1784366123"
+    ],
+    "symbols": [
+      "DIA",
+      "IWM",
+      "QQQ",
+      "SPY"
+    ]
+  },
+  "mode": "test",
+  "synthetic_snapshot_id": "phase-4-4a-1784366123",
+  "watchlist": {
+    "coverage_ratio": 1.0,
+    "first_elapsed_ms": 9,
+    "membership_hash": "fcb85879826433ef",
+    "status": "complete",
+    "symbols_unavailable": [],
+    "warm_elapsed_ms": 1
+  }
+}

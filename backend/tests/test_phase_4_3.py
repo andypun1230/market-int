@@ -216,7 +216,9 @@ class Phase43Tests(unittest.TestCase):
         os.environ["MARKET_DATA_ALLOW_MOCK_FALLBACK"] = "true"
         from app.services.market_data_repository import reset_market_data_repository
         from app.services.service_cache import invalidate_service_cache
+        from app.services.history_request_coordinator import reset_history_request_coordinator
 
+        reset_history_request_coordinator()
         reset_market_data_repository()
         invalidate_service_cache("relative-strength")
         invalidate_service_cache("stock-ratings")

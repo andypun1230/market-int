@@ -4,7 +4,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from app.cache.persistent_cache import delete_persistent_prefix
+from app.cache.persistent_cache import delete_persistent_prefix, reset_persistent_cache_state
 from app.providers.cnn_fear_greed_provider import (
     CNNFearGreedProvider,
     clear_fear_greed_cache,
@@ -17,7 +17,6 @@ from app.services.fear_greed import build_fear_greed_estimate, build_fear_greed_
 class FearGreedPartialTests(unittest.TestCase):
     def setUp(self) -> None:
         self.tempdir = tempfile.TemporaryDirectory(prefix="fear-greed-cache-")
-        self.addCleanup(self.tempdir.cleanup)
         self.env = patch.dict(os.environ, {
             "PERSISTENT_CACHE_DB_PATH": f"{self.tempdir.name}/persistent.sqlite3",
             "MARKET_DATA_CACHE_DB_PATH": f"{self.tempdir.name}/market.sqlite3",
@@ -25,9 +24,15 @@ class FearGreedPartialTests(unittest.TestCase):
             "CNN_FEAR_GREED_ESTIMATE_ENABLED": "true",
         }, clear=False)
         self.env.start()
-        self.addCleanup(self.env.stop)
         clear_fear_greed_cache()
+        reset_persistent_cache_state()
         delete_persistent_prefix("cnn-fear-greed:")
+
+    def tearDown(self) -> None:
+        clear_fear_greed_cache()
+        reset_persistent_cache_state()
+        self.env.stop()
+        self.tempdir.cleanup()
 
     def test_official_payload_normalizes_score_classification_timestamps_and_components(self) -> None:
         response = parse_cnn_fear_greed_payload(cnn_payload(score=39.1428571428571, rating="fear"))

@@ -126,6 +126,18 @@ CORE_ENDPOINTS: tuple[EndpointSpec, ...] = (
     ),
     EndpointSpec(
         "GET",
+        "/market/breadth/snapshot/latest",
+        "Market Breadth",
+        "getLatestBreadthSnapshot",
+        "breadth.snapshot_service.latest",
+        "BreadthSnapshot",
+        required_fields=("status",),
+        optional_fields=("snapshot_id", "coverage", "market_date"),
+        provider_domain="none",
+        timeout_seconds=3,
+    ),
+    EndpointSpec(
+        "GET",
         "/market/health",
         "Market Health",
         "getMarketHealth",

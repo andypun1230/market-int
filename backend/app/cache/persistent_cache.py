@@ -65,6 +65,11 @@ def initialize_persistent_cache() -> None:
             logger.warning("Persistent cache unavailable: %s: %s", type(exc).__name__, exc)
 
 
+def reset_persistent_cache_state() -> None:
+    with _lock:
+        _initialized_paths.clear()
+
+
 def connect() -> sqlite3.Connection:
     return sqlite3.connect(get_db_path(), timeout=5, check_same_thread=False)
 

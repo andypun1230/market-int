@@ -11,7 +11,7 @@
     "undefined",
     "NaN"
   ],
-  "generated_at": "2026-07-17T17:41:44.973880+00:00",
+  "generated_at": "2026-07-18T09:15:00.685377+00:00",
   "inventory": [
     {
       "allowed_source_states": [
@@ -288,6 +288,39 @@
       "test_required": true,
       "tier": "required",
       "timeout_seconds": 15
+    },
+    {
+      "allowed_source_states": [
+        "live",
+        "cached",
+        "stale",
+        "mock",
+        "mixed",
+        "unavailable",
+        "partial",
+        "delayed",
+        "initializing"
+      ],
+      "backend_service": "breadth.snapshot_service.latest",
+      "frontend_api": "getLatestBreadthSnapshot",
+      "live_required": false,
+      "method": "GET",
+      "optional_fields": [
+        "snapshot_id",
+        "coverage",
+        "market_date"
+      ],
+      "partial_supported": true,
+      "path": "/market/breadth/snapshot/latest",
+      "provider_domain": "none",
+      "required_fields": [
+        "status"
+      ],
+      "response_model": "BreadthSnapshot",
+      "screen": "Market Breadth",
+      "test_required": true,
+      "tier": "required",
+      "timeout_seconds": 3
     },
     {
       "allowed_source_states": [
@@ -1310,7 +1343,7 @@
     "Copilot Stock Context": {
       "FAIL": 0,
       "PARTIAL": 0,
-      "PASS": 25,
+      "PASS": 24,
       "SKIP": 0
     },
     "Data Sources": {
@@ -1333,7 +1366,7 @@
     },
     "Market Breadth": {
       "FAIL": 0,
-      "PARTIAL": 0,
+      "PARTIAL": 1,
       "PASS": 1,
       "SKIP": 0
     },
@@ -1394,43 +1427,43 @@
     "Stock Detail Aggregate": {
       "FAIL": 0,
       "PARTIAL": 0,
-      "PASS": 25,
+      "PASS": 24,
       "SKIP": 0
     },
     "Stock Detail Chart": {
       "FAIL": 0,
       "PARTIAL": 0,
-      "PASS": 25,
+      "PASS": 24,
       "SKIP": 0
     },
     "Stock Detail Chart 1M": {
       "FAIL": 0,
       "PARTIAL": 0,
-      "PASS": 25,
+      "PASS": 24,
       "SKIP": 0
     },
     "Stock Detail Quote": {
       "FAIL": 0,
       "PARTIAL": 0,
-      "PASS": 25,
+      "PASS": 24,
       "SKIP": 0
     },
     "Stock Detail Risk": {
       "FAIL": 0,
       "PARTIAL": 0,
-      "PASS": 25,
+      "PASS": 24,
       "SKIP": 0
     },
     "Stock Detail Signals": {
       "FAIL": 0,
       "PARTIAL": 0,
-      "PASS": 100,
+      "PASS": 96,
       "SKIP": 0
     },
     "Stock Detail Technical": {
       "FAIL": 0,
       "PARTIAL": 0,
-      "PASS": 50,
+      "PASS": 48,
       "SKIP": 0
     },
     "System": {

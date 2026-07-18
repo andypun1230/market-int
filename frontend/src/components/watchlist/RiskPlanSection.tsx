@@ -19,6 +19,7 @@ import {
   type ModeledRisk,
 } from '@/features/stock-detail/risk/riskPresenter';
 import type { RiskPlan, SupportResistanceResponse } from '@/types/market';
+import type { CurrentPriceSelection } from '@/features/stock-detail/currentPrice';
 import { getRiskColor, getSourceTone } from '@/utils/colors';
 import {
   formatNullablePercent,
@@ -27,18 +28,20 @@ import {
 } from '@/utils/formatters';
 
 export function RiskPlanSection({
+  currentPrice,
   riskPlan,
   showTitle = true,
   supportResistance,
 }: {
+  currentPrice?: CurrentPriceSelection | null;
   riskPlan?: RiskPlan;
   showTitle?: boolean;
   supportResistance?: SupportResistanceResponse;
 }) {
   const [supportingDetailsOpen, setSupportingDetailsOpen] = useState(false);
   const model = useMemo(
-    () => buildRiskDashboard({ riskPlan, supportResistance }),
-    [riskPlan, supportResistance],
+    () => buildRiskDashboard({ currentPrice, riskPlan, supportResistance }),
+    [currentPrice, riskPlan, supportResistance],
   );
   const riskColor = getRiskColor(model.riskLevel);
   const sourceObject = {

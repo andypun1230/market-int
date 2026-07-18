@@ -5,8 +5,9 @@ from typing import Any
 from app.services.breadth import calculate_market_breadth
 from app.services.background_refresh import queue_refresh
 from app.services.decision_intelligence import calculate_aggressiveness, build_market_playbook, recommend_trading_styles
+from app.services.gain_policy import quote_gain
 from app.services.industry_groups import build_industry_groups
-from app.services.market_data import INDEX_SYMBOLS, PROVIDER_INDEX_SYMBOLS, get_index_snapshots, safe_get_quote
+from app.services.market_data import get_index_snapshots, safe_get_quote
 from app.services.market_health import calculate_market_health
 from app.services.sectors import build_market_sectors
 from app.services.service_cache import (
@@ -16,6 +17,7 @@ from app.services.service_cache import (
     set_l1_service_value,
 )
 from app.services.snapshot_store import get_last_market_core_snapshot, save_market_core_snapshot
+from app.validation.symbol_registry import canonical_index_universe
 
 
 def build_market_core_snapshot() -> dict[str, Any]:
@@ -82,6 +84,11 @@ def _build_market_core_snapshot_uncached() -> dict[str, Any]:
             "coverage_percent": get_field(breadth, "coverage_percent"),
             "overall_mode": get_field(breadth, "overall_mode"),
             "universe": get_field(breadth, "universe"),
+            "snapshot_id": get_field(breadth, "snapshot_id"),
+            "universe_version": get_field(breadth, "universe_version"),
+            "market_date": get_field(breadth, "market_date"),
+            "coverage_status": get_field(breadth, "coverage_status"),
+            "trend": get_field(breadth, "trend"),
         },
         "top_sector": top_sector,
         "top_industry_group": top_group,
@@ -170,24 +177,34 @@ def build_quote_only_index_snapshots() -> list[dict[str, Any]]:
         return []
 
     snapshots: list[dict[str, Any]] = []
-    for public_symbol in INDEX_SYMBOLS:
-        provider_symbol = PROVIDER_INDEX_SYMBOLS[public_symbol]
+    for entry in canonical_index_universe():
         try:
-            quote = safe_get_quote(provider, provider_symbol)
+            quote = safe_get_quote(provider, entry.provider_quote_symbol)
         except Exception:
             continue
+        change, change_percent = quote_gain(quote.price, quote.previous_close)
         snapshots.append(
             {
-                "symbol": public_symbol,
+                "symbol": entry.display_symbol,
+                "display_symbol": entry.display_symbol,
+                "provider_symbol": entry.provider_quote_symbol,
+                "display_name": entry.display_name,
                 "price": quote.price,
-                "change": quote.change,
-                "change_percent": quote.change_percent,
+                "change": change if change is not None else 0.0,
+                "change_percent": change_percent if change_percent is not None else 0.0,
+                "previous_close": quote.previous_close,
                 "volume": quote.volume,
                 "ema_20": None,
                 "ema_50": None,
                 "ema_200": None,
                 "sma_50": None,
                 "rsi_14": None,
+                "quote_timestamp": quote.timestamp,
+                "quote_provider": quote.provider or quote.source,
+                "history_provider": "unavailable",
+                "source_state": quote.source_state or "mixed",
+                "stale": quote.is_stale,
+                "warnings": ["History unavailable in bootstrap index snapshot."],
                 "data_source": f"quote:{quote.source};history:unavailable",
                 "is_live": False,
                 "is_stale": quote.is_stale,
@@ -244,6 +261,11 @@ def build_cached_breadth_summary(breadth: object) -> dict[str, Any] | None:
         "coverage_percent": breadth.get("coverage_percent"),
         "overall_mode": breadth.get("overall_mode"),
         "universe": breadth.get("universe"),
+        "snapshot_id": breadth.get("snapshot_id"),
+        "universe_version": breadth.get("universe_version"),
+        "market_date": breadth.get("market_date"),
+        "coverage_status": breadth.get("coverage_status"),
+        "trend": breadth.get("trend"),
     }
 
 

@@ -1,0 +1,29 @@
+{
+  "coverage": {
+    "coverage_ratio": 1.0,
+    "coverage_status": "complete",
+    "coverage_warnings": [],
+    "indicator_coverage": {
+      "EMA20": 1.0,
+      "EMA200": 1.0,
+      "EMA50": 1.0,
+      "advance_decline": 1.0,
+      "highs_lows": 1.0
+    },
+    "members_available": 4,
+    "members_eligible": 4,
+    "members_invalid": [],
+    "members_missing": [],
+    "members_requested": 4,
+    "members_stale": [],
+    "universe_size": 4
+  },
+  "failures": [],
+  "history_points": 1,
+  "member_count": 4,
+  "mode": "test",
+  "provider_calls_during_warm_read": 0,
+  "snapshot_id": "breadth-sp100-test-v1-2026-07-17-fe3b5ff406",
+  "universe": "sp100-test-v1",
+  "warm_read_elapsed_ms": 29
+}

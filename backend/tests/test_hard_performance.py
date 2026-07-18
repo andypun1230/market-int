@@ -1,7 +1,9 @@
 import os
 import unittest
+from datetime import datetime, timezone
 from unittest.mock import patch
 
+from app.providers.models import BatchQuoteResult, QuoteData
 from app.providers.circuit_breaker import (
     is_circuit_open,
     record_provider_failure,
@@ -13,6 +15,42 @@ from app.services.materialized_market_state import update_market_state_component
 from app.services.stock_analysis_aggregate import build_stock_analysis
 from app.services.watchlist_summary import build_watchlist_summary
 from app.services.service_cache import invalidate_service_cache
+
+
+def quote(symbol: str) -> QuoteData:
+    now = datetime.now(timezone.utc).isoformat()
+    return QuoteData(
+        symbol=symbol,
+        price=1,
+        change=0,
+        change_percent=0,
+        open=1,
+        high=1,
+        low=1,
+        previous_close=1,
+        volume=1,
+        timestamp=now,
+        source="unit",
+        is_live=False,
+        is_stale=False,
+        fallback_used=False,
+        provider="unit",
+        source_state="cached",
+    )
+
+
+class QuoteRepository:
+    def get_batch_quotes(self, symbols: list[str]) -> BatchQuoteResult:
+        return BatchQuoteResult(
+            quotes=[quote(symbol) for symbol in symbols],
+            unavailable_symbols=[],
+            provider="unit",
+            source_state="cached",
+            fetched_at=datetime.now(timezone.utc),
+        )
+
+    def get_provider_name_for(self, domain: str) -> str:
+        return "unit"
 
 
 class HardPerformanceTests(unittest.TestCase):
@@ -63,20 +101,9 @@ class HardPerformanceTests(unittest.TestCase):
 
     def test_watchlist_summary_avoids_full_stock_detail_services(self) -> None:
         with (
-            patch("app.services.watchlist_summary.get_market_data_provider") as provider_factory,
+            patch("app.services.watchlist_summary.get_market_data_repository", return_value=QuoteRepository()),
             patch("app.services.support_resistance.calculate_support_resistance") as support,
         ):
-            provider = provider_factory.return_value
-            provider.get_quote.return_value.model_dump.return_value = {
-                "price": 1,
-                "change": 0,
-                "change_percent": 0,
-                "source": "unit",
-                "is_live": False,
-                "is_stale": False,
-                "fallback_used": False,
-                "timestamp": "now",
-            }
             result = build_watchlist_summary()
 
         self.assertIn("items", result)
