@@ -36,10 +36,36 @@ export function classifyWatchlistItem(item: WatchlistSummaryItem): WatchlistClas
       dataStatus,
       group: 'data_unavailable',
       primarySignal: 'unavailable',
-      reason: 'Quote or setup data is unavailable for this ticker.',
+      reason: item.status_reason ?? 'Quote or setup data is unavailable for this ticker.',
       score: null,
       secondarySignals: [],
       severity: 'critical',
+      ticker,
+    };
+  }
+
+  if (dataStatus === 'pending') {
+    return {
+      dataStatus,
+      group: 'watching',
+      primarySignal: 'pending',
+      reason: item.status_reason ?? 'Preparing analysis snapshot.',
+      score: null,
+      secondarySignals: [],
+      severity: 'neutral',
+      ticker,
+    };
+  }
+
+  if (dataStatus === 'partial') {
+    return {
+      dataStatus,
+      group: 'watching',
+      primarySignal: 'partial',
+      reason: item.status_reason ?? 'Quote is available while optional analysis metrics are still loading.',
+      score: null,
+      secondarySignals: [],
+      severity: 'neutral',
       ticker,
     };
   }
@@ -168,6 +194,10 @@ export function getSignalLabel(signal: WatchlistSignalType) {
       return 'Earnings Risk';
     case 'stale_data':
       return 'Stale Data';
+    case 'partial':
+      return 'Partial';
+    case 'pending':
+      return 'Preparing Analysis';
     case 'unavailable':
       return 'Unavailable';
     case 'watching':
@@ -175,7 +205,31 @@ export function getSignalLabel(signal: WatchlistSignalType) {
   }
 }
 
+export function shouldShowWatchlistStatusDot(
+  status: WatchlistDataStatus,
+  primarySignal?: WatchlistSignalType,
+) {
+  return !(
+    status === 'live' ||
+    status === 'unavailable' ||
+    (status === 'pending' && primarySignal === 'pending') ||
+    (status === 'partial' && primarySignal === 'partial')
+  );
+}
+
 function getDataStatus(item: WatchlistSummaryItem): WatchlistDataStatus {
+  if (item.overall_status === 'pending') {
+    return 'pending';
+  }
+  if (item.overall_status === 'partial') {
+    return 'partial';
+  }
+  if (item.overall_status === 'unavailable' || item.overall_status === 'unsupported') {
+    return 'unavailable';
+  }
+  if (item.overall_status === 'stale') {
+    return 'stale';
+  }
   if (typeof item.price !== 'number' || typeof item.change_percent !== 'number' || item.data_source === 'unavailable') {
     return 'unavailable';
   }

@@ -11,7 +11,7 @@ import {
 type WatchlistBookmarkButtonProps = {
   id: string;
   name: string;
-  type: Extract<WatchlistItemType, 'sector' | 'theme'>;
+  type: WatchlistItemType;
 };
 
 export function WatchlistBookmarkButton({ id, name, type }: WatchlistBookmarkButtonProps) {
@@ -26,11 +26,11 @@ export function WatchlistBookmarkButton({ id, name, type }: WatchlistBookmarkBut
       return;
     }
     setSaving(true);
-    watchlist.toggleWatchlistItem({
-      id: normalizedId,
-      name,
-      type,
-    });
+    if (type === 'stock') {
+      watchlist.toggleWatchlistItem({ id: normalizedId, name, ticker: normalizedId, type });
+    } else {
+      watchlist.toggleWatchlistItem({ id: normalizedId, name, type });
+    }
     setTimeout(() => setSaving(false), 120);
   };
 

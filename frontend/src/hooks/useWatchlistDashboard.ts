@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
   getWatchlistSummary,
@@ -38,9 +38,17 @@ type WatchlistDashboardData = {
   stockRatingsError: string | null;
 };
 
-export function useWatchlistDashboard(enabled = true) {
+export function useWatchlistDashboard(symbols: string[] = [], enabled = true) {
+  const symbolsInputKey = symbols.join(',');
+  const bypassSummaryCacheRef = useRef(false);
+  const requestedSymbols = useMemo(
+    () => [...new Set(symbolsInputKey.split(',').map((symbol) => symbol.trim().toUpperCase()).filter(Boolean))].sort(),
+    [symbolsInputKey],
+  );
   const fetchWatchlistDashboard = useCallback(async (): Promise<WatchlistDashboardData> => {
-    const summary = await getWatchlistSummary();
+    const bypassCache = bypassSummaryCacheRef.current;
+    bypassSummaryCacheRef.current = false;
+    const summary = await getWatchlistSummary(requestedSymbols, { bypassCache });
     const items = summary.items ?? [];
 
     return {
@@ -53,9 +61,21 @@ export function useWatchlistDashboard(enabled = true) {
       relativeStrengthError: null,
       stockRatingsError: null,
     };
-  }, []);
+  }, [requestedSymbols]);
 
   const { data, loading, error, refetch } = useAsyncData(fetchWatchlistDashboard, { enabled });
+  const awaitingCanonicalSnapshot = hasRefreshingWatchlistItems(data?.watchlist?.items ?? []);
+
+  useEffect(() => {
+    if (!enabled || !awaitingCanonicalSnapshot) {
+      return undefined;
+    }
+    const timer = setTimeout(() => {
+      bypassSummaryCacheRef.current = true;
+      void refetch();
+    }, 2_000);
+    return () => clearTimeout(timer);
+  }, [awaitingCanonicalSnapshot, enabled, refetch]);
   const relativeStrength = data?.relativeStrength ?? EMPTY_RELATIVE_STRENGTH;
   const stockRatings = data?.stockRatings ?? EMPTY_STOCK_RATINGS;
   const patterns = data?.patterns ?? EMPTY_PATTERNS;
@@ -93,6 +113,10 @@ export function useWatchlistDashboard(enabled = true) {
     stockRatingsError: data?.stockRatingsError ?? null,
     refetch,
   };
+}
+
+export function hasRefreshingWatchlistItems(items: WatchlistSummaryItem[]) {
+  return items.some((item) => item.overall_status === 'pending' || item.refreshing === true);
 }
 
 function mapBySymbol<T extends { symbol: string }>(items: T[]) {

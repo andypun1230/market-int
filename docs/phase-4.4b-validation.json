@@ -1,5 +1,43 @@
 {
   "coverage": {
+    "coverage_dimensions": {
+      "advance_decline": {
+        "display": "4/4",
+        "eligible": 4,
+        "ratio": 1.0,
+        "total": 4
+      },
+      "ema20": {
+        "display": "4/4",
+        "eligible": 4,
+        "ratio": 1.0,
+        "total": 4
+      },
+      "ema200": {
+        "display": "4/4",
+        "eligible": 4,
+        "ratio": 1.0,
+        "total": 4
+      },
+      "ema50": {
+        "display": "4/4",
+        "eligible": 4,
+        "ratio": 1.0,
+        "total": 4
+      },
+      "highs_lows": {
+        "display": "4/4",
+        "eligible": 4,
+        "ratio": 1.0,
+        "total": 4
+      },
+      "universe": {
+        "display": "4/4",
+        "eligible": 4,
+        "ratio": 1.0,
+        "total": 4
+      }
+    },
     "coverage_ratio": 1.0,
     "coverage_status": "complete",
     "coverage_warnings": [],
@@ -23,7 +61,7 @@
   "member_count": 4,
   "mode": "test",
   "provider_calls_during_warm_read": 0,
-  "snapshot_id": "breadth-sp100-test-v1-2026-07-17-fe3b5ff406",
+  "snapshot_id": "breadth-sp100-test-v1-2026-07-17-71bf895808",
   "universe": "sp100-test-v1",
-  "warm_read_elapsed_ms": 29
+  "warm_read_elapsed_ms": 27
 }

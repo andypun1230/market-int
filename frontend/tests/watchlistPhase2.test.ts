@@ -1,4 +1,5 @@
-import { classifyWatchlistItem, calculateWatchlistScore } from '../src/features/watchlist/watchlistClassifier';
+import { classifyWatchlistItem, calculateWatchlistScore, getSignalLabel, shouldShowWatchlistStatusDot } from '../src/features/watchlist/watchlistClassifier';
+import { hasRefreshingWatchlistItems } from '../src/hooks/useWatchlistDashboard';
 import { groupSortedWatchlistItems, sortWatchlistItems } from '../src/features/watchlist/watchlistSort';
 import type { ClassifiedWatchlistItem } from '../src/features/watchlist/types';
 import type { WatchlistSummaryItem } from '../src/types/market';
@@ -55,6 +56,48 @@ function run() {
   const unavailable = classifyWatchlistItem(item({ change_percent: null, price: null, ticker: 'BAD' }));
   assert(unavailable.group === 'data_unavailable', 'missing quote data goes to Data Unavailable');
   assert(unavailable.score === null, 'unavailable score is null');
+
+  const aaplComplete = classifyWatchlistItem(item({
+    analysis_snapshot_id: 'stock-AAPL-v1',
+    overall_status: 'complete',
+    price: 200,
+    ticker: 'AAPL',
+  }));
+  assert(aaplComplete.group !== 'data_unavailable', 'complete AAPL snapshot is never grouped under Data Unavailable');
+
+  const msftComplete = classifyWatchlistItem(item({
+    analysis_snapshot_id: 'stock-MSFT-v1',
+    overall_status: 'complete',
+    price: 400,
+    ticker: 'MSFT',
+  }));
+  assert(msftComplete.group !== 'data_unavailable', 'complete MSFT snapshot is never grouped under Data Unavailable');
+
+  const partial = classifyWatchlistItem(item({
+    overall_status: 'partial',
+    status_reason: 'Quote and trend available; advanced signals are still loading.',
+    ticker: 'PART',
+  }));
+  assert(partial.primarySignal === 'partial' && getSignalLabel(partial.primarySignal) === 'Partial', 'partial stock is labelled Partial with an explicit reason');
+  assert(partial.reason.includes('advanced signals'), 'partial stock preserves its canonical reason ahead of secondary warnings');
+
+  const pending = classifyWatchlistItem(item({
+    overall_status: 'pending',
+    status_reason: 'Preparing analysis snapshot.',
+    ticker: 'PEND',
+  }));
+  assert(pending.primarySignal === 'pending' && getSignalLabel(pending.primarySignal) === 'Preparing Analysis', 'pending stock is labelled Preparing Analysis');
+  assert(!shouldShowWatchlistStatusDot('pending', 'pending'), 'pending uses one status badge instead of duplicate badges');
+
+  const stale = classifyWatchlistItem(item({
+    overall_status: 'stale',
+    status_reason: 'Showing the latest compatible analysis while it refreshes.',
+    ticker: 'STALE-SNAPSHOT',
+  }));
+  assert(stale.group !== 'data_unavailable', 'stale usable analysis is not misclassified as unavailable');
+  assert(!shouldShowWatchlistStatusDot('unavailable', 'unavailable'), 'unavailable state never renders a duplicate status badge');
+  assert(hasRefreshingWatchlistItems([item({ overall_status: 'pending', refreshing: true })]), 'pending canonical analysis schedules one follow-up summary read');
+  assert(!hasRefreshingWatchlistItems([item({ overall_status: 'partial', refreshing: false })]), 'stable partial analysis does not poll the summary endpoint');
 
   const staleBreakout = classifyWatchlistItem(item({ is_stale: true, setup: 'Confirmed breakout', ticker: 'STALE' }));
   assert(staleBreakout.group === 'needs_attention', 'warning precedence beats high-priority setup');

@@ -1,0 +1,731 @@
+{
+  "checks": {
+    "advance_decline_semantics": {
+      "details": {
+        "advancing": 26,
+        "declining": 75,
+        "display": "0.35",
+        "ratio_method": "raw=advancing/declining; smoothed=(advancing+0.5)/(declining+0.5)",
+        "raw_ratio": 0.3467,
+        "smoothed_ratio": 0.351
+      },
+      "passed": true
+    },
+    "coverage_eligibility": {
+      "details": {
+        "data_confidence": {
+          "calculated_at": "2026-07-18T18:27:01.738535+00:00",
+          "label": "High",
+          "reason": "Universe coverage 100.00% and EMA200 eligibility 99.01%.",
+          "score": 99,
+          "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb"
+        },
+        "ema200": {
+          "display": "100/101",
+          "eligible": 100,
+          "ratio": 0.990099,
+          "total": 101
+        },
+        "signal_confidence": {
+          "calculated_at": "2026-07-18T18:27:01.738535+00:00",
+          "label": "Moderate",
+          "reason": "3 supportive, 1 mixed, and 1 caution breadth dimensions.",
+          "score": 65,
+          "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb"
+        },
+        "universe": {
+          "display": "101/101",
+          "eligible": 101,
+          "ratio": 1.0,
+          "total": 101
+        }
+      },
+      "passed": true
+    },
+    "decision_confidence_consistency": {
+      "details": {
+        "canonical": {
+          "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+          "contributors": [
+            {
+              "label": "Market Health",
+              "score": 68,
+              "signal": "Mixed"
+            },
+            {
+              "label": "Breadth",
+              "score": 56,
+              "signal": "56.0% above 50EMA"
+            },
+            {
+              "label": "Trend",
+              "score": 70,
+              "signal": "Uptrend Under Pressure"
+            },
+            {
+              "label": "Institutional",
+              "score": 90,
+              "signal": "Bullish"
+            },
+            {
+              "label": "Fear & Greed",
+              "score": 45,
+              "signal": "Fear"
+            },
+            {
+              "label": "Sector Leadership",
+              "score": 55,
+              "signal": "Energy"
+            },
+            {
+              "label": "Market Stage",
+              "score": 68,
+              "signal": "Uptrend Under Pressure / Mega Cap leadership"
+            }
+          ],
+          "disagreements": [
+            "Breadth is below confirmation level (56.0% above 50EMA).",
+            "Fear & Greed is below confirmation level (Fear).",
+            "Sector Leadership is below confirmation level (Energy)."
+          ],
+          "reason": "4 of 7 decision inputs meet the confirmation threshold.",
+          "score": 65,
+          "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+          "status": "Mixed",
+          "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
+        },
+        "sources": {
+          "detail": {
+            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "contributors": [
+              {
+                "label": "Market Health",
+                "score": 68,
+                "signal": "Mixed"
+              },
+              {
+                "label": "Breadth",
+                "score": 56,
+                "signal": "56.0% above 50EMA"
+              },
+              {
+                "label": "Trend",
+                "score": 70,
+                "signal": "Uptrend Under Pressure"
+              },
+              {
+                "label": "Institutional",
+                "score": 90,
+                "signal": "Bullish"
+              },
+              {
+                "label": "Fear & Greed",
+                "score": 45,
+                "signal": "Fear"
+              },
+              {
+                "label": "Sector Leadership",
+                "score": 55,
+                "signal": "Energy"
+              },
+              {
+                "label": "Market Stage",
+                "score": 68,
+                "signal": "Uptrend Under Pressure / Mega Cap leadership"
+              }
+            ],
+            "disagreements": [
+              "Breadth is below confirmation level (56.0% above 50EMA).",
+              "Fear & Greed is below confirmation level (Fear).",
+              "Sector Leadership is below confirmation level (Energy)."
+            ],
+            "reason": "4 of 7 decision inputs meet the confirmation threshold.",
+            "score": 65,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+            "status": "Mixed",
+            "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
+          },
+          "health": {
+            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "contributors": [
+              {
+                "label": "Market Health",
+                "score": 68,
+                "signal": "Mixed"
+              },
+              {
+                "label": "Breadth",
+                "score": 56,
+                "signal": "56.0% above 50EMA"
+              },
+              {
+                "label": "Trend",
+                "score": 70,
+                "signal": "Uptrend Under Pressure"
+              },
+              {
+                "label": "Institutional",
+                "score": 90,
+                "signal": "Bullish"
+              },
+              {
+                "label": "Fear & Greed",
+                "score": 45,
+                "signal": "Fear"
+              },
+              {
+                "label": "Sector Leadership",
+                "score": 55,
+                "signal": "Energy"
+              },
+              {
+                "label": "Market Stage",
+                "score": 68,
+                "signal": "Uptrend Under Pressure / Mega Cap leadership"
+              }
+            ],
+            "disagreements": [
+              "Breadth is below confirmation level (56.0% above 50EMA).",
+              "Fear & Greed is below confirmation level (Fear).",
+              "Sector Leadership is below confirmation level (Energy)."
+            ],
+            "reason": "4 of 7 decision inputs meet the confirmation threshold.",
+            "score": 65,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+            "status": "Mixed",
+            "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
+          },
+          "home": {
+            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "contributors": [
+              {
+                "label": "Market Health",
+                "score": 68,
+                "signal": "Mixed"
+              },
+              {
+                "label": "Breadth",
+                "score": 56,
+                "signal": "56.0% above 50EMA"
+              },
+              {
+                "label": "Trend",
+                "score": 70,
+                "signal": "Uptrend Under Pressure"
+              },
+              {
+                "label": "Institutional",
+                "score": 90,
+                "signal": "Bullish"
+              },
+              {
+                "label": "Fear & Greed",
+                "score": 45,
+                "signal": "Fear"
+              },
+              {
+                "label": "Sector Leadership",
+                "score": 55,
+                "signal": "Energy"
+              },
+              {
+                "label": "Market Stage",
+                "score": 68,
+                "signal": "Uptrend Under Pressure / Mega Cap leadership"
+              }
+            ],
+            "disagreements": [
+              "Breadth is below confirmation level (56.0% above 50EMA).",
+              "Fear & Greed is below confirmation level (Fear).",
+              "Sector Leadership is below confirmation level (Energy)."
+            ],
+            "reason": "4 of 7 decision inputs meet the confirmation threshold.",
+            "score": 65,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+            "status": "Mixed",
+            "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
+          },
+          "snapshot": {
+            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "contributors": [
+              {
+                "label": "Market Health",
+                "score": 68,
+                "signal": "Mixed"
+              },
+              {
+                "label": "Breadth",
+                "score": 56,
+                "signal": "56.0% above 50EMA"
+              },
+              {
+                "label": "Trend",
+                "score": 70,
+                "signal": "Uptrend Under Pressure"
+              },
+              {
+                "label": "Institutional",
+                "score": 90,
+                "signal": "Bullish"
+              },
+              {
+                "label": "Fear & Greed",
+                "score": 45,
+                "signal": "Fear"
+              },
+              {
+                "label": "Sector Leadership",
+                "score": 55,
+                "signal": "Energy"
+              },
+              {
+                "label": "Market Stage",
+                "score": 68,
+                "signal": "Uptrend Under Pressure / Mega Cap leadership"
+              }
+            ],
+            "disagreements": [
+              "Breadth is below confirmation level (56.0% above 50EMA).",
+              "Fear & Greed is below confirmation level (Fear).",
+              "Sector Leadership is below confirmation level (Energy)."
+            ],
+            "reason": "4 of 7 decision inputs meet the confirmation threshold.",
+            "score": 65,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+            "status": "Mixed",
+            "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
+          }
+        }
+      },
+      "passed": true
+    },
+    "home_laggard_consistency": {
+      "details": {
+        "actual": {
+          "composite_score": 22.77,
+          "eligible_members": 1,
+          "etf_symbol": "XLB",
+          "market_date": "2026-07-17",
+          "name": "Materials",
+          "percent_above_50ema": 0.0,
+          "rank": 11,
+          "relative_strength_1m": -3.216,
+          "relative_strength_score": 33,
+          "sector_id": "materials",
+          "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+          "status": "Lagging",
+          "total_members": 1,
+          "universe_version": "v20260718"
+        },
+        "expected": {
+          "name": "Materials",
+          "rank": 11
+        }
+      },
+      "passed": true
+    },
+    "live_snapshot_provenance": {
+      "details": {
+        "breadth_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+        "breadth_source_state": "live",
+        "sector_snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "sector_source_state": "live"
+      },
+      "passed": true
+    },
+    "participation_is_distinct": {
+      "details": {
+        "invalid_rows": []
+      },
+      "passed": true
+    },
+    "rank_and_score_stability": {
+      "details": {
+        "changed": [],
+        "compared_rows": 11
+      },
+      "passed": true
+    },
+    "report_and_copilot_semantics": {
+      "details": {
+        "copilot_breadth_semantics": {
+          "advance_decline": {
+            "display": "0.35",
+            "ratio_method": "raw=advancing/declining; smoothed=(advancing+0.5)/(declining+0.5)",
+            "raw_ratio": 0.3467,
+            "smoothed_ratio": 0.351
+          },
+          "coverage_dimensions": {
+            "advance_decline": {
+              "display": "101/101",
+              "eligible": 101,
+              "ratio": 1.0,
+              "total": 101
+            },
+            "ema20": {
+              "display": "100/101",
+              "eligible": 100,
+              "ratio": 0.990099,
+              "total": 101
+            },
+            "ema200": {
+              "display": "100/101",
+              "eligible": 100,
+              "ratio": 0.990099,
+              "total": 101
+            },
+            "ema50": {
+              "display": "100/101",
+              "eligible": 100,
+              "ratio": 0.990099,
+              "total": 101
+            },
+            "highs_lows": {
+              "display": "100/101",
+              "eligible": 100,
+              "ratio": 0.990099,
+              "total": 101
+            },
+            "universe": {
+              "display": "101/101",
+              "eligible": 101,
+              "ratio": 1.0,
+              "total": 101
+            }
+          },
+          "data_confidence": {
+            "calculated_at": "2026-07-18T18:27:01.738535+00:00",
+            "label": "High",
+            "reason": "Universe coverage 100.00% and EMA200 eligibility 99.01%.",
+            "score": 99,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb"
+          },
+          "signal_confidence": {
+            "calculated_at": "2026-07-18T18:27:01.738535+00:00",
+            "label": "Moderate",
+            "reason": "3 supportive, 1 mixed, and 1 caution breadth dimensions.",
+            "score": 65,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb"
+          }
+        },
+        "copilot_sector_samples": 11,
+        "report_context": {
+          "advance_decline": {
+            "display": "0.35",
+            "ratio_method": "raw=advancing/declining; smoothed=(advancing+0.5)/(declining+0.5)",
+            "raw_ratio": 0.3467,
+            "smoothed_ratio": 0.351
+          },
+          "coverage_dimensions": {
+            "advance_decline": {
+              "display": "101/101",
+              "eligible": 101,
+              "ratio": 1.0,
+              "total": 101
+            },
+            "ema20": {
+              "display": "100/101",
+              "eligible": 100,
+              "ratio": 0.990099,
+              "total": 101
+            },
+            "ema200": {
+              "display": "100/101",
+              "eligible": 100,
+              "ratio": 0.990099,
+              "total": 101
+            },
+            "ema50": {
+              "display": "100/101",
+              "eligible": 100,
+              "ratio": 0.990099,
+              "total": 101
+            },
+            "highs_lows": {
+              "display": "100/101",
+              "eligible": 100,
+              "ratio": 0.990099,
+              "total": 101
+            },
+            "universe": {
+              "display": "101/101",
+              "eligible": 101,
+              "ratio": 1.0,
+              "total": 101
+            }
+          },
+          "data_confidence": {
+            "calculated_at": "2026-07-18T18:27:01.738535+00:00",
+            "label": "High",
+            "reason": "Universe coverage 100.00% and EMA200 eligibility 99.01%.",
+            "score": 99,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb"
+          },
+          "decision_confidence": {
+            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "contributors": [
+              {
+                "label": "Market Health",
+                "score": 68,
+                "signal": "Mixed"
+              },
+              {
+                "label": "Breadth",
+                "score": 56,
+                "signal": "56.0% above 50EMA"
+              },
+              {
+                "label": "Trend",
+                "score": 70,
+                "signal": "Uptrend Under Pressure"
+              },
+              {
+                "label": "Institutional",
+                "score": 90,
+                "signal": "Bullish"
+              },
+              {
+                "label": "Fear & Greed",
+                "score": 45,
+                "signal": "Fear"
+              },
+              {
+                "label": "Sector Leadership",
+                "score": 55,
+                "signal": "Energy"
+              },
+              {
+                "label": "Market Stage",
+                "score": 68,
+                "signal": "Uptrend Under Pressure / Mega Cap leadership"
+              }
+            ],
+            "disagreements": [
+              "Breadth is below confirmation level (56.0% above 50EMA).",
+              "Fear & Greed is below confirmation level (Fear).",
+              "Sector Leadership is below confirmation level (Energy)."
+            ],
+            "reason": "4 of 7 decision inputs meet the confirmation threshold.",
+            "score": 65,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+            "status": "Mixed",
+            "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
+          },
+          "macro": {},
+          "sector_breadth_representativeness": [
+            {
+              "eligible_members": 3,
+              "reason": "Only 3 eligible constituents; breadth is not as representative as a broad sector sample.",
+              "representativeness": "Limited",
+              "sector": "Energy"
+            },
+            {
+              "eligible_members": 15,
+              "reason": "15 eligible constituents meet the documented 10-member high-representativeness threshold.",
+              "representativeness": "High",
+              "sector": "Health Care"
+            },
+            {
+              "eligible_members": 2,
+              "reason": "Only 2 eligible constituents; breadth is not as representative as a broad sector sample.",
+              "representativeness": "Limited",
+              "sector": "Real Estate"
+            },
+            {
+              "eligible_members": 15,
+              "reason": "15 eligible constituents meet the documented 10-member high-representativeness threshold.",
+              "representativeness": "High",
+              "sector": "Financials"
+            },
+            {
+              "eligible_members": 14,
+              "reason": "14 eligible constituents meet the documented 10-member high-representativeness threshold.",
+              "representativeness": "High",
+              "sector": "Industrials"
+            },
+            {
+              "eligible_members": 9,
+              "reason": "9 eligible constituents meet the documented 4-member moderate-representativeness threshold.",
+              "representativeness": "Moderate",
+              "sector": "Consumer Staples"
+            },
+            {
+              "eligible_members": 20,
+              "reason": "20 eligible constituents meet the documented 10-member high-representativeness threshold.",
+              "representativeness": "High",
+              "sector": "Information Technology"
+            },
+            {
+              "eligible_members": 3,
+              "reason": "Only 3 eligible constituents; breadth is not as representative as a broad sector sample.",
+              "representativeness": "Limited",
+              "sector": "Utilities"
+            },
+            {
+              "eligible_members": 9,
+              "reason": "9 eligible constituents meet the documented 4-member moderate-representativeness threshold.",
+              "representativeness": "Moderate",
+              "sector": "Consumer Discretionary"
+            },
+            {
+              "eligible_members": 9,
+              "reason": "9 eligible constituents meet the documented 4-member moderate-representativeness threshold.",
+              "representativeness": "Moderate",
+              "sector": "Communication Services"
+            },
+            {
+              "eligible_members": 1,
+              "reason": "Only 1 eligible constituent; breadth is not as representative as a broad sector sample.",
+              "representativeness": "Limited",
+              "sector": "Materials"
+            }
+          ],
+          "signal_confidence": {
+            "calculated_at": "2026-07-18T18:27:01.738535+00:00",
+            "label": "Moderate",
+            "reason": "3 supportive, 1 mixed, and 1 caution breadth dimensions.",
+            "score": 65,
+            "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb"
+          },
+          "snapshot_ids": {
+            "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+            "market": "market-20260719T101853Z-b1a9743d",
+            "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+          },
+          "theme_provenance": {}
+        }
+      },
+      "passed": true
+    },
+    "sector_composite_audit": {
+      "details": {
+        "invalid_rows": [],
+        "schema_version": 4
+      },
+      "passed": true
+    },
+    "sector_sample_reliability": {
+      "details": {
+        "invalid_rows": [],
+        "samples": [
+          {
+            "eligible_members": 3,
+            "representativeness": "Limited",
+            "sector": "energy"
+          },
+          {
+            "eligible_members": 15,
+            "representativeness": "High",
+            "sector": "health_care"
+          },
+          {
+            "eligible_members": 2,
+            "representativeness": "Limited",
+            "sector": "real_estate"
+          },
+          {
+            "eligible_members": 15,
+            "representativeness": "High",
+            "sector": "financials"
+          },
+          {
+            "eligible_members": 14,
+            "representativeness": "High",
+            "sector": "industrials"
+          },
+          {
+            "eligible_members": 9,
+            "representativeness": "Moderate",
+            "sector": "consumer_staples"
+          },
+          {
+            "eligible_members": 20,
+            "representativeness": "High",
+            "sector": "information_technology"
+          },
+          {
+            "eligible_members": 3,
+            "representativeness": "Limited",
+            "sector": "utilities"
+          },
+          {
+            "eligible_members": 9,
+            "representativeness": "Moderate",
+            "sector": "consumer_discretionary"
+          },
+          {
+            "eligible_members": 9,
+            "representativeness": "Moderate",
+            "sector": "communication_services"
+          },
+          {
+            "eligible_members": 1,
+            "representativeness": "Limited",
+            "sector": "materials"
+          }
+        ]
+      },
+      "passed": true
+    },
+    "sector_zero_denominator_semantics": {
+      "details": {
+        "invalid_rows": [],
+        "zero_decliner_sectors": [
+          "energy",
+          "real_estate"
+        ]
+      },
+      "passed": true
+    },
+    "semantic_regressions": {
+      "details": {
+        "output": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n....................\n----------------------------------------------------------------------\nRan 20 tests in 1.391s\n\nOK\n"
+      },
+      "passed": true
+    },
+    "warm_snapshot_reads": {
+      "details": {
+        "provider_history_calls": 0,
+        "routes": {
+          "/home/dashboard": {
+            "latency_ms": 7.92,
+            "status": 200
+          },
+          "/market/breadth": {
+            "latency_ms": 20.48,
+            "status": 200
+          },
+          "/market/breadth/snapshot/latest": {
+            "latency_ms": 2.45,
+            "status": 200
+          },
+          "/market/decision-dashboard": {
+            "latency_ms": 2.87,
+            "status": 200
+          },
+          "/market/details/decision": {
+            "latency_ms": 2.42,
+            "status": 200
+          },
+          "/market/health": {
+            "latency_ms": 5.33,
+            "status": 200
+          },
+          "/market/sectors/snapshot/latest": {
+            "latency_ms": 4.81,
+            "status": 200
+          },
+          "/market/snapshot/latest": {
+            "latency_ms": 8.01,
+            "status": 200
+          }
+        }
+      },
+      "passed": true
+    }
+  },
+  "conditions": [],
+  "failures": [],
+  "passed": true,
+  "phase": "4.4c-semantics"
+}

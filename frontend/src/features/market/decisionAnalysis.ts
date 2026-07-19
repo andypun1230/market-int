@@ -24,6 +24,7 @@ export type DecisionPostureViewModel = {
   actionFramework: string;
   aggressivenessScore: number | null;
   confidence: number | null;
+  confidenceLabel: string | null;
   focus: string | null;
   mainRisk: string | null;
   monitor: string | null;
@@ -167,6 +168,7 @@ export function buildPosture(
     actionFramework: dashboard.playbook?.summary ?? dashboard.aggressiveness?.summary ?? 'Decision guidance unavailable.',
     aggressivenessScore: aggressiveness,
     confidence,
+    confidenceLabel: dashboard.decision_confidence?.status ?? null,
     focus,
     mainRisk: avoid,
     monitor,
@@ -621,15 +623,15 @@ function buildMarketCapScore(items: MarketCapRotationItem[], category: string) {
 
 function buildFocus(dashboard: DecisionDashboardResponse) {
   const hasSpecifics = Boolean(dashboard.playbook?.top_sector || dashboard.playbook?.top_industry_group || dashboard.playbook?.cap_rotation_leader);
-  return hasSpecifics ? 'Leading sectors, themes, and stronger market-cap groups' : null;
+  return hasSpecifics ? 'Leading sectors, static strategy preferences, and stronger market-cap groups' : null;
 }
 
 function buildLeadershipFocus(dashboard: DecisionDashboardResponse) {
-  const items = [
-    dashboard.playbook?.top_sector,
-    dashboard.playbook?.top_industry_group,
-    dashboard.playbook?.cap_rotation_leader,
-  ].filter((item): item is string => Boolean(item));
+  const staticPreference = dashboard.playbook?.top_industry_group
+    ? `${dashboard.playbook.top_industry_group} (Static strategy preference)`
+    : null;
+  const items = [dashboard.playbook?.top_sector, staticPreference, dashboard.playbook?.cap_rotation_leader]
+    .filter((item): item is string => Boolean(item));
   return Array.from(new Set(items)).slice(0, 3);
 }
 

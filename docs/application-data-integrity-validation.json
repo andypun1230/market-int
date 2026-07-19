@@ -1,6 +1,6 @@
 {
   "base_url": null,
-  "generated_at": "2026-07-18T09:15:00.681946+00:00",
+  "generated_at": "2026-07-19T10:32:10.073425+00:00",
   "inventory": [
     {
       "allowed_source_states": [
@@ -1334,7 +1334,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1349,7 +1349,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1364,7 +1364,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1379,7 +1379,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 44,
+      "elapsed_ms": 55,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1394,7 +1394,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 7,
       "http_status": 200,
       "method": "GET",
       "name": "HomeDashboardResponse",
@@ -1409,7 +1409,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 7,
       "http_status": 200,
       "method": "GET",
       "name": "MarketCoreSnapshot",
@@ -1424,7 +1424,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 46,
+      "elapsed_ms": 79,
       "http_status": 200,
       "method": "GET",
       "name": "IndexesResponse",
@@ -1439,7 +1439,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 17,
+      "elapsed_ms": 19,
       "http_status": 200,
       "method": "GET",
       "name": "SectorBreadthResponse",
@@ -1454,7 +1454,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 194,
+      "elapsed_ms": 235,
       "http_status": 200,
       "method": "GET",
       "name": "BreadthSnapshot",
@@ -1473,7 +1473,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 8,
       "http_status": 200,
       "method": "GET",
       "name": "MarketHealthResponse",
@@ -1488,7 +1488,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "DecisionDashboardResponse",
@@ -1503,7 +1503,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1523,7 +1523,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 5,
+      "elapsed_ms": 10,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1544,7 +1544,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 8,
       "http_status": 200,
       "method": "GET",
       "name": "dict",
@@ -1565,13 +1565,13 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 758,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "SectorDashboardResponse",
       "optional_failures": [],
       "path": "/market/sector-dashboard",
-      "provider": "generated_test_data",
+      "provider": "test",
       "required_failures": [],
       "screen": "Sectors",
       "source_state": null,
@@ -1580,7 +1580,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 9,
+      "elapsed_ms": 17,
       "http_status": 200,
       "method": "GET",
       "name": "SectorsSummaryResponse",
@@ -1589,13 +1589,13 @@
       "provider": null,
       "required_failures": [],
       "screen": "Sectors",
-      "source_state": "mock",
+      "source_state": "unavailable",
       "status": "PASS",
       "symbol": null,
       "warnings": []
     },
     {
-      "elapsed_ms": 82,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "SectorsResponse",
@@ -1604,13 +1604,13 @@
       "provider": null,
       "required_failures": [],
       "screen": "Sectors Legacy",
-      "source_state": "mock",
+      "source_state": "unavailable",
       "status": "PASS",
       "symbol": null,
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 891,
       "http_status": 200,
       "method": "GET",
       "name": "IndustryGroupResponse",
@@ -1625,7 +1625,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 42,
+      "elapsed_ms": 14,
       "http_status": 200,
       "method": "GET",
       "name": "IndustryRotationResponse",
@@ -1640,7 +1640,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "SectorEtfResponse",
@@ -1649,13 +1649,13 @@
       "provider": null,
       "required_failures": [],
       "screen": "Sector ETFs",
-      "source_state": "mock",
+      "source_state": "unavailable",
       "status": "PASS",
       "symbol": null,
       "warnings": []
     },
     {
-      "elapsed_ms": 12,
+      "elapsed_ms": 25,
       "http_status": 200,
       "method": "GET",
       "name": "WatchlistSummaryResponse",
@@ -1670,7 +1670,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 45,
+      "elapsed_ms": 57,
       "http_status": 200,
       "method": "GET",
       "name": "RelativeStrengthResponse",
@@ -1685,7 +1685,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 194,
+      "elapsed_ms": 228,
       "http_status": 200,
       "method": "GET",
       "name": "StockRatingResponse",
@@ -1700,7 +1700,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 0,
       "http_status": 200,
       "method": "GET",
       "name": "MarketSentimentResponse",
@@ -1715,7 +1715,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 3,
+      "elapsed_ms": 0,
       "http_status": 200,
       "method": "GET",
       "name": "MoneyFlowResponse",
@@ -1730,7 +1730,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "InstitutionalDashboardResponse",
@@ -1745,7 +1745,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "OptionsIntelligenceResponse",
@@ -1760,7 +1760,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 16,
+      "elapsed_ms": 0,
       "http_status": 200,
       "method": "GET",
       "name": "LiquidityDashboardResponse",
@@ -1775,7 +1775,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 83,
+      "elapsed_ms": 506,
       "http_status": 200,
       "method": "GET",
       "name": "MarketAnalysisResponse",
@@ -1790,7 +1790,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -1805,7 +1805,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -1895,7 +1895,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -1910,7 +1910,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -1925,7 +1925,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -1985,7 +1985,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -1994,13 +1994,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLB",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2009,13 +2009,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLC",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2024,13 +2024,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLE",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2039,13 +2039,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLF",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2054,13 +2054,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLI",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2069,13 +2069,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLK",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2084,13 +2084,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLP",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2099,13 +2099,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLRE",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2114,13 +2114,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLU",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2129,13 +2129,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLV",
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "QuoteData",
@@ -2144,13 +2144,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Quote",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLY",
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2165,7 +2165,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2195,7 +2195,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2210,7 +2210,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2240,7 +2240,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2270,7 +2270,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2300,7 +2300,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 9,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2315,7 +2315,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 9,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2324,7 +2324,7 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Chart",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "SPY",
       "warnings": []
@@ -2345,7 +2345,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 9,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2354,7 +2354,7 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Chart",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLB",
       "warnings": []
@@ -2405,7 +2405,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2420,7 +2420,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2435,7 +2435,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 7,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2444,13 +2444,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Chart",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLP",
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 9,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2459,13 +2459,13 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Chart",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLRE",
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2480,7 +2480,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2495,7 +2495,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 9,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2504,7 +2504,7 @@
       "provider": "generated_test_data",
       "required_failures": [],
       "screen": "Stock Detail Chart",
-      "source_state": "cached",
+      "source_state": "mock",
       "status": "PASS",
       "symbol": "XLY",
       "warnings": []
@@ -2540,7 +2540,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2555,7 +2555,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2570,7 +2570,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2585,7 +2585,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2645,7 +2645,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2660,7 +2660,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2675,7 +2675,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2690,7 +2690,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2705,7 +2705,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2750,7 +2750,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2810,7 +2810,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "HistoryData",
@@ -2870,7 +2870,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -2885,7 +2885,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -2900,7 +2900,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -2915,7 +2915,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -2930,7 +2930,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -2945,7 +2945,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -2960,7 +2960,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -2975,7 +2975,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -2990,7 +2990,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3005,7 +3005,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3020,7 +3020,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3035,7 +3035,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3050,7 +3050,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3065,7 +3065,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3080,7 +3080,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3095,7 +3095,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3110,7 +3110,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3125,7 +3125,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3140,7 +3140,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3155,7 +3155,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3170,7 +3170,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3185,7 +3185,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3200,7 +3200,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3215,7 +3215,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SupportResistanceResponse",
@@ -3230,7 +3230,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3245,7 +3245,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3260,7 +3260,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3275,7 +3275,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3290,7 +3290,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3305,7 +3305,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3320,7 +3320,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3335,7 +3335,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3350,7 +3350,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3365,7 +3365,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3395,7 +3395,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3410,7 +3410,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3440,7 +3440,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3455,7 +3455,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3470,7 +3470,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3485,7 +3485,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3500,7 +3500,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3515,7 +3515,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3530,7 +3530,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3545,7 +3545,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3560,7 +3560,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3575,7 +3575,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "TrendlineResponse",
@@ -3605,7 +3605,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3620,7 +3620,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3665,7 +3665,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3680,7 +3680,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3695,7 +3695,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3725,7 +3725,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3740,7 +3740,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3755,7 +3755,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3785,7 +3785,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3830,7 +3830,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3845,7 +3845,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3875,7 +3875,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3890,7 +3890,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3905,7 +3905,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "VolumeAnalysis",
@@ -3950,7 +3950,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 7,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -3965,7 +3965,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -3980,7 +3980,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 8,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -3995,7 +3995,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4010,7 +4010,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4025,7 +4025,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4040,7 +4040,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 8,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4055,7 +4055,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 8,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4070,7 +4070,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 21,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4085,7 +4085,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 7,
+      "elapsed_ms": 9,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4100,7 +4100,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 5,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4130,7 +4130,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4145,7 +4145,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 5,
+      "elapsed_ms": 7,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4160,7 +4160,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 7,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4175,7 +4175,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4190,7 +4190,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4205,7 +4205,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4220,7 +4220,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4235,7 +4235,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4250,7 +4250,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4265,7 +4265,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4280,7 +4280,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4295,7 +4295,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 4,
+      "elapsed_ms": 6,
       "http_status": 200,
       "method": "GET",
       "name": "RiskPlan",
@@ -4310,7 +4310,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "PatternResponse",
@@ -4340,7 +4340,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "PatternResponse",
@@ -4385,7 +4385,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "PatternResponse",
@@ -4400,7 +4400,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "PatternResponse",
@@ -4415,7 +4415,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "PatternResponse",
@@ -4445,7 +4445,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "PatternResponse",
@@ -4640,7 +4640,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "PatternResponse",
@@ -4655,7 +4655,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "PatternResponse",
@@ -4670,7 +4670,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4685,7 +4685,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4745,7 +4745,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4820,7 +4820,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4835,7 +4835,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4850,7 +4850,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4880,7 +4880,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4895,7 +4895,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4910,7 +4910,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4925,7 +4925,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4970,7 +4970,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -4985,7 +4985,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -5000,7 +5000,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -5015,7 +5015,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 0,
+      "elapsed_ms": 1,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolOptionsIntelligence",
@@ -5030,7 +5030,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5105,7 +5105,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5210,7 +5210,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5270,7 +5270,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5285,7 +5285,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5315,7 +5315,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5330,7 +5330,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 4,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5345,7 +5345,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "http_status": 200,
       "method": "GET",
       "name": "SymbolLiquidityResponse",
@@ -5390,7 +5390,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 5,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5405,7 +5405,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 8,
+      "elapsed_ms": 15,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5420,7 +5420,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 53,
+      "elapsed_ms": 127,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5435,7 +5435,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 7,
+      "elapsed_ms": 18,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5450,7 +5450,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 56,
+      "elapsed_ms": 38,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5465,7 +5465,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 16,
+      "elapsed_ms": 42,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5480,7 +5480,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 22,
+      "elapsed_ms": 21,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5495,7 +5495,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 41,
+      "elapsed_ms": 81,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5510,7 +5510,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 6,
+      "elapsed_ms": 41,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5525,7 +5525,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 28,
+      "elapsed_ms": 60,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5540,7 +5540,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 67,
+      "elapsed_ms": 147,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5555,7 +5555,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 22,
+      "elapsed_ms": 46,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5570,7 +5570,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 23,
+      "elapsed_ms": 24,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5585,7 +5585,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 72,
+      "elapsed_ms": 50,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5600,7 +5600,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 13,
+      "elapsed_ms": 62,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5615,7 +5615,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 44,
+      "elapsed_ms": 32,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5630,7 +5630,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 41,
+      "elapsed_ms": 79,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5645,7 +5645,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 54,
+      "elapsed_ms": 18,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5660,7 +5660,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 10,
+      "elapsed_ms": 69,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5675,7 +5675,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 75,
+      "elapsed_ms": 59,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5690,7 +5690,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 65,
+      "elapsed_ms": 16,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5705,7 +5705,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 124,
+      "elapsed_ms": 70,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5720,7 +5720,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 47,
+      "elapsed_ms": 124,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5735,7 +5735,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 8,
+      "elapsed_ms": 32,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisAggregate",
@@ -5750,7 +5750,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 482,
+      "elapsed_ms": 437,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5765,7 +5765,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 43,
+      "elapsed_ms": 54,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5780,7 +5780,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 51,
+      "elapsed_ms": 64,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5795,7 +5795,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 41,
+      "elapsed_ms": 53,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5810,7 +5810,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 41,
+      "elapsed_ms": 51,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5825,7 +5825,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 41,
+      "elapsed_ms": 56,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5840,7 +5840,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 48,
+      "elapsed_ms": 64,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5855,7 +5855,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 48,
+      "elapsed_ms": 65,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5870,7 +5870,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 53,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5885,7 +5885,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 48,
+      "elapsed_ms": 64,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5900,7 +5900,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 46,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5915,7 +5915,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 35,
+      "elapsed_ms": 51,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5930,7 +5930,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 55,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5945,7 +5945,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 39,
+      "elapsed_ms": 57,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5960,7 +5960,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 41,
+      "elapsed_ms": 51,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5975,7 +5975,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 54,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -5990,7 +5990,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 56,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6005,7 +6005,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 55,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6020,7 +6020,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 53,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6035,7 +6035,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 55,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6050,7 +6050,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 56,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6065,7 +6065,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 39,
+      "elapsed_ms": 56,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6080,7 +6080,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 56,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6095,7 +6095,7 @@
       "warnings": []
     },
     {
-      "elapsed_ms": 40,
+      "elapsed_ms": 54,
       "http_status": 200,
       "method": "GET",
       "name": "StockAnalysisResponse",
@@ -6123,7 +6123,7 @@
     "overall_result": "PASS WITH CONDITIONS",
     "partial_records": [
       {
-        "elapsed_ms": 194,
+        "elapsed_ms": 235,
         "http_status": 200,
         "method": "GET",
         "name": "BreadthSnapshot",
@@ -6142,7 +6142,7 @@
         "warnings": []
       },
       {
-        "elapsed_ms": 1,
+        "elapsed_ms": 6,
         "http_status": 200,
         "method": "GET",
         "name": "dict",
@@ -6162,7 +6162,7 @@
         "warnings": []
       },
       {
-        "elapsed_ms": 5,
+        "elapsed_ms": 10,
         "http_status": 200,
         "method": "GET",
         "name": "dict",
@@ -6183,7 +6183,7 @@
         "warnings": []
       },
       {
-        "elapsed_ms": 4,
+        "elapsed_ms": 8,
         "http_status": 200,
         "method": "GET",
         "name": "dict",
@@ -6220,7 +6220,7 @@
           "keys": [],
           "persistent": {
             "available": true,
-            "database_path": "/var/folders/pn/xvktlkjx4wx3dqs7wlx7zfhh0000gn/T/app-validation-cache-_qtqpumx/market_cache.sqlite3",
+            "database_path": "/var/folders/pn/xvktlkjx4wx3dqs7wlx7zfhh0000gn/T/app-validation-cache-y2xs6eg6/market_cache.sqlite3",
             "expired_items": 0,
             "fresh_items": 0,
             "items": 0,
@@ -6384,14 +6384,14 @@
           "quotes": true,
           "volume": true
         },
-        "checked_at": "2026-07-18T09:14:56.159583+00:00",
+        "checked_at": "2026-07-19T10:32:04.030339+00:00",
         "configured": true,
         "enabled": true,
         "fallback_active": false,
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-18T09:14:56.159370+00:00",
+        "last_successful_request": "2026-07-19T10:32:04.030159+00:00",
         "message": "Generated test-data provider is active.",
         "provider": "generated_test_data",
         "rate_limit_state": null,
@@ -6431,7 +6431,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-18T09:14:56.160764+00:00",
+        "last_successful_request": "2026-07-19T10:32:04.031643+00:00",
         "message": null,
         "provider": "generated_test_data",
         "rate_limit_state": null,
@@ -6457,7 +6457,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-18T09:14:56.161703+00:00",
+        "last_successful_request": "2026-07-19T10:32:04.033651+00:00",
         "message": null,
         "provider": "market_data",
         "rate_limit_state": null,
@@ -6485,7 +6485,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-18T09:14:56.161506+00:00",
+        "last_successful_request": "2026-07-19T10:32:04.033329+00:00",
         "message": null,
         "provider": "mock-options",
         "rate_limit_state": null,
@@ -6691,14 +6691,14 @@
           "quotes": true,
           "volume": true
         },
-        "checked_at": "2026-07-18T09:14:56.159583+00:00",
+        "checked_at": "2026-07-19T10:32:04.030339+00:00",
         "configured": true,
         "enabled": true,
         "fallback_active": false,
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-18T09:14:56.159370+00:00",
+        "last_successful_request": "2026-07-19T10:32:04.030159+00:00",
         "message": "Generated test-data provider is active.",
         "provider": "generated_test_data",
         "rate_limit_state": null,
@@ -6723,7 +6723,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-18T09:14:56.161235+00:00",
+        "last_successful_request": "2026-07-19T10:32:04.032928+00:00",
         "message": null,
         "provider": "market_proxy",
         "rate_limit_state": null,
@@ -6736,10 +6736,10 @@
       "source": "generated_test_data",
       "test_data": {
         "data_status": "test",
-        "generated_at": "2026-07-18T09:14:24.924479+00:00",
+        "generated_at": "2026-07-19T10:31:26.058178+00:00",
         "is_mock": true,
         "label": "Generated Test Data",
-        "last_regenerated": "2026-07-18T09:14:24.924479+00:00",
+        "last_regenerated": "2026-07-19T10:31:26.058178+00:00",
         "mode": "TEST_DATA",
         "scenario": "balanced_market",
         "scenarios": [
@@ -6783,7 +6783,7 @@
         "last_error": null,
         "last_failure_at": null,
         "last_success_at": null,
-        "last_successful_request": "2026-07-18T09:14:56.161518+00:00",
+        "last_successful_request": "2026-07-19T10:32:04.033348+00:00",
         "message": null,
         "provider": "mock-trade-flow",
         "rate_limit_state": null,

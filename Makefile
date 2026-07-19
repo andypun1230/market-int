@@ -1,4 +1,4 @@
-.PHONY: validate-application-data validate-market-snapshot validate-stock-snapshot validate-phase-4-4a validate-phase-4-4b
+.PHONY: validate-application-data validate-market-snapshot validate-stock-snapshot validate-phase-4-4a validate-phase-4-4b validate-phase-4-4c validate-phase-4-4c-semantics validate-phase-4-4c-release-gate validate-phase-4-4c-blockers audit-rotation-integrity
 
 validate-application-data:
 	cd backend && python3 -m compileall app main.py
@@ -31,3 +31,24 @@ validate-phase-4-4b:
 	cd backend && python3 -m compileall app main.py scripts
 	cd backend && python3 -m unittest tests.test_breadth_snapshot
 	cd backend && python3 scripts/validate_phase_4_4b.py --test --json-output ../docs/phase-4.4b-validation.json
+
+validate-phase-4-4c:
+	cd backend && python3 -m compileall app main.py scripts
+	cd backend && python3 -m unittest discover -s tests -p 'test_sector_snapshot.py'
+	cd backend && python3 scripts/validate_phase_4_4c.py --test --warm --restart --json-output ../docs/phase-4.4c-validation.json
+
+validate-phase-4-4c-semantics:
+	cd backend && python3 -m compileall app main.py scripts
+	cd backend && python3 -m unittest tests.test_breadth_snapshot tests.test_sector_snapshot
+	cd backend && python3 scripts/validate_phase_4_4c_semantics.py --test --warm --report --json-output ../docs/phase-4.4c-semantics-validation.json
+
+validate-phase-4-4c-release-gate:
+	cd backend && python3 -m compileall app main.py scripts
+	cd backend && python3 scripts/validate_phase_4_4c_release_gate.py --test --live --warm --restart --report --copilot-context --json-output ../docs/phase-4.4c-final-release-gate.json --markdown-output ../docs/phase-4.4c-final-release-gate.md
+
+validate-phase-4-4c-blockers:
+	cd backend && python3 -m compileall app main.py scripts
+	cd backend && python3 scripts/validate_phase_4_4c_blockers.py --test --live --warm --restart --report --copilot-context --json-output ../docs/phase-4.4c-blockers-final.json --markdown-output ../docs/phase-4.4c-blockers-final.md
+
+audit-rotation-integrity:
+	cd backend && python3 scripts/audit_rotation_integrity.py --entity all --all-intervals --live --json-output ../docs/rotation-integrity-validation.json --csv-output ../docs/rotation-integrity-validation.csv

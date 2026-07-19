@@ -79,6 +79,9 @@ export type MarketBreadth = SourceMetadata & {
   declining_stocks: number;
   unchanged_stocks: number;
   advance_decline_ratio: number | null;
+  advance_decline_ratio_display?: string | null;
+  advance_decline_ratio_smoothed?: number | null;
+  ratio_method?: string | null;
   percent_above_20ema: number;
   percent_above_50ema: number;
   percent_above_200ema: number;
@@ -95,6 +98,9 @@ export type MarketBreadth = SourceMetadata & {
   source_state?: string | null;
   providers?: string[] | null;
   warnings?: string[] | null;
+  coverage_dimensions?: Record<string, { eligible?: number; total?: number; ratio?: number; display?: string }> | null;
+  data_confidence?: { score?: number | null; label?: string | null; reason?: string | null; source_snapshot_id?: string | null; calculated_at?: string | null } | null;
+  signal_confidence?: { score?: number | null; label?: string | null; reason?: string | null; source_snapshot_id?: string | null; calculated_at?: string | null } | null;
 };
 
 export type SectorBreadthItem = SourceMetadata & {
@@ -130,10 +136,14 @@ export type SectorLeader = SourceMetadata & {
   weekly_change_percent?: number;
   monthly_change_percent?: number;
   relative_strength_score?: number;
+  composite_score?: number;
+  relative_strength_1m?: number;
   percent_above_50ema?: number;
   advancing_stocks?: number;
   declining_stocks?: number;
   etf_symbol?: string | null;
+  total_members?: number | null;
+  eligible_members?: number | null;
 };
 
 export type SectorResponse = {
@@ -215,6 +225,10 @@ export type SectorDashboardResponse = {
   cache_status?: string | null;
   partial?: boolean | null;
   refreshing?: boolean | null;
+  snapshot_id?: string | null;
+  universe_version?: string | null;
+  market_date?: string | null;
+  coverage?: { constituent_coverage_ratio?: number; etf_coverage_ratio?: number } | null;
 };
 
 export type IndustryGroupItem = SourceMetadata & {
@@ -239,6 +253,19 @@ export type IndustryGroupItem = SourceMetadata & {
   new_lows?: number | null;
   volume_participation?: number | null;
   trend_direction?: string | null;
+  provenance?: ThemeProvenance | null;
+};
+
+export type ThemeProvenance = {
+  category?: string | null;
+  label?: string | null;
+  data_mode?: string | null;
+  is_live_theme_intelligence?: boolean | null;
+  verified?: boolean | null;
+  source?: string | null;
+  snapshot_id?: string | null;
+  last_updated?: string | null;
+  reason?: string | null;
 };
 
 export type IndustryGroupResponse = {
@@ -247,6 +274,7 @@ export type IndustryGroupResponse = {
   overall_mode?: string | null;
   coverage_percent?: number | null;
   as_of?: string | null;
+  theme_provenance?: ThemeProvenance | null;
 };
 
 export type WatchlistItem = {
@@ -286,6 +314,24 @@ export type WatchlistSummaryItem = WatchlistItem & {
   rs_status?: string | null;
   pattern_name?: string | null;
   pattern_confidence?: number | null;
+  quote_status?: 'live' | 'cached' | 'stale' | 'unavailable' | null;
+  quote_price?: number | null;
+  quote_change_percent?: number | null;
+  quote_source?: string | null;
+  quote_timestamp?: string | null;
+  analysis_status?: 'complete' | 'partial' | 'stale' | 'unavailable' | 'initializing' | null;
+  analysis_snapshot_id?: string | null;
+  analysis_updated_at?: string | null;
+  overall_status?: 'complete' | 'partial' | 'pending' | 'stale' | 'unavailable' | 'unsupported' | null;
+  status_reason_code?: string | null;
+  status_reason?: string | null;
+  next_action?: string | null;
+  retryable?: boolean | null;
+  refreshing?: boolean | null;
+  available_fields?: string[];
+  missing_fields?: string[];
+  signal?: string | null;
+  signal_confidence?: number | null;
 };
 
 export type WatchlistSummaryResponse = {
@@ -482,11 +528,14 @@ export type DecisionConfidenceContributor = {
 };
 
 export type DecisionConfidenceResponse = {
-  score: number;
+  score: number | null;
   status: string;
   contributors: DecisionConfidenceContributor[];
   disagreements: string[];
   summary: string;
+  reason?: string | null;
+  calculated_at?: string | null;
+  source_snapshot_id?: string | null;
 };
 
 export type DashboardComparisonItem = {
@@ -737,6 +786,7 @@ export type MarketPlaybookResponse = {
   suggested_aggressiveness: string;
   top_sector: string;
   top_industry_group: string;
+  top_industry_group_provenance?: ThemeProvenance | null;
   cap_rotation_leader: string;
   main_risk: string;
   action_guidelines: string[];
@@ -776,6 +826,7 @@ export type MarketCoreSnapshot = {
     aggressiveness?: AggressivenessResponse | null;
     preferred_style?: string | null;
     main_risk?: string | null;
+    decision_confidence?: DecisionConfidenceResponse | null;
   };
   breadth_summary?: {
     breadth_score?: number | null;
@@ -789,8 +840,12 @@ export type MarketCoreSnapshot = {
     market_date?: string | null;
     coverage_status?: string | null;
     trend?: string | null;
+    coverage_dimensions?: Record<string, { eligible?: number; total?: number; ratio?: number; display?: string }> | null;
+    data_confidence?: { label?: string; score?: number; reason?: string; source_snapshot_id?: string; calculated_at?: string } | null;
+    signal_confidence?: { label?: string; score?: number; reason?: string; source_snapshot_id?: string; calculated_at?: string } | null;
   };
   top_sector?: SectorLeader | null;
+  lagging_sector?: SectorLeader | null;
   top_industry_group?: IndustryGroupItem | null;
   as_of?: string | null;
   overall_mode?: string | null;
@@ -1327,6 +1382,28 @@ export type HistoryData = {
   background_refresh_started?: boolean;
   capability_state?: string | null;
   fallback_reason?: string | null;
+};
+
+export type MarketMacroResponse = {
+  state: string;
+  state_label: string;
+  score: number | null;
+  confidence: string;
+  supporting_evidence: string[];
+  current_risks: string[];
+  key_risk: string;
+  invalidation_conditions: string;
+  summary: string;
+  leading: string[];
+  lagging: string[];
+  assets: Record<string, unknown>[];
+  available_assets: number;
+  expected_assets: number;
+  source_state: string;
+  source_label: string;
+  as_of: string;
+  provenance: Record<string, unknown>;
+  histories: Record<string, HistoryData>;
 };
 
 export type LiveQuotesResponse = {

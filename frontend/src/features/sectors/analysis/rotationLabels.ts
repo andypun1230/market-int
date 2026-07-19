@@ -30,6 +30,7 @@ export type RotationLabelCandidate = {
   id: string;
   key: string;
   latest: RotationPoint;
+  priority?: number;
   shortName: string;
   type: 'sector' | 'theme' | string;
 };
@@ -171,7 +172,7 @@ export function selectSmartLabelKeys(items: RotationLabelCandidate[], context: R
 export function estimateLabelBounds(label: string, fontSize: number) {
   return {
     height: Math.ceil(fontSize * 1.65),
-    width: Math.min(116, Math.max(38, Math.ceil(label.length * fontSize * 0.62) + 16)),
+    width: Math.min(116, Math.max(52, Math.ceil(label.length * fontSize * 0.62) + 16)),
   };
 }
 
@@ -262,7 +263,7 @@ function getLabelPriority(item: RotationLabelCandidate, selectedItemKey: string 
   const quadrantChanged = classifyQuadrant(first.relativeStrength, first.relativeMomentum) !== classifyQuadrant(latest.relativeStrength, latest.relativeMomentum);
   const neutralDistance = Math.hypot(latest.relativeStrength - 100, latest.relativeMomentum - 100);
 
-  let score = 0;
+  let score = item.priority ?? 0;
   if (selectedItemKey === item.key) {
     score += 10000;
   }

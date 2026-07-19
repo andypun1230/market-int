@@ -8,38 +8,17 @@ import { AppScreen } from '@/components/ui/AppScreen';
 import { DetailModal } from '@/components/ui/DetailModal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { MetricTile } from '@/components/ui/MetricTile';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
-import { StatusBadge } from '@/components/ui/StatusBadge';
-import { TestDataBadge } from '@/components/ui/TestDataBadge';
 import { StockCard } from '@/components/watchlist/StockCard';
 import { Spacing, Theme } from '@/constants/theme';
 import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
-import {
-  formatQuadrant,
-  generateSectorTabTestData,
-  getRotationWindow,
-  SECTOR_TAB_TEST_SEED,
-  TEST_HEATMAP_INTERVALS,
-  type ConstituentTestItem,
-  type SectorThemeTestItem,
-} from '@/data/sectorTabTestData';
-import { RelevantStocksSection } from '@/features/sectors/components/RelevantStocksSection';
-import { SectorThemeRow } from '@/features/watchlist/components/SectorThemeRow';
-import { SectorThemeSection } from '@/features/watchlist/components/SectorThemeSection';
+import { SectorDetailContent } from '@/features/sectors/components/SectorDetailContent';
+import { normalizeSectorId, type SectorId } from '@/features/sectors/sectorSnapshot';
 import { WatchlistSection } from '@/features/watchlist/components/WatchlistSection';
 import { WatchlistSummary } from '@/features/watchlist/components/WatchlistSummary';
 import { buildWatchlistKey, useWatchlist, type GroupWatchlistItem } from '@/features/watchlist/store';
-import { classifySectorThemeItem } from '@/features/watchlist/sectorThemeClassifier';
-import {
-  getSectorThemeSortLabel,
-  groupSectorThemeItems,
-  SECTOR_THEME_SORT_OPTIONS,
-  sortSectorThemeItems,
-  type ClassifiedSectorThemeItem,
-} from '@/features/watchlist/sectorThemeSort';
 import { classifyWatchlistItem } from '@/features/watchlist/watchlistClassifier';
 import {
   getSortLabel,
@@ -48,33 +27,22 @@ import {
   WATCHLIST_SORT_OPTIONS,
 } from '@/features/watchlist/watchlistSort';
 import { useWatchlistUiPreferences } from '@/features/watchlist/watchlistUiPreferences';
-import type {
-  ClassifiedWatchlistItem,
-  SectorThemeGroup,
-  SectorThemeSortMode,
-  WatchlistGroup,
-} from '@/features/watchlist/types';
+import type { ClassifiedWatchlistItem, WatchlistGroup } from '@/features/watchlist/types';
 import { useWatchlistDashboard } from '@/hooks/useWatchlistDashboard';
-import type { WatchlistItem } from '@/types/market';
+import { useSectorSnapshot } from '@/hooks/useSectorSnapshot';
+import type { WatchlistSummaryItem } from '@/types/market';
 
 type WatchlistTab = 'stocks' | 'groups';
 
 const WATCHLIST_TABS = [
   { key: 'stocks', label: 'Stocks' },
-  { key: 'groups', label: 'Sectors & Themes' },
+  { key: 'groups', label: 'Sectors' },
 ];
 const WATCHLIST_GROUP_ORDER: WatchlistGroup[] = [
   'needs_attention',
   'high_priority',
   'momentum',
   'watching',
-  'data_unavailable',
-];
-const SECTOR_THEME_GROUP_ORDER: SectorThemeGroup[] = [
-  'leading',
-  'improving',
-  'watching',
-  'weakening',
   'data_unavailable',
 ];
 
@@ -87,16 +55,14 @@ export default function WatchlistScreen() {
   const [sectorThemeToolbarOpen, setSectorThemeToolbarOpen] = useState(false);
   const [removedSymbols, setRemovedSymbols] = useState<string[]>([]);
   const [inputError, setInputError] = useState<string | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<SectorThemeTestItem | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<SectorId | null>(null);
   const watchlistStore = useWatchlist();
   const [watchlistPreferences, updateWatchlistPreferences] = useWatchlistUiPreferences();
   const {
     collapsedGroups,
-    sectorThemeCollapsedGroups,
-    sectorThemePeriod,
-    sectorThemeSortMode,
     sortMode,
   } = watchlistPreferences;
+  const { snapshot: sectorSnapshot } = useSectorSnapshot(activeTab === 'groups');
 
   useFocusEffect(
     useCallback(() => {
@@ -105,7 +71,11 @@ export default function WatchlistScreen() {
     }, []),
   );
 
-  const { error, loading, refetch, watchlist } = useWatchlistDashboard(isFocused && activeTab === 'stocks');
+  const requestedStockSymbols = useMemo(
+    () => watchlistStore.stockItems.map((item) => item.ticker).sort(),
+    [watchlistStore.stockItems],
+  );
+  const { error, loading, refetch, watchlist } = useWatchlistDashboard(requestedStockSymbols, isFocused && activeTab === 'stocks');
   const savedItems = useMemo(
     () => mergeWatchlistItems(watchlist?.items ?? [], watchlistStore.stockItems, removedSymbols),
     [removedSymbols, watchlist, watchlistStore.stockItems],
@@ -133,60 +103,14 @@ export default function WatchlistScreen() {
   );
   const canAdd = query.length > 0 && !savedItems.some((item) => item.ticker === query);
 
-  const sectorData = useMemo(() => generateSectorTabTestData(SECTOR_TAB_TEST_SEED), []);
-  const allGroups = useMemo<SectorThemeTestItem[]>(
-    () => [...sectorData.sectors, ...sectorData.themes],
-    [sectorData.sectors, sectorData.themes],
-  );
-  const groupLookup = useMemo(() => {
-    const lookup = new Map<string, SectorThemeTestItem>();
-    allGroups.forEach((item) => lookup.set(buildWatchlistKey(item.type, item.id), item));
-    return lookup;
-  }, [allGroups]);
-  const stockWatchlistKeys = useMemo(
-    () => new Set(watchlistStore.stockItems.map((item) => buildWatchlistKey('stock', item.ticker))),
-    [watchlistStore.stockItems],
-  );
-  const classifiedSectorThemeItems = useMemo<ClassifiedSectorThemeItem[]>(
-    () => watchlistStore.groupItems.map((stored, originalIndex) => {
-      const item = groupLookup.get(buildWatchlistKey(stored.type, stored.id)) ?? null;
-      return {
-        classification: classifySectorThemeItem({
-          item,
-          period: sectorThemePeriod,
-          stored,
-        }),
-        item,
-        originalIndex,
-        stored,
-      };
-    }),
-    [groupLookup, sectorThemePeriod, watchlistStore.groupItems],
-  );
   const sectorThemeQuery = sectorThemeSearchText.trim().toLowerCase();
-  const visibleSectorThemeItems = useMemo(
-    () => classifiedSectorThemeItems.filter(({ item, stored }) => {
-      if (!sectorThemeQuery) {
-        return true;
-      }
-      const searchableText = [
-        stored.name,
-        stored.id,
-        item?.name,
-        item?.type === 'theme' ? item.parentSector : null,
-      ].filter(Boolean).join(' ').toLowerCase();
-      return searchableText.includes(sectorThemeQuery);
-    }),
-    [classifiedSectorThemeItems, sectorThemeQuery],
-  );
-  const sortedSectorThemeItems = useMemo(
-    () => sortSectorThemeItems(visibleSectorThemeItems, sectorThemeSortMode),
-    [sectorThemeSortMode, visibleSectorThemeItems],
-  );
-  const groupedSectorThemeItems = useMemo(
-    () => groupSectorThemeItems(sortedSectorThemeItems),
-    [sortedSectorThemeItems],
-  );
+  const savedSectors = useMemo(() => watchlistStore.groupItems
+    .filter((item) => item.type === 'sector')
+    .map((stored) => ({ stored, sectorId: normalizeSectorId(stored.id) ?? normalizeSectorId(stored.name) }))
+    .filter((item): item is { stored: GroupWatchlistItem; sectorId: SectorId } => item.sectorId !== null)
+    .map((item) => ({ ...item, row: sectorSnapshot?.sectors.find((row) => row.sectorId === item.sectorId) ?? null }))
+    .filter(({ stored, row }) => !sectorThemeQuery || [stored.id, stored.name, row?.displayName, row?.sectorId].filter(Boolean).join(' ').toLowerCase().includes(sectorThemeQuery))
+    .sort((a, b) => (a.row?.rank ?? 999) - (b.row?.rank ?? 999)), [sectorSnapshot, sectorThemeQuery, watchlistStore.groupItems]);
   const copilotContext = useMemo(
     () => createCopilotContext({
       payload: {
@@ -196,10 +120,7 @@ export default function WatchlistScreen() {
             acc[group] = groupedClassifiedItems[group].length;
             return acc;
           }, {})
-          : SECTOR_THEME_GROUP_ORDER.reduce<Record<string, number>>((acc, group) => {
-            acc[group] = groupedSectorThemeItems[group].length;
-            return acc;
-          }, {}),
+          : { saved_sectors: savedSectors.length },
         items: activeTab === 'stocks'
           ? sortedClassifiedItems.map(({ classification, item }) => ({
             changePercent: item.change_percent,
@@ -209,23 +130,15 @@ export default function WatchlistScreen() {
             ticker: item.ticker,
             group: classification.group,
           }))
-          : sortedSectorThemeItems.map(({ classification, item, stored }) => ({
-            group: classification.group,
-            id: stored.id,
-            name: stored.name,
-            return: item?.returns?.[sectorThemePeriod],
-            score: classification.score,
-            signal: classification.primaryStatus,
-            type: stored.type,
-          })),
-        sortMode: activeTab === 'stocks' ? sortMode : sectorThemeSortMode,
+          : savedSectors.map(({ row, stored }) => ({ id: row?.sectorId ?? stored.id, name: row?.displayName ?? stored.name, score: row?.compositeScore, signal: row?.classification, type: 'sector' })),
+        sortMode: activeTab === 'stocks' ? sortMode : 'snapshot_rank',
       },
       routeName: '/watchlist',
       screenTitle: activeTab === 'stocks' ? 'Watchlist Stocks' : 'Watchlist Sectors & Themes',
       screenType: 'watchlist',
-      sourceState: activeTab === 'stocks' ? 'mixed' : 'mock',
+      sourceState: activeTab === 'stocks' ? 'mixed' : sectorSnapshot?.sourceState ?? 'unavailable',
     }),
-    [activeTab, groupedClassifiedItems, groupedSectorThemeItems, sectorThemePeriod, sectorThemeSortMode, sortMode, sortedClassifiedItems, sortedSectorThemeItems],
+    [activeTab, groupedClassifiedItems, savedSectors, sectorSnapshot?.sourceState, sortMode, sortedClassifiedItems],
   );
 
   const addSymbol = () => {
@@ -268,23 +181,6 @@ export default function WatchlistScreen() {
     });
   };
 
-  const toggleSectorThemeGroupCollapsed = (group: SectorThemeGroup) => {
-    updateWatchlistPreferences({
-      sectorThemeCollapsedGroups: {
-        [group]: !sectorThemeCollapsedGroups[group],
-      },
-    });
-  };
-
-  const toggleStockWatchlist = (stock: ConstituentTestItem) => {
-    watchlistStore.toggleWatchlistItem({
-      id: stock.ticker.toUpperCase(),
-      name: stock.companyName,
-      ticker: stock.ticker.toUpperCase(),
-      type: 'stock',
-    });
-  };
-
   return (
     <AppScreen title="Watchlist" subtitle="Saved stocks, sectors, and themes.">
       <View style={styles.stack}>
@@ -313,7 +209,7 @@ export default function WatchlistScreen() {
 
         <AskCopilotButton
           context={copilotContext}
-          prompt={activeTab === 'stocks' ? 'Rank my watchlist and explain which name needs attention.' : 'Explain my saved sectors and themes by rotation group.'}
+          prompt={activeTab === 'stocks' ? 'Rank my watchlist and explain which name needs attention.' : 'Explain my saved sectors using the current market snapshot.'}
         />
 
         {activeTab === 'stocks' ? (
@@ -392,17 +288,11 @@ export default function WatchlistScreen() {
           </>
         ) : (
           <View style={styles.stack}>
-            {classifiedSectorThemeItems.length ? <SectorThemeSummary items={classifiedSectorThemeItems} /> : null}
-
             {sectorThemeToolbarOpen ? (
               <DashboardCard style={styles.compactControlCard}>
                 <SectorThemeSearchPanel
                   query={sectorThemeSearchText}
                   onQueryChange={setSectorThemeSearchText}
-                />
-                <SectorThemeSortPanel
-                  onSortChange={(nextSortMode) => updateWatchlistPreferences({ sectorThemeSortMode: nextSortMode })}
-                  sortMode={sectorThemeSortMode}
                 />
               </DashboardCard>
             ) : null}
@@ -411,36 +301,29 @@ export default function WatchlistScreen() {
               <SkeletonCard compact rows={2} title />
             ) : (
               <View style={styles.stack}>
-                {SECTOR_THEME_GROUP_ORDER.map((group) => (
-                  <SectorThemeSection
-                    collapsed={Boolean(sectorThemeCollapsedGroups[group])}
-                    group={group}
-                    items={groupedSectorThemeItems[group]}
-                    key={group}
-                    onToggleCollapsed={() => toggleSectorThemeGroupCollapsed(group)}>
-                    {groupedSectorThemeItems[group].map((entry) => (
-                      <SectorThemeRow
-                        entry={entry}
-                        key={buildWatchlistKey(entry.stored.type, entry.stored.id)}
-                        onOpen={() => entry.item && setSelectedGroup(entry.item)}
-                        onRemove={() => removeGroup(entry.stored)}
-                      />
-                    ))}
-                  </SectorThemeSection>
+                {savedSectors.map(({ stored, sectorId, row }) => (
+                  <DashboardCard key={buildWatchlistKey('sector', sectorId)}>
+                    <Pressable accessibilityRole="button" onPress={() => setSelectedGroup(sectorId)} style={styles.summaryHeaderRow}>
+                      <View><Text style={styles.summaryTitle}>{row?.displayName ?? stored.name}</Text><Text style={styles.summarySubtitle}>{row ? `#${row.rank} · ${row.etfSymbol} · ${row.classification}` : 'Sector snapshot unavailable'}</Text></View>
+                      <Text style={styles.summaryCount}>{row?.compositeScore?.toFixed(2) ?? 'N/A'}</Text>
+                    </Pressable>
+                    <Pressable accessibilityRole="button" onPress={() => removeGroup(stored)} style={styles.removeGroupButton}><Text style={styles.removeGroupText}>Remove</Text></Pressable>
+                  </DashboardCard>
                 ))}
+                {watchlistStore.groupItems.some((item) => item.type === 'theme') ? <Text style={styles.helperText}>Live theme intelligence is not yet available.</Text> : null}
               </View>
             )}
 
             {watchlistStore.hydrated && watchlistStore.groupItems.length === 0 ? (
               <EmptyState
-                title="No saved sectors or themes"
-                message="Open the Sector tab and save sectors or themes to track them here."
+                title="No saved sectors"
+                message="Open the Sectors tab and save a sector to track it here."
               />
             ) : null}
-            {watchlistStore.hydrated && watchlistStore.groupItems.length > 0 && visibleSectorThemeItems.length === 0 ? (
+            {watchlistStore.hydrated && watchlistStore.groupItems.length > 0 && savedSectors.length === 0 ? (
               <EmptyState
                 title="No saved groups match"
-                message="Change the search to show saved sectors and themes."
+                message="Change the search to show saved sectors."
               />
             ) : null}
           </View>
@@ -449,46 +332,10 @@ export default function WatchlistScreen() {
 
       <DetailModal
         onClose={() => setSelectedGroup(null)}
-        subtitle={selectedGroup?.type === 'theme' ? selectedGroup.parentSector : 'Sector detail · Test Data'}
-        title={selectedGroup ? `${selectedGroup.type === 'sector' ? 'Sector' : 'Theme'}: ${selectedGroup.name}` : 'Group Detail'}
+        subtitle={sectorSnapshot ? `${sectorSnapshot.marketDate} · ${sectorSnapshot.sourceState === 'live' ? 'Live Polygon history' : 'Snapshot data'}` : undefined}
+        title={selectedGroup ? sectorSnapshot?.sectors.find((row) => row.sectorId === selectedGroup)?.displayName ?? 'Sector detail' : 'Sector detail'}
         visible={Boolean(selectedGroup)}>
-        {selectedGroup ? (
-          <View style={styles.stack}>
-            <DashboardCard title="Performance Summary" accentColor={Theme.colors.success}>
-              <View style={styles.badgeRow}>
-                <TestDataBadge />
-                <StatusBadge label={formatQuadrant(selectedGroup.quadrant)} tone="info" />
-              </View>
-              <View style={styles.metricGrid}>
-                {TEST_HEATMAP_INTERVALS.map((interval) => (
-                  <MetricTile key={interval} label={interval} value={formatReturn(selectedGroup.returns[interval])} />
-                ))}
-              </View>
-            </DashboardCard>
-            <DashboardCard title="Rotation Snapshot" accentColor={Theme.colors.accent}>
-              <View style={styles.metricGrid}>
-                {(['1W', '1M', '3M'] as const).map((interval) => {
-                  const rotation = getRotationWindow(selectedGroup, interval);
-                  return (
-                    <MetricTile
-                      key={interval}
-                      label={interval}
-                      value={formatQuadrant(rotation.quadrant)}
-                      subvalue={`RS ${rotation.relativeStrength.toFixed(1)} · Mo ${rotation.relativeMomentum.toFixed(1)}`}
-                      tone="info"
-                    />
-                  );
-                })}
-              </View>
-            </DashboardCard>
-            <RelevantStocksSection
-              group={selectedGroup}
-              initialInterval={sectorThemePeriod}
-              onToggleStockWatchlist={toggleStockWatchlist}
-              stockWatchlistKeys={stockWatchlistKeys}
-            />
-          </View>
-        ) : null}
+        {selectedGroup ? <SectorDetailContent sectorId={selectedGroup} /> : null}
       </DetailModal>
     </AppScreen>
   );
@@ -518,71 +365,6 @@ function SectorThemeHeaderActions({ onToggle, open }: { onToggle: () => void; op
       />
     </View>
   );
-}
-
-function SectorThemeSummary({ items }: { items: ClassifiedSectorThemeItem[] }) {
-  const counts = items.reduce(
-    (result, entry) => {
-      if (entry.item?.quadrant) {
-        result[entry.item.quadrant] += 1;
-      }
-      return result;
-    },
-    {
-      improving: 0,
-      lagging: 0,
-      leading: 0,
-      weakening: 0,
-    },
-  );
-
-  return (
-    <DashboardCard style={styles.compactControlCard}>
-      <View style={styles.summaryHeaderRow}>
-        <View>
-          <Text style={styles.summaryTitle}>Sectors & Themes Dashboard</Text>
-          <Text style={styles.summarySubtitle}>Saved groups by rotation quadrant</Text>
-        </View>
-        <Text style={styles.summaryCount}>{items.length} Saved</Text>
-      </View>
-      <View style={styles.summaryMetricRow}>
-        <SummaryMetric label="Leading" tone="success" value={counts.leading} />
-        <SummaryMetric label="Weakening" tone="warning" value={counts.weakening} />
-        <SummaryMetric label="Lagging" tone="danger" value={counts.lagging} />
-        <SummaryMetric label="Improving" tone="info" value={counts.improving} />
-      </View>
-    </DashboardCard>
-  );
-}
-
-function SummaryMetric({
-  label,
-  tone,
-  value,
-}: {
-  label: string;
-  tone: 'danger' | 'info' | 'success' | 'warning';
-  value: number;
-}) {
-  return (
-    <View style={styles.summaryMetric}>
-      <Text style={styles.summaryMetricLabel}>{label}</Text>
-      <Text style={[styles.summaryMetricValue, { color: getSummaryToneColor(tone) }]}>{value}</Text>
-    </View>
-  );
-}
-
-function getSummaryToneColor(tone: 'danger' | 'info' | 'success' | 'warning') {
-  switch (tone) {
-    case 'danger':
-      return Theme.colors.danger;
-    case 'info':
-      return Theme.colors.accent;
-    case 'success':
-      return Theme.colors.success;
-    case 'warning':
-      return Theme.colors.warning;
-  }
 }
 
 function IconButton({
@@ -710,43 +492,13 @@ function SectorThemeSearchPanel({
   );
 }
 
-function SectorThemeSortPanel({
-  onSortChange,
-  sortMode,
-}: {
-  onSortChange: (sortMode: SectorThemeSortMode) => void;
-  sortMode: SectorThemeSortMode;
-}) {
-  return (
-    <View style={styles.sortPanel}>
-      <Text style={styles.sortPanelTitle}>Sort: {getSectorThemeSortLabel(sortMode)}</Text>
-      <View style={styles.sortOptionGrid}>
-        {SECTOR_THEME_SORT_OPTIONS.map((option) => {
-          const selected = option.key === sortMode;
-          return (
-            <Pressable
-              accessibilityLabel={`Sort by ${option.label}`}
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-              key={option.key}
-              onPress={() => onSortChange(option.key)}
-              style={({ pressed }) => [styles.sortOption, selected && styles.sortOptionSelected, pressed && styles.pressedButton]}>
-              <Text numberOfLines={1} style={[styles.sortOptionText, selected && styles.sortOptionTextSelected]}>{option.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
-
 function mergeWatchlistItems(
-  backendItems: WatchlistItem[],
+  backendItems: WatchlistSummaryItem[],
   stockItems: { ticker: string; name?: string }[],
   removedSymbols: string[],
-) {
+) : WatchlistSummaryItem[] {
   const removed = new Set(removedSymbols);
-  const bySymbol = new Map<string, WatchlistItem>();
+  const bySymbol = new Map<string, WatchlistSummaryItem>();
   backendItems.forEach((item) => {
     if (!removed.has(item.ticker)) {
       bySymbol.set(item.ticker, item);
@@ -757,17 +509,26 @@ function mergeWatchlistItems(
     if (!removed.has(symbol) && !bySymbol.has(symbol)) {
       bySymbol.set(symbol, {
         ticker: symbol,
-        trend: 'Local',
-        setup: item.name ? `${item.name} saved from watchlist` : 'Open for analysis',
+        trend: 'Preparing analysis',
+        setup: item.name ? `${item.name} saved from watchlist; analysis is preparing.` : 'Preparing analysis snapshot.',
         support_zone: 'N/A',
         risk_flag: 'N/A',
         price: null,
         change_percent: null,
-        data_source: 'local',
+        data_source: 'unavailable',
         is_live: false,
-        is_stale: true,
+        is_stale: false,
         fallback_used: false,
         as_of: null,
+        overall_status: 'pending',
+        status_reason_code: 'snapshot_missing',
+        status_reason: 'Preparing analysis snapshot.',
+        quote_status: 'unavailable',
+        analysis_status: 'initializing',
+        retryable: true,
+        refreshing: true,
+        available_fields: [],
+        missing_fields: ['chart', 'rating', 'risk', 'trend'],
       });
     }
   });
@@ -790,14 +551,6 @@ function WatchlistSkeleton() {
       ))}
     </View>
   );
-}
-
-function formatReturn(value: number) {
-  const prefix = value > 0 ? '+' : '';
-  return `${prefix}${value.toLocaleString('en-US', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
-  })}%`;
 }
 
 const styles = StyleSheet.create({
@@ -937,6 +690,21 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
     justifyContent: 'space-between',
     marginBottom: Spacing.two,
+  },
+  removeGroupButton: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.small,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 32,
+    paddingHorizontal: Spacing.two,
+  },
+  removeGroupText: {
+    color: Theme.colors.danger,
+    fontSize: 12,
+    fontWeight: '800',
   },
   summaryMetric: {
     backgroundColor: Theme.colors.backgroundMuted,

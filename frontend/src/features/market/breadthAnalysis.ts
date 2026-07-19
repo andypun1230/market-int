@@ -42,6 +42,7 @@ export type AdvanceDeclineViewModel = {
   decliningPercent: number | null;
   interpretation: string;
   ratio: number | null;
+  ratioDisplay: string;
   state: 'Positive' | 'Mixed' | 'Negative' | 'Unavailable';
   stateKey: DailyParticipationState;
   tone: BreadthSignalTone;
@@ -75,7 +76,12 @@ export type MovingAverageBreadthViewModel = {
 export type BreadthQualityViewModel = {
   confidence: BreadthConfidence;
   confidenceLabel: string;
+  signalConfidenceLabel?: string;
+  signalConfidenceReason?: string | null;
+  signalConfidenceSource?: string | null;
   coveragePercent: number | null;
+  universeCoverageLabel?: string | null;
+  ema200EligibilityLabel?: string | null;
   expectedUniverse: number | null;
   limitation: string;
   sourceLabel: string;
@@ -221,6 +227,8 @@ export function deriveAdvanceDeclineState(market: MarketBreadth | null): Advance
   const decliningPercent = (declining / total) * 100;
   const unchangedPercent = (unchanged / total) * 100;
   const ratio = market.advance_decline_ratio ?? (declining > 0 ? advancing / declining : advancing > 0 ? null : 0);
+  const ratioDisplay = market.advance_decline_ratio_display
+    ?? (declining === 0 && advancing > 0 ? 'No decliners' : formatBreadthRatio(ratio));
   const net = advancingPercent - decliningPercent;
   const state = net >= 10 ? 'Positive'
     : net <= -10 ? 'Negative'
@@ -233,6 +241,7 @@ export function deriveAdvanceDeclineState(market: MarketBreadth | null): Advance
     decliningPercent,
     interpretation: buildAdvanceDeclineInterpretation(state, advancing, declining, unchanged),
     ratio,
+    ratioDisplay,
     state,
     stateKey: state.toLowerCase() as DailyParticipationState,
     tone,
@@ -285,7 +294,7 @@ export function deriveHighLowState(market: MarketBreadth | null): HighLowViewMod
     differential: inactive ? null : differential,
     highPercent: inactive ? null : highPercent,
     highs,
-    interpretation: buildHighLowInterpretation(state),
+    interpretation: buildHighLowInterpretation(state, market),
     lowPercent: inactive ? null : lowPercent,
     lows,
     ratioLabel: inactive ? 'No leadership signal' : ratioLabel,
@@ -338,14 +347,32 @@ export function deriveBreadthQuality(market: MarketBreadth | null): BreadthQuali
   const coveragePercent = validPercent(market?.coverage_percent)
     ?? (trackedStocks !== null && expectedUniverse ? (trackedStocks / expectedUniverse) * 100 : null);
   const confidence = classifyBreadthConfidence(coveragePercent);
+  const dimensions = market?.coverage_dimensions ?? null;
+  const universe = dimensions?.universe ?? null;
+  const ema200 = dimensions?.ema200 ?? null;
+  const dataLabel = market?.data_confidence?.label ?? null;
+  const signalLabel = market?.signal_confidence?.label ?? null;
+  const signalScore = validNumber(market?.signal_confidence?.score);
+  const signalReason = market?.signal_confidence?.reason
+    ?? 'Insufficient historical breadth snapshots';
+  const signalConfidenceLabel = signalLabel && signalLabel !== 'Unavailable'
+    ? `${signalLabel}${signalScore !== null ? ` · ${Math.round(signalScore)}` : ''}`
+    : `Unavailable — ${signalReason}`;
   const sourceLabel = getBreadthSourceLabel(market);
   const strengthLabel = market?.breadth_status && market.breadth_status !== 'N/A'
     ? market.breadth_status
     : labelForScore(market?.breadth_score ?? null);
   return {
     confidence,
-    confidenceLabel: confidence === 'unavailable' ? 'Unavailable' : `${capitalize(confidence)} Confidence`,
+    confidenceLabel: dataLabel ? `${dataLabel} Data Confidence` : confidence === 'unavailable' ? 'Unavailable' : `${capitalize(confidence)} Data Confidence`,
+    signalConfidenceLabel,
+    signalConfidenceReason: signalReason,
+    signalConfidenceSource: market?.signal_confidence?.source_snapshot_id
+      ? `Snapshot ${market.signal_confidence.source_snapshot_id}${market.signal_confidence.calculated_at ? ` · calculated ${market.signal_confidence.calculated_at}` : ''}`
+      : null,
     coveragePercent,
+    universeCoverageLabel: universe?.display ?? (trackedStocks !== null && expectedUniverse !== null ? `${trackedStocks}/${expectedUniverse}` : null),
+    ema200EligibilityLabel: ema200?.display ?? null,
     expectedUniverse,
     limitation: buildQualityLimitation(confidence),
     sourceLabel,
@@ -620,10 +647,12 @@ function buildAdvanceDeclineInterpretation(state: AdvanceDeclineViewModel['state
   return `${advancing} advancing, ${declining} declining, and ${unchanged} unchanged stocks point to ${state.toLowerCase()} participation.`;
 }
 
-function buildHighLowInterpretation(state: HighLowViewModel['state']) {
+function buildHighLowInterpretation(state: HighLowViewModel['state'], market: MarketBreadth | null) {
   switch (state) {
     case 'Expanding':
-      return 'New highs are outpacing new lows, showing leadership expansion.';
+      return (market?.advancing_stocks ?? 0) < (market?.declining_stocks ?? 0)
+        ? 'New highs exceed new lows, but daily participation remains weak.'
+        : 'New highs exceed new lows, indicating leadership expansion.';
     case 'Deteriorating':
       return 'New lows are gaining relative to new highs, showing internal deterioration.';
     case 'Inactive':
@@ -673,6 +702,7 @@ function emptyAdvanceDecline(): AdvanceDeclineViewModel {
     decliningPercent: null,
     interpretation: 'Daily participation is unavailable.',
     ratio: null,
+    ratioDisplay: 'N/A',
     state: 'Unavailable',
     stateKey: 'unavailable',
     tone: 'neutral',

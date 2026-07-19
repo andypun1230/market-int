@@ -20,6 +20,7 @@ import {
   MarketBreadthResponse,
   MarketCapRotationResponse,
   MarketHealthResponse,
+  MarketMacroResponse,
   MarketCoreSnapshot,
   MarketSnapshotResponse,
   MarketRegime,
@@ -61,6 +62,7 @@ import {
 } from '@/types/market';
 import { cachedRequest } from '@/services/requestCache';
 import { API_URL } from '@/services/apiConfig';
+import { normalizeSectorId } from '@/features/sectors/sectorSnapshot';
 import type { CopilotChatRequest, CopilotChatResponse } from '@/features/copilot/types';
 
 type RequestOptions = {
@@ -222,14 +224,33 @@ export function getSectorDashboard() {
   );
 }
 
+export function getSectorSnapshot() {
+  return cachedRequest('sector-snapshot:latest', () => request<unknown>('/market/sectors/snapshot/latest'), 60_000);
+}
+
+export function getSectorRotation() {
+  return cachedRequest('sector-rotation', () => request<unknown>('/market/sectors/rotation'), 60_000);
+}
+
+export function getSectorDetail(sectorId: string) {
+  const canonicalId = normalizeSectorId(sectorId) ?? sectorId;
+  return cachedRequest(`sector-detail:${canonicalId}`, () => request<unknown>(`/market/sectors/${encodeURIComponent(canonicalId)}`), 60_000);
+}
+
 export function getMarketWatchlist() {
   return request<WatchlistResponse>('/market/watchlist');
 }
 
-export function getWatchlistSummary() {
+export function getWatchlistSummary(symbols: string[] = [], options: { bypassCache?: boolean } = {}) {
+  const normalizedSymbols = [...new Set(symbols.map((symbol) => symbol.trim().toUpperCase()).filter(Boolean))].sort();
+  const query = normalizedSymbols.length ? `?symbols=${encodeURIComponent(normalizedSymbols.join(','))}` : '';
+  const fetcher = () => request<WatchlistSummaryResponse>(`/watchlist/summary${query}`, { timeoutMs: 5000 });
+  if (options.bypassCache) {
+    return fetcher();
+  }
   return cachedRequest(
-    'watchlist-summary',
-    () => request<WatchlistSummaryResponse>('/watchlist/summary', { timeoutMs: 5000 }),
+    `watchlist-summary:v2:${normalizedSymbols.join(',') || 'default'}`,
+    fetcher,
     60_000,
   );
 }
@@ -539,6 +560,14 @@ export function getLiveHistory(symbol: string, resolution = 'D', days = 240) {
       `/market/live/history/${encodeURIComponent(normalizedSymbol)}?resolution=${encodeURIComponent(resolution)}&days=${days}`,
       { timeoutMs: 10_000 },
     ).then((history) => assertCompatibleHistoryRange(history, days)),
+    300_000,
+  );
+}
+
+export function getMarketMacro(days = 110) {
+  return cachedRequest(
+    `market-macro:v1:${days}`,
+    () => request<MarketMacroResponse>(`/market/macro?days=${days}`, { timeoutMs: 15_000 }),
     300_000,
   );
 }

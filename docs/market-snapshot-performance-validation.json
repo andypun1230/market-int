@@ -14,7 +14,7 @@
       "risk": "complete",
       "risk_dashboard": "complete"
     },
-    "snapshot_id": "market-validation-1784366118",
+    "snapshot_id": "market-validation-1784456423",
     "status": "partial",
     "synthetic": true
   },
@@ -22,79 +22,79 @@
   "mode": "test:warm",
   "read_latency": [
     {
-      "elapsed_ms": 17,
+      "elapsed_ms": 25,
       "path": "/market/snapshot/latest",
-      "snapshot_id": "market-validation-1784366118",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 300
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 4,
       "path": "/home/dashboard",
-      "snapshot_id": "market-validation-1784366118",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 500
     },
     {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "path": "/market/core-snapshot",
-      "snapshot_id": "market-validation-1784366118",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 500
     },
     {
       "elapsed_ms": 1,
       "path": "/market/regime",
-      "snapshot_id": "market-validation-1784366118",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 500
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 2,
       "path": "/market/health",
-      "snapshot_id": "market-validation-1784366118",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 500
     },
     {
       "elapsed_ms": 1,
       "path": "/market/risk",
-      "snapshot_id": "market-validation-1784366118",
-      "status_code": 200,
-      "target_ms": 500
-    },
-    {
-      "elapsed_ms": 1,
-      "path": "/market/fear-greed",
-      "snapshot_id": "market-validation-1784366118",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 500
     },
     {
       "elapsed_ms": 2,
-      "path": "/market/decision-dashboard",
-      "snapshot_id": "market-validation-1784366118",
+      "path": "/market/fear-greed",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 500
     },
     {
-      "elapsed_ms": 1,
+      "elapsed_ms": 5,
+      "path": "/market/decision-dashboard",
+      "snapshot_id": "market-validation-1784456423",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 4,
       "path": "/market/details/decision",
-      "snapshot_id": "market-validation-1784366118",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 800
     },
     {
-      "elapsed_ms": 3,
+      "elapsed_ms": 8,
       "path": "/market/details/structure",
-      "snapshot_id": "market-validation-1784366118",
+      "snapshot_id": "market-validation-1784456423",
       "status_code": 200,
       "target_ms": 800
     }
   ],
   "status": {
     "enabled": true,
-    "latest_snapshot_id": "market-validation-1784366118",
+    "latest_snapshot_id": "market-validation-1784456423",
     "latest_status": "partial",
     "metrics": {
       "background_refreshes_triggered": 1,
@@ -104,21 +104,21 @@
       "read_count": 14
     },
     "refresh_in_progress": true,
-    "snapshot_age_seconds": 0.05,
+    "snapshot_age_seconds": 0.08,
     "storage": {
       "healthy": true,
       "latest": {
-        "published_at": "2026-07-18T09:15:18.046727+00:00",
-        "snapshot_id": "market-validation-1784366118",
+        "published_at": "2026-07-19T10:20:23.738803+00:00",
+        "snapshot_id": "market-validation-1784456423",
         "status": "partial"
       },
       "snapshot_count": 1,
       "state": {
-        "last_build_completed_at": "2026-07-18T09:15:18.046732+00:00",
+        "last_build_completed_at": "2026-07-19T10:20:23.738807+00:00",
         "last_build_error": "",
-        "last_build_started_at": "2026-07-18T09:15:18.083178+00:00",
-        "last_successful_snapshot_id": "market-validation-1784366118",
-        "latest_snapshot_id": "market-validation-1784366118"
+        "last_build_started_at": "2026-07-19T10:20:23.789247+00:00",
+        "last_successful_snapshot_id": "market-validation-1784456423",
+        "latest_snapshot_id": "market-validation-1784456423"
       }
     }
   }

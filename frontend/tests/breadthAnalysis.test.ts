@@ -6,6 +6,7 @@ import {
   deriveAdvanceDeclineState,
   deriveHighLowState,
   deriveMovingAverageBreadthProfile,
+  deriveBreadthQuality,
   formatBreadthPercent,
   formatHighLowRatio,
 } from '../src/features/market/breadthAnalysis';
@@ -63,6 +64,16 @@ function run() {
   const mixed = deriveAdvanceDeclineState(market({ advancing_stocks: 45, declining_stocks: 45, unchanged_stocks: 10 }));
   assert(mixed.state === 'Mixed', 'mixed participation classifies');
   assert(deriveAdvanceDeclineState(market({ total_stocks: 0 })).state === 'Unavailable', 'invalid denominator is unavailable');
+  const noDecliners = deriveAdvanceDeclineState(market({
+    advance_decline_ratio: null,
+    advance_decline_ratio_display: 'No decliners',
+    advancing_stocks: 100,
+    declining_stocks: 0,
+    total_stocks: 100,
+    unchanged_stocks: 0,
+  }));
+  assert(noDecliners.ratio === null, 'raw A/D ratio remains unavailable with a zero denominator');
+  assert(noDecliners.ratioDisplay === 'No decliners', 'zero-denominator A/D uses its explicit display state');
 
   const highLow = deriveHighLowState(market({ new_52w_highs: 24, new_52w_lows: 6 }));
   assert(highLow.differential === 18, 'high-low differential calculates');
@@ -78,6 +89,19 @@ function run() {
   assert(classifyBreadthConfidence(55) === 'moderate', 'moderate coverage confidence');
   assert(classifyBreadthConfidence(20) === 'low', 'low coverage confidence');
   assert(classifyBreadthConfidence(null) === 'unavailable', 'invalid coverage confidence');
+  const signalQuality = deriveBreadthQuality(market({
+    signal_confidence: {
+      calculated_at: '2026-07-17T20:00:00+00:00',
+      label: 'Moderate',
+      reason: 'Breadth dimensions are mixed.',
+      score: 65,
+      source_snapshot_id: 'breadth-fixture',
+    },
+  }));
+  assert(signalQuality.signalConfidenceLabel === 'Moderate · 65', 'breadth signal confidence preserves its own score');
+  assert(signalQuality.signalConfidenceSource?.includes('breadth-fixture'), 'breadth signal confidence exposes snapshot provenance');
+  const unavailableSignal = deriveBreadthQuality(market({ signal_confidence: { label: 'Unavailable', score: null } }));
+  assert(unavailableSignal.signalConfidenceLabel === 'Unavailable — Insufficient historical breadth snapshots', 'unavailable breadth confidence uses the canonical reason');
 
   const allHigh = deriveMovingAverageBreadthProfile(market({ percent_above_20ema: 82, percent_above_50ema: 78, percent_above_200ema: 74 }));
   assert(allHigh.summary === 'Fully aligned across all horizons', 'all-high structural breadth has aligned summary');
@@ -126,7 +150,7 @@ function run() {
   assert(!confirmed.takeaway.conclusion.toLowerCase().includes('undefined'), 'takeaway has no malformed copy');
   assert(!bearish.takeaway.conclusion.toLowerCase().includes('guarantee'), 'takeaway avoids reversal guarantees');
   const strongLowConfidence = buildBreadthDashboard({ market: market({ coverage_percent: 20 }), sectors: [] }, [spy(1.2)]);
-  assert(strongLowConfidence.quality.confidenceLabel === 'Low Confidence', 'low confidence label is standardized');
+  assert(strongLowConfidence.quality.confidenceLabel === 'Low Data Confidence', 'data confidence label is explicit');
   assert(strongLowConfidence.takeaway.risk === 'Moderately Elevated', 'low confidence affects risk label without changing strength');
 }
 

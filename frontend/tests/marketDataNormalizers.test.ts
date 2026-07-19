@@ -25,6 +25,15 @@ function run() {
         percent_above_50ema: '61.8',
         percent_above_200ema: { percentage: 42 },
         coverage_percent: { value: 88 },
+        advance_decline_ratio_display: '0.35',
+        advance_decline_ratio_smoothed: 0.351,
+        ratio_method: 'raw=advancing/declining',
+        coverage_dimensions: {
+          universe: { eligible: 101, total: 101, ratio: 1, display: '101/101' },
+          ema200: { eligible: 100, total: 101, ratio: 0.990099, display: '100/101' },
+        },
+        data_confidence: { score: 99, label: 'High', reason: 'Complete coverage.', source_snapshot_id: 'breadth-fixture', calculated_at: '2026-07-17T20:00:00+00:00' },
+        signal_confidence: { score: 65, label: 'Moderate', reason: 'Mixed current breadth inputs.', source_snapshot_id: 'breadth-fixture', calculated_at: '2026-07-17T20:00:00+00:00' },
         overall_mode: 'mock',
       },
       sectors: [
@@ -43,6 +52,11 @@ function run() {
   assert(snakeCaseBreadth?.market.percent_above_200ema === 42, 'parses percentage object');
   assert(snakeCaseBreadth?.market.coverage_percent === 88, 'parses value object');
   assert(snakeCaseBreadth?.sectors[0]?.percent_above_50ema === 60, 'normalizes sector breadth');
+  assert(snakeCaseBreadth?.market.signal_confidence?.score === 65, 'preserves canonical signal confidence through the compatibility normalizer');
+  assert(snakeCaseBreadth?.market.signal_confidence?.source_snapshot_id === 'breadth-fixture', 'preserves signal confidence provenance');
+  assert(snakeCaseBreadth?.market.data_confidence?.label === 'High', 'preserves distinct data confidence');
+  assert(snakeCaseBreadth?.market.coverage_dimensions?.ema200?.display === '100/101', 'preserves long-indicator eligibility');
+  assert(snakeCaseBreadth?.market.advance_decline_ratio_display === '0.35', 'preserves canonical A/D display semantics');
 
   const camelCaseBreadth = normalizeBreadthResponse({
     data: {
@@ -63,6 +77,18 @@ function run() {
   });
   assert(camelCaseBreadth?.market.advancing_stocks === 80, 'supports camelCase advancing');
   assert(camelCaseBreadth?.market.advance_decline_ratio === 4, 'derives A/D ratio');
+  const zeroDecliners = normalizeBreadthResponse({
+    market: {
+      total_stocks: 10,
+      advancing_stocks: 10,
+      declining_stocks: 0,
+      percent_above_20ema: 80,
+      percent_above_50ema: 80,
+      percent_above_200ema: 80,
+    },
+    sectors: [],
+  });
+  assert(zeroDecliners?.market.advance_decline_ratio === null, 'never fabricates an infinite A/D ratio for zero decliners');
 
   const decision = normalizeDecisionIntelligenceResponse({
     decision_dashboard: {

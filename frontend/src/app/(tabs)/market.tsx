@@ -112,7 +112,7 @@ import {
   type WeightComparisonViewModel,
 } from '@/features/market/weightComparison';
 import { useMarketDashboard } from '@/hooks/useMarketDashboard';
-import { getLiveHistory } from '@/services/api';
+import { getLiveHistory, getMarketMacro } from '@/services/api';
 import { areTestScenariosEnabled } from '@/services/runtimeConfig';
 import type {
   HistoryData,
@@ -122,6 +122,7 @@ import type {
   InstitutionalActivityResponse,
   InstitutionalIntelligenceResponse,
   MarketHealthResponse,
+  MarketMacroResponse,
   MarketBreadthResponse,
   MarketCapRotationResponse,
   MarketCoreSnapshot,
@@ -418,9 +419,10 @@ function OverviewTab({
   regime: MarketRegime | null;
 }) {
   const [histories, setHistories] = useState<Partial<Record<string, HistoryData>>>({});
+  const [macroState, setMacroState] = useState<MarketMacroResponse | null>(null);
   useEffect(() => {
     let cancelled = false;
-    const symbols = Array.from(new Set([...indexSymbols, 'RSP', 'QQEW', ...macroAssetDefinitions.map((asset) => asset.symbol)]));
+    const symbols = Array.from(new Set([...indexSymbols, 'RSP', 'QQEW']));
     Promise.allSettled(symbols.map((symbol) => getLiveHistory(symbol, 'D', 370)))
       .then((results) => {
         if (cancelled) {
@@ -443,6 +445,23 @@ function OverviewTab({
       cancelled = true;
     };
   }, []);
+  useEffect(() => {
+    let cancelled = false;
+    getMarketMacro(110)
+      .then((payload) => {
+        if (!cancelled) {
+          setMacroState(payload);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setMacroState(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const indexHistories = useMemo<Partial<Record<IndexSymbol, HistoryData>>>(() => ({
     DIA: histories.DIA,
     IWM: histories.IWM,
@@ -454,12 +473,9 @@ function OverviewTab({
     () => buildConcentrationBreadthSignal(buildWeightComparisonPair('sp500', histories, '1M')),
     [histories],
   );
-  const macroHistories = useMemo(() => Object.fromEntries(
-    macroAssetDefinitions.map((asset) => [asset.symbol, histories[asset.symbol]]).filter((entry): entry is [string, HistoryData] => Boolean(entry[1])),
-  ), [histories]);
   const macro = useMemo(
-    () => buildMacroDashboardViewModel(macroHistories, '3M', Intl.DateTimeFormat().resolvedOptions().timeZone, null),
-    [macroHistories],
+    () => buildMacroDashboardViewModel(macroState?.histories ?? {}, '3M', Intl.DateTimeFormat().resolvedOptions().timeZone, null),
+    [macroState],
   );
   const breadthDashboard = useMemo(() => buildBreadthDashboard(breadth, indexes), [breadth, indexes]);
   const institutional = useMemo(
@@ -642,26 +658,18 @@ function MacroTab() {
     Promise.resolve()
       .then(() => {
         if (cancelled) {
-          return [];
+          throw new Error('Macro request cancelled.');
         }
         setLoading(true);
         setError(null);
-        return Promise.allSettled(
-          macroAssetDefinitions.map((asset) => getLiveHistory(asset.symbol, 'D', macroTimeframeDays[timeframe])),
-        );
+        return getMarketMacro(macroTimeframeDays[timeframe]);
       })
-      .then((results) => {
+      .then((payload) => {
         if (cancelled) {
           return;
         }
-        const nextHistories: Partial<Record<string, HistoryData>> = {};
-        results.forEach((result, index) => {
-          if (result.status === 'fulfilled') {
-            nextHistories[macroAssetDefinitions[index].symbol] = result.value;
-          }
-        });
-        setHistories(nextHistories);
-        setError(results.every((result) => result.status === 'rejected') ? 'Macro proxy history unavailable.' : null);
+        setHistories(payload.histories);
+        setError(payload.available_assets === 0 ? 'Macro proxy history unavailable.' : null);
       })
       .catch(() => {
         if (!cancelled) {
@@ -792,7 +800,8 @@ function MacroOverviewCard({ model }: { model: MacroDashboardViewModel }) {
         <MetricTile label="Leading" value={model.overview.leading.join(' · ') || 'N/A'} />
         <MetricTile label="Lagging" value={model.overview.lagging.join(' · ') || 'N/A'} />
       </View>
-      <Text style={styles.warningInline}>Key risk: {model.overview.keyRisk}</Text>
+      <Text style={styles.warningInline}>Current risk: {model.overview.keyRisk}</Text>
+      <Text style={styles.helperText}>What would weaken this: {model.overview.invalidationConditions}</Text>
     </View>
   );
 }
@@ -1053,6 +1062,7 @@ function MacroInterpretationCard({ model }: { model: MacroDashboardViewModel }) 
         <MetricTile label="Main Risk" value={model.interpretation.mainRisk} />
       </View>
       <Text style={styles.bodyText}>{model.interpretation.implication}</Text>
+      <Text style={styles.warningInline}>What would weaken this: {model.interpretation.invalidationConditions}</Text>
     </View>
   );
 }
@@ -1759,7 +1769,7 @@ function WeightedEqualWeightCard({
               <Text style={styles.tooltipTitle}>{tooltip.dateLabel}</Text>
               <Text style={styles.tooltipValue}>{model.weightedSymbol}: {formatSignedPercent(tooltip.weightedReturn)}</Text>
               <Text style={styles.tooltipValue}>{model.equalWeightSymbol}: {formatSignedPercent(tooltip.equalWeightReturn)}</Text>
-              <Text style={styles.tooltipValue}>Spread: {formatSignedPoints(tooltip.spreadPoints)}</Text>
+              <Text style={styles.tooltipValue}>{model.weightedSymbol} minus {model.equalWeightSymbol}: {formatSignedPoints(tooltip.spreadPoints)}</Text>
             </View>
           ) : null}
         </Pressable>
@@ -1776,7 +1786,7 @@ function WeightedEqualWeightCard({
           value={formatNullableSignedPercent(model.equalWeightPeriodReturn)}
         />
         <WeightSummaryMetric
-          label="Spread"
+          label={`${model.weightedSymbol} minus ${model.equalWeightSymbol}`}
           value={formatSignedPoints(model.spreadPoints)}
         />
       </View>
@@ -2279,7 +2289,7 @@ function MarketDecisionPostureCard({ overview }: { overview: MarketOverviewDashb
       <View style={styles.sectionHeaderRow}>
         <View style={styles.summaryTitleBlock}>
           <Text style={styles.detailSectionTitle}>Decision Posture</Text>
-          <Text style={styles.helperInline}>Confidence · {posture.confidence === null ? 'N/A' : `${Math.round(posture.confidence)}%`}</Text>
+          <Text style={styles.helperInline}>Confidence · {posture.confidence === null ? 'Unavailable' : `${posture.confidenceLabel ?? 'Mixed'} · ${Math.round(posture.confidence)}/100`}</Text>
         </View>
         <StatusBadge label={posture.posture} tone={overviewStatusTone(posture.tone)} />
       </View>
@@ -2528,7 +2538,7 @@ function BreadthOverviewCard({ dashboard }: { dashboard: BreadthDashboardViewMod
       </View>
       <View style={styles.breadthHeroMetrics}>
         <MiniDecisionMetric label="Composite" value={formatNullableNumber(overview.score)} />
-        <MiniDecisionMetric label="A/D Ratio" value={formatBreadthRatio(advanceDecline.ratio)} />
+        <MiniDecisionMetric label="A/D Ratio" value={advanceDecline.ratioDisplay} />
         <MiniDecisionMetric
           label="Participation"
           value={`${formatNullableNumber(advanceDecline.advancing)} advancing · ${formatNullableNumber(advanceDecline.declining)} declining`}
@@ -2593,7 +2603,7 @@ function BreadthConfirmationCard({ dashboard }: { dashboard: BreadthDashboardVie
         <MiniDecisionMetric label="Risk" value={divergence.riskDirection} />
       </View>
       <Text style={styles.healthUnavailableText}>
-        History unavailable. SPY-versus-breadth comparison will appear when real breadth snapshots are available.
+        Trend history unavailable. SPY-versus-breadth comparison will appear when real breadth snapshots are available.
       </Text>
       {divergence.state !== 'unavailable' ? <Text style={styles.bodyText}>{divergence.explanation}</Text> : null}
     </View>
@@ -2717,6 +2727,7 @@ function BreadthQualityCard({
       <View style={styles.breadthInlineMetrics}>
         <MiniDecisionMetric label="Breadth Strength" value={data.strengthLabel} />
         <MiniDecisionMetric label="Data Confidence" value={data.confidenceLabel} />
+        <MiniDecisionMetric label="Signal Confidence" value={data.signalConfidenceLabel ?? 'Unavailable — Insufficient historical breadth snapshots'} />
       </View>
       <View style={styles.breadthQualityBars}>
         <QualityBar label="Breadth Strength" tone={strengthScore !== null ? toneForNumericScore(strengthScore) : 'neutral'} value={strengthScore} />
@@ -2737,8 +2748,9 @@ function BreadthQualityCard({
         />
       </View>
       <Text style={styles.helperText}>
-        {formatCoverageCounts(data.trackedStocks, data.expectedUniverse)} · {formatBreadthPercent(data.coveragePercent)} universe coverage
+        Universe coverage: {data.universeCoverageLabel ?? formatCoverageCounts(data.trackedStocks, data.expectedUniverse)} · {formatBreadthPercent(data.coveragePercent)}{data.ema200EligibilityLabel ? ` · EMA200 eligibility: ${data.ema200EligibilityLabel}` : ''}
       </Text>
+      <Text style={styles.helperText}>{data.signalConfidenceReason}{data.signalConfidenceSource ? ` · ${data.signalConfidenceSource}` : ''}</Text>
       <Text style={styles.bodyText}>{data.limitation}</Text>
     </View>
   );
@@ -2777,7 +2789,7 @@ function BreadthTrendCard() {
     <View style={styles.breadthPanel}>
       <View style={styles.sectionHeaderRow}>
         <Text style={styles.detailSectionTitle}>Breadth Trend</Text>
-        <StatusBadge label="History Unavailable" tone="muted" />
+        <StatusBadge label="Trend History Unavailable" tone="muted" />
       </View>
       <Text style={styles.healthUnavailableText}>
         Historical breadth will appear when real snapshots are available.
@@ -3006,7 +3018,7 @@ function DecisionCapRotationCard({ data }: { data: MarketCapRotationViewModel })
           <Text style={styles.detailSectionTitle}>Market Cap Rotation</Text>
           <Text style={styles.helperInline}>{data.stateLabel}</Text>
         </View>
-        {data.leader ? <StatusBadge label={`${data.leader} Leading`} tone="info" /> : null}
+        {data.leader ? <StatusBadge label={`Relative leader: ${data.leader}`} tone="info" /> : null}
       </View>
       <View style={styles.healthComponentList}>
         {data.items.length ? data.items.map((item) => (
@@ -3345,7 +3357,7 @@ function SmartMoneyTrendCard({ data }: { data: InstitutionalDashboardViewModel['
           <Text style={styles.detailSectionTitle}>Smart Money Trend</Text>
           <Text style={styles.helperInline}>Historical snapshot trend</Text>
         </View>
-        <StatusBadge label={data.historyAvailable ? 'Available' : 'History unavailable'} tone={data.historyAvailable ? 'info' : 'muted'} />
+        <StatusBadge label={data.historyAvailable ? 'Available' : 'Trend history unavailable'} tone={data.historyAvailable ? 'info' : 'muted'} />
       </View>
       <Text style={styles.bodyText}>{data.summary}</Text>
     </View>

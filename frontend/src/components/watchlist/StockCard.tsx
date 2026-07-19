@@ -155,38 +155,37 @@ export function StockCard({
 
   return (
     <>
-      <Pressable
-        accessibilityLabel={`Open ${stock.ticker} full analysis${classification ? `, ${classification.reason}` : ''}`}
-        accessibilityRole="button"
-        onPress={() => setDetailsVisible(true)}
-        style={styles.tickerRow}>
-        <View style={styles.tickerMain}>
-          <Text numberOfLines={1} style={styles.tickerSymbol}>{stock.ticker}</Text>
-        </View>
-        <Text style={[styles.changeValue, { color: changeTone }]}>
-          {formatNullablePercent(stock.change_percent)}
-        </Text>
-        {classification ? (
-          <View style={styles.signalBlock}>
-            <WatchlistSignalBadge classification={classification} />
-            <DataStatusDot status={classification.dataStatus} />
+      <View style={styles.tickerRow}>
+        <Pressable
+          accessibilityLabel={`Open ${stock.ticker} full analysis${classification ? `, ${classification.reason}` : ''}`}
+          accessibilityRole="button"
+          onPress={() => setDetailsVisible(true)}
+          style={styles.tickerRowContent}>
+          <View style={styles.tickerMain}>
+            <Text numberOfLines={1} style={styles.tickerSymbol}>{stock.ticker}</Text>
           </View>
-        ) : null}
+          <Text style={[styles.changeValue, { color: changeTone }]}>
+            {formatNullablePercent(stock.change_percent)}
+          </Text>
+          {classification ? (
+            <View style={styles.signalBlock}>
+              <WatchlistSignalBadge classification={classification} />
+              <DataStatusDot primarySignal={classification.primarySignal} status={classification.dataStatus} />
+            </View>
+          ) : null}
+          <Text style={styles.chevron}>›</Text>
+        </Pressable>
         {onRemove ? (
           <Pressable
             accessibilityLabel={`Remove ${stock.ticker} from watchlist`}
             accessibilityRole="button"
             hitSlop={8}
-            onPress={(event) => {
-              event.stopPropagation();
-              onRemove(stock.ticker);
-            }}
+            onPress={() => onRemove(stock.ticker)}
             style={styles.removeButton}>
             <Text style={styles.removeText}>★</Text>
           </Pressable>
         ) : null}
-        <Text style={styles.chevron}>›</Text>
-      </Pressable>
+      </View>
 
       <DetailModal
         onClose={() => setDetailsVisible(false)}
@@ -290,6 +289,13 @@ const styles = StyleSheet.create({
     minHeight: 56,
     paddingHorizontal: Spacing.twoAndHalf,
     paddingVertical: Spacing.one,
+  },
+  tickerRowContent: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: Spacing.two,
+    minWidth: 0,
   },
   tickerMain: {
     flex: 1,

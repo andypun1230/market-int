@@ -43,6 +43,13 @@ export function normalizeBreadthResponse(raw: unknown): MarketBreadthResponse | 
     return null;
   }
 
+  const reportedStatus = extractText(getByKeys(marketPayload, ['breadth_status', 'breadthStatus', 'status']), '').toLowerCase();
+  const reportedSnapshotId = primitiveToText(getByKeys(marketPayload, ['snapshot_id', 'snapshotId']));
+  if (reportedStatus === 'unavailable' && !reportedSnapshotId) {
+    logNormalizer('breadth', raw, null, ['Unavailable embedded breadth has no published snapshot']);
+    return null;
+  }
+
   const market = normalizeMarketBreadth(marketPayload);
   const sectors = sectorsPayload
     .map(normalizeSectorBreadthItem)
@@ -211,6 +218,9 @@ function normalizeMarketBreadth(payload: UnknownRecord): MarketBreadth {
     declining_stocks: declining ?? 0,
     unchanged_stocks: unchanged ?? 0,
     advance_decline_ratio: adRatio,
+    advance_decline_ratio_display: primitiveToText(getByKeys(payload, ['advance_decline_ratio_display', 'advanceDeclineRatioDisplay'])),
+    advance_decline_ratio_smoothed: extractNumber(getByKeys(payload, ['advance_decline_ratio_smoothed', 'advanceDeclineRatioSmoothed'])),
+    ratio_method: primitiveToText(getByKeys(payload, ['ratio_method', 'ratioMethod'])),
     percent_above_20ema: extractNumber(getByKeys(payload, ['percent_above_20ema', 'percentAbove20Ema', 'above_20ema', 'above20ema'])) ?? 0,
     percent_above_50ema: extractNumber(getByKeys(payload, ['percent_above_50ema', 'percentAbove50Ema', 'above_50ema', 'above50ema'])) ?? 0,
     percent_above_200ema: extractNumber(getByKeys(payload, ['percent_above_200ema', 'percentAbove200Ema', 'above_200ema', 'above200ema'])) ?? 0,
@@ -218,6 +228,16 @@ function normalizeMarketBreadth(payload: UnknownRecord): MarketBreadth {
     new_52w_lows: extractNumber(getByKeys(payload, ['new_52w_lows', 'new52WeekLows', 'new_lows', 'newLows'])) ?? 0,
     breadth_score: extractNumber(getByKeys(payload, ['breadth_score', 'breadthScore', 'score'])),
     breadth_status: extractText(getByKeys(payload, ['breadth_status', 'breadthStatus', 'status']), 'N/A'),
+    snapshot_id: primitiveToText(getByKeys(payload, ['snapshot_id', 'snapshotId'])),
+    universe_version: primitiveToText(getByKeys(payload, ['universe_version', 'universeVersion'])),
+    market_date: primitiveToText(getByKeys(payload, ['market_date', 'marketDate'])),
+    coverage_status: primitiveToText(getByKeys(payload, ['coverage_status', 'coverageStatus'])),
+    trend: primitiveToText(getByKeys(payload, ['trend'])),
+    confidence: primitiveToText(getByKeys(payload, ['confidence'])),
+    source_state: primitiveToText(getByKeys(payload, ['source_state', 'sourceState'])),
+    coverage_dimensions: normalizeCoverageDimensions(getByKeys(payload, ['coverage_dimensions', 'coverageDimensions'])),
+    data_confidence: normalizeConfidence(getByKeys(payload, ['data_confidence', 'dataConfidence'])),
+    signal_confidence: normalizeConfidence(getByKeys(payload, ['signal_confidence', 'signalConfidence'])),
     coverage_percent: extractNumber(getByKeys(payload, ['coverage_percent', 'coveragePercent', 'coverage'])),
     overall_mode: extractText(getByKeys(payload, ['overall_mode', 'overallMode', 'mode', 'breadthMode']), 'mock'),
     universe: primitiveToText(getByKeys(payload, ['universe', 'breadth_universe', 'breadthUniverse'])),
@@ -275,9 +295,56 @@ function deriveAdvanceDeclineRatio(advancing: number | null, declining: number |
     return null;
   }
   if (declining === 0) {
-    return advancing > 0 ? Number.POSITIVE_INFINITY : 0;
+    return null;
   }
   return Number((advancing / declining).toFixed(2));
+}
+
+function normalizeCoverageDimensions(value: unknown): NonNullable<MarketBreadth['coverage_dimensions']> | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+  const dimensions = Object.entries(value).reduce<NonNullable<MarketBreadth['coverage_dimensions']>>((result, [key, item]) => {
+    if (!isRecord(item)) {
+      return result;
+    }
+    const eligible = extractNumber(getByKeys(item, ['eligible']));
+    const total = extractNumber(getByKeys(item, ['total']));
+    const ratio = extractNumber(getByKeys(item, ['ratio']));
+    const display = primitiveToText(getByKeys(item, ['display']))
+      ?? (eligible !== null && total !== null ? `${eligible}/${total}` : undefined);
+    if (eligible !== null || total !== null || ratio !== null || display) {
+      result[key] = {
+        eligible: eligible ?? undefined,
+        total: total ?? undefined,
+        ratio: ratio ?? undefined,
+        display,
+      };
+    }
+    return result;
+  }, {});
+  return Object.keys(dimensions).length ? dimensions : null;
+}
+
+function normalizeConfidence(value: unknown): NonNullable<MarketBreadth['data_confidence']> | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+  const score = extractNumber(getByKeys(value, ['score']));
+  const label = primitiveToText(getByKeys(value, ['label']));
+  const reason = primitiveToText(getByKeys(value, ['reason']));
+  const sourceSnapshotId = primitiveToText(getByKeys(value, ['source_snapshot_id', 'sourceSnapshotId']));
+  const calculatedAt = primitiveToText(getByKeys(value, ['calculated_at', 'calculatedAt']));
+  if (score === null && !label && !reason && !sourceSnapshotId && !calculatedAt) {
+    return null;
+  }
+  return {
+    score,
+    label,
+    reason,
+    source_snapshot_id: sourceSnapshotId,
+    calculated_at: calculatedAt,
+  };
 }
 
 function getByKeys(record: UnknownRecord | null, keys: string[]): unknown {

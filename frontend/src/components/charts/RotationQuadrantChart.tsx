@@ -52,6 +52,8 @@ type RotationQuadrantChartProps<T> = {
   getHistory?: (item: T) => ChartRotationPoint[];
   getItemKey?: (item: T) => string;
   getItemType?: (item: T) => 'sector' | 'theme' | string;
+  getLabel?: (item: T) => string;
+  getLabelPriority?: (item: T) => number;
   getName: (item: T) => string;
   getRelativeMomentum: (item: T) => number | null;
   getRelativeStrength: (item: T) => number | null;
@@ -70,6 +72,7 @@ type RotationQuadrantChartProps<T> = {
   quadrantFilter?: RotationQuadrantFilter;
   selectedItemKey?: string | null;
   showExpandButton?: boolean;
+  showTestDataBadge?: boolean;
   trailLength?: number;
   watchlistKeys?: Set<string>;
 };
@@ -96,6 +99,8 @@ export function RotationQuadrantChart<T>({
   getHistory,
   getItemKey,
   getItemType,
+  getLabel,
+  getLabelPriority,
   getName,
   getRelativeMomentum,
   getRelativeStrength,
@@ -114,6 +119,8 @@ export function RotationQuadrantChart<T>({
   quadrantFilter: controlledQuadrantFilter,
   selectedItemKey: controlledSelectedItemKey,
   showExpandButton = false,
+  showTestDataBadge = false,
+  trailLength,
   watchlistKeys,
 }: RotationQuadrantChartProps<T>) {
   const [localLabelMode, setLocalLabelMode] = useState<RotationLabelMode>('smart');
@@ -135,7 +142,8 @@ export function RotationQuadrantChart<T>({
           return;
         }
 
-        const history = normalizeHistory(getHistory?.(item), strength, momentum);
+        const normalizedHistory = normalizeHistory(getHistory?.(item), strength, momentum);
+        const history = trailLength ? normalizedHistory.slice(-trailLength) : normalizedHistory;
         const latest = history[history.length - 1];
         const fullName = getName(item);
         const type = getItemType?.(item) ?? 'item';
@@ -151,13 +159,14 @@ export function RotationQuadrantChart<T>({
           key,
           latest,
           momentum,
-          shortName: getRotationShortLabel({ name: fullName }),
+          priority: getLabelPriority?.(item) ?? 0,
+          shortName: getLabel?.(item) ?? getRotationShortLabel({ name: fullName }),
           strength,
           type,
         });
       });
     return mappedItems;
-  }, [getHistory, getItemKey, getItemType, getName, getRelativeMomentum, getRelativeStrength, items]);
+  }, [getHistory, getItemKey, getItemType, getLabel, getLabelPriority, getName, getRelativeMomentum, getRelativeStrength, items, trailLength]);
 
   const visibleItems = useMemo<ChartItem<T>[]>(
     () => filterRotationItemsByQuadrant(chartItems, quadrantFilter),
@@ -188,8 +197,8 @@ export function RotationQuadrantChart<T>({
     [labelMode, selectedItemKey, smartLabelLimit, visibleItems, watchlistKeys],
   );
   const placedLabels = useMemo(
-    () => buildPlacedLabels(visibleItems, labelKeys, selectedItemKey, domain, plotSize, chartSize),
-    [chartSize, domain, labelKeys, plotSize, selectedItemKey, visibleItems],
+    () => buildPlacedLabels(visibleItems, labelKeys, labelMode, selectedItemKey, domain, plotSize, chartSize),
+    [chartSize, domain, labelKeys, labelMode, plotSize, selectedItemKey, visibleItems],
   );
   const summary = selectedItem ? buildRotationTrailSummary(selectedItem.history) : visibleItems.length === 1 ? buildRotationTrailSummary(visibleItems[0].history) : null;
 
@@ -239,10 +248,11 @@ export function RotationQuadrantChart<T>({
           onChange={(value) => updateLabelMode(value as RotationLabelMode)}
         />
         <SegmentedControl
+          compact
           label="Quadrant"
           options={QUADRANT_OPTIONS}
           selectedKey={quadrantFilter}
-          variant="chips"
+          variant="switch"
           onChange={(value) => updateQuadrantFilter(value as RotationQuadrantFilter)}
         />
       </View>
@@ -250,11 +260,7 @@ export function RotationQuadrantChart<T>({
       {!visibleItems.length ? (
         <Text style={styles.emptyText}>No points match the selected quadrant.</Text>
       ) : (
-        <Pressable
-          accessibilityLabel="Clear selected rotation point"
-          accessibilityRole="button"
-          onPress={() => updateSelectedItem(null)}
-          style={[styles.chart, { height: chartSize, width: chartSize }]}>
+        <View style={[styles.chart, { height: chartSize, width: chartSize }]}>
           <QuadrantLabels />
           <View style={[styles.verticalAxis, { height: plotSize, left: scaleX(100, domain, plotSize), top: PADDING }]} />
           <View style={[styles.horizontalAxis, { left: PADDING, top: scaleY(100, domain, plotSize), width: plotSize }]} />
@@ -279,6 +285,7 @@ export function RotationQuadrantChart<T>({
               key={`${item.key}-label`}
               label={label}
               layout={layout}
+              onSelect={() => updateSelectedItem(item.key)}
               pointX={pointX}
               pointY={pointY}
               plotSize={plotSize}
@@ -288,7 +295,7 @@ export function RotationQuadrantChart<T>({
 
           <Text style={styles.xAxisLabel}>Relative Strength</Text>
           <Text style={styles.yAxisLabel}>Relative Momentum</Text>
-        </Pressable>
+        </View>
       )}
 
       <Text style={styles.helperText}>
@@ -300,6 +307,7 @@ export function RotationQuadrantChart<T>({
           total: chartItems.length,
         })}
       </Text>
+      <Text style={styles.helperText}>Values above 100 outperform the benchmark; momentum above 100 is improving.</Text>
 
       {labelMode === 'all' ? (
         <Text style={styles.helperText}>All labels are attempted; tap any point when labels compete for space.</Text>
@@ -320,6 +328,7 @@ export function RotationQuadrantChart<T>({
           benchmark={benchmark}
           interval={interval}
           selectedPoint={selectedPoint}
+          showTestDataBadge={showTestDataBadge}
           watchlisted={Boolean(watchlistKeys?.has(selectedPoint.chartItem.key))}
           onOpenDetails={() => onPressItem?.(selectedPoint.chartItem.item)}
           onToggleWatchlist={onToggleWatchlist ? () => onToggleWatchlist(selectedPoint.chartItem.item) : undefined}
@@ -440,6 +449,7 @@ function RotationLabel<T>({
   item,
   label,
   layout,
+  onSelect,
   pointX,
   pointY,
   selected,
@@ -447,6 +457,7 @@ function RotationLabel<T>({
   item: ChartItem<T>;
   label: string;
   layout: PlacedLabel;
+  onSelect: () => void;
   pointX: number;
   pointY: number;
   plotSize: number;
@@ -472,24 +483,26 @@ function RotationLabel<T>({
               selected,
               false,
             ),
+            { pointerEvents: 'none' },
           ]}
         />
       ) : null}
-      <Text
-        numberOfLines={1}
+      <Pressable
+        accessibilityLabel={`Select ${item.fullName}`}
+        accessibilityRole="button"
+        onPress={onSelect}
         style={[
           styles.pointLabel,
           selected && styles.selectedLabel,
           {
             borderColor: selected ? Theme.colors.text : item.color,
-            color: selected ? Theme.colors.text : Theme.colors.textMuted,
             left: layout.bounds.x,
             top: layout.bounds.y,
             width: layout.bounds.width,
           },
         ]}>
-        {label}
-      </Text>
+        <Text numberOfLines={1} style={[styles.pointLabelText, selected && styles.selectedLabelText]}>{label}</Text>
+      </Pressable>
     </>
   );
 }
@@ -500,6 +513,7 @@ function PointInspector<T>({
   onOpenDetails,
   onToggleWatchlist,
   selectedPoint,
+  showTestDataBadge,
   watchlisted,
 }: {
   benchmark: string;
@@ -507,6 +521,7 @@ function PointInspector<T>({
   onOpenDetails?: () => void;
   onToggleWatchlist?: () => void;
   selectedPoint: SelectedPoint<T>;
+  showTestDataBadge: boolean;
   watchlisted: boolean;
 }) {
   const quadrant = classifyQuadrant(selectedPoint.point.relativeStrength, selectedPoint.point.relativeMomentum);
@@ -518,19 +533,19 @@ function PointInspector<T>({
       <View style={[styles.inspectorDot, { backgroundColor: selectedPoint.chartItem.color }]} />
       <View style={styles.inspectorContent}>
         <View style={styles.inspectorHeader}>
-          <Text style={styles.inspectorTitle}>{selectedPoint.chartItem.fullName}</Text>
+          <Text style={styles.inspectorTitle}>{selectedPoint.chartItem.fullName} · {selectedPoint.chartItem.shortName}</Text>
           {watchlisted ? <StatusBadge label="Watchlist" tone="info" /> : null}
         </View>
         <View style={styles.inspectorBadgeRow}>
           <StatusBadge label={typeLabel} tone={selectedPoint.chartItem.type === 'theme' ? 'purple' : 'info'} />
           <StatusBadge label={formatQuadrant(quadrant)} tone={getQuadrantTone(quadrant)} />
-          <TestDataBadge />
+          {showTestDataBadge ? <TestDataBadge /> : null}
         </View>
         <Text style={styles.inspectorText}>
           Relative Strength {selectedPoint.point.relativeStrength.toFixed(2)} · Relative Momentum {selectedPoint.point.relativeMomentum.toFixed(2)}
         </Text>
         <Text style={styles.inspectorText}>
-          {interval} direction {summary ? `${formatSigned(summary.netRelativeStrength)} RS, ${formatSigned(summary.netRelativeMomentum)} Mom` : 'N/A'} · Benchmark {benchmark}
+          {interval} direction {summary ? `${formatSigned(summary.netRelativeStrength)} RS, ${formatSigned(summary.netRelativeMomentum)} Mom` : 'Insufficient snapshot history'} · Benchmark {benchmark}
         </Text>
         {onOpenDetails ? (
           <View style={styles.inspectorActions}>
@@ -559,6 +574,7 @@ function PointInspector<T>({
 function buildPlacedLabels<T>(
   items: ChartItem<T>[],
   labelKeys: Set<string>,
+  labelMode: RotationLabelMode,
   selectedItemKey: string | null,
   domain: RotationDomain,
   plotSize: number,
@@ -580,7 +596,7 @@ function buildPlacedLabels<T>(
     { height: 26, width: 100, x: chartSize - 104, y: chartSize - 28 },
   ];
 
-  candidates.forEach((item) => {
+  candidates.forEach((item, index) => {
     const selected = item.key === selectedItemKey;
     const pointX = scaleX(item.latest.relativeStrength, domain, plotSize);
     const pointY = scaleY(item.latest.relativeMomentum, domain, plotSize);
@@ -596,20 +612,38 @@ function buildPlacedLabels<T>(
       placedRects,
       reservedRects,
     );
-    if (!layout) {
+    const fallback = labelMode === 'all' ? fallbackAllLabelLayout(pointX, pointY, index, chartSize) : null;
+    if (!layout && !fallback) {
       return;
     }
     labels.push({
       item,
       label: selected ? item.fullName : item.shortName,
-      layout,
+      layout: layout ?? fallback!,
       pointX,
       pointY,
     });
-    placedRects.push(layout.bounds);
+    placedRects.push((layout ?? fallback!).bounds);
   });
 
   return labels;
+}
+
+function fallbackAllLabelLayout(pointX: number, pointY: number, index: number, chartSize: number): PlacedLabel {
+  const width = 52;
+  const height = 17;
+  const column = index % 2 === 0 ? 12 : -width - 12;
+  const row = (Math.floor(index / 2) % 3 - 1) * 19;
+  return {
+    bounds: {
+      height,
+      width,
+      x: Math.max(4, Math.min(pointX + column, chartSize - width - 4)),
+      y: Math.max(30, Math.min(pointY + row, chartSize - height - 30)),
+    },
+    connector: true,
+    placement: index % 2 === 0 ? 'right' : 'left',
+  };
 }
 
 function normalizeHistory(history: ChartRotationPoint[] | undefined, strength: number, momentum: number): ChartRotationPoint[] {
@@ -878,13 +912,17 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.card,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
-    fontSize: 10,
-    fontWeight: '900',
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,
     position: 'absolute',
     textAlign: 'center',
     zIndex: 7,
+  },
+  pointLabelText: {
+    color: Theme.colors.textMuted,
+    fontSize: 10,
+    fontWeight: '900',
+    textAlign: 'center',
   },
   pressed: {
     opacity: 0.78,
@@ -905,6 +943,8 @@ const styles = StyleSheet.create({
   },
   selectedLabel: {
     backgroundColor: Theme.colors.cardElevated,
+  },
+  selectedLabelText: {
     color: Theme.colors.text,
     fontSize: 11,
   },

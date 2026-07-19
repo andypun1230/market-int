@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Spacing, Theme } from '@/constants/theme';
-import { getSignalLabel } from '@/features/watchlist/watchlistClassifier';
+import { getSignalLabel, shouldShowWatchlistStatusDot } from '@/features/watchlist/watchlistClassifier';
 import type { WatchlistClassification, WatchlistDataStatus, WatchlistSignalType } from '@/features/watchlist/types';
 
 type WatchlistSignalBadgeProps = {
@@ -22,8 +22,8 @@ export function WatchlistSignalBadge({ classification }: WatchlistSignalBadgePro
   );
 }
 
-export function DataStatusDot({ status }: { status: WatchlistDataStatus }) {
-  if (status === 'live') {
+export function DataStatusDot({ primarySignal, status }: { primarySignal?: WatchlistSignalType; status: WatchlistDataStatus }) {
+  if (!shouldShowWatchlistStatusDot(status, primarySignal)) {
     return null;
   }
   const label = status === 'test' ? 'Test Data' : status.charAt(0).toUpperCase() + status.slice(1);
@@ -97,6 +97,13 @@ function getDataStatusPalette(status: WatchlistDataStatus) {
       background: Theme.colors.warningSoft,
       border: Theme.colors.warning,
       text: Theme.colors.warning,
+    };
+  }
+  if (status === 'pending' || status === 'partial') {
+    return {
+      background: Theme.colors.accentSoft,
+      border: Theme.colors.accent,
+      text: Theme.colors.accent,
     };
   }
   return {

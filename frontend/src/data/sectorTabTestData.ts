@@ -23,8 +23,10 @@ export type TestPerformanceIntervals = Record<TestHeatmapInterval, number>;
 
 export type RotationPoint = {
   dateLabel: string;
+  isSynthetic?: boolean;
   relativeStrength: number;
   relativeMomentum: number;
+  source?: TestSource;
 };
 
 export type RotationDomain = {
@@ -538,8 +540,10 @@ function generateRotationHistory(seed: string, index: number, scenario: Divergen
 
     return {
       dateLabel: buildRotationLabel(count - pointIndex - 1),
+      isSynthetic: true,
       relativeStrength: round(relativeStrength, 2),
       relativeMomentum: round(relativeMomentum, 2),
+      source: 'test',
     };
   });
 }
@@ -551,8 +555,10 @@ function generateRotationDeteriorationHistory(rng: () => number, count: number):
     const relativeMomentum = clamp(104.6 - progress * 3.2 + Math.cos(progress * Math.PI * 1.6) * 0.25 + (rng() - 0.5) * 0.22, 100.6, 106);
     return {
       dateLabel: buildRotationLabel(count - pointIndex - 1),
+      isSynthetic: true,
       relativeMomentum: round(relativeMomentum, 2),
       relativeStrength: round(relativeStrength, 2),
+      source: 'test',
     };
   });
 }

@@ -439,7 +439,8 @@ export function buildIndexTrendSummary(analyses: IndexAnalysis[]) {
     return `${valid.map((analysis) => analysis.symbol).join(', ')} are moving in broadly constructive alignment. ${leader.symbol} has a small relative edge over the selected period.`;
   }
   const divergence = spread >= 2 ? 'creating moderate index divergence' : 'with only mild index divergence';
-  return `${leader.symbol} is leading while ${laggard.symbol} is lagging over the selected period, ${divergence}. ${constructive.length >= 2 ? 'The medium-term trend remains mostly intact.' : 'Trend confirmation is uneven across the major indexes.'}`;
+  const leaderTrend = leader.trend.state === 'range' ? 'Neutral' : leader.trend.label;
+  return `Relative leader: ${leader.symbol}. Best relative performer over the selected period, but its trend remains ${leaderTrend}. ${laggard.symbol} is lagging, ${divergence}. ${constructive.length >= 2 ? 'The medium-term trend remains mostly intact.' : 'Trend confirmation is uneven across the major indexes.'}`;
 }
 
 export function deriveLeadershipRead(analyses: IndexAnalysis[]) {

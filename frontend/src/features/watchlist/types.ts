@@ -22,12 +22,14 @@ export type WatchlistSignalType =
   | 'weak_momentum'
   | 'earnings_risk'
   | 'stale_data'
+  | 'partial'
+  | 'pending'
   | 'watching'
   | 'unavailable';
 
 export type WatchlistSeverity = 'positive' | 'neutral' | 'warning' | 'critical';
 
-export type WatchlistDataStatus = 'live' | 'test' | 'cached' | 'stale' | 'mock' | 'unavailable';
+export type WatchlistDataStatus = 'live' | 'test' | 'cached' | 'stale' | 'partial' | 'pending' | 'mock' | 'unavailable';
 
 export type WatchlistClassification = {
   dataStatus: WatchlistDataStatus;

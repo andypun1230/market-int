@@ -1,0 +1,1303 @@
+{
+  "conditions": [
+    "Native simulator gesture/layout validation remains manual."
+  ],
+  "endpoints": {
+    "/market/breadth": {
+      "latency_ms": 5.06,
+      "path": "/market/breadth",
+      "status": 200
+    },
+    "/market/sectors/rotation?interval=1m": {
+      "latency_ms": 40.04,
+      "path": "/market/sectors/rotation?interval=1m",
+      "status": 200
+    },
+    "/market/sectors/rotation?interval=1w": {
+      "latency_ms": 63.62,
+      "path": "/market/sectors/rotation?interval=1w",
+      "status": 200
+    },
+    "/market/sectors/rotation?interval=3m": {
+      "latency_ms": 38.99,
+      "path": "/market/sectors/rotation?interval=3m",
+      "status": 200
+    },
+    "/market/sectors/snapshot/latest": {
+      "latency_ms": 6.55,
+      "path": "/market/sectors/snapshot/latest",
+      "status": 200
+    },
+    "/market/snapshot/latest": {
+      "latency_ms": 10.18,
+      "path": "/market/snapshot/latest",
+      "status": 200
+    },
+    "/market/stock-analysis/AAPL": {
+      "latency_ms": 6.06,
+      "path": "/market/stock-analysis/AAPL",
+      "status": 200
+    },
+    "/market/stock-analysis/MSFT": {
+      "latency_ms": 5.48,
+      "path": "/market/stock-analysis/MSFT",
+      "status": 200
+    },
+    "/market/stock-snapshot/AAPL": {
+      "latency_ms": 8.16,
+      "path": "/market/stock-snapshot/AAPL",
+      "status": 200
+    },
+    "/market/stock-snapshot/MSFT": {
+      "latency_ms": 7.95,
+      "path": "/market/stock-snapshot/MSFT",
+      "status": 200
+    },
+    "/report/daily": {
+      "latency_ms": 7003.55,
+      "path": "/report/daily",
+      "status": 200
+    },
+    "/watchlist/summary?symbols=AAPL,MSFT": {
+      "latency_ms": 2.42,
+      "path": "/watchlist/summary?symbols=AAPL,MSFT",
+      "status": 200
+    }
+  },
+  "failed_checks": [],
+  "http_500_count": 0,
+  "matrix": {
+    "blocker_regressions": {
+      "details": [
+        {
+          "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m unittest tests.test_sector_snapshot tests.test_watchlist_evaluation tests.test_request_stability",
+          "output": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n........................\n----------------------------------------------------------------------\nRan 24 tests in 1.149s\n\nOK\n",
+          "returncode": 0
+        },
+        {
+          "command": "npx tsx tests/sectorSnapshot.test.ts",
+          "output": "",
+          "returncode": 0
+        },
+        {
+          "command": "npx tsx tests/watchlistPhase2.test.ts",
+          "output": "",
+          "returncode": 0
+        }
+      ],
+      "remediation": "Keep canonical rotation availability and Watchlist evaluation regressions green.",
+      "status": "PASS"
+    },
+    "copilot_context_consistency": {
+      "details": {
+        "market_theme": {
+          "availability": "Static strategy preferences only; not live Theme Intelligence.",
+          "provenance": {
+            "category": "static_strategy_preference",
+            "data_mode": "unverified_strategy_basket",
+            "is_live_theme_intelligence": false,
+            "label": "Static strategy preference",
+            "last_updated": "2026-07-19T08:56:01.992010+00:00",
+            "reason": "Live Theme Intelligence is unavailable until reviewed membership, durable history, and a ThemeSnapshot are published.",
+            "snapshot_id": null,
+            "source": "configured industry-group basket",
+            "verified": false
+          },
+          "static_preferences": [
+            {
+              "name": "Cybersecurity",
+              "parent_sector": "Technology"
+            },
+            {
+              "name": "Payments",
+              "parent_sector": "Financials"
+            },
+            {
+              "name": "Oil & Gas",
+              "parent_sector": "Energy"
+            }
+          ]
+        },
+        "stocks": {
+          "AAPL": {
+            "data_quality": {
+              "fallback_components": [
+                "risk_plan"
+              ],
+              "live_components": [
+                "relative_strength",
+                "volume_analysis",
+                "support_resistance",
+                "trendline"
+              ],
+              "mock_components": [
+                "pattern_detection",
+                "multi_timeframe",
+                "sector_strength"
+              ],
+              "overall_mode": "mixed"
+            },
+            "key_strengths": [
+              "Strong relative strength versus SPY and QQQ",
+              "Market regime is supportive enough for watchlist monitoring"
+            ],
+            "main_pattern": {
+              "confidence": null,
+              "name": "N/A",
+              "status": "N/A"
+            },
+            "multi_timeframe_alignment": "Bearish Alignment",
+            "rating": "D",
+            "relative_strength_status": "Leading",
+            "risk_level": "Elevated",
+            "score": 68,
+            "status": "Weak / Needs Confirmation",
+            "symbol": "AAPL",
+            "trendline_status": "Holding above rising support",
+            "volume_quality": "Average",
+            "warnings": [
+              "Risk control is not yet ideal",
+              "Position sizing should account for volatility"
+            ],
+            "what_to_watch": [
+              "Whether price confirms the main setup around key levels.",
+              "Whether volume remains constructive.",
+              "Whether the risk plan remains intact."
+            ]
+          },
+          "MSFT": {
+            "data_quality": {
+              "fallback_components": [
+                "risk_plan"
+              ],
+              "live_components": [
+                "relative_strength",
+                "volume_analysis",
+                "support_resistance",
+                "trendline"
+              ],
+              "mock_components": [
+                "pattern_detection",
+                "multi_timeframe",
+                "sector_strength"
+              ],
+              "overall_mode": "mixed"
+            },
+            "key_strengths": [
+              "Strong relative strength versus SPY and QQQ",
+              "Market regime is supportive enough for watchlist monitoring"
+            ],
+            "main_pattern": {
+              "confidence": null,
+              "name": "N/A",
+              "status": "N/A"
+            },
+            "multi_timeframe_alignment": "Bearish Alignment",
+            "rating": "D",
+            "relative_strength_status": "Strong",
+            "risk_level": "Low",
+            "score": 66,
+            "status": "Weak / Needs Confirmation",
+            "symbol": "MSFT",
+            "trendline_status": "No clear rising support trendline detected",
+            "volume_quality": "Weak",
+            "warnings": [
+              "Stock is near breakout level"
+            ],
+            "what_to_watch": [
+              "Whether price confirms the main setup around key levels.",
+              "Whether volume remains constructive.",
+              "Whether the risk plan remains intact."
+            ]
+          }
+        },
+        "watchlist": {
+          "AAPL": {
+            "analysis_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+            "analysis_status": "partial",
+            "available_fields": [
+              "chart",
+              "executive_summary",
+              "leadership",
+              "overall_assessment",
+              "pattern",
+              "rating",
+              "relative_strength",
+              "risk",
+              "signals",
+              "support_resistance",
+              "technical",
+              "trend",
+              "volume"
+            ],
+            "compatible_snapshot_id": true,
+            "missing_fields": [],
+            "quote_price": 333.74,
+            "quote_source": "finnhub",
+            "reason": "Quote and trend available; advanced signals are still loading.",
+            "reason_code": "insufficient_history",
+            "refreshing": false,
+            "stock_analysis_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+            "stock_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+            "watchlist_status": "partial"
+          },
+          "MSFT": {
+            "analysis_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+            "analysis_status": "partial",
+            "available_fields": [
+              "chart",
+              "executive_summary",
+              "leadership",
+              "overall_assessment",
+              "pattern",
+              "rating",
+              "relative_strength",
+              "risk",
+              "signals",
+              "support_resistance",
+              "technical",
+              "trend",
+              "volume"
+            ],
+            "compatible_snapshot_id": true,
+            "missing_fields": [],
+            "quote_price": 393.82,
+            "quote_source": "finnhub",
+            "reason": "Quote and trend available; advanced signals are still loading.",
+            "reason_code": "insufficient_history",
+            "refreshing": false,
+            "stock_analysis_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+            "stock_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+            "watchlist_status": "partial"
+          }
+        }
+      },
+      "remediation": "Copilot context must retain canonical Watchlist states and static-theme provenance.",
+      "status": "PASS"
+    },
+    "report_snapshot_consistency": {
+      "details": {
+        "canonical_ids": {
+          "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+          "market": "market-20260719T130046Z-87f4ff39",
+          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+        },
+        "endpoint_snapshot_ids": {
+          "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+          "market": "market-20260719T130046Z-87f4ff39",
+          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+        },
+        "http_report_id": "2026-07-17-d6a9894d",
+        "pre_report_canonical_ids": {
+          "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+          "market": "market-20260719T125726Z-977c0b2e",
+          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+        },
+        "rebuilt_snapshot_ids": {
+          "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+          "market": "market-20260719T130046Z-87f4ff39",
+          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+        },
+        "report_id": "2026-07-17-e7617aaf"
+      },
+      "remediation": "Build the report from the canonical Market, Breadth, and Sector snapshots only.",
+      "status": "PASS"
+    },
+    "restart_persistence": {
+      "details": {
+        "after": {
+          "aapl": "stock-AAPL-20260719T125831Z-96023800",
+          "msft": "stock-MSFT-20260719T125831Z-b7c2954e",
+          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+        },
+        "before": {
+          "aapl": "stock-AAPL-20260719T125831Z-96023800",
+          "msft": "stock-MSFT-20260719T125831Z-b7c2954e",
+          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+        }
+      },
+      "remediation": "Latest durable rotation and stock snapshots must survive service reinitialization unchanged.",
+      "status": "PASS"
+    },
+    "rotation_1m_renderable": {
+      "details": {
+        "current_point_count": 11,
+        "current_positions_available": true,
+        "etf_trails_available": true,
+        "formula_version": "relative-return-momentum-v1",
+        "interval": "1M",
+        "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+        "market_date": "2026-07-17",
+        "normalization_version": "midpoint-100-relative-return-v1",
+        "sector_count": 11,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "snapshot_transition_history_available": false,
+        "source_state": "live",
+        "trail_point_count": 55,
+        "transition_snapshot_count": 1,
+        "valid": true,
+        "warnings": [
+          "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+        ]
+      },
+      "remediation": "Current canonical points must remain independent from snapshot-transition alert history.",
+      "status": "PASS"
+    },
+    "rotation_1w_renderable": {
+      "details": {
+        "current_point_count": 11,
+        "current_positions_available": true,
+        "etf_trails_available": true,
+        "formula_version": "relative-return-momentum-v1",
+        "interval": "1W",
+        "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+        "market_date": "2026-07-17",
+        "normalization_version": "midpoint-100-relative-return-v1",
+        "sector_count": 11,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "snapshot_transition_history_available": false,
+        "source_state": "live",
+        "trail_point_count": 55,
+        "transition_snapshot_count": 1,
+        "valid": true,
+        "warnings": [
+          "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+        ]
+      },
+      "remediation": "Current canonical points must remain independent from snapshot-transition alert history.",
+      "status": "PASS"
+    },
+    "rotation_3m_renderable": {
+      "details": {
+        "current_point_count": 11,
+        "current_positions_available": true,
+        "etf_trails_available": true,
+        "formula_version": "relative-return-momentum-v1",
+        "interval": "3M",
+        "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+        "market_date": "2026-07-17",
+        "normalization_version": "midpoint-100-relative-return-v1",
+        "sector_count": 11,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "snapshot_transition_history_available": false,
+        "source_state": "live",
+        "trail_point_count": 55,
+        "transition_snapshot_count": 1,
+        "valid": true,
+        "warnings": [
+          "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+        ]
+      },
+      "remediation": "Current canonical points must remain independent from snapshot-transition alert history.",
+      "status": "PASS"
+    },
+    "rotation_shallow_transition_history_is_non_blocking": {
+      "details": {
+        "1M": {
+          "current_point_count": 11,
+          "current_positions_available": true,
+          "etf_trails_available": true,
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "1M",
+          "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+          "market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "sector_count": 11,
+          "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+          "snapshot_transition_history_available": false,
+          "source_state": "live",
+          "trail_point_count": 55,
+          "transition_snapshot_count": 1,
+          "valid": true,
+          "warnings": [
+            "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+          ]
+        },
+        "1W": {
+          "current_point_count": 11,
+          "current_positions_available": true,
+          "etf_trails_available": true,
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "1W",
+          "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+          "market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "sector_count": 11,
+          "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+          "snapshot_transition_history_available": false,
+          "source_state": "live",
+          "trail_point_count": 55,
+          "transition_snapshot_count": 1,
+          "valid": true,
+          "warnings": [
+            "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+          ]
+        },
+        "3M": {
+          "current_point_count": 11,
+          "current_positions_available": true,
+          "etf_trails_available": true,
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "3M",
+          "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+          "market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "sector_count": 11,
+          "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+          "snapshot_transition_history_available": false,
+          "source_state": "live",
+          "trail_point_count": 55,
+          "transition_snapshot_count": 1,
+          "valid": true,
+          "warnings": [
+            "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+          ]
+        }
+      },
+      "remediation": "Do not use transition-history depth as a chart availability gate.",
+      "status": "PASS"
+    },
+    "theme_intelligence_quarantine": {
+      "details": {
+        "item_count": 15,
+        "provenance": {
+          "category": "static_strategy_preference",
+          "data_mode": "unverified_strategy_basket",
+          "is_live_theme_intelligence": false,
+          "label": "Static strategy preference",
+          "last_updated": "2026-07-19T08:56:01.992010+00:00",
+          "reason": "Live Theme Intelligence is unavailable until reviewed membership, durable history, and a ThemeSnapshot are published.",
+          "snapshot_id": null,
+          "source": "configured industry-group basket",
+          "verified": false
+        }
+      },
+      "remediation": "Keep static strategy preferences separate from live Theme Intelligence until Phase 4.4D.",
+      "status": "PASS"
+    },
+    "warm_navigation_provider_isolation": {
+      "details": {
+        "polygon_history_calls": 0,
+        "routes": {
+          "/home/dashboard": {
+            "latency_ms": 6.27,
+            "path": "/home/dashboard",
+            "status": 200
+          },
+          "/market/sectors/rotation?interval=1m": {
+            "latency_ms": 42.13,
+            "path": "/market/sectors/rotation?interval=1m",
+            "status": 200
+          },
+          "/market/sectors/rotation?interval=1w": {
+            "latency_ms": 40.95,
+            "path": "/market/sectors/rotation?interval=1w",
+            "status": 200
+          },
+          "/market/sectors/rotation?interval=3m": {
+            "latency_ms": 42.96,
+            "path": "/market/sectors/rotation?interval=3m",
+            "status": 200
+          },
+          "/market/stock-analysis/AAPL": {
+            "latency_ms": 5.92,
+            "path": "/market/stock-analysis/AAPL",
+            "status": 200
+          },
+          "/market/stock-analysis/MSFT": {
+            "latency_ms": 5.84,
+            "path": "/market/stock-analysis/MSFT",
+            "status": 200
+          },
+          "/report/daily": {
+            "latency_ms": 14.19,
+            "path": "/report/daily",
+            "status": 200
+          },
+          "/watchlist/summary?symbols=AAPL,MSFT": {
+            "latency_ms": 14.74,
+            "path": "/watchlist/summary?symbols=AAPL,MSFT",
+            "status": 200
+          }
+        }
+      },
+      "remediation": "Warm navigation must not trigger Polygon history calls or snapshot rebuilding.",
+      "status": "PASS"
+    },
+    "watchlist_canonical_snapshot_evaluation": {
+      "details": {
+        "initial_pending_symbols": [],
+        "summary_snapshot_id": "watchlist-ddadedbc69fdb18e",
+        "summary_status": "complete",
+        "symbols": {
+          "AAPL": {
+            "analysis_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+            "analysis_status": "partial",
+            "available_fields": [
+              "chart",
+              "executive_summary",
+              "leadership",
+              "overall_assessment",
+              "pattern",
+              "rating",
+              "relative_strength",
+              "risk",
+              "signals",
+              "support_resistance",
+              "technical",
+              "trend",
+              "volume"
+            ],
+            "compatible_snapshot_id": true,
+            "missing_fields": [],
+            "quote_price": 333.74,
+            "quote_source": "finnhub",
+            "reason": "Quote and trend available; advanced signals are still loading.",
+            "reason_code": "insufficient_history",
+            "refreshing": false,
+            "stock_analysis_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+            "stock_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+            "watchlist_status": "partial"
+          },
+          "MSFT": {
+            "analysis_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+            "analysis_status": "partial",
+            "available_fields": [
+              "chart",
+              "executive_summary",
+              "leadership",
+              "overall_assessment",
+              "pattern",
+              "rating",
+              "relative_strength",
+              "risk",
+              "signals",
+              "support_resistance",
+              "technical",
+              "trend",
+              "volume"
+            ],
+            "compatible_snapshot_id": true,
+            "missing_fields": [],
+            "quote_price": 393.82,
+            "quote_source": "finnhub",
+            "reason": "Quote and trend available; advanced signals are still loading.",
+            "reason_code": "insufficient_history",
+            "refreshing": false,
+            "stock_analysis_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+            "stock_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+            "watchlist_status": "partial"
+          }
+        }
+      },
+      "remediation": "Watchlist rows must retain quotes and use the same compatible StockAnalysisSnapshot as Stock Detail.",
+      "status": "PASS"
+    }
+  },
+  "overall_result": "PASS WITH CONDITIONS",
+  "phase": "4.4c-blockers",
+  "provider_calls": {
+    "background_refresh_failures": 0,
+    "background_refreshes": 8,
+    "fallback_active": false,
+    "provider_calls": 8,
+    "unavailable_results": 0
+  },
+  "provider_status": {
+    "active_history_provider": "polygon",
+    "active_provider": "finnhub",
+    "active_quote_provider": "finnhub",
+    "cache_status": {
+      "provider_cache": {
+        "items": 0,
+        "keys": [],
+        "persistent": {
+          "available": true,
+          "database_path": "/Users/andypun/Downloads/market-intelligence-app/backend/.cache/market_cache.sqlite3",
+          "expired_items": 0,
+          "fresh_items": 15,
+          "items": 22,
+          "keys": [
+            "cnn-fear-greed:official:v1",
+            "dashboard-comparison",
+            "decision-confidence",
+            "decision-dashboard",
+            "index-snapshots",
+            "industry-groups:v2",
+            "industry-rotation",
+            "institutional-dashboard",
+            "institutional-intelligence",
+            "leadership",
+            "liquidity-dashboard",
+            "macro-state:v3:110",
+            "market-health",
+            "market-sentiment",
+            "materialized:market-state",
+            "money-flow",
+            "options-intelligence",
+            "probabilities",
+            "report:history",
+            "report:last-snapshot",
+            "risk-dashboard-v2",
+            "watchlist-summary:v2:ddadedbc69fdb18e"
+          ],
+          "newest_item_age": 30.24,
+          "oldest_item_age": 8879.05,
+          "stale_items": 7
+        }
+      },
+      "repository": {
+        "history_request_coordinator": {
+          "deduplicated": 0,
+          "enabled": true,
+          "failed": 0,
+          "inflight_keys": 0,
+          "max_concurrency": 2,
+          "max_queue_depth": 0,
+          "max_running": 0,
+          "queue_timeouts": 0,
+          "queued": 0,
+          "retries": 0,
+          "running": 0,
+          "started": 0,
+          "succeeded": 0
+        },
+        "hit_count": 0,
+        "items": 0,
+        "keys": [],
+        "miss_count": 0,
+        "persistent": {
+          "corrupt_entries": 0,
+          "database_size_bytes": 23764992,
+          "database_size_mb": 22.664,
+          "domain_counts": {
+            "daily_history": 461,
+            "quotes": 73
+          },
+          "enabled": true,
+          "entries": 534,
+          "expired_entries": 55,
+          "fresh_entries": 124,
+          "healthy": true,
+          "last_cleanup_at": null,
+          "newest_entry_age_seconds": 8938,
+          "oldest_entry_age_seconds": 174760,
+          "provider_counts": {
+            "finnhub": 22,
+            "generated_test_data": 222,
+            "mock": 153,
+            "polygon": 137
+          },
+          "read_errors": 0,
+          "stale_entries": 355,
+          "write_errors": 0
+        },
+        "persistent_hit_count": 0,
+        "provider_routing": {
+          "capabilities": {
+            "finnhub": {
+              "daily_history_access_state": "restricted",
+              "last_restricted_at": null,
+              "notes": [
+                "Finnhub quote access is available.",
+                "Daily candles returned HTTP 403 under the configured plan."
+              ],
+              "provider": "finnhub",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": false,
+              "supports_daily_history": false,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "generated_test_data": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Generated deterministic test data."
+              ],
+              "provider": "generated_test_data",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": true,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "mock": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Deterministic mock data."
+              ],
+              "provider": "mock",
+              "quote_access_state": "available",
+              "restriction_reason": null,
+              "supports_batch_quotes": true,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": true
+            },
+            "polygon": {
+              "daily_history_access_state": "available",
+              "last_restricted_at": null,
+              "notes": [
+                "Polygon/Massive daily stock aggregate history provider.",
+                "Internal provider id remains polygon."
+              ],
+              "provider": "polygon",
+              "quote_access_state": "unavailable",
+              "restriction_reason": null,
+              "supports_batch_quotes": false,
+              "supports_daily_history": true,
+              "supports_economic_calendar": false,
+              "supports_intraday_history": false,
+              "supports_macro": false,
+              "supports_quotes": false
+            }
+          },
+          "configured_history_provider": "polygon",
+          "configured_quote_provider": "finnhub"
+        },
+        "repository_metrics": {
+          "background_refresh_failures": 0,
+          "background_refreshes": 0,
+          "fallback_active": false,
+          "provider_calls": 0,
+          "unavailable_results": 0
+        },
+        "stale_hit_count": 0,
+        "write_count": 0
+      }
+    },
+    "circuit_breakers": {},
+    "configured_history_provider": "polygon",
+    "configured_provider": "finnhub",
+    "configured_quote_provider": "finnhub",
+    "data_provider": "finnhub",
+    "data_status": "healthy",
+    "fallback_active": false,
+    "fallback_enabled": false,
+    "health": {
+      "capabilities": {
+        "adjusted_history": false,
+        "daily_history": true,
+        "intraday_history": false,
+        "quotes": true,
+        "volume": true
+      },
+      "checked_at": "2026-07-19T13:00:44.172069+00:00",
+      "configured": true,
+      "enabled": true,
+      "fallback_active": false,
+      "last_error": null,
+      "last_failure_at": null,
+      "last_success_at": null,
+      "last_successful_request": null,
+      "message": "Finnhub API key configured.",
+      "provider": "finnhub",
+      "rate_limit_state": null,
+      "reachable": true,
+      "recent_error_count": 0,
+      "response_time_ms": null,
+      "status": "healthy"
+    },
+    "history_capability": {
+      "daily_history_access_state": "available",
+      "last_restricted_at": null,
+      "notes": [
+        "Polygon/Massive daily stock aggregate history provider.",
+        "Internal provider id remains polygon."
+      ],
+      "provider": "polygon",
+      "quote_access_state": "unavailable",
+      "restriction_reason": null,
+      "supports_batch_quotes": false,
+      "supports_daily_history": true,
+      "supports_economic_calendar": false,
+      "supports_intraday_history": false,
+      "supports_macro": false,
+      "supports_quotes": false
+    },
+    "history_health": {
+      "capabilities": {
+        "adjusted_history": true,
+        "daily_history": true,
+        "intraday_history": false,
+        "quotes": false,
+        "volume": true
+      },
+      "checked_at": "2026-07-19T13:00:44.310839+00:00",
+      "configured": true,
+      "enabled": true,
+      "fallback_active": false,
+      "last_error": null,
+      "last_failure_at": null,
+      "last_success_at": null,
+      "last_successful_request": null,
+      "message": "Polygon/Massive history API key configured.",
+      "provider": "polygon",
+      "rate_limit_state": null,
+      "reachable": true,
+      "recent_error_count": 0,
+      "response_time_ms": null,
+      "status": "healthy"
+    },
+    "history_provider": "polygon",
+    "history_ready": true,
+    "liquidity_health": {
+      "capabilities": {
+        "adjusted_history": true,
+        "daily_history": true,
+        "intraday_history": false,
+        "quotes": true,
+        "volume": true
+      },
+      "checked_at": null,
+      "configured": true,
+      "enabled": true,
+      "fallback_active": false,
+      "last_error": null,
+      "last_failure_at": null,
+      "last_success_at": null,
+      "last_successful_request": null,
+      "message": null,
+      "provider": "market_data",
+      "rate_limit_state": null,
+      "reachable": true,
+      "recent_error_count": 0,
+      "response_time_ms": null,
+      "status": null
+    },
+    "liquidity_provider": "generated_test_data",
+    "live_ready": true,
+    "market_data_provider": "finnhub",
+    "mode": "FINNHUB",
+    "options_health": {
+      "capabilities": {
+        "adjusted_history": false,
+        "daily_history": false,
+        "intraday_history": true,
+        "quotes": false,
+        "volume": true
+      },
+      "checked_at": null,
+      "configured": true,
+      "enabled": true,
+      "fallback_active": false,
+      "last_error": null,
+      "last_failure_at": null,
+      "last_success_at": null,
+      "last_successful_request": "2026-07-19T13:00:44.312685+00:00",
+      "message": null,
+      "provider": "mock-options",
+      "rate_limit_state": null,
+      "reachable": true,
+      "recent_error_count": 0,
+      "response_time_ms": null,
+      "status": null
+    },
+    "options_provider": "generated_test_data",
+    "provider_capabilities": {
+      "finnhub": {
+        "daily_history_access_state": "restricted",
+        "last_restricted_at": null,
+        "notes": [
+          "Finnhub quote access is available.",
+          "Daily candles returned HTTP 403 under the configured plan."
+        ],
+        "provider": "finnhub",
+        "quote_access_state": "available",
+        "restriction_reason": null,
+        "supports_batch_quotes": false,
+        "supports_daily_history": false,
+        "supports_economic_calendar": false,
+        "supports_intraday_history": false,
+        "supports_macro": false,
+        "supports_quotes": true
+      },
+      "generated_test_data": {
+        "daily_history_access_state": "available",
+        "last_restricted_at": null,
+        "notes": [
+          "Generated deterministic test data."
+        ],
+        "provider": "generated_test_data",
+        "quote_access_state": "available",
+        "restriction_reason": null,
+        "supports_batch_quotes": true,
+        "supports_daily_history": true,
+        "supports_economic_calendar": false,
+        "supports_intraday_history": false,
+        "supports_macro": false,
+        "supports_quotes": true
+      },
+      "mock": {
+        "daily_history_access_state": "available",
+        "last_restricted_at": null,
+        "notes": [
+          "Deterministic mock data."
+        ],
+        "provider": "mock",
+        "quote_access_state": "available",
+        "restriction_reason": null,
+        "supports_batch_quotes": true,
+        "supports_daily_history": true,
+        "supports_economic_calendar": false,
+        "supports_intraday_history": false,
+        "supports_macro": false,
+        "supports_quotes": true
+      },
+      "polygon": {
+        "daily_history_access_state": "available",
+        "last_restricted_at": null,
+        "notes": [
+          "Polygon/Massive daily stock aggregate history provider.",
+          "Internal provider id remains polygon."
+        ],
+        "provider": "polygon",
+        "quote_access_state": "unavailable",
+        "restriction_reason": null,
+        "supports_batch_quotes": false,
+        "supports_daily_history": true,
+        "supports_economic_calendar": false,
+        "supports_intraday_history": false,
+        "supports_macro": false,
+        "supports_quotes": false
+      }
+    },
+    "provider_routing": {
+      "capabilities": {
+        "finnhub": {
+          "daily_history_access_state": "restricted",
+          "last_restricted_at": null,
+          "notes": [
+            "Finnhub quote access is available.",
+            "Daily candles returned HTTP 403 under the configured plan."
+          ],
+          "provider": "finnhub",
+          "quote_access_state": "available",
+          "restriction_reason": null,
+          "supports_batch_quotes": false,
+          "supports_daily_history": false,
+          "supports_economic_calendar": false,
+          "supports_intraday_history": false,
+          "supports_macro": false,
+          "supports_quotes": true
+        },
+        "generated_test_data": {
+          "daily_history_access_state": "available",
+          "last_restricted_at": null,
+          "notes": [
+            "Generated deterministic test data."
+          ],
+          "provider": "generated_test_data",
+          "quote_access_state": "available",
+          "restriction_reason": null,
+          "supports_batch_quotes": true,
+          "supports_daily_history": true,
+          "supports_economic_calendar": false,
+          "supports_intraday_history": false,
+          "supports_macro": false,
+          "supports_quotes": true
+        },
+        "mock": {
+          "daily_history_access_state": "available",
+          "last_restricted_at": null,
+          "notes": [
+            "Deterministic mock data."
+          ],
+          "provider": "mock",
+          "quote_access_state": "available",
+          "restriction_reason": null,
+          "supports_batch_quotes": true,
+          "supports_daily_history": true,
+          "supports_economic_calendar": false,
+          "supports_intraday_history": false,
+          "supports_macro": false,
+          "supports_quotes": true
+        },
+        "polygon": {
+          "daily_history_access_state": "available",
+          "last_restricted_at": null,
+          "notes": [
+            "Polygon/Massive daily stock aggregate history provider.",
+            "Internal provider id remains polygon."
+          ],
+          "provider": "polygon",
+          "quote_access_state": "unavailable",
+          "restriction_reason": null,
+          "supports_batch_quotes": false,
+          "supports_daily_history": true,
+          "supports_economic_calendar": false,
+          "supports_intraday_history": false,
+          "supports_macro": false,
+          "supports_quotes": false
+        }
+      },
+      "configured_history_provider": "polygon",
+      "configured_quote_provider": "finnhub"
+    },
+    "quote_capability": {
+      "daily_history_access_state": "restricted",
+      "last_restricted_at": null,
+      "notes": [
+        "Finnhub quote access is available.",
+        "Daily candles returned HTTP 403 under the configured plan."
+      ],
+      "provider": "finnhub",
+      "quote_access_state": "available",
+      "restriction_reason": null,
+      "supports_batch_quotes": false,
+      "supports_daily_history": false,
+      "supports_economic_calendar": false,
+      "supports_intraday_history": false,
+      "supports_macro": false,
+      "supports_quotes": true
+    },
+    "quote_health": {
+      "capabilities": {
+        "adjusted_history": false,
+        "daily_history": true,
+        "intraday_history": false,
+        "quotes": true,
+        "volume": true
+      },
+      "checked_at": "2026-07-19T13:00:44.172069+00:00",
+      "configured": true,
+      "enabled": true,
+      "fallback_active": false,
+      "last_error": null,
+      "last_failure_at": null,
+      "last_success_at": null,
+      "last_successful_request": null,
+      "message": "Finnhub API key configured.",
+      "provider": "finnhub",
+      "rate_limit_state": null,
+      "reachable": true,
+      "recent_error_count": 0,
+      "response_time_ms": null,
+      "status": "healthy"
+    },
+    "quote_provider": "finnhub",
+    "sentiment_health": {
+      "capabilities": {
+        "adjusted_history": true,
+        "daily_history": true,
+        "intraday_history": false,
+        "quotes": false,
+        "volume": true
+      },
+      "checked_at": null,
+      "configured": true,
+      "enabled": true,
+      "fallback_active": false,
+      "last_error": null,
+      "last_failure_at": null,
+      "last_success_at": null,
+      "last_successful_request": "2026-07-19T13:00:44.312436+00:00",
+      "message": null,
+      "provider": "market_proxy",
+      "rate_limit_state": null,
+      "reachable": true,
+      "recent_error_count": 0,
+      "response_time_ms": null,
+      "status": null
+    },
+    "sentiment_provider": "generated_test_data",
+    "source": "finnhub",
+    "test_data": {
+      "data_status": "test",
+      "generated_at": "2026-07-19T10:31:26.058178+00:00",
+      "is_mock": true,
+      "label": "Generated Test Data",
+      "last_regenerated": "2026-07-19T10:31:26.058178+00:00",
+      "mode": "TEST_DATA",
+      "scenario": "balanced_market",
+      "scenarios": [
+        {
+          "description": "Mixed leadership with constructive but selective breadth.",
+          "id": "balanced_market",
+          "label": "Balanced Market"
+        },
+        {
+          "description": "Stronger momentum, leadership, and broad participation.",
+          "id": "risk_on",
+          "label": "Risk-On"
+        },
+        {
+          "description": "Weakening trend, lower breadth, and defensive behavior.",
+          "id": "risk_off",
+          "label": "Risk-Off"
+        },
+        {
+          "description": "Uneven performance with clear sector and theme rotation.",
+          "id": "rotation",
+          "label": "Rotation"
+        }
+      ],
+      "schema_version": 1,
+      "seed": "test-market-001",
+      "source": "generated_test_data"
+    },
+    "trade_flow_health": {
+      "capabilities": {
+        "adjusted_history": false,
+        "daily_history": false,
+        "intraday_history": true,
+        "quotes": false,
+        "volume": true
+      },
+      "checked_at": null,
+      "configured": true,
+      "enabled": true,
+      "fallback_active": false,
+      "last_error": null,
+      "last_failure_at": null,
+      "last_success_at": null,
+      "last_successful_request": "2026-07-19T13:00:44.312698+00:00",
+      "message": null,
+      "provider": "mock-trade-flow",
+      "rate_limit_state": null,
+      "reachable": true,
+      "recent_error_count": 0,
+      "response_time_ms": null,
+      "status": null
+    },
+    "trade_flow_provider": "generated_test_data"
+  },
+  "rotation": {
+    "1M": {
+      "current_point_count": 11,
+      "current_positions_available": true,
+      "etf_trails_available": true,
+      "formula_version": "relative-return-momentum-v1",
+      "interval": "1M",
+      "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+      "market_date": "2026-07-17",
+      "normalization_version": "midpoint-100-relative-return-v1",
+      "sector_count": 11,
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+      "snapshot_transition_history_available": false,
+      "source_state": "live",
+      "trail_point_count": 55,
+      "transition_snapshot_count": 1,
+      "valid": true,
+      "warnings": [
+        "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+      ]
+    },
+    "1W": {
+      "current_point_count": 11,
+      "current_positions_available": true,
+      "etf_trails_available": true,
+      "formula_version": "relative-return-momentum-v1",
+      "interval": "1W",
+      "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+      "market_date": "2026-07-17",
+      "normalization_version": "midpoint-100-relative-return-v1",
+      "sector_count": 11,
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+      "snapshot_transition_history_available": false,
+      "source_state": "live",
+      "trail_point_count": 55,
+      "transition_snapshot_count": 1,
+      "valid": true,
+      "warnings": [
+        "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+      ]
+    },
+    "3M": {
+      "current_point_count": 11,
+      "current_positions_available": true,
+      "etf_trails_available": true,
+      "formula_version": "relative-return-momentum-v1",
+      "interval": "3M",
+      "limited_history_reason": "Snapshot transition alerts require additional daily SectorSnapshots.",
+      "market_date": "2026-07-17",
+      "normalization_version": "midpoint-100-relative-return-v1",
+      "sector_count": 11,
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+      "snapshot_transition_history_available": false,
+      "source_state": "live",
+      "trail_point_count": 55,
+      "transition_snapshot_count": 1,
+      "valid": true,
+      "warnings": [
+        "Published snapshot movement is separate from rotation trails. Rotation series uses adjusted ETF and SPY daily history without endpoint rebasing."
+      ]
+    }
+  },
+  "unexpected_http_503_count": 0,
+  "watchlist": {
+    "initial_pending_symbols": [],
+    "summary_snapshot_id": "watchlist-ddadedbc69fdb18e",
+    "summary_status": "complete",
+    "symbols": {
+      "AAPL": {
+        "analysis_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+        "analysis_status": "partial",
+        "available_fields": [
+          "chart",
+          "executive_summary",
+          "leadership",
+          "overall_assessment",
+          "pattern",
+          "rating",
+          "relative_strength",
+          "risk",
+          "signals",
+          "support_resistance",
+          "technical",
+          "trend",
+          "volume"
+        ],
+        "compatible_snapshot_id": true,
+        "missing_fields": [],
+        "quote_price": 333.74,
+        "quote_source": "finnhub",
+        "reason": "Quote and trend available; advanced signals are still loading.",
+        "reason_code": "insufficient_history",
+        "refreshing": false,
+        "stock_analysis_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+        "stock_snapshot_id": "stock-AAPL-20260719T125831Z-96023800",
+        "watchlist_status": "partial"
+      },
+      "MSFT": {
+        "analysis_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+        "analysis_status": "partial",
+        "available_fields": [
+          "chart",
+          "executive_summary",
+          "leadership",
+          "overall_assessment",
+          "pattern",
+          "rating",
+          "relative_strength",
+          "risk",
+          "signals",
+          "support_resistance",
+          "technical",
+          "trend",
+          "volume"
+        ],
+        "compatible_snapshot_id": true,
+        "missing_fields": [],
+        "quote_price": 393.82,
+        "quote_source": "finnhub",
+        "reason": "Quote and trend available; advanced signals are still loading.",
+        "reason_code": "insufficient_history",
+        "refreshing": false,
+        "stock_analysis_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+        "stock_snapshot_id": "stock-MSFT-20260719T125831Z-b7c2954e",
+        "watchlist_status": "partial"
+      }
+    }
+  }
+}

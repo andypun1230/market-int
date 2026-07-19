@@ -98,6 +98,9 @@ function runTests() {
   assert(strongRiskOn.riskAppetite.state === 'strong_risk_on', 'strong risk-on scenario classifies correctly');
   assert(strongRiskOn.assetRotation.items[0]?.symbol === 'SPY', 'asset rotation ranks the strongest asset first');
   assert(strongRiskOn.crossAsset.series.every((series) => series.chartPoints[0]?.value === 0), 'all cross-asset series normalize to 0%');
+  assert(strongRiskOn.overview.keyRisk === 'No dominant current macro risk is identified.', 'current macro risk does not fabricate a future condition');
+  assert(strongRiskOn.overview.invalidationConditions.includes('renewed rise'), 'future invalidation remains separately labelled');
+  assert(!strongRiskOn.overview.currentRisks.some((risk) => risk.toLowerCase().includes('renewed rise')), 'future invalidation is not mixed into current-risk evidence');
 
   const riskOff = buildMacroDashboardViewModel(histories({
     GLD: 6,

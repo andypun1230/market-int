@@ -223,6 +223,24 @@ function run() {
     },
   }));
   assert(unavailableLeadership.laggardState === 'unavailable', 'missing leadership data does not imply no major laggards');
+
+  const canonicalLaggard = buildHomeSummary(dashboard({
+    core: {
+      ...dashboard().core,
+      lagging_sector: {
+        ...dashboard().core.top_sector!,
+        composite_score: 22.8,
+        eligible_members: 1,
+        name: 'Materials',
+        rank: 11,
+        status: 'Lagging',
+        total_members: 1,
+      },
+    },
+  }));
+  assert(canonicalLaggard.laggardState === 'canonical', 'a published lowest-ranked sector is used as the Home laggard');
+  assert(canonicalLaggard.laggards[0]?.label.includes('Materials · #11 overall · Lagging'), 'Home preserves canonical rank and classification for the laggard');
+  assert(canonicalLaggard.laggards[0]?.label.includes('limited breadth sample (1)'), 'small-sector reliability is visible without changing the rank');
 }
 
 run();

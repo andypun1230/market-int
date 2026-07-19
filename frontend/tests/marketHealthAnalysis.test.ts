@@ -115,7 +115,7 @@ function run() {
   const overview = buildHealthOverviewSummary(components, health);
   assert(overview.includes('supported by'), 'overview describes strongest support');
   assert(!overview.includes('supported by breadth remains'), 'overview grammar is natural');
-  assert(getHealthHistoryBadgeLabel('unavailable') === 'History unavailable', 'history badge is explicit');
+  assert(getHealthHistoryBadgeLabel('unavailable') === 'Trend history unavailable', 'history badge identifies the missing dependency');
   assert(getHealthSourceBadgeLabel('mock') === 'Mock data', 'mock source badge is explicit');
   assert(getHealthSourceBadgeLabel(undefined) === null, 'missing source badge is hidden');
 

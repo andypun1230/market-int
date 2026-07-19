@@ -193,7 +193,7 @@ export function getHealthHistoryBadgeLabel(status: HealthHistoryStatus) {
     case 'collecting':
       return 'History collecting';
     default:
-      return 'History unavailable';
+      return 'Trend history unavailable';
   }
 }
 

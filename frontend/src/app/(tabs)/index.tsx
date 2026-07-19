@@ -205,7 +205,7 @@ function WatchlistSnapshotCard({
   summary: HomeSummary;
 }) {
   return (
-    <HomeCard onPress={onPressView} title="Top Stock Ideas">
+    <HomeCard title="Top Stock Ideas">
       <View style={styles.cardContentStack}>
         {summary.stockIdeas.length ? (
           <View style={styles.tickerRow}>
@@ -224,7 +224,13 @@ function WatchlistSnapshotCard({
         ) : (
           <Text style={styles.emptyText}>No stocks saved yet</Text>
         )}
-        <Text style={styles.linkText}>View Watchlist ›</Text>
+        <Pressable
+          accessibilityLabel="Open Watchlist"
+          accessibilityRole="button"
+          onPress={onPressView}
+          style={({ pressed }) => pressed && styles.pressed}>
+          <Text style={styles.linkText}>View Watchlist ›</Text>
+        </Pressable>
       </View>
     </HomeCard>
   );

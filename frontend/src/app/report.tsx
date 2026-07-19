@@ -423,7 +423,7 @@ function ReportDetails({ report }: { report: DailyReportWithInstitutionalActivit
         />
       </ExpandableSection>
 
-      <ExpandableSection summary={report.industry_groups?.summary || 'N/A'} title="Theme Leadership">
+      <ExpandableSection summary={report.industry_groups?.summary || 'Live Theme Intelligence is unavailable.'} title="Static Strategy Preferences">
         {report.industry_groups ? (
           <IndustryGroupsSection industryGroups={report.industry_groups} />
         ) : (
@@ -714,7 +714,7 @@ function IndustryGroupsSection({
   industryGroups: NonNullable<DailyReport['industry_groups']>;
 }) {
   return (
-    <DashboardCard title="Theme Leadership" accentColor={Theme.colors.accent}>
+    <DashboardCard title="Static Strategy Preferences" accentColor={Theme.colors.accent}>
       <Text style={styles.bodyText}>{industryGroups.summary}</Text>
       <View style={styles.metricGrid}>
         {industryGroups.items.slice(0, 6).map((item) => (

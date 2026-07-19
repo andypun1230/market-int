@@ -64,6 +64,7 @@ export type MarketOverviewDashboardViewModel = {
   decisionPosture: {
     avoid: string | null;
     confidence: number | null;
+    confidenceLabel: string | null;
     implication: string;
     monitor: string | null;
     posture: string;
@@ -173,11 +174,16 @@ export function buildOverviewIndexesSnapshot(
     : volumeWarnings
       ? 'Volume participation is mixed.'
       : 'Volume participation is confirming.';
+  const leaderTrend = leader?.trend.state === 'range' || leader?.trend.label === 'Range'
+    ? 'Neutral'
+    : leader?.trend.label ?? 'Unavailable';
   return {
     key: 'indexes',
     label: 'Indexes',
-    primary: leader ? `${leader.symbol} Leading` : 'Index Trend Available',
-    secondary: `${uptrends} of ${valid.length} tracked indexes in constructive trends. ${participation}`,
+    primary: leader ? `Relative leader: ${leader.symbol}` : 'Index Trend Available',
+    secondary: leader
+      ? `Best relative performer among the ${valid.length} tracked indexes, but its trend remains ${leaderTrend}. ${uptrends} of ${valid.length} tracked indexes are in constructive trends. ${participation}`
+      : `${uptrends} of ${valid.length} tracked indexes in constructive trends. ${participation}`,
     sourceTab: 'indexes',
     tone,
   };
@@ -272,17 +278,17 @@ export function buildOverviewMacroSnapshot(macro: MacroDashboardViewModel | null
 
 export function buildOverviewLeadershipSnapshot(core: MarketCoreSnapshot | null, breadth: BreadthDashboardViewModel | null): MarketSnapshotTile | null {
   const sector = core?.top_sector?.name;
-  const theme = core?.top_industry_group?.name;
-  if (!sector && !theme) {
+  const staticPreference = core?.top_industry_group?.name;
+  if (!sector && !staticPreference) {
     return null;
   }
   const narrow = breadth?.quality.confidence === 'low' || (breadth?.overview.score !== null && (breadth?.overview.score ?? 100) < 55);
   return {
     key: 'leadership',
     label: 'Leadership',
-    primary: sector ?? theme ?? 'Leadership Available',
-    secondary: theme
-      ? `${theme} leads themes${narrow ? ', but leadership remains concentrated.' : '.'}`
+    primary: sector ?? staticPreference ?? 'Leadership Available',
+    secondary: staticPreference
+      ? `${staticPreference} is a static strategy preference, not live Theme Intelligence.${narrow ? ' Leadership remains concentrated.' : ''}`
       : narrow ? 'Leadership exists, but breadth confirmation is limited.' : 'Sector leadership is constructive.',
     sourceTab: 'overview',
     tone: narrow ? 'warning' : 'positive',
@@ -443,6 +449,7 @@ export function buildOverviewDecisionPosture(
     return {
       avoid: null,
       confidence: null,
+      confidenceLabel: null,
       implication: 'Decision posture unavailable.',
       monitor: null,
       posture: 'Unavailable',
@@ -454,6 +461,7 @@ export function buildOverviewDecisionPosture(
   return {
     avoid: decision.posture.mainRisk,
     confidence: decision.posture.confidence,
+    confidenceLabel: decision.posture.confidenceLabel,
     implication: conflict ? `${decision.posture.actionFramework} Monitor conflict: ${conflict.explanation}` : decision.posture.actionFramework,
     monitor: conflict?.explanation ?? decision.posture.monitor,
     posture: decision.posture.postureLabel,
@@ -486,7 +494,8 @@ function buildCoreDecisionPosture(core: MarketCoreSnapshot | null): MarketOvervi
   }
   return {
     avoid,
-    confidence: null,
+    confidence: finiteNumber(summary.decision_confidence?.score),
+    confidenceLabel: summary.decision_confidence?.status ?? null,
     implication: summary.playbook?.summary
       ?? summary.aggressiveness?.summary
       ?? 'Decision posture is available from the core market snapshot while full Decision details load.',
@@ -535,7 +544,9 @@ function buildMarketAlignmentSummary(
     return `Most important conflict: ${contradictions[0].explanation}`;
   }
   if (alignment.supportive.length > alignment.caution.length && alignment.supportive.length > alignment.mixed.length) {
-    return 'Most major market dimensions are supportive.';
+    const cautionText = alignment.caution.length ? `the ${alignment.caution.length} caution${alignment.caution.length === 1 ? '' : 's'}` : 'no cautions';
+    const mixedText = alignment.mixed.length ? ` while ${alignment.mixed.length} dimension${alignment.mixed.length === 1 ? ' remains' : 's remain'} mixed` : '';
+    return `Supportive factors (${alignment.supportive.length}) outweigh ${cautionText}${mixedText}.`;
   }
   if (alignment.caution.length > alignment.supportive.length) {
     return 'Caution signals outweigh supportive confirmation.';

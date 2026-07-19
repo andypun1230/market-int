@@ -39,7 +39,7 @@ export type HomeSummary = {
   healthScore: number | null;
   indexes: HomeIndexSnapshot[];
   laggards: HomeLeadershipItem[];
-  laggardState: 'evaluated_empty' | 'unavailable';
+  laggardState: 'canonical' | 'evaluated_empty' | 'unavailable';
   leaders: HomeLeadershipItem[];
   positioningLabel: string;
   positioningScore: number | null;
@@ -74,6 +74,7 @@ export function buildHomeSummary(dashboard: HomeDashboardResponse | null): HomeS
   const riskScore = validNumber(riskSummary?.score);
   const positioningScore = validNumber(aggressiveness?.score);
   const leaders = buildLeadership(core);
+  const laggards = buildLaggards(core);
   const breadth = buildBreadthMetric(core);
   const volatility = buildVolatilityMetric(health);
   const rawRiskDriver = riskSummary?.summary ?? riskSummary?.top_contributors?.[0]?.explanation ?? core?.decision_summary.main_risk ?? null;
@@ -108,8 +109,8 @@ export function buildHomeSummary(dashboard: HomeDashboardResponse | null): HomeS
     healthLabel: health?.status ?? scoreLabel(healthScore, 'Health'),
     healthScore,
     indexes: buildIndexSnapshots(core?.indexes ?? []),
-    laggards: [],
-    laggardState: leaders.length ? 'evaluated_empty' : 'unavailable',
+    laggards,
+    laggardState: laggards.length ? 'canonical' : leaders.length ? 'evaluated_empty' : 'unavailable',
     leaders,
     positioningLabel: aggressiveness?.status ?? playbook?.suggested_aggressiveness ?? scoreLabel(positioningScore, 'Positioning'),
     positioningScore,
@@ -127,6 +128,18 @@ export function buildHomeSummary(dashboard: HomeDashboardResponse | null): HomeS
     volatility: buildVolatilityMetric(health),
     yield10Y: null,
   };
+}
+
+function buildLaggards(core: HomeDashboardResponse['core'] | null): HomeLeadershipItem[] {
+  const sector = core?.lagging_sector;
+  if (!sector?.name) {
+    return [];
+  }
+  return [{
+    kind: 'sector',
+    label: `${sector.name} · #${sector.rank} overall · ${sector.status}${typeof sector.composite_score === 'number' ? ` · Composite ${sector.composite_score.toFixed(1)}` : ''}${typeof sector.total_members === 'number' && sector.total_members <= 3 ? ` · limited breadth sample (${sector.total_members})` : typeof sector.percent_above_50ema === 'number' ? ` · ${Math.round(sector.percent_above_50ema)}% above EMA50` : ''}`,
+    tone: 'negative',
+  }];
 }
 
 function buildIndexSnapshots(indexes: IndexSnapshot[]): HomeIndexSnapshot[] {
@@ -173,7 +186,7 @@ function buildLeadership(core: HomeDashboardResponse['core'] | null): HomeLeader
   return [
     core?.top_sector?.name ? {
       kind: 'sector' as const,
-      label: core.top_sector.name,
+      label: `${core.top_sector.name} · #${core.top_sector.rank} overall · ${core.top_sector.status}${typeof core.top_sector.composite_score === 'number' ? ` · Composite ${core.top_sector.composite_score.toFixed(1)}` : ''}${typeof core.top_sector.percent_above_50ema === 'number' ? ` · ${Math.round(core.top_sector.percent_above_50ema)}% above EMA50` : ''}`,
       tone: toneForScore(validNumber(core.top_sector.relative_strength_score)),
     } : null,
     core?.top_industry_group?.name ? {

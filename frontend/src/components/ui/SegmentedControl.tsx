@@ -8,21 +8,25 @@ type SegmentedOption = {
 };
 
 type SegmentedControlProps = {
+  compact?: boolean;
   fullWidth?: boolean;
   label?: string;
   onChange: (key: string) => void;
   options: SegmentedOption[];
   selectedKey: string;
   variant?: 'chips' | 'switch';
+  wrap?: boolean;
 };
 
 export function SegmentedControl({
+  compact = false,
   fullWidth = false,
   label,
   onChange,
   options,
   selectedKey,
   variant = 'chips',
+  wrap = false,
 }: SegmentedControlProps) {
   const isSwitch = variant === 'switch';
   const content = options.map((option) => {
@@ -37,12 +41,13 @@ export function SegmentedControl({
         style={({ pressed }) => [
           styles.chip,
           isSwitch && styles.switchChip,
+          compact && styles.compactChip,
           fullWidth && styles.fullWidthChip,
           selected && styles.selectedChip,
           isSwitch && selected && styles.selectedSwitchChip,
           pressed && styles.pressedChip,
         ]}>
-        <Text numberOfLines={1} style={[styles.label, fullWidth && styles.fullWidthLabel, selected && styles.selectedLabel]}>{option.label}</Text>
+        <Text numberOfLines={1} style={[styles.label, compact && styles.compactLabel, fullWidth && styles.fullWidthLabel, selected && styles.selectedLabel]}>{option.label}</Text>
       </Pressable>
     );
   });
@@ -50,11 +55,12 @@ export function SegmentedControl({
   return (
     <View style={[styles.wrapper, isSwitch && styles.switchWrapper]}>
       {label ? <Text style={styles.controlLabel}>{label}</Text> : null}
-      {fullWidth ? (
+      {fullWidth || wrap ? (
         <View style={[
           styles.content,
           isSwitch && styles.switchContent,
-          styles.fullWidthContent,
+          (fullWidth || wrap) && styles.fullWidthContent,
+          wrap && styles.wrapContent,
         ]}>
           {content}
         </View>
@@ -75,6 +81,7 @@ export function SegmentedControl({
 
 const styles = StyleSheet.create({
   content: {
+    flexDirection: 'row',
     gap: Spacing.two,
     paddingRight: Spacing.three,
   },
@@ -86,6 +93,12 @@ const styles = StyleSheet.create({
     minHeight: 38,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
+  },
+  compactChip: {
+    paddingHorizontal: Spacing.one,
+  },
+  compactLabel: {
+    fontSize: 12,
   },
   selectedChip: {
     backgroundColor: Theme.colors.accentSoft,
@@ -142,6 +155,9 @@ const styles = StyleSheet.create({
   },
   switchWrapper: {
     gap: Spacing.one,
+  },
+  wrapContent: {
+    flexWrap: 'wrap',
   },
   wrapper: {
     gap: Spacing.one,

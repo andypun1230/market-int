@@ -63,6 +63,13 @@ function indexes(): IndexAnalysis[] {
   ] as unknown as IndexAnalysis[];
 }
 
+function neutralIwmIndexes(): IndexAnalysis[] {
+  return [
+    { periodReturn: 1.5, relativeStrengthLabel: 'Leading', symbol: 'IWM', trend: { label: 'Range', state: 'range', tone: 'warning' }, volume: { tone: 'warning' } },
+    { periodReturn: 0.8, relativeStrengthLabel: 'Neutral RS', symbol: 'SPY', trend: { label: 'Range', state: 'range', tone: 'warning' }, volume: { tone: 'warning' } },
+  ] as unknown as IndexAnalysis[];
+}
+
 function breadth(tone: 'positive' | 'warning' | 'negative' = 'warning'): BreadthDashboardViewModel {
   return {
     advanceDecline: {
@@ -245,6 +252,14 @@ function run() {
   const coreFallbackBreadth = buildOverviewBreadthSnapshot(null, core());
   assert(coreFallbackBreadth?.primary === 'Constructive', 'breadth tile falls back to core breadth status before full breadth details load');
   assert(coreFallbackBreadth?.secondary?.includes('61% above 50 EMA'), 'core breadth fallback shows 50 EMA participation');
+
+  const iwmOverview = buildMarketOverviewDashboard({
+    breadth: breadth(), core: core(), decision: decision(), health: health(), indexes: neutralIwmIndexes(), institutional: institutional(), macro: defensiveMacro(),
+  });
+  const indexTile = iwmOverview.snapshot.find((item) => item.key === 'indexes');
+  assert(indexTile?.primary === 'Relative leader: IWM', 'IWM is labelled as a relative leader');
+  assert(indexTile?.secondary?.includes('trend remains Neutral'), 'IWM neutral trend remains visible');
+  assert(!indexTile?.primary.includes('IWM Leading'), 'relative leadership does not imply an absolute bullish trend');
 
   const coreOnlyOverview = buildMarketOverviewDashboard({
     breadth: null,

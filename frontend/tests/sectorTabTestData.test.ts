@@ -96,6 +96,7 @@ function run() {
       const rotation = item.rotation[interval];
       const expectedLength = interval === '1W' ? 5 : interval === '1M' ? 10 : 12;
       assert(rotation.history.length === expectedLength, `${item.name} ${interval} uses expected sampled trail length`);
+      assert(rotation.history.every((point) => point.source === 'test' && point.isSynthetic === true), `${item.name} ${interval} marks generated rotation points as test data`);
       assert(rotation.quadrant === classifyQuadrant(rotation.relativeStrength, rotation.relativeMomentum), `${item.name} quadrant is classified from latest point`);
       rotation.history.slice(1).forEach((point, index) => {
         const previous = rotation.history[index];

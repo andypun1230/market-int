@@ -1,0 +1,135 @@
+{
+  "checks": {
+    "breadth_consistency": {
+      "breadth_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+      "coverage_percent": 100.0,
+      "home_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+      "market_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+      "structure_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb"
+    },
+    "detail_routes": {
+      "Technology": {
+        "constituents": 20,
+        "has_all_periods": true,
+        "sector_id": "information_technology",
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+      },
+      "energy": {
+        "constituents": 3,
+        "has_all_periods": true,
+        "sector_id": "energy",
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+      },
+      "materials": {
+        "constituents": 1,
+        "has_all_periods": true,
+        "sector_id": "materials",
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+      }
+    },
+    "restart": {
+      "after": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+      "before": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+    },
+    "rotation_ux": {
+      "formula_version": "relative-return-momentum-v1",
+      "history_point_count": 1,
+      "movement_available": false,
+      "published_source": "published_sector_snapshots",
+      "sector_points": 11,
+      "series_count": 33,
+      "series_source": "durable_polygon_adjusted_daily_history",
+      "trail_lengths": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "sector_snapshot_tests": {
+      "output": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n........\n----------------------------------------------------------------------\nRan 8 tests in 0.948s\n\nOK\n",
+      "passed": true
+    },
+    "taxonomy": true,
+    "warm_reads": {
+      "/market/sector-dashboard": {
+        "latency_ms": 2.99,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      },
+      "/market/sectors": {
+        "latency_ms": 3.03,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      },
+      "/market/sectors/Technology": {
+        "latency_ms": 89.71,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      },
+      "/market/sectors/alerts": {
+        "latency_ms": 2.89,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      },
+      "/market/sectors/energy": {
+        "latency_ms": 46.47,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      },
+      "/market/sectors/materials": {
+        "latency_ms": 40.5,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      },
+      "/market/sectors/rotation": {
+        "latency_ms": 48.6,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      },
+      "/market/sectors/snapshot/latest": {
+        "latency_ms": 20.17,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      },
+      "/market/sectors/summary": {
+        "latency_ms": 2.65,
+        "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+        "status": 200
+      }
+    }
+  },
+  "conditions": [],
+  "failures": [],
+  "passed": true,
+  "phase": "4.4c"
+}

@@ -10,6 +10,8 @@ import {
   type ReactNode,
 } from 'react';
 
+import { normalizeSectorId } from '@/features/sectors/sectorSnapshot';
+
 export type WatchlistItemType = 'stock' | 'sector' | 'theme';
 
 export type BaseWatchlistItem = {
@@ -268,6 +270,9 @@ export function normalizeWatchlistId(type: WatchlistItemType | unknown, id: stri
   const normalizedType = normalizeWatchlistItemType(type);
   if (normalizedType === 'stock') {
     return id.trim().toUpperCase();
+  }
+  if (normalizedType === 'sector') {
+    return normalizeSectorId(id) ?? id.trim().toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   }
   return id.trim().toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }

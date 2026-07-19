@@ -87,11 +87,11 @@ function buildBrief(dashboard: HomeDashboardResponse | null): MarketBrief | null
     regime: marketHealth?.status ?? 'Unavailable',
     drivers: [
       topSector ? `${topSector} sector leadership` : null,
-      topGroup ? `${topGroup} industry group leadership` : null,
+      topGroup ? `${topGroup} static strategy preference` : null,
       core.decision_summary.preferred_style,
     ].filter((item): item is string => Boolean(item)),
     risks: [core.decision_summary.main_risk].filter((item): item is string => Boolean(item)),
-    top_sectors: [topSector, topGroup].filter((item): item is string => Boolean(item)),
+    top_sectors: [topSector].filter((item): item is string => Boolean(item)),
     summary: playbook?.summary ?? marketHealth?.summary ?? 'Market dashboard is updating.',
   };
 }

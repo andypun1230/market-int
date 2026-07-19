@@ -113,12 +113,16 @@ export type MacroDashboardViewModel = {
   interpretation: {
     confidence: MacroConfidence;
     implication: string;
+    invalidationConditions: string;
     mainRisk: string;
     stance: string;
     supportiveFactor: string;
   };
   overview: {
     confidence: MacroConfidence;
+    currentRisks: string[];
+    supportingEvidence: string[];
+    invalidationConditions: string;
     keyRisk: string;
     lagging: string[];
     leading: string[];
@@ -860,7 +864,7 @@ function buildEconomicRead(metrics: EconomicMetric[], source: 'test' | null) {
   if (inflationCooling >= 2 && easing) {
     return {
       confidence,
-      implication: 'Disinflation and easier rate pressure are consistent with a more constructive macro backdrop, provided labor remains stable.',
+      implication: 'Disinflation and easier rate pressure support a more constructive macro backdrop.',
       mainRisk: 'A renewed inflation or yield rebound',
       regime: 'disinflationary' as MacroRegime,
       summary: 'Economic test data shows cooling inflation and easing rate pressure.',
@@ -911,6 +915,9 @@ function buildMacroOverview(
   if (risk.state === 'unavailable') {
     return {
       confidence: 'unavailable',
+      currentRisks: [],
+      supportingEvidence: [],
+      invalidationConditions: 'Cross-asset coverage must be restored before an invalidation condition can be assessed.',
       keyRisk: 'Cross-asset coverage unavailable',
       lagging: [],
       leading: [],
@@ -922,12 +929,18 @@ function buildMacroOverview(
   const leading = ranked.slice(0, 2).map((asset) => asset.label);
   const lagging = ranked.slice(-2).reverse().map((asset) => asset.label);
   const oilReturn = commodities.oil?.returnValue ?? null;
-  const keyRisk = economicRead.mainRisk
-    ?? risk.defensiveFactors[0]
-    ?? (oilReturn !== null && oilReturn > 5 ? 'Oil strength may keep inflation sensitivity elevated.' : 'A renewed rise in yields or defensive assets.');
+  const currentRisks = [
+    ...risk.defensiveFactors,
+    oilReturn !== null && oilReturn > 5 ? 'Oil strength may keep inflation sensitivity elevated.' : null,
+  ].filter((item): item is string => Boolean(item));
+  const keyRisk = currentRisks[0] ?? 'No dominant current macro risk is identified.';
+  const invalidationConditions = economicRead.mainRisk ?? 'A renewed rise in defensive assets or destabilizing yields would weaken this risk-appetite read.';
   const regime: MacroRegime = economicRead.regime !== 'mixed' ? economicRead.regime : risk.state;
   return {
     confidence: economicRead.confidence === 'unavailable' ? dataQuality.confidence : economicRead.confidence,
+    currentRisks,
+    supportingEvidence: risk.supportingFactors,
+    invalidationConditions,
     keyRisk,
     lagging,
     leading,
@@ -1020,7 +1033,7 @@ function buildMacroInterpretation(
   const supportiveFactor = economicRead.supportiveFactor ?? risk.supportingFactors[0] ?? (overview.leading.length ? `${overview.leading[0]} leadership` : 'Supportive factor unavailable');
   const mainRisk = overview.keyRisk;
   const implication = economicRead.implication ?? (risk.state === 'strong_risk_on' || risk.state === 'risk_on'
-    ? 'The backdrop is consistent with risk appetite, but sharp yield or defensive-asset reversals would weaken that read.'
+    ? 'Cross-asset conditions remain supportive of risk appetite.'
     : risk.state === 'risk_off' || risk.state === 'defensive_rotation'
       ? 'The backdrop is defensive, so equity leadership needs confirmation from cross-asset improvement.'
       : commodities.oil?.returnValue !== null && (commodities.oil?.returnValue ?? 0) > 5
@@ -1029,6 +1042,7 @@ function buildMacroInterpretation(
   return {
     confidence: economicRead.confidence === 'unavailable' ? risk.confidence : economicRead.confidence,
     implication,
+    invalidationConditions: overview.invalidationConditions,
     mainRisk,
     stance: formatRiskState(economicRead.regime !== 'mixed' ? economicRead.regime : risk.state),
     supportiveFactor,
