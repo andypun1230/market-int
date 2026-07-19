@@ -9,18 +9,20 @@ from app.services.basket_data import (
     get_equal_weight_returns,
 )
 from app.services.service_cache import get_or_compute, get_service_ttl
+from app.services.theme_provenance import static_strategy_preference_provenance
 
 
 def build_industry_groups() -> IndustryGroupResponse:
-    return get_or_compute(
-        "industry-groups",
+    response = get_or_compute(
+        "industry-groups:v2",
         get_service_ttl("SERVICE_CACHE_INDUSTRY_GROUPS_TTL_SECONDS", 900),
         _build_industry_groups_uncached,
     )
+    return normalize_industry_group_response(response)
 
 
 def _build_industry_groups_uncached() -> IndustryGroupResponse:
-    cache_key = f"industry-groups:{os.getenv('INDUSTRY_GROUP_HISTORY_DAYS', '260')}"
+    cache_key = f"industry-groups:v2:{os.getenv('INDUSTRY_GROUP_HISTORY_DAYS', '260')}"
     cached = get_cached_value(cache_key)
     if cached is not None and has_long_interval_fields(cached):
         return cached
@@ -36,10 +38,9 @@ def _build_industry_groups_uncached() -> IndustryGroupResponse:
         ),
         reverse=True,
     )
-    items = [
-        IndustryGroupItem(rank=index + 1, **row)
-        for index, row in enumerate(ranked_rows)
-    ]
+    as_of = max((item["as_of"] for item in ranked_rows if item.get("as_of")), default=None)
+    provenance = static_strategy_preference_provenance(as_of)
+    items = [IndustryGroupItem(rank=index + 1, provenance=provenance, **row) for index, row in enumerate(ranked_rows)]
     leaders = ", ".join(item.name for item in items[:3]) if items else "N/A"
     modes = {item.overall_mode for item in items if item.overall_mode}
     overall_mode = "live" if modes == {"live"} else "mixed" if "live" in modes or "mixed" in modes else "mock"
@@ -49,16 +50,32 @@ def _build_industry_groups_uncached() -> IndustryGroupResponse:
 
     result = IndustryGroupResponse(
         items=items,
-        summary=f"{leaders} are the leading industry groups based on basket returns, breadth, and relative strength.",
+        summary=(
+            f"{leaders} are configured strategy baskets. They are static preferences, not live Theme Intelligence."
+        ),
         overall_mode=overall_mode,
         coverage_percent=(
             round(sum(coverage_values) / len(coverage_values), 2)
             if coverage_values else None
         ),
-        as_of=max((item.as_of for item in items if item.as_of), default=None),
+        as_of=as_of,
+        theme_provenance=provenance,
     )
     set_cached_value(cache_key, result, int(os.getenv("INDUSTRY_GROUP_CACHE_TTL_SECONDS", "900")))
     return result
+
+
+def normalize_industry_group_response(value: object) -> IndustryGroupResponse:
+    """Keep old cached data truthful without mutating the cached object."""
+    response = value if isinstance(value, IndustryGroupResponse) else IndustryGroupResponse.model_validate(value)
+    provenance = static_strategy_preference_provenance(response.as_of)
+    items = [item.model_copy(update={"provenance": provenance}) for item in response.items]
+    leaders = ", ".join(item.name for item in items[:3]) if items else "No configured baskets"
+    return response.model_copy(update={
+        "items": items,
+        "summary": f"{leaders} are configured strategy baskets. They are static preferences, not live Theme Intelligence.",
+        "theme_provenance": provenance,
+    })
 
 
 def has_long_interval_fields(response: object) -> bool:

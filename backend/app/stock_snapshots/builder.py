@@ -119,6 +119,11 @@ class StockAnalysisSnapshotBuilder:
             self.storage.set_build_error(normalized, f"incompatible snapshot not published: {reason}")
             return None
         self.storage.publish_snapshot(snapshot)
+        # A published snapshot changes the canonical Watchlist evaluation for
+        # this symbol, so no pending/unavailable summary may outlive it.
+        from app.services.service_cache import invalidate_service_cache
+
+        invalidate_service_cache("watchlist-summary:v2")
         return snapshot
 
     def build(self, symbol: str, *, started: float | None = None) -> StockAnalysisSnapshot:

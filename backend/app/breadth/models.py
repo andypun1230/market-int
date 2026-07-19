@@ -60,6 +60,9 @@ class BreadthSnapshot:
     calculation_version: str
     input_hash: str
     sections: dict[str, dict[str, Any]]
+    semantics_version: str = "market-semantics-v1"
+    data_confidence: dict[str, Any] = field(default_factory=dict)
+    signal_confidence: dict[str, Any] = field(default_factory=dict)
 
     def model_dump(self) -> dict[str, Any]:
         return asdict(self)

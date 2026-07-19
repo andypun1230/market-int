@@ -131,14 +131,14 @@ class ReportIntelligenceTests(unittest.TestCase):
                 "volume": 72,
             },
             "sectorRanking": [{"name": "Technology", "return": 1.5}],
-            "themeRanking": [{"name": "Semiconductors", "return": 2.1}],
         }
 
         relationships = RelationshipEngine().detect(snapshot)
 
         self.assertGreaterEqual(len(relationships), 2)
         self.assertTrue(any("Breadth" in item for item in relationships))
-        self.assertTrue(any("Sector and theme" in item for item in relationships))
+        self.assertTrue(any("Trend and volume" in item for item in relationships))
+        self.assertFalse(any("theme" in item.lower() for item in relationships))
 
     def test_previous_playbook_and_evolution_use_stored_reports_only(self) -> None:
         previous = {

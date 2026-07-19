@@ -87,10 +87,6 @@ def build_rule_market_narrative(analysis: dict[str, Any]) -> dict[str, Any]:
         item.get("sector", "N/A")
         for item in sector_etfs.get("items", [])[:2]
     ]
-    industry_group_leaders = [
-        item.get("name", "N/A")
-        for item in industry_groups.get("items", [])[:3]
-    ]
 
     summary = (
         f"Market health is {market_health_status} with a score of {market_health_score}. "
@@ -110,7 +106,7 @@ def build_rule_market_narrative(analysis: dict[str, Any]) -> dict[str, Any]:
         f"Institutional bias is {institutional_bias}, and the leading broad sector is {leading_sector}. "
         f"Institutional intelligence shows {institutional_intelligence.get('summary', 'N/A')} "
         "Options gamma is estimated, money flow is estimated, and large prints are only block-trade candidates. "
-        f"Leading industry groups are {', '.join(industry_group_leaders) if industry_group_leaders else 'N/A'}. "
+        "Configured industry baskets are static strategy preferences, not live Theme Intelligence. "
         f"Sector ETF leadership is focused on {', '.join(sector_etf_leaders) if sector_etf_leaders else 'N/A'}. "
         "The main takeaway is to stay selective and monitor whether leadership broadens or narrows."
     )
@@ -138,7 +134,7 @@ def build_rule_market_narrative(analysis: dict[str, Any]) -> dict[str, Any]:
             f"Whether institutional bias remains {institutional_bias}.",
             "Whether money flow, options sentiment, and liquidity remain constructive.",
             f"Whether {leading_sector} continues to lead as a broad sector.",
-            "Whether leading industry groups keep confirming the broader sector move.",
+            "Whether published sector leadership continues to confirm the broader move.",
             risk.get("main_risks", ["Upcoming macro catalysts"])[0],
         ],
         "disclaimer": DISCLAIMER,

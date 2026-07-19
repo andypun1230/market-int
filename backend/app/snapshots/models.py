@@ -35,7 +35,10 @@ class InputCoverage(BaseModel):
 
 class MarketSnapshot(BaseModel):
     snapshot_id: str
-    version: int = 1
+    # Version 2 adds the persisted semantic contract carried by the breadth,
+    # health, decision, and home sections. Older immutable snapshots remain
+    # readable as version 1.
+    version: int = 2
     status: SnapshotStatus
     created_at: str
     market_timestamp: str | None = None

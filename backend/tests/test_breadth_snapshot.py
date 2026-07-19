@@ -18,6 +18,7 @@ from app.breadth.storage import BreadthSnapshotStorage
 from app.market_history.storage import DailyBar, DailyBarStorage
 from app.securities.service import SecurityMasterService
 from app.securities.storage import SecurityMasterStorage
+from app.semantics import advance_decline_semantics
 from main import app
 
 
@@ -67,7 +68,27 @@ class BreadthSnapshotTests(unittest.TestCase):
         self.assertEqual(result.core["advancing_count"] + result.core["declining_count"] + result.core["unchanged_count"], 4)
         self.assertEqual(result.coverage["coverage_status"], "complete")
         self.assertEqual(result.coverage["indicator_coverage"]["EMA200"], 1.0)
+        self.assertEqual(result.coverage["coverage_dimensions"]["universe"]["display"], "4/4")
         self.assertTrue(0 <= (result.score or 0) <= 100)
+
+    def test_advance_decline_semantics_keep_zero_denominator_honest(self) -> None:
+        for advancing, declining, raw, display in ((3, 0, None, "No decliners"), (2, 0, None, "No decliners"), (0, 3, 0.0, "0.00"), (0, 0, None, "N/A"), (26, 75, 0.3467, "0.35")):
+            semantics = advance_decline_semantics(advancing, declining)
+            self.assertEqual(semantics["advance_decline_ratio"], raw)
+            self.assertEqual(semantics["advance_decline_ratio_display"], display)
+            self.assertIn("smoothed", semantics["ratio_method"])
+        self.assertEqual(advance_decline_semantics(26, 75)["advance_decline_ratio_smoothed"], 0.351)
+
+    def test_universe_coverage_and_long_indicator_eligibility_are_distinct(self) -> None:
+        universe = self.master.storage.get_active_universe("sp100"); assert universe
+        members = tuple(self.master.storage.members(universe.universe_id))
+        histories = {member.ticker: tuple(self.bars.history(member.ticker)) for member in members}
+        histories["XOM"] = histories["XOM"][:100]
+        result = calculate_breadth(BreadthCalculationInput(universe, members, "2026-07-17", histories), BreadthPolicy())
+        self.assertEqual(result.coverage["coverage_dimensions"]["universe"]["display"], "4/4")
+        self.assertEqual(result.coverage["coverage_dimensions"]["ema200"]["display"], "3/4")
+        self.assertEqual(result.core["data_confidence"]["label"], "Moderate")
+        self.assertIn("signal_confidence", result.core)
 
     def test_partial_coverage_does_not_fabricate_missing_member_metrics(self) -> None:
         universe = self.master.storage.get_active_universe("sp100"); assert universe
@@ -96,6 +117,15 @@ class BreadthSnapshotTests(unittest.TestCase):
             latest = self.snapshot_storage.latest(snapshot.universe_id, "test:polygon:sp100")
         self.assertEqual(latest.snapshot_id, snapshot.snapshot_id)
         self.assertEqual(len(self.snapshot_storage.history(snapshot.universe_id, "breadth_score")), 1)
+
+    def test_republishing_identical_snapshot_restores_latest_pointer(self) -> None:
+        builder = BreadthSnapshotBuilder(self.master, self.bars, self.snapshot_storage)
+        first = builder.build_and_publish("sp100"); assert first
+        # Simulate a prior interrupted process that wrote the immutable row but not its pointer.
+        self.snapshot_storage.set_state("test:polygon:sp100", f"latest:{first.universe_id}", "", first.published_at)
+        second = builder.build_and_publish("sp100"); assert second
+        self.assertEqual(second.snapshot_id, first.snapshot_id)
+        self.assertEqual(self.snapshot_storage.latest(first.universe_id, "test:polygon:sp100").snapshot_id, first.snapshot_id)
 
     def test_unavailable_build_preserves_last_known_good(self) -> None:
         builder = BreadthSnapshotBuilder(self.master, self.bars, self.snapshot_storage)

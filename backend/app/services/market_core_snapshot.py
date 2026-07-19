@@ -17,6 +17,7 @@ from app.services.service_cache import (
     set_l1_service_value,
 )
 from app.services.snapshot_store import get_last_market_core_snapshot, save_market_core_snapshot
+from app.services.theme_provenance import static_strategy_preference_provenance
 from app.validation.symbol_registry import canonical_index_universe
 
 
@@ -56,6 +57,7 @@ def _build_market_core_snapshot_uncached() -> dict[str, Any]:
     industry_groups = build_industry_groups()
 
     top_sector = sectors.leaders[0].model_dump() if sectors.leaders else None
+    lagging_sector = sectors.leaders[-1].model_dump() if sectors.leaders else None
     top_group = industry_groups.items[0].model_dump() if industry_groups.items else None
     modes = {
         item
@@ -76,6 +78,7 @@ def _build_market_core_snapshot_uncached() -> dict[str, Any]:
             "aggressiveness": aggressiveness.model_dump(),
             "preferred_style": trading_styles.preferred_style,
             "main_risk": playbook.main_risk,
+            "decision_confidence": get_field(market_health, "decision_confidence"),
         },
         "breadth_summary": {
             "breadth_score": get_field(breadth, "breadth_score"),
@@ -89,8 +92,12 @@ def _build_market_core_snapshot_uncached() -> dict[str, Any]:
             "market_date": get_field(breadth, "market_date"),
             "coverage_status": get_field(breadth, "coverage_status"),
             "trend": get_field(breadth, "trend"),
+            "coverage_dimensions": get_field(breadth, "coverage_dimensions"),
+            "data_confidence": get_field(breadth, "data_confidence"),
+            "signal_confidence": get_field(breadth, "signal_confidence"),
         },
         "top_sector": top_sector,
+        "lagging_sector": lagging_sector,
         "top_industry_group": top_group,
         "as_of": max(
             [
@@ -138,9 +145,11 @@ def build_bootstrap_snapshot() -> dict[str, Any]:
             "aggressiveness": aggressiveness,
             "preferred_style": (trading_styles or {}).get("preferred_style") if isinstance(trading_styles, dict) else None,
             "main_risk": (playbook or {}).get("main_risk") if isinstance(playbook, dict) else None,
+            "decision_confidence": (market_health or {}).get("decision_confidence") if isinstance(market_health, dict) else None,
         },
         "breadth_summary": build_cached_breadth_summary(breadth),
         "top_sector": first_item(sectors, "leaders"),
+        "lagging_sector": last_item(sectors, "leaders"),
         "top_industry_group": first_item(industry_groups, "items"),
         "as_of": datetime.now(timezone.utc).isoformat(),
         "overall_mode": "partial",
@@ -248,6 +257,16 @@ def decorate_snapshot(
         decorated["cache_age_seconds"] = round(age_seconds, 2)
     if generated_at is not None:
         decorated["generated_at"] = datetime.fromtimestamp(generated_at, timezone.utc).isoformat()
+    top_group = decorated.get("top_industry_group")
+    if isinstance(top_group, dict):
+        top_group = dict(top_group)
+        top_group["provenance"] = static_strategy_preference_provenance(top_group.get("as_of"))
+        decorated["top_industry_group"] = top_group
+    decision_summary = decorated.get("decision_summary")
+    if isinstance(decision_summary, dict) and isinstance(decision_summary.get("playbook"), dict):
+        playbook = dict(decision_summary["playbook"])
+        playbook["top_industry_group_provenance"] = static_strategy_preference_provenance(decorated.get("as_of"))
+        decorated["decision_summary"] = {**decision_summary, "playbook": playbook}
     return decorated
 
 
@@ -266,6 +285,9 @@ def build_cached_breadth_summary(breadth: object) -> dict[str, Any] | None:
         "market_date": breadth.get("market_date"),
         "coverage_status": breadth.get("coverage_status"),
         "trend": breadth.get("trend"),
+        "coverage_dimensions": breadth.get("coverage_dimensions"),
+        "data_confidence": breadth.get("data_confidence"),
+        "signal_confidence": breadth.get("signal_confidence"),
     }
 
 
@@ -276,6 +298,16 @@ def first_item(value: object, key: str) -> dict[str, Any] | None:
     if isinstance(items, list) and items:
         first = items[0]
         return first if isinstance(first, dict) else to_jsonable(first)
+    return None
+
+
+def last_item(value: object, key: str) -> dict[str, Any] | None:
+    if not isinstance(value, dict):
+        return None
+    items = value.get(key)
+    if isinstance(items, list) and items:
+        last = items[-1]
+        return last if isinstance(last, dict) else to_jsonable(last)
     return None
 
 

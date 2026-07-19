@@ -128,7 +128,7 @@ def calculate_market_regime() -> RegimeResponse:
         spy_above_50ema=spy_above_50ema,
         qqq_above_50ema=qqq_above_50ema,
         percent_above_50ema=market_breadth.percent_above_50ema,
-        advance_decline_ratio=market_breadth.advance_decline_ratio,
+        advance_decline_ratio=market_breadth.advance_decline_ratio_smoothed or market_breadth.advance_decline_ratio,
         distribution_days=institutional_bias.distribution_count,
         vix=MOCK_VIX,
     )
@@ -151,7 +151,7 @@ def calculate_market_regime() -> RegimeResponse:
             stocks_above_20ma=round(market_breadth.percent_above_20ema),
             stocks_above_50ma=round(market_breadth.percent_above_50ema),
             stocks_above_200ma=round(market_breadth.percent_above_200ema),
-            advance_decline_ratio=market_breadth.advance_decline_ratio,
+            advance_decline_ratio=market_breadth.advance_decline_ratio_smoothed or market_breadth.advance_decline_ratio,
         ),
         volatility=VolatilityResponse(
             vix=MOCK_VIX,

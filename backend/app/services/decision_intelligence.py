@@ -25,6 +25,7 @@ from app.services.risk_dashboard_v2 import build_risk_dashboard_v2
 from app.services.sector_etfs import build_sector_etf_dashboard
 from app.services.sectors import build_market_sectors
 from app.services.service_cache import get_or_compute, get_service_ttl
+from app.services.theme_provenance import static_strategy_preference_provenance
 
 
 DISCLAIMER = "Educational market decision support only, not financial advice."
@@ -238,16 +239,17 @@ def build_market_playbook() -> MarketPlaybookResponse:
         headline=get_playbook_headline(aggressiveness.status),
         summary=(
             "The market remains constructive but not perfect. Focus on leading sectors "
-            "and industry groups, and avoid chasing extended moves."
+            "and verified setups, and avoid chasing extended moves."
         ),
         preferred_strategy=trading_styles.preferred_style,
         suggested_aggressiveness=aggressiveness.status,
         top_sector=top_sector,
         top_industry_group=top_group,
+        top_industry_group_provenance=static_strategy_preference_provenance(industry_groups.as_of),
         cap_rotation_leader=cap_rotation.leader,
         main_risk=main_risk,
         action_guidelines=[
-            "Prioritize high-RS stocks in leading industry groups.",
+            "Prioritize high-RS stocks in leading sectors; configured strategy baskets are not live theme evidence.",
             "Prefer breakouts with strong volume confirmation.",
             "Avoid chasing stocks far above short-term moving averages.",
         ],

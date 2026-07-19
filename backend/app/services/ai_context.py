@@ -28,10 +28,12 @@ def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str,
     industry_groups = market_analysis.get("industry_groups", {})
     cap_rotation = market_analysis.get("cap_rotation", {})
     fear_greed = market_analysis.get("fear_greed", {})
+    macro = market_analysis.get("macro", {})
     breadth = market_analysis.get("breadth", {}).get("market", {})
     data_transparency = market_analysis.get("data_transparency", {})
     sectors = market_analysis.get("sectors", {})
     institutional_activity = market_analysis.get("institutional_activity", {})
+    semantic_context = market_analysis.get("semantic_context", {})
 
     breadth_status = regime.get("breadth", {}).get("status", "N/A")
     percent_above_50ema = breadth.get("percent_above_50ema")
@@ -67,6 +69,8 @@ def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str,
             "checklist_max_score": checklist.get("max_score"),
             "decision_confidence_score": decision_confidence.get("score"),
             "decision_confidence_status": decision_confidence.get("status", "N/A"),
+            "decision_confidence_reason": decision_confidence.get("reason"),
+            "decision_confidence_snapshot_id": decision_confidence.get("source_snapshot_id"),
             "top_probability": first_probability(probabilities),
             "leadership_summary": leadership.get("summary", "N/A"),
             "comparison_summary": comparison.get("summary", "N/A"),
@@ -94,14 +98,10 @@ def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str,
             ],
         },
         "industry_groups": {
-            "summary": industry_groups.get("summary", "N/A"),
-            "leaders": [
-                {
-                    "name": item.get("name", "N/A"),
-                    "parent_sector": item.get("parent_sector", "N/A"),
-                    "status": item.get("status", "N/A"),
-                    "relative_strength_score": item.get("relative_strength_score"),
-                }
+            "availability": "Static strategy preferences only; not live Theme Intelligence.",
+            "provenance": industry_groups.get("theme_provenance", {}),
+            "static_preferences": [
+                {"name": item.get("name", "N/A"), "parent_sector": item.get("parent_sector", "N/A")}
                 for item in industry_groups.get("items", [])[:3]
             ],
         },
@@ -115,6 +115,15 @@ def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str,
             "status": fear_greed.get("status", "N/A"),
             "summary": fear_greed.get("summary", "N/A"),
         },
+        "macro": {
+            "state": macro.get("state_label", "Unavailable"),
+            "score": macro.get("score"),
+            "supporting_evidence": macro.get("supporting_evidence", []),
+            "current_risks": macro.get("current_risks", []),
+            "invalidation_conditions": macro.get("invalidation_conditions"),
+            "source_state": macro.get("source_state", "unavailable"),
+            "provenance": macro.get("provenance", {}),
+        },
         "market_regime": regime.get("status", "N/A"),
         "breadth_status": breadth_status,
         "percent_above_50ema": percent_above_50ema,
@@ -123,6 +132,13 @@ def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str,
             "breadth_coverage_percent",
             breadth.get("coverage_percent"),
         ),
+        "breadth_semantics": {
+            "advance_decline": semantic_context.get("advance_decline", {}),
+            "coverage_dimensions": semantic_context.get("coverage_dimensions", {}),
+            "data_confidence": semantic_context.get("data_confidence", {}),
+            "signal_confidence": semantic_context.get("signal_confidence", {}),
+        },
+        "sector_breadth_representativeness": semantic_context.get("sector_breadth_representativeness", []),
         "data_mode": {
             "breadth": data_transparency.get("breadth_mode", breadth.get("overall_mode", "mock")),
             "sectors": data_transparency.get("sector_mode", "mock"),
@@ -144,7 +160,7 @@ def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str,
             "Breadth is based on a core liquid-stock universe, not complete exchange-wide breadth.",
             f"Whether institutional bias remains {institutional_bias}.",
             "Whether money flow, options sentiment, and liquidity remain supportive.",
-            "Whether leadership broadens beyond the top sectors and industry groups.",
+            "Whether leadership broadens beyond the top sectors.",
         ],
     }
 

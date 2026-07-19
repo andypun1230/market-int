@@ -9,6 +9,7 @@ from typing import Any
 from app.breadth.models import BreadthCalculationInput, BreadthCalculationResult
 from app.breadth.policy import WEIGHTS, BreadthPolicy, classify_score
 from app.market_history.storage import DailyBar
+from app.semantics import advance_decline_semantics, confidence_contract, coverage_dimension
 
 
 def calculate_breadth(input_: BreadthCalculationInput, policy: BreadthPolicy | None = None) -> BreadthCalculationResult:
@@ -36,6 +37,7 @@ def calculate_breadth(input_: BreadthCalculationInput, policy: BreadthPolicy | N
     classification = classify_score(score)
     trend = _trend(input_, score)
     confidence = _confidence(coverage, core)
+    confidence_details = _confidence_details(coverage, core)
     warnings = list(coverage["coverage_warnings"])
     if coverage["coverage_status"] == "unavailable":
         warnings.append("Breadth is not published as a score until minimum coverage is available.")
@@ -43,6 +45,7 @@ def calculate_breadth(input_: BreadthCalculationInput, policy: BreadthPolicy | N
         classification = "unavailable"
     sectors = _sectors(rows, policy)
     input_hash = hashlib.sha256(json.dumps({"universe": input_.universe.universe_id, "market_date": input_.market_date, "histories": {ticker: [bar.session_date for bar in bars] for ticker, bars in sorted(input_.histories.items())}}, sort_keys=True).encode("utf-8")).hexdigest()[:24]
+    core.update(confidence_details)
     return BreadthCalculationResult(input_.market_date, core, coverage, sectors, score, classification, trend, confidence, warnings, input_hash)
 
 
@@ -87,20 +90,57 @@ def _aggregate(rows: list[dict[str, Any]], policy: BreadthPolicy) -> dict[str, A
     advancing = sum(row["advance"] == "advancing" for row in advance_rows)
     declining = sum(row["advance"] == "declining" for row in advance_rows)
     unchanged = sum(row["advance"] == "unchanged" for row in advance_rows)
-    return {"advancing_count": advancing, "declining_count": declining, "unchanged_count": unchanged, "net_advances": advancing - declining, "advance_decline_ratio": None if declining == 0 else round(advancing / declining, 4), "percent_advancing": _percent(advancing, len(advance_rows)), "percent_declining": _percent(declining, len(advance_rows)), "percent_above_20ema": _metric_percent(rows, "above_20"), "percent_above_50ema": _metric_percent(rows, "above_50"), "percent_above_200ema": _metric_percent(rows, "above_200"), "new_52_week_highs": sum(row["high"] is True for row in rows), "new_52_week_lows": sum(row["low"] is True for row in rows), "highs_minus_lows": sum(row["high"] is True for row in rows) - sum(row["low"] is True for row in rows), "high_low_ratio": _ratio(sum(row["high"] is True for row in rows), sum(row["low"] is True for row in rows)), "eligible_rows": len(rows)}
+    return {
+        "advancing_count": advancing,
+        "declining_count": declining,
+        "unchanged_count": unchanged,
+        "net_advances": advancing - declining,
+        **advance_decline_semantics(advancing, declining),
+        "percent_advancing": _percent(advancing, len(advance_rows)),
+        "percent_declining": _percent(declining, len(advance_rows)),
+        "percent_above_20ema": _metric_percent(rows, "above_20"),
+        "percent_above_50ema": _metric_percent(rows, "above_50"),
+        "percent_above_200ema": _metric_percent(rows, "above_200"),
+        "new_52_week_highs": sum(row["high"] is True for row in rows),
+        "new_52_week_lows": sum(row["low"] is True for row in rows),
+        "highs_minus_lows": sum(row["high"] is True for row in rows) - sum(row["low"] is True for row in rows),
+        "high_low_ratio": _ratio(sum(row["high"] is True for row in rows), sum(row["low"] is True for row in rows)),
+        "eligible_rows": len(rows),
+    }
 
 
 def _coverage(requested: set[str], rows: list[dict[str, Any]], missing: list[str], stale: list[str], invalid: list[str], core: dict[str, Any], policy: BreadthPolicy) -> dict[str, Any]:
     available = len(rows)
     ratio = available / len(requested) if requested else 0.0
-    indicator = {"advance_decline": _valid_ratio(rows, "advance"), "EMA20": _valid_ratio(rows, "above_20"), "EMA50": _valid_ratio(rows, "above_50"), "EMA200": _valid_ratio(rows, "above_200"), "highs_lows": _valid_ratio(rows, "high")}
+    indicator_counts = {"advance_decline": sum(row["advance"] is not None for row in rows), "EMA20": sum(row["above_20"] is not None for row in rows), "EMA50": sum(row["above_50"] is not None for row in rows), "EMA200": sum(row["above_200"] is not None for row in rows), "highs_lows": sum(row["high"] is not None for row in rows)}
+    indicator = {key: coverage_dimension(value, available)["ratio"] for key, value in indicator_counts.items()}
     status = "complete" if ratio >= policy.min_complete_coverage and indicator["EMA200"] >= policy.min_complete_coverage else "partial" if available else "unavailable"
     warnings = []
     if missing: warnings.append(f"{len(missing)} constituent(s) have no stored history.")
     if stale: warnings.append(f"{len(stale)} constituent(s) are not aligned to the market date.")
     if indicator["EMA200"] < policy.min_complete_coverage: warnings.append("Long-term moving-average coverage is limited.")
     if available and ratio < policy.min_partial_coverage: warnings.append("Coverage is below the score-publication threshold; partial metrics are informational only.")
-    return {"universe_size": len(requested), "members_requested": len(requested), "members_available": available, "members_eligible": available, "members_missing": sorted(missing), "members_stale": sorted(stale), "members_invalid": sorted(invalid), "coverage_ratio": round(ratio, 6), "indicator_coverage": indicator, "coverage_status": status, "coverage_warnings": warnings}
+    return {
+        "universe_size": len(requested),
+        "members_requested": len(requested),
+        "members_available": available,
+        "members_eligible": available,
+        "members_missing": sorted(missing),
+        "members_stale": sorted(stale),
+        "members_invalid": sorted(invalid),
+        "coverage_ratio": round(ratio, 6),
+        "indicator_coverage": indicator,
+        "coverage_dimensions": {
+            "universe": coverage_dimension(available, len(requested)),
+            "advance_decline": coverage_dimension(indicator_counts["advance_decline"], available),
+            "ema20": coverage_dimension(indicator_counts["EMA20"], available),
+            "ema50": coverage_dimension(indicator_counts["EMA50"], available),
+            "ema200": coverage_dimension(indicator_counts["EMA200"], available),
+            "highs_lows": coverage_dimension(indicator_counts["highs_lows"], available),
+        },
+        "coverage_status": status,
+        "coverage_warnings": warnings,
+    }
 
 
 def _sectors(rows: list[dict[str, Any]], policy: BreadthPolicy) -> list[dict[str, Any]]:
@@ -132,6 +172,27 @@ def _confidence(coverage: dict[str, Any], core: dict[str, Any]) -> str:
     if coverage["coverage_status"] == "complete": return "high"
     if coverage["coverage_status"] == "partial": return "moderate"
     return "limited"
+
+
+def _confidence_details(coverage: dict[str, Any], core: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    dimensions = coverage.get("coverage_dimensions", {})
+    universe_ratio = float((dimensions.get("universe") or {}).get("ratio", 0))
+    ema200_ratio = float((dimensions.get("ema200") or {}).get("ratio", 0))
+    data_score = min(universe_ratio, ema200_ratio) * 100
+    values = [
+        core.get("percent_above_20ema"), core.get("percent_above_50ema"), core.get("percent_above_200ema"),
+        core.get("percent_advancing"), _leadership_score(core),
+    ]
+    values = [float(value) for value in values if value is not None]
+    supportive = sum(value >= 60 for value in values)
+    caution = sum(value < 40 for value in values)
+    signal_score = 85 if len(values) >= 4 and (supportive == len(values) or caution == len(values)) else 65 if len(values) >= 4 else 45 if values else None
+    return confidence_contract(
+        data_score=data_score,
+        data_reason=f"Universe coverage {universe_ratio * 100:.2f}% and EMA200 eligibility {ema200_ratio * 100:.2f}%.",
+        signal_score=signal_score,
+        signal_reason=f"{supportive} supportive, {len(values) - supportive - caution} mixed, and {caution} caution breadth dimensions.",
+    )
 
 
 def _metric_percent(rows: list[dict[str, Any]], key: str) -> float | None:

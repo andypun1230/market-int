@@ -12,6 +12,7 @@ from app.services.institutional_intelligence import build_institutional_intellig
 from app.services.leadership import build_leadership_dashboard
 from app.services.market_cap_rotation import build_market_cap_rotation
 from app.services.market_health import calculate_market_health
+from app.services.macro_state import build_macro_state
 from app.services.multi_timeframe import (
     analyze_all_multi_timeframes,
     analyze_multi_timeframe,
@@ -29,6 +30,7 @@ from app.services.stock_rating import calculate_stock_rating
 from app.services.support_resistance import calculate_support_resistance
 from app.services.trendline import analyze_trendline
 from app.services.volume_analysis import analyze_volume, build_volume_analysis
+from app.sector_snapshots.service import get_sector_snapshot_service
 
 
 def build_market_analysis() -> dict[str, Any]:
@@ -62,6 +64,7 @@ def _build_market_analysis_uncached() -> dict[str, Any]:
     industry_groups = build_industry_groups()
     cap_rotation = build_market_cap_rotation()
     fear_greed = build_fear_greed_index()
+    macro = build_macro_state()
 
     top_sector = sectors.leaders[0] if sectors.leaders else None
     breadth_50ema = market_breadth.percent_above_50ema
@@ -69,6 +72,28 @@ def _build_market_analysis_uncached() -> dict[str, Any]:
     institutional_bias = institutional_activity.bias.bias
     data_quality = market_health.data_quality or {}
     data_mode = data_quality.get("overall_mode", "mock")
+    sector_snapshot = get_sector_snapshot_service().latest()
+    semantic_context = {
+        "advance_decline": {
+            "raw_ratio": market_breadth.advance_decline_ratio,
+            "display": market_breadth.advance_decline_ratio_display,
+            "smoothed_ratio": market_breadth.advance_decline_ratio_smoothed,
+            "ratio_method": market_breadth.ratio_method,
+        },
+        "coverage_dimensions": market_breadth.coverage_dimensions or {},
+        "data_confidence": market_breadth.data_confidence or {},
+        "signal_confidence": market_breadth.signal_confidence or {},
+        "decision_confidence": to_plain_data(decision_confidence),
+        "sector_breadth_representativeness": [
+            {
+                "sector": row.get("display_name"),
+                "eligible_members": row.get("eligible_members"),
+                "representativeness": row.get("breadth_representativeness"),
+                "reason": row.get("representativeness_reason"),
+            }
+            for row in (sector_snapshot.sectors if sector_snapshot else ())
+        ],
+    }
 
     return {
         "type": "market",
@@ -85,6 +110,7 @@ def _build_market_analysis_uncached() -> dict[str, Any]:
         "industry_groups": to_plain_data(industry_groups),
         "cap_rotation": to_plain_data(cap_rotation),
         "fear_greed": to_plain_data(fear_greed),
+        "macro": macro,
         "regime": to_plain_data(regime),
         "breadth": {
             "market": to_plain_data(market_breadth),
@@ -112,7 +138,7 @@ def _build_market_analysis_uncached() -> dict[str, Any]:
             f"Current market analysis data mode is {data_mode}.",
             f"Institutional intelligence: {institutional_intelligence.summary}",
             f"Top sector is {top_sector.name if top_sector else 'N/A'}.",
-            f"Leading industry group is {industry_groups.items[0].name if industry_groups.items else 'N/A'}.",
+            f"Preferred static strategy basket is {industry_groups.items[0].name if industry_groups.items else 'N/A'}; it is not live Theme Intelligence.",
         ],
         "key_opportunities": build_market_opportunities(sectors, industry_groups, volume),
         "key_risks": risk.main_risks,
@@ -123,7 +149,11 @@ def _build_market_analysis_uncached() -> dict[str, Any]:
             "sector_mode": sectors.overall_mode,
             "industry_group_mode": industry_groups.overall_mode,
             "leadership_mode": leadership.overall_mode,
+            "coverage_dimensions": market_breadth.coverage_dimensions or {},
+            "data_confidence": market_breadth.data_confidence or {},
+            "signal_confidence": market_breadth.signal_confidence or {},
         },
+        "semantic_context": semantic_context,
         "ai_prompt_context": {
             "purpose": "Explain current market conditions using only the provided structured data.",
             "rules": [
@@ -208,7 +238,7 @@ def build_market_opportunities(sectors: Any, industry_groups: Any, volume: Any) 
 
     if industry_groups.items:
         group_names = ", ".join(group.name for group in industry_groups.items[:3])
-        opportunities.append(f"Leading industry groups are {group_names}.")
+        opportunities.append(f"Configured static strategy baskets include {group_names}; they are not live theme leadership.")
 
     if volume.items:
         best_volume = max(volume.items, key=lambda item: item.relative_volume or 0)

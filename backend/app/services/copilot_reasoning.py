@@ -251,13 +251,7 @@ def extract_market_signals(context: dict[str, Any]) -> dict[str, Any]:
             "sector.selected.name",
             "theme.selected.name",
         ]),
-        "secondary_leader": first_value(context, [
-            "market.top_industry_group.name",
-            "market.topIndustryGroup.name",
-            "market.top_theme.name",
-            "market.topTheme.name",
-            "report.topTheme",
-        ]),
+        "secondary_leader": None,
     }
 
 

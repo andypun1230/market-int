@@ -328,11 +328,12 @@ def refresh_breadth() -> None:
 
 
 def refresh_sector_rotation() -> None:
-    from app.services.sector_etfs import build_sector_etf_dashboard
-    from app.services.sectors import build_market_sectors
-
-    build_sector_etf_dashboard()
-    build_market_sectors()
+    from app.breadth.service import get_breadth_snapshot_service
+    from app.sector_snapshots.service import get_sector_snapshot_service
+    # Sector publication is ordered after durable breadth publication. Both
+    # builders read only persisted bars, so this cannot create request-time I/O.
+    get_breadth_snapshot_service().builder.build_and_publish()
+    get_sector_snapshot_service().build_now()
 
 
 def refresh_industry_groups() -> None:

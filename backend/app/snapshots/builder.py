@@ -67,6 +67,7 @@ class MarketSnapshotBuilder:
             "input_hash": bundle.input_hash(),
             "sections": sorted(sections),
             "created_at": build_started_at,
+            "semantic_contract": "market-semantics-v1",
         }
         completed_at = now_iso()
         published_at = completed_at
@@ -100,7 +101,8 @@ class MarketSnapshotBuilder:
             sections=sections,
             metadata={
                 "planner": "canonical-v1",
-                "algorithm_version": "market-snapshot-v1",
+                "algorithm_version": "market-snapshot-v2",
+                "semantic_contract": "market-semantics-v1",
                 "input_latency_ms": bundle.input_latency_ms,
             },
         )
@@ -122,6 +124,7 @@ class MarketSnapshotBuilder:
         sections: dict[str, SnapshotSection] = {}
         for name, fn in builders.items():
             sections[name] = build_section(name, fn, bundle)
+        synchronize_semantic_contracts(sections)
         sections["home"] = build_section("home", lambda: build_home_payload(sections), bundle)
         sections["core"] = build_section("core", lambda: build_core_payload(sections), bundle)
         return sections
@@ -158,6 +161,7 @@ def build_core_payload(sections: dict[str, SnapshotSection]) -> dict[str, Any]:
     playbook = decision.get("playbook") if isinstance(decision, dict) else None
     aggressiveness = decision.get("aggressiveness") if isinstance(decision, dict) else None
     trading_styles = decision.get("trading_styles") if isinstance(decision, dict) else None
+    decision_confidence = decision.get("decision_confidence") if isinstance(decision, dict) else None
     sectors = as_dict(sections.get("sectors_summary"))
     return {
         "indexes": as_payload(sections.get("indexes")) or [],
@@ -167,9 +171,11 @@ def build_core_payload(sections: dict[str, SnapshotSection]) -> dict[str, Any]:
             "aggressiveness": aggressiveness,
             "preferred_style": (trading_styles or {}).get("preferred_style") if isinstance(trading_styles, dict) else None,
             "main_risk": (playbook or {}).get("main_risk") if isinstance(playbook, dict) else None,
+            "decision_confidence": decision_confidence,
         },
         "breadth_summary": compact_breadth(as_payload(sections.get("breadth"))),
         "top_sector": first_item(sectors, "top_sectors"),
+        "lagging_sector": last_item(sectors, "top_sectors"),
         "top_industry_group": first_item(sectors, "top_industry_groups"),
         "as_of": now_iso(),
         "overall_mode": "live",
@@ -179,6 +185,16 @@ def build_core_payload(sections: dict[str, SnapshotSection]) -> dict[str, Any]:
         "is_stale": False,
         "generated_at": now_iso(),
     }
+
+
+def synchronize_semantic_contracts(sections: dict[str, SnapshotSection]) -> None:
+    """Ensure every snapshot consumer reads the one captured confidence object."""
+    decision = as_dict(sections.get("decision"))
+    confidence = decision.get("decision_confidence")
+    health = as_dict(sections.get("health"))
+    if confidence and health:
+        health["decision_confidence"] = confidence
+        sections["health"] = sections["health"].model_copy(update={"payload": health})
 
 
 def build_home_payload(sections: dict[str, SnapshotSection]) -> dict[str, Any]:
@@ -248,6 +264,9 @@ def compact_breadth(payload: Any) -> dict[str, Any] | None:
         "market_date": payload.get("market_date"),
         "coverage_status": payload.get("coverage_status"),
         "trend": payload.get("trend"),
+        "coverage_dimensions": payload.get("coverage_dimensions"),
+        "data_confidence": payload.get("data_confidence"),
+        "signal_confidence": payload.get("signal_confidence"),
     }
 
 
@@ -255,6 +274,13 @@ def first_item(value: dict[str, Any], key: str) -> Any:
     items = value.get(key)
     if isinstance(items, list) and items:
         return items[0]
+    return None
+
+
+def last_item(value: dict[str, Any], key: str) -> Any:
+    items = value.get(key)
+    if isinstance(items, list) and items:
+        return items[-1]
     return None
 
 

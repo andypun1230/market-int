@@ -9,6 +9,7 @@ from typing import Callable, TypeVar
 from pydantic import TypeAdapter
 
 from app.cache.persistent_cache import (
+    delete_persistent_value,
     delete_persistent_prefix,
     get_persistent_cache_status,
     get_persistent_value,
@@ -67,6 +68,7 @@ SERVICE_MODEL_BY_KEY = {
     "decision-confidence": DecisionConfidenceResponse,
     "decision-dashboard": DecisionDashboardResponse,
     "industry-groups": IndustryGroupResponse,
+    "industry-groups:v2": IndustryGroupResponse,
     "industry-rotation": IndustryRotationResponse,
     "institutional-dashboard": InstitutionalDashboardResponse,
     "institutional-intelligence": InstitutionalIntelligenceResponse,
@@ -242,7 +244,14 @@ def get_persistent_service_value(key: str, allow_stale: bool):
     result = get_persistent_value(key, allow_stale=allow_stale)
     if result is None:
         return None
-    result.value = deserialize_service_value(key, result.value)
+    try:
+        result.value = deserialize_service_value(key, result.value)
+    except Exception as exc:
+        # A persisted value from an older schema (or a damaged record) must
+        # behave as a cache miss, never make a read endpoint fail.
+        logger.warning("Discarding invalid persistent service cache entry %s: %s", key, type(exc).__name__)
+        delete_persistent_value(key)
+        return None
     return result
 
 

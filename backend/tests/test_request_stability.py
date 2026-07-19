@@ -75,48 +75,21 @@ class RequestStabilityTests(unittest.TestCase):
         delete_persistent_prefix("materialized:market-details")
         invalidate_service_cache()
 
-    def test_sectors_summary_reads_cached_state_without_full_rebuilds(self) -> None:
-        with (
-            patch(
-                "app.services.sectors_summary.get_cached_service_value",
-                side_effect=lambda key: {
-                    "sectors": {
-                        "leaders": [
-                            {
-                                "name": "Technology",
-                                "rank": 1,
-                                "status": "Leading",
-                                "relative_strength_score": 91,
-                            }
-                        ],
-                        "summary": "Technology leads.",
-                        "overall_mode": "mixed",
-                    },
-                    "sector-etfs": {"items": [{"symbol": "XLK", "sector": "Technology"}]},
-                    "industry-groups": {"items": [{"name": "Semiconductors", "parent_sector": "Technology"}]},
-                    "industry-rotation": {"summary": "Semiconductors lead."},
-                }.get(key),
-            ),
-            patch("app.services.sectors.build_market_sectors") as sectors,
-            patch("app.services.industry_groups.build_industry_groups") as industry_groups,
-        ):
+    def test_sectors_summary_reads_one_durable_snapshot_without_legacy_engines(self) -> None:
+        snapshot = type("Snapshot", (), {"snapshot_id": "sector-1", "market_date": "2026-07-17", "universe_id": "sp100-v1", "universe_version": "v1", "source_state": "live", "rotation_summary": "Technology leads.", "coverage": {"constituent_coverage_ratio": 1.0}, "sectors": ({"display_name": "Information Technology", "sector_id": "information_technology", "etf_symbol": "XLK", "classification": "Leading", "composite_score": 80, "component_scores": {"relative_strength": 91}, "price_metrics": {"return_1m": 2.0}},)})()
+        with patch("app.services.sectors_summary.get_sector_snapshot_service") as service, patch("app.services.sectors.build_market_sectors", side_effect=AssertionError("legacy engine called")):
+            service.return_value.latest.return_value = snapshot
             result = build_sectors_summary()
-
-        self.assertEqual(result["top_sectors"][0]["name"], "Technology")
+        self.assertEqual(result["snapshot_id"], "sector-1")
+        self.assertEqual(result["top_sectors"][0]["name"], "Information Technology")
         self.assertEqual(result["top_sector_etfs"][0]["symbol"], "XLK")
-        self.assertEqual(result["top_industry_groups"][0]["name"], "Semiconductors")
-        sectors.assert_not_called()
-        industry_groups.assert_not_called()
 
-    def test_repeated_sectors_summary_uses_service_cache(self) -> None:
-        with patch(
-            "app.services.sectors_summary._build_sectors_summary_uncached",
-            return_value={"top_sectors": [], "top_sector_etfs": [], "top_industry_groups": []},
-        ) as compute:
-            self.assertEqual(build_sectors_summary()["top_sectors"], [])
-            self.assertEqual(build_sectors_summary()["top_sectors"], [])
-
-        self.assertEqual(compute.call_count, 1)
+    def test_repeated_sectors_summary_reads_the_same_snapshot_identity(self) -> None:
+        snapshot = type("Snapshot", (), {"snapshot_id": "sector-1", "market_date": "2026-07-17", "universe_id": "sp100-v1", "universe_version": "v1", "source_state": "live", "rotation_summary": "Ready", "coverage": {"constituent_coverage_ratio": 1.0}, "sectors": ()})()
+        with patch("app.services.sectors_summary.get_sector_snapshot_service") as service:
+            service.return_value.latest.return_value = snapshot
+            self.assertEqual(build_sectors_summary()["snapshot_id"], "sector-1")
+            self.assertEqual(build_sectors_summary()["snapshot_id"], "sector-1")
 
     def test_repeated_watchlist_summary_uses_service_cache(self) -> None:
         with patch(
@@ -130,7 +103,11 @@ class RequestStabilityTests(unittest.TestCase):
 
     def test_watchlist_summary_uses_repository_quotes_and_membership_metadata(self) -> None:
         repository = WatchlistQuoteRepository([quote("MU", 110, 100), quote("NVDA", 95, 100)], unavailable=["ARM", "SNDK"])
-        with patch("app.services.watchlist_summary.get_market_data_repository", return_value=repository):
+        with patch("app.services.watchlist_summary.get_market_data_repository", return_value=repository), patch(
+            "app.services.watchlist_summary.get_stock_snapshot_service"
+        ) as snapshots:
+            snapshots.return_value.get_latest_snapshot.return_value = None
+            snapshots.return_value.is_refreshing.return_value = False
             result = build_watchlist_summary()
 
         self.assertEqual(repository.quote_calls, 1)
@@ -146,7 +123,11 @@ class RequestStabilityTests(unittest.TestCase):
 
     def test_warm_watchlist_summary_read_makes_zero_repository_calls(self) -> None:
         repository = WatchlistQuoteRepository([quote(symbol) for symbol in ["MU", "NVDA", "ARM", "SNDK"]])
-        with patch("app.services.watchlist_summary.get_market_data_repository", return_value=repository):
+        with patch("app.services.watchlist_summary.get_market_data_repository", return_value=repository), patch(
+            "app.services.watchlist_summary.get_stock_snapshot_service"
+        ) as snapshots:
+            snapshots.return_value.get_latest_snapshot.return_value = None
+            snapshots.return_value.is_refreshing.return_value = False
             first = build_watchlist_summary()
         self.assertEqual(repository.quote_calls, 1)
 

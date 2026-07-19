@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Any
 
 from app.models.market import DecisionConfidenceContributor, DecisionConfidenceResponse
@@ -59,15 +60,19 @@ def calculate_decision_confidence_from_inputs(
     score = round(sum(item.score for item in contributors) / len(contributors))
     disagreements = build_disagreements(contributors)
 
+    status = get_confidence_status(score)
+    reason = f"{len(contributors) - len(disagreements)} of {len(contributors)} decision inputs meet the confirmation threshold."
     return DecisionConfidenceResponse(
         score=score,
-        status=get_confidence_status(score),
+        status=status,
         contributors=contributors,
         disagreements=disagreements,
         summary=(
-            f"Decision confidence is {get_confidence_status(score).lower()} because "
-            f"{len(contributors) - len(disagreements)} of {len(contributors)} signals are aligned."
+            f"Decision confidence is {status.lower()} because {reason.lower()}"
         ),
+        reason=reason,
+        calculated_at=datetime.now(timezone.utc).isoformat(),
+        source_snapshot_id=getattr(breadth, "snapshot_id", None),
     )
 
 
@@ -125,12 +130,10 @@ def build_disagreements(contributors: list[DecisionConfidenceContributor]) -> li
 
 
 def get_confidence_status(score: int) -> str:
-    if score >= 85:
-        return "High Conviction"
+    if score >= 80:
+        return "High"
     if score >= 70:
-        return "Constructive"
+        return "Moderate"
     if score >= 55:
         return "Mixed"
-    if score >= 40:
-        return "Low Confidence"
-    return "Risk-Off"
+    return "Limited"

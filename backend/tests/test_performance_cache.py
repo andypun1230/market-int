@@ -4,11 +4,13 @@ import time
 import unittest
 from unittest.mock import patch
 
+from app.cache.persistent_cache import get_persistent_value, set_persistent_value
 from app.services.home_dashboard import build_home_dashboard
 from app.services.market_core_snapshot import build_market_core_snapshot
 from app.services.service_cache import (
     get_cached_service_value,
     get_or_compute,
+    get_persistent_service_value,
     get_service_cache_status,
     invalidate_service_cache,
     set_cached_service_value,
@@ -65,11 +67,17 @@ class PerformanceCacheTests(unittest.TestCase):
 
     def test_prefix_invalidation(self) -> None:
         set_cached_service_value("breadth:core", {"a": 1}, 30)
-        set_cached_service_value("market-health", {"b": 2}, 30)
+        set_cached_service_value("test:market-health", {"b": 2}, 30)
         invalidate_service_cache("breadth")
 
         self.assertIsNone(get_cached_service_value("breadth:core"))
-        self.assertEqual(get_cached_service_value("market-health"), {"b": 2})
+        self.assertEqual(get_cached_service_value("test:market-health"), {"b": 2})
+
+    def test_invalid_persistent_model_entry_is_discarded_as_a_cache_miss(self) -> None:
+        set_persistent_value("market-health", {"b": 2}, ttl_seconds=30, stale_seconds=30)
+
+        self.assertIsNone(get_persistent_service_value("market-health", allow_stale=False))
+        self.assertIsNone(get_persistent_value("market-health"))
 
     def test_market_core_snapshot_reuses_cached_dependencies(self) -> None:
         fake_snapshot = {

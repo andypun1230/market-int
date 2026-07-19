@@ -44,6 +44,8 @@ from app.models.market import (
     WatchlistResponse,
 )
 from app.providers.models import HistoryData, QuoteData
+from app.securities.registry import canonical_sector_id
+from app.services.sector_dashboard import build_sector_rotation_trails
 from app.providers.selector import get_market_data_provider
 from app.services.breadth import calculate_market_breadth, calculate_sector_breadth, unavailable_market_breadth
 from app.breadth.service import get_breadth_snapshot_service
@@ -66,6 +68,7 @@ from app.services.market_detail_aggregates import (
     build_market_structure_details,
 )
 from app.services.market_health import calculate_market_health
+from app.services.macro_state import build_macro_state
 from app.services.market_sentiment import build_market_sentiment_dashboard
 from app.services.money_flow import build_money_flow_dashboard
 from app.services.multi_timeframe import (
@@ -82,6 +85,7 @@ from app.services.sector_etfs import build_sector_etf_dashboard
 from app.services.sector_dashboard import build_sector_dashboard
 from app.services.sectors import build_market_sectors
 from app.services.sectors_summary import build_sectors_summary
+from app.sector_snapshots.service import get_sector_snapshot_service
 from app.services.stock_rating import build_stock_ratings
 from app.services.support_resistance import calculate_support_resistance
 from app.services.trendline import analyze_trendline, analyze_watchlist_trendlines
@@ -128,6 +132,34 @@ async def get_market_sectors() -> SectorsResponse:
     return build_market_sectors()
 
 
+@router.get("/market/sectors/snapshot/latest")
+async def get_latest_sector_snapshot() -> dict:
+    snapshot = get_sector_snapshot_service().latest()
+    return snapshot.model_dump() if snapshot else {"status": "unavailable", "source_state": "unavailable", "warnings": ["No sector snapshot has been published."]}
+
+
+@router.get("/market/sectors/history")
+async def get_sector_snapshot_history(days: int = Query(default=90, ge=1, le=260)) -> dict:
+    service = get_sector_snapshot_service()
+    history = service.history(days)
+    latest = service.latest()
+    return {"snapshot_id": latest.snapshot_id if latest else None, "universe_version": latest.universe_version if latest else None, "market_date": latest.market_date if latest else None, "items": history, "limitation": "History contains only snapshots actually built; no historical values are fabricated."}
+
+
+@router.get("/market/sectors/rotation")
+async def get_sector_rotation() -> dict:
+    service = get_sector_snapshot_service()
+    snapshot = service.latest()
+    rotation = build_sector_rotation_trails(snapshot, service.history()) if snapshot else {"entity_type": "sector", "source_state": "unavailable", "data_mode": "unavailable", "formula_version": "relative-return-momentum-v1", "normalization_version": "midpoint-100-relative-return-v1", "benchmark": "SPY", "trails": {}, "published_snapshot_trails": {}, "market_trails": {}, "current_points": {}, "series": [], "current_positions_available": False, "etf_trails_available": False, "snapshot_transition_history_available": False, "current_point_count": 0, "trail_point_count": 0, "transition_snapshot_count": 0, "limited_history_reason": "No sector snapshot is available.", "movements": {}, "flow_groups": {"gaining": [], "losing": [], "stable": []}, "history_point_count": 0, "movement_available": False, "trail_limit": 4, "trail_source": "published_sector_snapshots", "market_trail_source": "durable_polygon_adjusted_daily_history", "warnings": ["No sector snapshot is available."]}
+    return {"snapshot_id": snapshot.snapshot_id if snapshot else None, "universe_version": snapshot.universe_version if snapshot else None, "market_date": snapshot.market_date if snapshot else None, "rankings": list(snapshot.rankings) if snapshot else [], "summary": snapshot.rotation_summary if snapshot else "Sector snapshot is unavailable.", "source_state": snapshot.source_state if snapshot else "unavailable", **rotation}
+
+
+@router.get("/market/sectors/alerts")
+async def get_sector_alerts() -> dict:
+    snapshot = get_sector_snapshot_service().latest()
+    return {"snapshot_id": snapshot.snapshot_id if snapshot else None, "universe_version": snapshot.universe_version if snapshot else None, "market_date": snapshot.market_date if snapshot else None, "items": list(snapshot.alerts) if snapshot else [], "source_state": snapshot.source_state if snapshot else "unavailable"}
+
+
 @router.get("/market/sectors/summary")
 async def get_market_sectors_summary() -> dict[str, object]:
     """Return compact cached sector data for first Sectors tab render."""
@@ -140,6 +172,29 @@ async def get_market_sector_dashboard() -> dict[str, object]:
     """Return normalized sector and theme heatmap/rotation data."""
     record_client_activity("sectors")
     return await run_in_threadpool(build_sector_dashboard)
+
+
+@router.get("/market/sectors/{sector_id}")
+async def get_sector_detail(sector_id: str) -> dict:
+    snapshot = get_sector_snapshot_service().latest()
+    canonical_id = canonical_sector_id(sector_id)
+    row = next((row for row in snapshot.sectors if row["sector_id"] == canonical_id), None) if snapshot and canonical_id else None
+    constituents: list[dict[str, object]] = []
+    if snapshot and row:
+        service = get_sector_snapshot_service()
+        for member in service.builder.security_master.storage.members(snapshot.universe_id):
+            if member.sector_id != canonical_id:
+                continue
+            security = service.builder.security_master.storage.security(member.ticker)
+            closes = [bar.close for bar in service.builder.bars.history(member.ticker, end_date=snapshot.market_date)]
+            def change(days: int) -> float | None:
+                return round((closes[-1] / closes[-days - 1] - 1) * 100, 3) if len(closes) > days and closes[-days - 1] else None
+            ema50 = sum(closes[-50:]) / 50 if len(closes) >= 50 else None
+            relevance = "Above EMA50" if ema50 is not None and closes[-1] >= ema50 else "Below EMA50" if ema50 is not None else None
+            constituents.append({"ticker": member.ticker, "company_name": security.company_name if security else member.ticker, "sector_id": canonical_id, "eligible": len(closes) >= 200, "returns": {"1d": change(1), "1w": change(5), "1m": change(21), "3m": change(63), "6m": change(126), "1y": change(252)}, "relevance": relevance})
+    rotation = build_sector_rotation_trails(snapshot, get_sector_snapshot_service().history()) if snapshot and row else {"trails": {}, "movements": {}, "series": []}
+    sector_series = [item for item in rotation.get("series", []) if item.get("entity_id") == canonical_id]
+    return {"snapshot_id": snapshot.snapshot_id if snapshot else None, "universe_id": snapshot.universe_id if snapshot else None, "universe_version": snapshot.universe_version if snapshot else None, "market_date": snapshot.market_date if snapshot else None, "source_state": snapshot.source_state if snapshot else "unavailable", "status": snapshot.status if snapshot else "unavailable", "coverage": snapshot.coverage if snapshot else {}, "benchmark": snapshot.benchmark if snapshot else "SPY", "provider_provenance": snapshot.provider_provenance if snapshot else {}, "alerts": list(snapshot.alerts) if snapshot else [], "warnings": list(snapshot.warnings) if snapshot else [], "sector": row, "constituents": constituents, "rotation_history": rotation.get("trails", {}).get(canonical_id, []), "rotation_series": sector_series, "rotation_movement": rotation.get("movements", {}).get(canonical_id)}
 
 
 @router.get("/market/watchlist", response_model=WatchlistResponse)
@@ -159,6 +214,13 @@ async def get_market_risk() -> RiskResponse:
 async def get_market_health() -> MarketHealthResponse:
     """Return a composite market health score from existing mock engines."""
     return get_health_from_snapshot()
+
+
+@router.get("/market/macro")
+async def get_market_macro(days: int = Query(default=110, ge=45, le=370)) -> dict[str, Any]:
+    """Return the canonical cache-backed cross-asset macro interpretation."""
+    record_client_activity("market")
+    return await run_in_threadpool(build_macro_state, days)
 
 
 @router.get("/market/core-snapshot")
@@ -493,10 +555,11 @@ async def get_market_stock_ratings() -> StockRatingResponse:
 
 
 @router.get("/watchlist/summary")
-async def get_watchlist_summary() -> dict[str, object]:
+async def get_watchlist_summary(symbols: str | None = Query(default=None)) -> dict[str, object]:
     """Return compact watchlist data for first render without full detail fan-out."""
     record_client_activity("watchlist")
-    return await run_in_threadpool(build_watchlist_summary)
+    requested_symbols = [symbol for symbol in (symbols or "").split(",") if symbol.strip()]
+    return await run_in_threadpool(build_watchlist_summary, requested_symbols)
 
 
 @router.get("/market/stock-analysis/{symbol}")

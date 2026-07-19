@@ -57,6 +57,9 @@ from app.services.ai_summary import generate_market_narrative
 from app.services.candle_data import get_symbol_history
 from app.services.market_cap_rotation import build_market_cap_rotation
 from app.services.market_health import calculate_market_health
+from app.services.macro_state import build_macro_state
+from app.services.regime import build_market_regime
+from app.services.breadth import calculate_market_breadth
 from app.services.market_data import get_index_history, get_index_snapshots
 from app.services.multi_timeframe import build_daily_multi_timeframe_summary
 from app.services.probability_engine import build_probability_engine
@@ -65,10 +68,12 @@ from app.services.risk_dashboard_v2 import build_risk_dashboard_v2
 from app.services.report_intelligence import build_report_intelligence, build_report_snapshot
 from app.services.sector_dashboard import build_sector_dashboard
 from app.services.sector_etfs import build_sector_etf_dashboard
+from app.sector_snapshots.service import get_sector_snapshot_service
 from app.services.service_cache import get_or_compute, get_service_ttl
 from app.services.support_resistance import calculate_support_resistance
 from app.services.volume_analysis import build_volume_analysis
 from app.services.watchlist_summary import build_watchlist_summary
+from app.snapshots.service import get_market_snapshot_service
 
 
 def build_daily_volume_analysis() -> DailyVolumeAnalysis:
@@ -112,11 +117,35 @@ def build_daily_multi_timeframe() -> DailyMultiTimeframe:
 
 
 def build_daily_report() -> DailyReportResponse:
-    return get_or_compute(
-        "report:daily",
+    value = get_or_compute(
+        f"report:daily:v7:{latest_market_snapshot_id()}:{latest_sector_snapshot_id()}:{latest_breadth_snapshot_id()}",
         get_service_ttl("SERVICE_CACHE_REPORT_TTL_SECONDS", 300),
         _build_daily_report_uncached,
     )
+    return value if isinstance(value, DailyReportResponse) else DailyReportResponse.model_validate(value)
+
+
+def latest_market_snapshot_id() -> str:
+    try:
+        snapshot = get_market_snapshot_service().get_latest_snapshot()
+        return snapshot.snapshot_id if snapshot else "unavailable"
+    except Exception:
+        return "unavailable"
+
+
+def latest_sector_snapshot_id() -> str:
+    try:
+        snapshot = get_sector_snapshot_service().latest()
+        return snapshot.snapshot_id if snapshot else "unavailable"
+    except Exception:
+        return "unavailable"
+
+
+def latest_breadth_snapshot_id() -> str:
+    try:
+        return calculate_market_breadth().snapshot_id or "unavailable"
+    except Exception:
+        return "unavailable"
 
 
 def _build_daily_report_uncached() -> DailyReportResponse:
@@ -125,10 +154,12 @@ def _build_daily_report_uncached() -> DailyReportResponse:
     risk_plans = build_daily_risk_plans()
     multi_timeframe = build_daily_multi_timeframe()
     market_health = calculate_market_health()
+    market_regime = build_market_regime()
     decision_dashboard = build_decision_dashboard()
     probabilities = build_probability_engine()
     leadership = build_leadership_dashboard()
     decision_confidence = calculate_decision_confidence()
+    breadth = calculate_market_breadth()
     comparison = build_dashboard_comparison()
     industry_rotation = build_industry_rotation_dashboard()
     risk_dashboard = build_risk_dashboard_v2()
@@ -137,26 +168,37 @@ def _build_daily_report_uncached() -> DailyReportResponse:
     industry_groups = build_industry_groups()
     cap_rotation = build_market_cap_rotation()
     fear_greed = build_fear_greed_index()
+    macro = build_macro_state()
     ai_summary = generate_market_narrative()
     indexes = safe_build_index_snapshots()
     index_histories = safe_build_index_histories()
     watchlist_summary = safe_build_watchlist_summary()
     stock_charts = safe_build_selected_stock_charts(watchlist_summary)
     sector_dashboard = safe_build_sector_dashboard()
+    sector_names = [
+        str(item.get("name") or item.get("sector") or "")
+        for item in (sector_dashboard or {}).get("sectors", [])
+        if isinstance(item, dict) and (item.get("name") or item.get("sector"))
+    ]
+    market_date = breadth.market_date or (sector_dashboard or {}).get("market_date") or datetime.utcnow().date().isoformat()
+    leading_sector = sector_names[0] if sector_names else "Sector leadership"
     base_report = DailyReportResponse(
-        date="2026-07-05",
+        date=market_date,
         title="Daily Market Report",
         executive_summary=(
-            "The market remains in a confirmed uptrend, led by Technology and "
-            "Communication Services at the sector level. Industry group leadership "
-            "is strongest in Memory, Semiconductors, and AI Infrastructure, while "
-            "breadth is healthy but slightly narrowing."
+            f"Market regime is {market_regime.status}. {leading_sector} is the current durable sector leader, "
+            f"while breadth is {breadth.breadth_status or 'unavailable'} with "
+            f"{breadth.percent_above_50ema:.1f}% above the 50 EMA. "
+            "Live Theme Intelligence is not published in this report."
         ),
-        market_regime="Confirmed Uptrend",
-        key_drivers=["Technology sector leadership", "Semiconductors", "AI Infrastructure"],
-        main_risks=["CPI tomorrow", "Extended AI stocks", "Narrowing breadth"],
-        sector_leaders=["Technology", "Communication Services", "Industrials"],
-        tomorrow_watch=["CPI", "Fed speakers", "Large-cap tech earnings"],
+        market_regime=market_regime.status,
+        key_drivers=[
+            f"{leading_sector} is the current durable sector leader.",
+            f"Breadth is {breadth.breadth_status or 'unavailable'} at {breadth.percent_above_50ema:.1f}% above the 50 EMA.",
+        ],
+        main_risks=[decision_dashboard.playbook.main_risk],
+        sector_leaders=sector_names[:3],
+        tomorrow_watch=list(risk_dashboard.upcoming_events),
         strategy_note=(
             "Prefer pullbacks in leading sectors. Avoid chasing extended breakouts."
         ),
@@ -177,13 +219,16 @@ def _build_daily_report_uncached() -> DailyReportResponse:
         industry_groups=industry_groups,
         cap_rotation=cap_rotation,
         fear_greed=fear_greed,
+        macro=macro,
         ai_summary=ai_summary,
         indexes=indexes,
         index_histories=index_histories,
         watchlist_summary=watchlist_summary,
         sector_dashboard=sector_dashboard,
+        sector_snapshot_id=(sector_dashboard or {}).get("snapshot_id") if isinstance(sector_dashboard, dict) else None,
         stock_charts=stock_charts,
         economic_calendar=build_economic_calendar(risk_dashboard.upcoming_events),
+        semantic_context=build_report_semantic_context(breadth, decision_confidence, industry_groups, macro),
     )
     report_history = load_report_history()
     previous_snapshot = report_history[-1] if report_history else None
@@ -216,6 +261,38 @@ def _build_daily_report_uncached() -> DailyReportResponse:
     base_report.report_narrative = intelligence["narrative"]
     save_report_history([*report_history, current_snapshot])
     return base_report
+
+
+def build_report_semantic_context(
+    breadth: object,
+    decision_confidence: DecisionConfidenceResponse,
+    industry_groups: IndustryGroupResponse | None = None,
+    macro: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    sector_snapshot = get_sector_snapshot_service().latest()
+    return {
+        "advance_decline": {
+            "raw_ratio": getattr(breadth, "advance_decline_ratio", None),
+            "display": getattr(breadth, "advance_decline_ratio_display", None),
+            "smoothed_ratio": getattr(breadth, "advance_decline_ratio_smoothed", None),
+            "ratio_method": getattr(breadth, "ratio_method", None),
+        },
+        "coverage_dimensions": getattr(breadth, "coverage_dimensions", None) or {},
+        "data_confidence": getattr(breadth, "data_confidence", None) or {},
+        "signal_confidence": getattr(breadth, "signal_confidence", None) or {},
+        "decision_confidence": decision_confidence.model_dump(),
+        "theme_provenance": industry_groups.theme_provenance if industry_groups else {},
+        "macro": macro or {},
+        "snapshot_ids": {
+            "market": latest_market_snapshot_id(),
+            "breadth": getattr(breadth, "snapshot_id", None),
+            "sector": sector_snapshot.snapshot_id if sector_snapshot else None,
+        },
+        "sector_breadth_representativeness": [
+            {"sector": row.get("display_name"), "eligible_members": row.get("eligible_members"), "representativeness": row.get("breadth_representativeness"), "reason": row.get("representativeness_reason")}
+            for row in (sector_snapshot.sectors if sector_snapshot else ())
+        ],
+    }
 
 
 def load_previous_report_snapshot() -> dict[str, Any] | None:
@@ -1243,14 +1320,11 @@ def build_report_narrative_context(report: DailyReportResponse) -> dict[str, Any
     playbook = report.decision_dashboard.playbook
     volatility = extract_volatility(report)
     top_sector = (get_sector_items(report) or [{}])[0].get("name", "Leadership")
-    top_theme = (get_theme_items(report) or [{}])[0].get("name", "theme leadership")
     sentiment_state = report.fear_greed.status
-    macro_state = "Neutral"
-    if any("CPI" in item or "Fed" in item for item in report.tomorrow_watch):
-        macro_state = "Event Watch"
+    macro_state = report.macro.get("state_label", "Unavailable")
     recommendation = playbook.headline or "Stay Selective"
     primary_opportunity = (
-        f"{top_sector} and {top_theme} remain the clearest leadership areas."
+        f"{top_sector} remains the clearest published leadership area."
         if top_sector != "Leadership"
         else first_or_default(report.key_drivers, "Leadership remains constructive.")
     )
@@ -1266,6 +1340,8 @@ def build_report_narrative_context(report: DailyReportResponse) -> dict[str, Any
         "leadership_state": "Strong" if health.components.sector_strength >= 70 else "Mixed",
         "sentiment_state": sentiment_state,
         "macro_state": macro_state,
+        "macro_current_risk": report.macro.get("key_risk", "Macro evidence unavailable."),
+        "macro_invalidation": report.macro.get("invalidation_conditions", "Macro evidence unavailable."),
         "primary_opportunity": primary_opportunity,
         "primary_risk": primary_risk,
         "invalidation_conditions": invalidation,
@@ -1365,21 +1441,21 @@ def build_sector_theme_page(report: DailyReportResponse, styles: dict[str, Parag
         top_insights_panel(build_page_insights(report, context, "leadership"), styles, width=6.9 * inch),
         Spacer(1, 0.06 * inch),
         two_column(
-            ranking_panel("Top Sectors", ranking_items(get_sector_items(report), "1m", limit=5), styles, width=3.35 * inch),
-            ranking_panel("Top Themes", ranking_items(get_theme_items(report), "1m", limit=5), styles, width=3.35 * inch),
+            panel_table("Top Sectors", [sector_snapshot_table(report, styles)], styles, width=3.35 * inch),
+            panel_table("Themes", [p("Theme intelligence is unavailable until Phase 4.4D.", styles["small"])], styles, width=3.35 * inch),
             [3.4 * inch, 3.4 * inch],
         ),
         Spacer(1, 0.06 * inch),
         two_column(
             chart_panel("Sector Rotation", sector_rotation_chart(report, 3.25 * inch, 1.65 * inch), styles, width=3.35 * inch),
-            chart_panel("Theme Rotation", theme_rotation_chart(report, 3.25 * inch, 1.65 * inch), styles, width=3.35 * inch),
+            panel_table("Theme Rotation", [p("Unavailable until Phase 4.4D.", styles["small"])], styles, width=3.35 * inch),
             [3.4 * inch, 3.4 * inch],
         ),
         Spacer(1, 0.06 * inch),
         three_column(
-            ranking_panel("Improving", rotation_bucket_items(get_theme_items(report), "improving"), styles, width=2.15 * inch),
-            ranking_panel("Weakening", rotation_bucket_items(get_theme_items(report), "weakening"), styles, width=2.15 * inch),
-            ranking_panel("Laggards", ranking_items(list(reversed(get_sector_items(report))), "1m", limit=5), styles, width=2.15 * inch),
+            ranking_panel("Improving", rotation_bucket_items(get_sector_items(report), "improving"), styles, width=2.15 * inch),
+            ranking_panel("Weakening", rotation_bucket_items(get_sector_items(report), "weakening"), styles, width=2.15 * inch),
+            ranking_panel("Laggards", ranking_items(list(reversed(get_sector_items(report))), "1m", limit=5, preserve_order=True), styles, width=2.15 * inch),
             [2.25 * inch, 2.25 * inch, 2.25 * inch],
         ),
         Spacer(1, 0.06 * inch),
@@ -1764,9 +1840,10 @@ def ranking_panel(title: str, items: list[tuple[str, str, str | None]], styles: 
     return panel_table(title, [data_table(rows, [0.25 * inch, width - 1.65 * inch, 0.62 * inch, 0.58 * inch], header=False)], styles, width=width)
 
 
-def ranking_items(items: list[dict[str, Any]], interval: str, limit: int = 5) -> list[tuple[str, str, str | None]]:
-    ranked = sorted(
-        [item for item in items if isinstance(item, dict)],
+def ranking_items(items: list[dict[str, Any]], interval: str, limit: int = 5, *, preserve_order: bool = False) -> list[tuple[str, str, str | None]]:
+    valid_items = [item for item in items if isinstance(item, dict)]
+    ranked = valid_items if preserve_order else sorted(
+        valid_items,
         key=lambda item: parse_number((item.get("returns") or {}).get(interval)) if parse_number((item.get("returns") or {}).get(interval)) is not None else -999,
         reverse=True,
     )
@@ -1968,6 +2045,25 @@ def theme_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) 
             p("Leadership remains data-driven from theme basket returns.", styles["table_cell"]),
         ])
     return data_table(rows, [1.35 * inch, 1.0 * inch, 0.55 * inch, 0.55 * inch, 0.8 * inch, 2.35 * inch])
+
+
+def sector_snapshot_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
+    rows = [[p(value, styles["table_header"]) for value in ["#", "Sector", "Score", "1M", "RS", ">50", "State"]]]
+    for item in get_sector_items(report)[:5]:
+        meta = item.get("metadata") or {}
+        returns = item.get("returns") or {}
+        rows.append([
+            p(str(meta.get("rank") or "N/A"), styles["table_cell"]),
+            p(f"{item.get('symbol') or ''} {fit_text(str(item.get('name') or 'N/A'), 11)}".strip(), styles["table_cell"]),
+            p(format_number(meta.get("composite_score")), styles["table_cell"]),
+            colored_percent(returns.get("1m"), styles),
+            colored_percent(meta.get("relative_strength_1m"), styles),
+            p(format_percent(meta.get("percent_above_50ema")), styles["table_cell"]),
+            p(str(meta.get("status") or "N/A"), styles["table_cell"]),
+        ])
+    if len(rows) == 1:
+        rows.append([p("N/A", styles["table_cell"]), p("No durable sector snapshot.", styles["table_cell"]), "", "", "", "", ""])
+    return data_table(rows, [0.22 * inch, 0.82 * inch, 0.38 * inch, 0.38 * inch, 0.38 * inch, 0.38 * inch, 0.55 * inch])
 
 
 def risk_summary_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
@@ -2225,7 +2321,7 @@ def build_risk_triggers(report: DailyReportResponse) -> list[str]:
         "Major index closes below its 50-day moving average.",
         "Breadth falls below the healthy participation threshold.",
         "Volatility shifts from contained to elevated.",
-        "Leadership narrows further into fewer themes.",
+        "Leadership narrows further into fewer sectors.",
     ]
     for warning in report.risk_dashboard.warnings[:2]:
         if warning not in triggers:
@@ -2244,9 +2340,7 @@ def build_unavailable_data_notes(report: DailyReportResponse) -> list[str]:
 
 def build_page_insights(report: DailyReportResponse, context: dict[str, Any], page: str) -> list[str]:
     sectors = get_sector_items(report)
-    themes = get_theme_items(report)
     top_sector = sectors[0].get("name", "sector leadership") if sectors else "sector leadership"
-    top_theme = themes[0].get("name", "theme leadership") if themes else "theme leadership"
     if page == "playbook":
         return [
             f"{context['recommendation']} while the regime remains {context['regime'].lower()}.",
@@ -2262,11 +2356,14 @@ def build_page_insights(report: DailyReportResponse, context: dict[str, Any], pa
             "Cross-asset pressure is monitored but not the primary driver in this snapshot.",
         ]
     if page == "leadership":
+        top = sectors[0] if sectors else {}
+        top_meta = top.get("metadata") or {}
+        top_support = f"{format_percent(top_meta.get('percent_above_50ema'))} above EMA50" if top_meta.get("percent_above_50ema") is not None else "breadth data unavailable"
         return [
-            f"{top_sector} is the leading broad sector in this snapshot.",
-            f"{top_theme} is the strongest theme basket by recent performance.",
-            "Rotation remains useful for separating leaders from late-cycle laggards.",
-            "Improving groups matter most if breadth continues to confirm.",
+            f"{top_sector} is the top-ranked S&P 100 sector, supported by {top_support}.",
+            f"Composite score {format_number(top_meta.get('composite_score'))}; 1M RS {format_percent(top_meta.get('relative_strength_1m'))}.",
+            "Rank reflects the leadership composite; the return column is the selected ETF period.",
+            "Theme intelligence remains unavailable until Phase 4.4D.",
         ]
     if page == "risk":
         return [
@@ -2336,9 +2433,10 @@ def build_watchlist_interpretation(report: DailyReportResponse, context: dict[st
 
 
 def build_macro_interpretation(report: DailyReportResponse, context: dict[str, Any]) -> str:
+    macro = report.macro or {}
     return (
-        "The next calendar events matter mainly through their effect on trend, volatility, and breadth. A constructive "
-        "reaction keeps the playbook intact; a negative reaction near key support would raise the need for defense."
+        f"{macro.get('summary', 'Macro evidence is unavailable.')} "
+        f"What would weaken this: {macro.get('invalidation_conditions', 'Macro evidence unavailable.')}"
     )
 
 
@@ -2346,7 +2444,10 @@ def get_sector_items(report: DailyReportResponse) -> list[dict[str, Any]]:
     dashboard = report.sector_dashboard if isinstance(report.sector_dashboard, dict) else {}
     sectors = dashboard.get("sectors")
     if isinstance(sectors, list):
-        return sorted([item for item in sectors if isinstance(item, dict)], key=lambda item: ((item.get("returns") or {}).get("1m") or 0), reverse=True)
+        return sorted(
+            [item for item in sectors if isinstance(item, dict)],
+            key=lambda item: (parse_number((item.get("metadata") or {}).get("rank")) or 999, str(item.get("id") or item.get("name") or "")),
+        )
     return [
         {
             "name": item.sector,
@@ -2362,17 +2463,15 @@ def get_theme_items(report: DailyReportResponse) -> list[dict[str, Any]]:
     dashboard = report.sector_dashboard if isinstance(report.sector_dashboard, dict) else {}
     themes = dashboard.get("themes")
     if isinstance(themes, list):
-        return sorted([item for item in themes if isinstance(item, dict)], key=lambda item: ((item.get("returns") or {}).get("1m") or 0), reverse=True)
-    return [
-        {
-            "name": item.name,
-            "parent_sector": item.parent_sector,
-            "returns": {"1d": item.return_1d, "1w": item.return_1w, "1m": item.return_mtd, "3m": item.return_3m, "6m": item.return_6m, "1y": item.return_1y},
-            "rotation": {"1m": {"relative_strength": item.relative_strength_score, "relative_momentum": getattr(item, "rotation_score", item.relative_strength_score)}},
-            "metadata": {"status": item.status},
-        }
-        for item in report.industry_groups.items
-    ]
+        verified = [
+            item
+            for item in themes
+            if isinstance(item, dict)
+            and isinstance(item.get("provenance"), dict)
+            and item["provenance"].get("is_live_theme_intelligence") is True
+        ]
+        return sorted(verified, key=lambda item: ((item.get("returns") or {}).get("1m") or 0), reverse=True)
+    return []
 
 
 def draw_page_frame(canvas: Any, doc: Any, report: DailyReportResponse, source_state: str) -> None:

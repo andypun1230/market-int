@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from app.securities.models import BreadthUniverse, BreadthUniverseMember, SecurityRecord, UniverseImportReport
-from app.securities.registry import SP100_SOURCE_NAME, normalized_sector, provider_symbol_for
+from app.securities.registry import SP100_SOURCE_NAME, canonical_sector_id, normalized_sector, provider_symbol_for
 from app.securities.storage import SecurityMasterStorage
 
 
@@ -32,8 +32,8 @@ class SecurityMasterService:
             row_source = row.get("source") or source
             row_source_timestamp = row.get("source_effective_date") or source_timestamp
             row_verified_at = row.get("verified_at") or now
-            self.storage.upsert_security(SecurityRecord(security_id=security_id, ticker=row["ticker"], company_name=row["company_name"], exchange=row.get("exchange", "US"), asset_type=row.get("asset_type", "equity"), active=row["active"], sector=row["sector"], industry=row.get("industry"), quote_provider_symbol=row["quote_provider_symbol"], history_provider_symbol=row["history_provider_symbol"], index_memberships=(name,), effective_from=row_source_timestamp or effective_date, source=row_source, source_timestamp=row_source_timestamp, verified_at=row_verified_at))
-            members.append(BreadthUniverseMember(universe_id=universe_id, security_id=security_id, ticker=row["ticker"], sector=row["sector"], active=row["active"], weight=row.get("weight"), effective_from=row_source_timestamp or effective_date, membership_source=row_source))
+            self.storage.upsert_security(SecurityRecord(security_id=security_id, ticker=row["ticker"], company_name=row["company_name"], exchange=row.get("exchange", "US"), asset_type=row.get("asset_type", "equity"), active=row["active"], sector=row["sector"], sector_id=row["sector_id"], industry=row.get("industry"), quote_provider_symbol=row["quote_provider_symbol"], history_provider_symbol=row["history_provider_symbol"], index_memberships=(name,), effective_from=row_source_timestamp or effective_date, source=row_source, source_timestamp=row_source_timestamp, verified_at=row_verified_at))
+            members.append(BreadthUniverseMember(universe_id=universe_id, security_id=security_id, ticker=row["ticker"], sector=row["sector"], sector_id=row["sector_id"], active=row["active"], weight=row.get("weight"), effective_from=row_source_timestamp or effective_date, membership_source=row_source))
         universe = BreadthUniverse(universe_id=universe_id, name=name, version=version, benchmark_symbol=benchmark_symbol.upper(), effective_date=effective_date, created_at=now, source=source, source_timestamp=source_timestamp, member_count=len(members), notes=notes)
         self.storage.publish_universe(universe, members)
         return report
@@ -47,13 +47,14 @@ class SecurityMasterService:
             if not ticker or ticker in seen:
                 invalid.append(f"row:{index}:duplicate_or_missing_ticker")
                 continue
+            sector_id = canonical_sector_id(raw.get("sector"))
             sector = normalized_sector(raw.get("sector"))
-            if sector == "Unknown":
+            if sector_id is None:
                 invalid.append(f"{ticker}:missing_sector")
                 continue
             seen.add(ticker)
             active = str(raw.get("active", "true")).strip().lower() in {"1", "true", "yes"}
-            normalized.append({"ticker": ticker, "company_name": str(raw.get("company_name") or raw.get("name") or ticker).strip(), "sector": sector, "industry": raw.get("industry"), "exchange": str(raw.get("exchange") or "US"), "asset_type": str(raw.get("asset_type") or "equity"), "active": active, "quote_provider_symbol": str(raw.get("quote_provider_symbol") or provider_symbol_for(ticker)).upper(), "history_provider_symbol": str(raw.get("history_provider_symbol") or provider_symbol_for(ticker)).upper(), "weight": raw.get("weight"), "source": str(raw.get("source") or "").strip() or None, "source_effective_date": str(raw.get("source_effective_date") or "").strip() or None, "verified_at": str(raw.get("verified_at") or "").strip() or None})
+            normalized.append({"ticker": ticker, "company_name": str(raw.get("company_name") or raw.get("name") or ticker).strip(), "sector": sector, "sector_id": sector_id, "industry": raw.get("industry"), "exchange": str(raw.get("exchange") or "US"), "asset_type": str(raw.get("asset_type") or "equity"), "active": active, "quote_provider_symbol": str(raw.get("quote_provider_symbol") or provider_symbol_for(ticker)).upper(), "history_provider_symbol": str(raw.get("history_provider_symbol") or provider_symbol_for(ticker)).upper(), "weight": raw.get("weight"), "source": str(raw.get("source") or "").strip() or None, "source_effective_date": str(raw.get("source_effective_date") or "").strip() or None, "verified_at": str(raw.get("verified_at") or "").strip() or None})
         return normalized, invalid
 
     @staticmethod

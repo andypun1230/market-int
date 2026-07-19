@@ -54,11 +54,13 @@ def latest_snapshot_response() -> dict[str, Any]:
     if snapshot is None:
         service.trigger_background_refresh()
         return initializing_snapshot_response()
-    return {
+    response = {
         **snapshot.model_dump(),
         "age_seconds": snapshot_age_seconds(snapshot),
         "refresh_state": service.get_status(),
     }
+    hydrate_snapshot_breadth(response)
+    return response
 
 
 def get_section_payload(name: str) -> Any:
@@ -136,8 +138,9 @@ def snapshot_details_payload(group: str) -> dict[str, Any]:
     if snapshot is None:
         return {"partial": True, "cache_status": "initializing", "refreshing": True, "errors": {}}
     if group == "structure":
+        breadth = current_breadth_payload() or snapshot.section_payload("breadth")
         return {
-            "breadth": {"market": snapshot.section_payload("breadth"), "sectors": []},
+            "breadth": {"market": breadth, "sectors": []},
             "sectors": snapshot.section_payload("sectors_summary") or {"leaders": [], "summary": "Sector summary unavailable."},
             "sectorEtfs": {"items": [], "summary": "Sector ETF summary unavailable."},
             "industryGroups": {"items": [], "summary": "Industry groups unavailable."},
@@ -213,9 +216,11 @@ def initializing_core_snapshot() -> dict[str, Any]:
             "aggressiveness": None,
             "preferred_style": None,
             "main_risk": "Market snapshot is initializing.",
+            "decision_confidence": None,
         },
         "breadth_summary": None,
         "top_sector": None,
+        "lagging_sector": None,
         "top_industry_group": None,
         "as_of": now_iso(),
         "overall_mode": "initializing",
@@ -230,11 +235,61 @@ def decorate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     snapshot = get_market_snapshot_service().get_latest_snapshot()
     result = dict(payload)
     normalize_embedded_indexes(result)
+    hydrate_current_breadth(result)
     if snapshot:
         result["snapshot_id"] = snapshot.snapshot_id
         result["snapshot_status"] = snapshot.status
         result["snapshot_age_seconds"] = snapshot_age_seconds(snapshot)
     return result
+
+
+def hydrate_current_breadth(payload: dict[str, Any]) -> None:
+    """Keep Home and Market reads attached to the current durable breadth snapshot."""
+    breadth = current_breadth_payload()
+    if not breadth:
+        return
+    summary = {
+        "breadth_score": breadth.get("breadth_score"),
+        "breadth_status": breadth.get("breadth_status"),
+        "percent_above_50ema": breadth.get("percent_above_50ema"),
+        "coverage_percent": breadth.get("coverage_percent"),
+        "overall_mode": breadth.get("overall_mode"),
+        "universe": breadth.get("universe"),
+        "snapshot_id": breadth.get("snapshot_id"),
+        "universe_version": breadth.get("universe_version"),
+        "market_date": breadth.get("market_date"),
+        "coverage_status": breadth.get("coverage_status"),
+        "trend": breadth.get("trend"),
+        "coverage_dimensions": breadth.get("coverage_dimensions"),
+        "data_confidence": breadth.get("data_confidence"),
+        "signal_confidence": breadth.get("signal_confidence"),
+    }
+    core = payload.get("core") if isinstance(payload.get("core"), dict) else payload
+    if isinstance(core, dict) and "breadth_summary" in core:
+        core["breadth_summary"] = summary
+
+
+def current_breadth_payload() -> dict[str, Any] | None:
+    try:
+        from app.services.breadth import calculate_market_breadth
+        breadth = calculate_market_breadth().model_dump()
+    except Exception:
+        return None
+    return breadth if breadth.get("snapshot_id") else None
+
+
+def hydrate_snapshot_breadth(payload: dict[str, Any]) -> None:
+    breadth = current_breadth_payload()
+    sections = payload.get("sections")
+    if not breadth or not isinstance(sections, dict):
+        return
+    section = sections.get("breadth")
+    if isinstance(section, dict):
+        section["payload"] = breadth
+        section["source_state"] = breadth.get("source_state") or section.get("source_state")
+    source_summary = payload.get("source_summary")
+    if isinstance(source_summary, dict):
+        source_summary["breadth_snapshot_id"] = breadth.get("snapshot_id")
 
 
 def normalize_embedded_indexes(payload: dict[str, Any]) -> None:

@@ -109,6 +109,8 @@ def _calculate_market_health_uncached() -> MarketHealthResponse:
         ),
     }
     data_quality = build_data_quality(index_snapshots, sector_etfs.items, breadth, leadership)
+    data_quality["breadth_data_confidence"] = getattr(breadth, "data_confidence", None)
+    data_quality["breadth_signal_confidence"] = getattr(breadth, "signal_confidence", None)
     improving_factors = build_improving_factors(components, sector_etfs.items, institutional_activity.bias.bias)
     weakening_factors = build_weakening_factors(components, breadth.percent_above_50ema)
     decision_confidence = calculate_decision_confidence_from_inputs(

@@ -8,6 +8,7 @@ from pathlib import Path
 
 from app.cache.persistent_cache import DB_PATH as DEFAULT_DB_PATH
 from app.securities.models import BreadthUniverse, BreadthUniverseMember, SecurityRecord
+from app.securities.registry import canonical_sector_id
 
 _lock = threading.RLock()
 
@@ -25,7 +26,7 @@ class SecurityMasterStorage:
                 """CREATE TABLE IF NOT EXISTS securities (
                 security_id TEXT PRIMARY KEY, ticker TEXT NOT NULL, company_name TEXT NOT NULL,
                 exchange TEXT NOT NULL, asset_type TEXT NOT NULL, active INTEGER NOT NULL,
-                sector TEXT NOT NULL, industry TEXT, quote_provider_symbol TEXT, history_provider_symbol TEXT,
+                sector TEXT NOT NULL, sector_id TEXT, industry TEXT, quote_provider_symbol TEXT, history_provider_symbol TEXT,
                 currency TEXT NOT NULL, country TEXT NOT NULL, index_memberships_json TEXT NOT NULL,
                 effective_from TEXT, effective_to TEXT, source TEXT NOT NULL, source_timestamp TEXT,
                 verified_at TEXT, metadata_version INTEGER NOT NULL, UNIQUE(ticker, active))"""
@@ -39,22 +40,32 @@ class SecurityMasterStorage:
             )
             connection.execute(
                 """CREATE TABLE IF NOT EXISTS breadth_universe_members (
-                universe_id TEXT NOT NULL, security_id TEXT NOT NULL, ticker TEXT NOT NULL, sector TEXT NOT NULL,
+                universe_id TEXT NOT NULL, security_id TEXT NOT NULL, ticker TEXT NOT NULL, sector TEXT NOT NULL, sector_id TEXT,
                 active INTEGER NOT NULL, weight REAL, effective_from TEXT, effective_to TEXT,
                 membership_source TEXT NOT NULL, PRIMARY KEY(universe_id, security_id),
                 FOREIGN KEY(universe_id) REFERENCES breadth_universes(universe_id),
                 FOREIGN KEY(security_id) REFERENCES securities(security_id))"""
             )
-            connection.execute("INSERT OR REPLACE INTO breadth_schema_versions(name, version) VALUES ('security_master', 1)")
+            # Existing rollout databases predate canonical sector identifiers.
+            for table, column in (("securities", "sector_id"), ("breadth_universe_members", "sector_id")):
+                columns = {row[1] for row in connection.execute(f"PRAGMA table_info({table})")}
+                if column not in columns:
+                    connection.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
+            for table in ("securities", "breadth_universe_members"):
+                for sector, in connection.execute(f"SELECT DISTINCT sector FROM {table} WHERE sector_id IS NULL OR sector_id = ''").fetchall():
+                    sector_id = canonical_sector_id(sector)
+                    if sector_id:
+                        connection.execute(f"UPDATE {table} SET sector_id=? WHERE sector=? AND (sector_id IS NULL OR sector_id = '')", (sector_id, sector))
+            connection.execute("INSERT OR REPLACE INTO breadth_schema_versions(name, version) VALUES ('security_master', 2)")
             connection.commit()
 
     def upsert_security(self, record: SecurityRecord) -> None:
         self.initialize()
         with _lock, self._connect() as connection:
             connection.execute(
-                """INSERT INTO securities VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """INSERT INTO securities (security_id, ticker, company_name, exchange, asset_type, active, sector, sector_id, industry, quote_provider_symbol, history_provider_symbol, currency, country, index_memberships_json, effective_from, effective_to, source, source_timestamp, verified_at, metadata_version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(security_id) DO UPDATE SET ticker=excluded.ticker, company_name=excluded.company_name,
-                exchange=excluded.exchange, asset_type=excluded.asset_type, active=excluded.active, sector=excluded.sector,
+                exchange=excluded.exchange, asset_type=excluded.asset_type, active=excluded.active, sector=excluded.sector, sector_id=excluded.sector_id,
                 industry=excluded.industry, quote_provider_symbol=excluded.quote_provider_symbol,
                 history_provider_symbol=excluded.history_provider_symbol, currency=excluded.currency, country=excluded.country,
                 index_memberships_json=excluded.index_memberships_json, effective_from=excluded.effective_from,
@@ -62,7 +73,7 @@ class SecurityMasterStorage:
                 verified_at=excluded.verified_at, metadata_version=excluded.metadata_version""",
                 (
                     record.security_id, record.ticker, record.company_name, record.exchange, record.asset_type,
-                    int(record.active), record.sector, record.industry, record.quote_provider_symbol,
+                    int(record.active), record.sector, record.sector_id, record.industry, record.quote_provider_symbol,
                     record.history_provider_symbol, record.currency, record.country,
                     json.dumps(list(record.index_memberships)), record.effective_from, record.effective_to,
                     record.source, record.source_timestamp, record.verified_at, record.metadata_version,
@@ -83,9 +94,9 @@ class SecurityMasterStorage:
                 ),
             )
             connection.executemany(
-                "INSERT INTO breadth_universe_members VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO breadth_universe_members (universe_id, security_id, ticker, sector, sector_id, active, weight, effective_from, effective_to, membership_source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [(
-                    member.universe_id, member.security_id, member.ticker, member.sector, int(member.active),
+                    member.universe_id, member.security_id, member.ticker, member.sector, member.sector_id, int(member.active),
                     member.weight, member.effective_from, member.effective_to, member.membership_source,
                 ) for member in members],
             )
@@ -94,29 +105,29 @@ class SecurityMasterStorage:
     def get_universe(self, universe_id: str) -> BreadthUniverse | None:
         self.initialize()
         with _lock, self._connect() as connection:
-            row = connection.execute("SELECT * FROM breadth_universes WHERE universe_id = ?", (universe_id,)).fetchone()
+            row = connection.execute("SELECT universe_id, name, version, benchmark_symbol, effective_date, created_at, source, source_timestamp, member_count, enabled, notes FROM breadth_universes WHERE universe_id = ?", (universe_id,)).fetchone()
         return BreadthUniverse(*row) if row else None
 
     def get_active_universe(self, name: str) -> BreadthUniverse | None:
         self.initialize()
         with _lock, self._connect() as connection:
-            row = connection.execute("SELECT * FROM breadth_universes WHERE name = ? AND enabled = 1 ORDER BY effective_date DESC, created_at DESC LIMIT 1", (name,)).fetchone()
+            row = connection.execute("SELECT universe_id, name, version, benchmark_symbol, effective_date, created_at, source, source_timestamp, member_count, enabled, notes FROM breadth_universes WHERE name = ? AND enabled = 1 ORDER BY effective_date DESC, created_at DESC LIMIT 1", (name,)).fetchone()
         return BreadthUniverse(*row) if row else None
 
     def members(self, universe_id: str) -> list[BreadthUniverseMember]:
         self.initialize()
         with _lock, self._connect() as connection:
-            rows = connection.execute("SELECT * FROM breadth_universe_members WHERE universe_id = ? AND active = 1 ORDER BY ticker", (universe_id,)).fetchall()
+            rows = connection.execute("SELECT universe_id, security_id, ticker, sector, sector_id, active, weight, effective_from, effective_to, membership_source FROM breadth_universe_members WHERE universe_id = ? AND active = 1 ORDER BY ticker", (universe_id,)).fetchall()
         return [BreadthUniverseMember(*row) for row in rows]
 
     def security(self, ticker: str) -> SecurityRecord | None:
         self.initialize()
         with _lock, self._connect() as connection:
-            row = connection.execute("SELECT * FROM securities WHERE ticker = ? AND active = 1", (ticker.upper(),)).fetchone()
+            row = connection.execute("SELECT security_id, ticker, company_name, exchange, asset_type, active, sector, sector_id, industry, quote_provider_symbol, history_provider_symbol, currency, country, index_memberships_json, effective_from, effective_to, source, source_timestamp, verified_at, metadata_version FROM securities WHERE ticker = ? AND active = 1", (ticker.upper(),)).fetchone()
         if not row:
             return None
         values = list(row)
-        values[12] = tuple(json.loads(values[12]))
+        values[13] = tuple(json.loads(values[13]))
         return SecurityRecord(*values)
 
     def _connect(self) -> sqlite3.Connection:

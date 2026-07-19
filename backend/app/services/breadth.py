@@ -8,6 +8,7 @@ from app.providers.cache import get_cached_value, set_cached_value
 from app.services.basket_data import calculate_basket_breadth
 from app.services.service_cache import get_or_compute, get_service_ttl
 from app.breadth.service import get_breadth_snapshot_service
+from app.semantics import advance_decline_semantics
 
 
 def get_breadth_universe_symbols() -> list[str]:
@@ -48,9 +49,10 @@ def _calculate_market_breadth_uncached() -> MarketBreadthResponse:
     days = int(os.getenv("BREADTH_HISTORY_DAYS", "260"))
     breadth = calculate_basket_breadth(symbols, days=days)
     metadata = breadth["metadata"]
+    ad_semantics = advance_decline_semantics(breadth["advancing_stocks"], breadth["declining_stocks"])
     breadth_score = round(
         (breadth["percent_above_50ema"] * 0.55)
-        + ((breadth["advance_decline_ratio"] or 1) * 15)
+        + ((ad_semantics["advance_decline_ratio_smoothed"] or 1) * 15)
         + (breadth["percent_above_20ema"] * 0.20)
     )
     breadth_score = max(0, min(100, breadth_score))
@@ -60,7 +62,10 @@ def _calculate_market_breadth_uncached() -> MarketBreadthResponse:
         advancing_stocks=breadth["advancing_stocks"],
         declining_stocks=breadth["declining_stocks"],
         unchanged_stocks=breadth["unchanged_stocks"],
-        advance_decline_ratio=breadth["advance_decline_ratio"],
+        advance_decline_ratio=ad_semantics["advance_decline_ratio"],
+        advance_decline_ratio_display=ad_semantics["advance_decline_ratio_display"],
+        advance_decline_ratio_smoothed=ad_semantics["advance_decline_ratio_smoothed"],
+        ratio_method=ad_semantics["ratio_method"],
         percent_above_20ema=breadth["percent_above_20ema"],
         percent_above_50ema=breadth["percent_above_50ema"],
         percent_above_200ema=breadth["percent_above_200ema"],
@@ -160,6 +165,9 @@ def market_breadth_from_snapshot(snapshot: Any) -> MarketBreadthResponse:
         declining_stocks=core.get("declining_count", 0),
         unchanged_stocks=core.get("unchanged_count", 0),
         advance_decline_ratio=core.get("advance_decline_ratio"),
+        advance_decline_ratio_display=core.get("advance_decline_ratio_display"),
+        advance_decline_ratio_smoothed=core.get("advance_decline_ratio_smoothed"),
+        ratio_method=core.get("ratio_method"),
         percent_above_20ema=core.get("percent_above_20ema") or 0.0,
         percent_above_50ema=core.get("percent_above_50ema") or 0.0,
         percent_above_200ema=core.get("percent_above_200ema") or 0.0,
@@ -183,6 +191,19 @@ def market_breadth_from_snapshot(snapshot: Any) -> MarketBreadthResponse:
         source_state=snapshot.source_state,
         providers=snapshot.providers,
         warnings=snapshot.warnings,
+        coverage_dimensions=coverage.get("coverage_dimensions"),
+        data_confidence=_confidence_with_snapshot_context(getattr(snapshot, "data_confidence", None), snapshot),
+        signal_confidence=_confidence_with_snapshot_context(getattr(snapshot, "signal_confidence", None), snapshot),
+    )
+
+
+def _confidence_with_snapshot_context(confidence: object, snapshot: Any) -> dict[str, Any]:
+    from app.semantics import confidence_with_snapshot_provenance
+
+    return confidence_with_snapshot_provenance(
+        confidence if isinstance(confidence, dict) else None,
+        source_snapshot_id=getattr(snapshot, "snapshot_id", None),
+        calculated_at=getattr(snapshot, "created_at", None) or getattr(snapshot, "published_at", None),
     )
 
 

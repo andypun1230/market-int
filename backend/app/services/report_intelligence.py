@@ -8,7 +8,7 @@ MAX_HISTORY = 10
 def build_report_snapshot(report: Any) -> dict[str, Any]:
     generated_time = datetime.now(timezone.utc).isoformat()
     sectors = get_ranked_items(getattr(report, "sector_dashboard", None), "sectors", fallback=getattr(getattr(report, "sector_etfs", None), "items", []))
-    themes = get_ranked_items(getattr(report, "sector_dashboard", None), "themes", fallback=getattr(getattr(report, "industry_groups", None), "items", []))
+    themes = get_ranked_items(getattr(report, "sector_dashboard", None), "themes", fallback=[])
     watchlist_items = (getattr(report, "watchlist_summary", None) or {}).get("items") or []
     health = getattr(report, "market_health", None)
     risk = getattr(report, "risk_dashboard", None)
@@ -46,7 +46,9 @@ def build_report_snapshot(report: Any) -> dict[str, Any]:
         },
         "macroSummary": {
             "events": list(getattr(report, "tomorrow_watch", []) or []),
-            "state": "Event Watch" if getattr(report, "tomorrow_watch", None) else "Neutral",
+            "state": (getattr(report, "macro", None) or {}).get("state_label", "Unavailable"),
+            "currentRisks": (getattr(report, "macro", None) or {}).get("current_risks", []),
+            "invalidationConditions": (getattr(report, "macro", None) or {}).get("invalidation_conditions"),
         },
         "playbook": {
             "headline": getattr(playbook, "headline", None),
@@ -86,7 +88,6 @@ class ReportComparisonEngine:
             })
 
         items.extend(rank_changes("Sector Leadership", previous.get("sectorRanking", []), current.get("sectorRanking", []), limit=5))
-        items.extend(rank_changes("Theme Leadership", previous.get("themeRanking", []), current.get("themeRanking", []), limit=5))
         items.extend(watchlist_changes(previous.get("watchlistSummary", []), current.get("watchlistSummary", [])))
         items.extend(macro_changes(previous.get("macroSummary", {}), current.get("macroSummary", {})))
 
@@ -102,19 +103,17 @@ class MarketConvictionEngine:
     def calculate(self, snapshot: dict[str, Any], convergence: dict[str, Any], warnings: list[str]) -> dict[str, Any]:
         signals = snapshot.get("signalSummary", {})
         sectors = snapshot.get("sectorRanking", [])
-        themes = snapshot.get("themeRanking", [])
         macro_state = snapshot.get("macroSummary", {}).get("state")
         components = [
             ("Trend", normalize_score(signals.get("trend")), 14),
             ("Breadth", normalize_score(signals.get("breadth")), 14),
             ("Leadership", normalize_score(signals.get("sectorStrength")), 13),
             ("Sector Rotation", rotation_score(sectors), 9),
-            ("Theme Rotation", rotation_score(themes), 9),
             ("Momentum", normalize_score(signals.get("momentum")), 10),
             ("Volume", normalize_score(signals.get("volume")), 9),
             ("Risk", inverse_score(signals.get("risk")), 10),
             ("Sentiment", sentiment_conviction(signals.get("sentiment")), 6),
-            ("Macro", 75 if macro_state == "Event Watch" else 85, 6),
+            ("Macro", 85 if macro_state in ("Strong Risk-On", "Risk-On") else 75 if macro_state == "Balanced" else 50, 6),
         ]
         raw = sum(score * weight for _, score, weight in components) / sum(weight for _, _, weight in components)
         disagreement_penalty = max(0, (convergence.get("total", 0) - convergence.get("passed", 0)) * 4)
@@ -146,7 +145,7 @@ class DecisionChecklistEngine:
             checklist_item("Leadership broad", signals.get("sectorStrength"), 65, 50, higher_is_better=True),
             checklist_item("Risk acceptable", signals.get("risk"), 45, 65, higher_is_better=False),
             checklist_item("Volatility acceptable", signals.get("risk"), 45, 65, higher_is_better=False),
-            checklist_item("Macro risk", 70 if snapshot.get("macroSummary", {}).get("state") == "Event Watch" else 85, 70, 50, higher_is_better=True),
+            checklist_item("Macro risk", macro_checklist_score(snapshot.get("macroSummary", {}).get("state")), 70, 50, higher_is_better=True),
             checklist_item("Watchlist confirms", watchlist_confirmation_score(watchlist), 55, 40, higher_is_better=True),
         ]
         passed = sum(1 for item in items if item["status"] == "Pass")
@@ -238,14 +237,11 @@ class RelationshipEngine:
     def detect(self, snapshot: dict[str, Any]) -> list[str]:
         signals = snapshot.get("signalSummary", {})
         sectors = snapshot.get("sectorRanking", [])
-        themes = snapshot.get("themeRanking", [])
         relationships: list[str] = []
         if number(signals.get("breadth"), 0) >= 65 and number(signals.get("risk"), 100) < 40:
             relationships.append("Breadth strength combined with contained risk raises conviction in the current playbook.")
         if number(signals.get("trend"), 0) >= 65 and number(signals.get("volume"), 0) >= 65:
             relationships.append("Trend and volume are moving together, which supports the quality of the advance.")
-        if sectors and themes and number(sectors[0].get("return"), 0) > 0 and number(themes[0].get("return"), 0) > 0:
-            relationships.append("Sector and theme leadership are aligned, suggesting leadership is not isolated to one lens.")
         if number(signals.get("sentiment"), 0) >= 75 and number(signals.get("risk"), 100) < 35:
             relationships.append("Low measured risk is offset by elevated sentiment, reducing room for careless entries.")
         return relationships[:4]
@@ -262,12 +258,11 @@ class CommentaryEngine:
         confirmations: list[str],
     ) -> dict[str, Any]:
         top_sector = first_name(snapshot.get("sectorRanking", []), "sector leadership")
-        top_theme = first_name(snapshot.get("themeRanking", []), "theme leadership")
         breadth = get_path(snapshot, "breadth", "status") or "mixed"
         risk = get_path(snapshot, "risk", "status") or "monitored"
         thesis = (
             f"The current market thesis is that the uptrend remains investable because {str(breadth).lower()} breadth, "
-            f"{top_sector} sector leadership, and {top_theme} theme leadership continue to support one another."
+            f"{top_sector} sector leadership continues to support the current evidence."
         )
         tradeoff = build_tradeoff(snapshot, warnings, confirmations)
         context = build_historical_context(snapshot)
@@ -345,14 +340,12 @@ class SignalConvergenceEngine:
     def calculate(self, snapshot: dict[str, Any]) -> dict[str, Any]:
         signals = snapshot.get("signalSummary", {})
         sectors = snapshot.get("sectorRanking", [])
-        themes = snapshot.get("themeRanking", [])
         risk = number(signals.get("risk"), 100)
         sentiment = number(signals.get("sentiment"), 50)
         checks = [
             signal_check("Trend", number(signals.get("trend"), 0) >= 60, signals.get("trend")),
             signal_check("Breadth", number(signals.get("breadth"), 0) >= 60, signals.get("breadth")),
             signal_check("Sector Leadership", number(signals.get("sectorStrength"), 0) >= 60, signals.get("sectorStrength")),
-            signal_check("Theme Leadership", bool(themes and number(themes[0].get("return"), 0) >= 0), themes[0].get("name") if themes else None),
             signal_check("Momentum", number(signals.get("momentum"), 0) >= 60, signals.get("momentum")),
             signal_check("Volume", number(signals.get("volume"), 0) >= 60, signals.get("volume")),
             signal_check("Risk", risk < 50, risk),
@@ -388,7 +381,6 @@ class MarketIntelligenceEngine:
         relationships: list[str] | None = None,
     ) -> dict[str, Any]:
         top_sector = first_name(snapshot.get("sectorRanking", []), "sector leadership")
-        top_theme = first_name(snapshot.get("themeRanking", []), "theme leadership")
         health = snapshot.get("marketHealth", {})
         risk = snapshot.get("risk", {})
         breadth = snapshot.get("breadth", {})
@@ -397,7 +389,7 @@ class MarketIntelligenceEngine:
         warning_text = hidden_warnings[0] if hidden_warnings else "No significant contradictions detected."
         cross_tab = (
             f"{snapshot.get('regime')} is supported by {breadth.get('status', 'mixed').lower()} breadth, "
-            f"{top_sector} sector leadership, and {top_theme} theme leadership. "
+            f"{top_sector} sector leadership. "
             f"Risk remains {str(risk.get('status') or 'monitored').lower()}, so the report favors selective action rather than broad chasing."
         )
         market_narrative = (
@@ -405,7 +397,7 @@ class MarketIntelligenceEngine:
             f"and risk are mostly aligned. The main caveat is: {warning_text}"
         )
         action_summary = [
-            "Prioritize names aligned with leading sectors and themes.",
+            "Prioritize names aligned with leading sectors and verified setups.",
             "Treat new entries cautiously if sentiment or breadth diverges.",
             "Use risk triggers as invalidation conditions rather than predictions.",
         ]
@@ -420,7 +412,7 @@ class MarketIntelligenceEngine:
             "thesis": (commentary or {}).get("thesis"),
             "invalidation": (commentary or {}).get("invalidation") or [],
             "signalAlignment": convergence,
-            "primaryOpportunity": f"{top_sector} and {top_theme} leadership.",
+            "primaryOpportunity": f"{top_sector} sector leadership.",
             "primaryRisk": playbook.get("mainRisk") or warning_text,
             "hiddenWarnings": hidden_warnings,
             "hiddenConfirmations": hidden_confirmations or [],
@@ -436,7 +428,6 @@ class MarketIntelligenceEngine:
 def build_hidden_warnings(snapshot: dict[str, Any], convergence: dict[str, Any]) -> list[str]:
     signals = snapshot.get("signalSummary", {})
     sectors = snapshot.get("sectorRanking", [])
-    themes = snapshot.get("themeRanking", [])
     watchlist = snapshot.get("watchlistSummary", [])
     warnings: list[str] = []
     if number(signals.get("trend"), 0) >= 70 and number(signals.get("breadth"), 0) < 60:
@@ -448,10 +439,6 @@ def build_hidden_warnings(snapshot: dict[str, Any], convergence: dict[str, Any])
     qqq = find_named_index(watchlist, "QQQ")
     if sectors and number(sectors[-1].get("return"), 0) < 0 and number(signals.get("sectorStrength"), 0) >= 70:
         warnings.append("Top leadership is strong, but lagging groups still show weak participation.")
-    if themes and watchlist:
-        weak_watchlist = sum(1 for item in watchlist if number(item.get("changePercent"), 0) < 0)
-        if number(themes[0].get("return"), 0) > 1 and weak_watchlist >= max(2, len(watchlist) // 2):
-            warnings.append("Theme leadership is positive, but several watchlist names are deteriorating.")
     if qqq:
         pass
     return warnings[:4] or ["No significant market contradictions detected."]
@@ -723,6 +710,16 @@ def checklist_item(label: str, value: Any, pass_threshold: float, watch_threshol
     return {"label": label, "status": status, "value": round(parsed, 1), "reason": checklist_reason(label, status, parsed)}
 
 
+def macro_checklist_score(state: object) -> int:
+    return {
+        "Strong Risk-On": 85,
+        "Risk-On": 75,
+        "Balanced": 60,
+        "Defensive Rotation": 40,
+        "Risk-Off": 25,
+    }.get(state, 0)
+
+
 def watchlist_confirmation_score(items: list[dict[str, Any]]) -> float:
     if not items:
         return 50.0
@@ -740,8 +737,6 @@ def build_hidden_confirmations(snapshot: dict[str, Any]) -> list[str]:
         confirmations.append("Risk remains contained relative to the current playbook.")
     if number(signals.get("momentum"), 0) >= 65 and number(signals.get("volume"), 0) >= 65:
         confirmations.append("Momentum and volume are aligned.")
-    if snapshot.get("sectorRanking") and snapshot.get("themeRanking"):
-        confirmations.append("Sector and theme leadership both provide support.")
     return confirmations[:4]
 
 
@@ -752,8 +747,9 @@ def conviction_constraints(snapshot: dict[str, Any], warnings: list[str]) -> lis
         constraints.append("Sentiment remains elevated.")
     if number(signals.get("sectorStrength"), 0) < 70:
         constraints.append("Leadership is constructive but not broad enough for maximum conviction.")
-    if snapshot.get("macroSummary", {}).get("state") == "Event Watch":
-        constraints.append("Macro event risk remains on the calendar.")
+    macro_risks = snapshot.get("macroSummary", {}).get("currentRisks") or []
+    if macro_risks:
+        constraints.append(str(macro_risks[0]))
     if warnings and warnings != ["No significant market contradictions detected."]:
         constraints.append(strip_terminal(warnings[0]))
     return constraints[:3] or ["No major constraint beyond normal market uncertainty."]
@@ -815,8 +811,9 @@ def build_tradeoff(snapshot: dict[str, Any], warnings: list[str], confirmations:
         cons.extend(warnings[:2])
     if number(get_path(snapshot, "signalSummary", "sentiment"), 0) >= 70:
         cons.append("Sentiment reduces the reward for late entries.")
-    if snapshot.get("macroSummary", {}).get("state") == "Event Watch":
-        cons.append("Macro events can change the risk picture quickly.")
+    macro_risks = snapshot.get("macroSummary", {}).get("currentRisks") or []
+    if macro_risks:
+        cons.append(str(macro_risks[0]))
     cons = cons[:3] or ["No major offsetting risk beyond normal market uncertainty."]
     overall = "Pros currently outweigh risks." if len(pros) >= len(cons) else "Risks are beginning to offset the positive evidence."
     return {"pros": pros, "cons": cons, "overall": overall}
@@ -843,7 +840,6 @@ def format_metric(value: Any) -> str:
 
 def build_historical_metrics(snapshot: dict[str, Any]) -> dict[str, Any]:
     sectors = snapshot.get("sectorRanking", [])
-    themes = snapshot.get("themeRanking", [])
     watchlist = snapshot.get("watchlistSummary", [])
     return {
         "reportId": snapshot.get("reportId"),
@@ -856,6 +852,5 @@ def build_historical_metrics(snapshot: dict[str, Any]) -> dict[str, Any]:
         "confidence": snapshot.get("confidence"),
         "playbook": get_path(snapshot, "playbook", "headline"),
         "sectorLeader": first_name(sectors, None) if sectors else None,
-        "themeLeader": first_name(themes, None) if themes else None,
         "topIdea": get_path(watchlist[0], "symbol") if watchlist else None,
     }

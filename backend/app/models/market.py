@@ -24,6 +24,7 @@ class BreadthResponse(BaseModel):
     stocks_above_50ma: int
     stocks_above_200ma: int
     advance_decline_ratio: float | None
+    advance_decline_ratio_smoothed: float | None = None
 
 
 class VolatilityResponse(BaseModel):
@@ -80,6 +81,11 @@ class SectorsResponse(BaseModel):
     overall_mode: str | None = None
     coverage_percent: float | None = None
     as_of: str | None = None
+    snapshot_id: str | None = None
+    universe_id: str | None = None
+    universe_version: str | None = None
+    market_date: str | None = None
+    source_state: str | None = None
 
 
 class IndustryGroupItem(BaseModel):
@@ -115,6 +121,7 @@ class IndustryGroupItem(BaseModel):
     fallback_used: bool | None = None
     as_of: str | None = None
     history_quality_score: int | None = None
+    provenance: Dict[str, Any] = Field(default_factory=dict)
 
 
 class IndustryGroupResponse(BaseModel):
@@ -123,6 +130,7 @@ class IndustryGroupResponse(BaseModel):
     overall_mode: str | None = None
     coverage_percent: float | None = None
     as_of: str | None = None
+    theme_provenance: Dict[str, Any] = Field(default_factory=dict)
 
 
 class WatchlistItem(BaseModel):
@@ -213,6 +221,9 @@ class MarketBreadthResponse(BaseModel):
     declining_stocks: int
     unchanged_stocks: int
     advance_decline_ratio: float | None
+    advance_decline_ratio_display: str | None = None
+    advance_decline_ratio_smoothed: float | None = None
+    ratio_method: str | None = None
     percent_above_20ema: float
     percent_above_50ema: float
     percent_above_200ema: float
@@ -237,6 +248,9 @@ class MarketBreadthResponse(BaseModel):
     source_state: str | None = None
     providers: list[str] | None = None
     warnings: list[str] | None = None
+    coverage_dimensions: dict[str, Any] | None = None
+    data_confidence: dict[str, Any] | None = None
+    signal_confidence: dict[str, Any] | None = None
 
 
 class SectorBreadthItem(BaseModel):
@@ -783,11 +797,14 @@ class DecisionConfidenceContributor(BaseModel):
 
 
 class DecisionConfidenceResponse(BaseModel):
-    score: int
+    score: int | None
     status: str
     contributors: List[DecisionConfidenceContributor]
     disagreements: List[str]
     summary: str
+    reason: str | None = None
+    calculated_at: str | None = None
+    source_snapshot_id: str | None = None
 
 
 class DashboardComparisonItem(BaseModel):
@@ -1033,6 +1050,7 @@ class MarketPlaybookResponse(BaseModel):
     suggested_aggressiveness: str
     top_sector: str
     top_industry_group: str
+    top_industry_group_provenance: Dict[str, Any] = Field(default_factory=dict)
     cap_rotation_leader: str
     main_risk: str
     action_guidelines: List[str]
@@ -1122,8 +1140,11 @@ class DailyReportResponse(BaseModel):
     index_histories: Dict[str, List[float]] = Field(default_factory=dict)
     watchlist_summary: Dict[str, Any] | None = None
     sector_dashboard: Dict[str, Any] | None = None
+    sector_snapshot_id: str | None = None
     stock_charts: List[Dict[str, Any]] = Field(default_factory=list)
     economic_calendar: List[Dict[str, Any]] = Field(default_factory=list)
+    macro: Dict[str, Any] = Field(default_factory=dict)
+    semantic_context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class MarketAnalysisResponse(BaseModel):

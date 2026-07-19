@@ -39,7 +39,9 @@ class BreadthSnapshotStorage:
         digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
         with _lock, self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
-            connection.execute("INSERT INTO breadth_snapshots VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (snapshot.snapshot_id, snapshot.universe_id, snapshot.universe_version, snapshot.market_date, snapshot.status, payload, snapshot.created_at, snapshot.published_at, snapshot.source_state, snapshot.calculation_version, snapshot.input_hash, digest))
+            # Snapshot IDs are content-addressed. Rebuilding unchanged durable input
+            # must restore the pointers rather than turn an idempotent publish into an error.
+            connection.execute("INSERT OR IGNORE INTO breadth_snapshots VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (snapshot.snapshot_id, snapshot.universe_id, snapshot.universe_version, snapshot.market_date, snapshot.status, payload, snapshot.created_at, snapshot.published_at, snapshot.source_state, snapshot.calculation_version, snapshot.input_hash, digest))
             self._state_in_tx(connection, namespace, f"latest:{snapshot.universe_id}", snapshot.snapshot_id, snapshot.published_at)
             if snapshot.status in {"complete", "partial"}:
                 self._state_in_tx(connection, namespace, f"lkg:{snapshot.universe_id}", snapshot.snapshot_id, snapshot.published_at)

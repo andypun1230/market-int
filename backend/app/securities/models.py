@@ -13,6 +13,7 @@ class SecurityRecord:
     asset_type: str = "equity"
     active: bool = True
     sector: str = "Unknown"
+    sector_id: str | None = None
     industry: str | None = None
     quote_provider_symbol: str | None = None
     history_provider_symbol: str | None = None
@@ -56,6 +57,7 @@ class BreadthUniverseMember:
     security_id: str
     ticker: str
     sector: str
+    sector_id: str | None = None
     active: bool = True
     weight: float | None = None
     effective_from: str | None = None
