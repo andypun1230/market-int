@@ -1,0 +1,58 @@
+{
+  "conclusion": "VERIFIED SAME-ISSUER TICKER CHANGE",
+  "retrieved_at": "2026-07-19T18:11:25Z",
+  "reviewer": {
+    "reviewed_by": "AndyPun123123",
+    "email": "andypun3a224@gmail.com",
+    "review_commit": "3b48aae2f371f88087cf4d09220198dfd3af7e03"
+  },
+  "old_identity": {
+    "ticker": "PSTG",
+    "company_name": "Pure Storage",
+    "exchange": "NYSE",
+    "cik": "0001474432",
+    "polygon_composite_figi": "BBG00212PVZ5",
+    "polygon_share_class_figi": "BBG00212PW10"
+  },
+  "new_identity": {
+    "ticker": "P",
+    "company_name": "Everpure, Inc.",
+    "exchange": "NYSE",
+    "cik": "0001474432",
+    "polygon_composite_figi": "BBG00212PVZ5",
+    "polygon_share_class_figi": "BBG00212PW10",
+    "active_trading_status": "active"
+  },
+  "provider_symbol_transition": {
+    "effective_date": "2026-04-17",
+    "pre_effective_polygon_history_symbol": "PSTG",
+    "post_effective_polygon_history_symbol": "P",
+    "current_finnhub_quote_symbol": "P",
+    "corporate_action_type": "ticker_and_name_change",
+    "continuity": "same_issuer"
+  },
+  "sources": [
+    {"source": "SEC company tickers", "url": "https://www.sec.gov/files/company_tickers.json", "result": "CIK 1474432, ticker P, Everpure, Inc."},
+    {"source": "SEC submissions", "url": "https://data.sec.gov/submissions/CIK0001474432.json", "result": "same CIK, current P, NYSE, Pure Storage former name"},
+    {"source": "SEC 8-K 0001474432-26-000011", "url": "https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm", "result": "corporate-name change to Everpure"},
+    {"source": "Polygon dated reference PSTG", "as_of_date": "2026-04-16", "request_id": "d76e7cfd5eea33bd956c369931979451", "result": "Everpure, active, matching CIK and FIGIs"},
+    {"source": "Polygon dated reference P", "as_of_date": "2026-04-17", "request_id": "c17c7b7675ba541bcfba01d54c7199c4", "result": "Everpure, active, matching CIK and FIGIs"},
+    {"source": "Polygon current reference P", "as_of_date": "2026-07-17", "request_id": "46af4df3adf1391cbf9f355910649", "result": "Everpure active current reference"},
+    {"source": "Polygon adjusted aggregates PSTG", "request_id": "07a233c200415cc0ad04223c02ddafa8", "result": "450 bars 2024-07-01 through 2026-04-16"},
+    {"source": "Polygon adjusted aggregates P", "request_id": "97f70d7e97f9995c955e010b55b8903c", "result": "63 bars 2026-04-17 through 2026-07-17"},
+    {"source": "Finnhub quote", "result": "P current quote available; PSTG quote treated as legacy alias only"}
+  ],
+  "history_boundary": {
+    "last_pre_change": {"session_date": "2026-04-16", "source_symbol": "PSTG", "adjusted_close": 67.8},
+    "first_post_change": {"session_date": "2026-04-17", "source_symbol": "P", "adjusted_close": 66.97},
+    "boundary_return": -0.012242,
+    "overlap_count": 0,
+    "alias_transition_gap_count": 0,
+    "synthetic_return": false,
+    "manual_normalization": false
+  },
+  "conflicting_fields": [
+    {"field": "Finnhub PSTG quote", "resolution": "legacy alias response; not authoritative current identity"}
+  ],
+  "final_action": "Use canonical P / Everpure with PSTG historical alias and date-aware Polygon history mappings."
+}

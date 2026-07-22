@@ -26,6 +26,7 @@ from app.services.sector_etfs import build_sector_etf_dashboard
 from app.services.sectors import build_market_sectors
 from app.services.service_cache import get_or_compute, get_service_ttl
 from app.services.theme_provenance import static_strategy_preference_provenance
+from app.services.theme_intelligence import build_theme_intelligence_context
 
 
 DISCLAIMER = "Educational market decision support only, not financial advice."
@@ -295,6 +296,7 @@ def _build_decision_dashboard_uncached() -> DecisionDashboardResponse:
         industry_rotation=industry_rotation,
         risk_dashboard=risk_dashboard,
         institutional_intelligence=institutional_intelligence,
+        theme_intelligence=build_theme_intelligence_context(),
     )
 
 

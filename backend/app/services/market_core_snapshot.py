@@ -18,6 +18,7 @@ from app.services.service_cache import (
 )
 from app.services.snapshot_store import get_last_market_core_snapshot, save_market_core_snapshot
 from app.services.theme_provenance import static_strategy_preference_provenance
+from app.services.theme_intelligence import build_theme_intelligence_context
 from app.validation.symbol_registry import canonical_index_universe
 
 
@@ -55,6 +56,7 @@ def _build_market_core_snapshot_uncached() -> dict[str, Any]:
     trading_styles = recommend_trading_styles()
     sectors = build_market_sectors()
     industry_groups = build_industry_groups()
+    theme_intelligence = build_theme_intelligence_context()
 
     top_sector = sectors.leaders[0].model_dump() if sectors.leaders else None
     lagging_sector = sectors.leaders[-1].model_dump() if sectors.leaders else None
@@ -99,6 +101,7 @@ def _build_market_core_snapshot_uncached() -> dict[str, Any]:
         "top_sector": top_sector,
         "lagging_sector": lagging_sector,
         "top_industry_group": top_group,
+        "theme_intelligence": theme_intelligence,
         "as_of": max(
             [
                 value
@@ -151,6 +154,7 @@ def build_bootstrap_snapshot() -> dict[str, Any]:
         "top_sector": first_item(sectors, "leaders"),
         "lagging_sector": last_item(sectors, "leaders"),
         "top_industry_group": first_item(industry_groups, "items"),
+        "theme_intelligence": build_theme_intelligence_context(),
         "as_of": datetime.now(timezone.utc).isoformat(),
         "overall_mode": "partial",
         "bootstrap": True,

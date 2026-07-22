@@ -34,10 +34,10 @@ export function buildStarterPrompts(context: CopilotContext): string[] {
       ];
     case 'watchlist':
       return [
-        'Rank my watchlist.',
-        'Which name has the strongest alignment?',
-        'Which stock is weakening?',
-        'Compare my top three watchlist names.',
+        'Rank the saved watchlist items.',
+        'Which saved name has the strongest alignment?',
+        'Which saved stock is weakening?',
+        'Compare the top three saved watchlist names.',
       ];
     case 'stock':
       return [
@@ -49,7 +49,7 @@ export function buildStarterPrompts(context: CopilotContext): string[] {
     case 'report':
       return [
         'Explain this report in simple terms.',
-        'Why is Conviction only 77?',
+        'What limits the current conviction score?',
         'Explain the scenario probabilities.',
         'What changed since the previous report?',
       ];

@@ -1,0 +1,14 @@
+security_id,ticker,company_name,exchange,sector,industry,quote_provider_symbol,history_provider_symbol,reviewed_at,reviewed_by,source_url,source_retrieved_at
+theme-sec-sndk,SNDK,Sandisk Corporation,NASDAQ,Information Technology,Data Storage,SNDK,SNDK,2026-07-19T18:11:25Z,AndyPun123123,https://www.sandisk.com/about/,2026-07-19
+theme-sec-wdc,WDC,Western Digital,NASDAQ,Information Technology,Data Storage,WDC,WDC,2026-07-19T18:11:25Z,AndyPun123123,https://www.westerndigital.com/company,2026-07-19
+theme-sec-stx,STX,Seagate Technology Holdings,NASDAQ,Information Technology,Data Storage,STX,STX,2026-07-19T18:11:25Z,AndyPun123123,https://www.seagate.com/company/,2026-07-19
+theme-sec-mrvl,MRVL,Marvell Technology,NASDAQ,Information Technology,Semiconductors,MRVL,MRVL,2026-07-19T18:11:25Z,AndyPun123123,https://www.marvell.com/company.html,2026-07-19
+theme-sec-ntap,NTAP,NetApp,NASDAQ,Information Technology,Data Storage,NTAP,NTAP,2026-07-19T18:11:25Z,AndyPun123123,https://www.netapp.com/company/,2026-07-19
+theme-sec-everpure-1474432,P,Everpure,NYSE,Information Technology,Data Storage,P,P,2026-07-19T18:11:25Z,AndyPun123123,https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm,2026-07-19
+theme-sec-crwd,CRWD,CrowdStrike Holdings,NASDAQ,Information Technology,Cybersecurity,CRWD,CRWD,2026-07-19T18:11:25Z,AndyPun123123,https://www.crowdstrike.com/about-us/,2026-07-19
+theme-sec-panw,PANW,Palo Alto Networks,NASDAQ,Information Technology,Cybersecurity,PANW,PANW,2026-07-19T18:11:25Z,AndyPun123123,https://www.paloaltonetworks.com/company,2026-07-19
+theme-sec-ftnt,FTNT,Fortinet,NASDAQ,Information Technology,Cybersecurity,FTNT,FTNT,2026-07-19T18:11:25Z,AndyPun123123,https://www.fortinet.com/corporate/about-us,2026-07-19
+theme-sec-zs,ZS,Zscaler,NASDAQ,Information Technology,Cybersecurity,ZS,ZS,2026-07-19T18:11:25Z,AndyPun123123,https://www.zscaler.com/company,2026-07-19
+theme-sec-okta,OKTA,Okta,NASDAQ,Information Technology,Cybersecurity,OKTA,OKTA,2026-07-19T18:11:25Z,AndyPun123123,https://www.okta.com/company/,2026-07-19
+theme-sec-chkp,CHKP,Check Point Software Technologies,NASDAQ,Information Technology,Cybersecurity,CHKP,CHKP,2026-07-19T18:11:25Z,AndyPun123123,https://www.checkpoint.com/about-us/,2026-07-19
+theme-sec-s,S,SentinelOne,NYSE,Information Technology,Cybersecurity,S,S,2026-07-19T18:11:25Z,AndyPun123123,https://www.sentinelone.com/company/,2026-07-19

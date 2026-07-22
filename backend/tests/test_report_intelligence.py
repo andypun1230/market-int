@@ -15,6 +15,13 @@ from app.services.report_intelligence import (
 
 
 class ReportIntelligenceTests(unittest.TestCase):
+    def test_first_report_establishes_an_explicit_change_baseline(self) -> None:
+        changes = ReportComparisonEngine().compare(None, {"marketHealth": {"score": 72}})
+
+        self.assertFalse(changes["available"])
+        self.assertEqual(changes["summary"], "Baseline report established.")
+        self.assertEqual(changes["items"], [])
+
     def test_comparison_ignores_noise_and_keeps_meaningful_changes(self) -> None:
         previous = {
             "marketHealth": {"score": 80},

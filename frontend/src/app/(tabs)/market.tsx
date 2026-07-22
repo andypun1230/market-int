@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,7 +11,6 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
-import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import {
   buildBreadthDashboard,
@@ -154,8 +153,12 @@ const MARKET_SECTIONS: {
 ];
 
 export default function MarketScreen() {
+  const router = useRouter();
+  const { section: sectionParam } = useLocalSearchParams<{ section?: string | string[] }>();
+  const requestedSection = firstMarketSection(sectionParam);
   const [isFocused, setIsFocused] = useState(false);
-  const [selectedSection, setSelectedSection] = useState<MarketSection>('overview');
+  const [localSection, setLocalSection] = useState<MarketSection>('overview');
+  const selectedSection = requestedSection ?? localSection;
   const [weightConcentration, setWeightConcentration] = useState<ReturnType<typeof buildConcentrationBreadthSignal>>(null);
   useFocusEffect(
     useCallback(() => {
@@ -206,22 +209,26 @@ export default function MarketScreen() {
   );
 
   return (
-    <AppScreen title="Market Regime" subtitle="Trend, breadth, volatility, and institutional activity.">
+    <AppScreen
+      copilotContext={copilotContext}
+      copilotPrompt={`Explain the ${selectedSection} section and the weakest signal.`}
+      stickyHeader={!loading ? (
+        <MarketSectionTabs
+          onChange={(section) => {
+            router.setParams({ commandTarget: undefined, section: undefined });
+            setLocalSection(section);
+          }}
+          selected={selectedSection}
+        />
+      ) : null}
+      title="Market Regime"
+      subtitle="Trend, breadth, volatility, and institutional activity.">
         {loading ? <MarketSkeleton /> : null}
 
         {error ? <ErrorState message={error} onRetry={refetch} /> : null}
 
         {!loading ? (
           <>
-            <AskCopilotButton
-              context={copilotContext}
-              prompt={`Explain the ${selectedSection} section and the weakest signal.`}
-            />
-            <MarketSectionTabs
-              onChange={setSelectedSection}
-              selected={selectedSection}
-            />
-
             {detailsError ? <ErrorState message={detailsError} /> : null}
             <MarketSectionContent
               aiSummary={aiSummary}
@@ -245,6 +252,11 @@ export default function MarketScreen() {
         ) : null}
     </AppScreen>
   );
+}
+
+function firstMarketSection(value: string | string[] | undefined): MarketSection | null {
+  const section = Array.isArray(value) ? value[0] : value;
+  return MARKET_SECTIONS.some((item) => item.key === section) ? section as MarketSection : null;
 }
 
 function MarketSkeleton() {
@@ -2876,6 +2888,7 @@ function DecisionDashboardDetails({
   return (
     <View style={styles.sectionStack}>
       <DecisionOverviewCard dashboard={dashboard} />
+      <DecisionThemeSnapshotCard themeIntelligence={decisionDashboard?.theme_intelligence} />
       <PreferredSetupsCard dashboard={dashboard} />
       <DecisionChecklistCard dashboard={dashboard} />
       <MarketScenariosCard dashboard={dashboard} />
@@ -2884,6 +2897,14 @@ function DecisionDashboardDetails({
       <WhatChangedCard data={dashboard.changes} />
     </View>
   );
+}
+
+function DecisionThemeSnapshotCard({ themeIntelligence }: { themeIntelligence?: DecisionDashboardResponse['theme_intelligence'] }) {
+  if (!themeIntelligence?.available) {
+    return <View style={styles.breadthPanel}><Text style={styles.detailSectionTitle}>Theme Intelligence</Text><Text style={styles.bodyText}>{themeIntelligence?.availability || 'Live Theme Intelligence is not yet available.'}</Text></View>;
+  }
+  const signals = (themeIntelligence.qualified_decision_theme_signals ?? []).filter((signal) => signal.source_type === 'live_theme_signal');
+  return <View style={styles.breadthPanel}><Text style={styles.detailSectionTitle}>Theme Intelligence</Text><Text style={styles.bodyText}>Reviewed ThemeSnapshot {themeIntelligence.snapshot_id || 'N/A'} · {themeIntelligence.market_date || 'N/A'}</Text>{signals.length ? signals.map((signal) => <View key={signal.theme_id || signal.display_name} style={styles.decisionMetricRow}><Text style={styles.bodyText}>{signal.display_name || 'Theme'} · Live Theme Signal · #{signal.rank ?? 'N/A'} · {signal.classification || 'Unavailable'}</Text><Text style={styles.metricValue}>{signal.score === undefined || signal.score === null ? 'N/A' : `${signal.score.toFixed(1)} / 100`}</Text><Text style={styles.metricSubvalue}>{signal.qualification_reason || 'Qualified by the documented live Theme policy.'}</Text></View>) : <Text style={styles.bodyText}>No live Theme meets the documented Decision qualification gates.</Text>}</View>;
 }
 
 function DecisionOverviewCard({ dashboard }: { dashboard: DecisionViewModel }) {

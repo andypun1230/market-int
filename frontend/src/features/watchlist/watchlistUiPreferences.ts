@@ -9,24 +9,35 @@ import type {
   WatchlistGroup,
   WatchlistSortMode,
 } from './types';
+import {
+  DEFAULT_LIST_CONTROL_PREFERENCES,
+  type ListControlPreferences,
+  type WatchlistCategory,
+} from './watchlistListControls';
+import { normalizeListControlPreferences, resetListControlCategory } from './watchlistListPreferences';
 
-type WatchlistUiPreferences = {
+export type WatchlistUiPreferences = {
   collapsedGroups: Partial<Record<WatchlistGroup, boolean>>;
   sectorThemeCollapsedGroups: Partial<Record<SectorThemeGroup, boolean>>;
   sectorThemePeriod: TestHeatmapInterval;
   sectorThemeSortMode: SectorThemeSortMode;
   sectorThemeTypeFilter: SectorThemeTypeFilter;
   sortMode: WatchlistSortMode;
+  listControls: Record<WatchlistCategory, ListControlPreferences>;
+};
+type WatchlistUiPreferencesPatch = Omit<Partial<WatchlistUiPreferences>, 'listControls'> & {
+  listControls?: Partial<Record<WatchlistCategory, ListControlPreferences>>;
 };
 
 const STORAGE_KEY = 'market-intelligence:watchlist-ui:v2';
-const DEFAULT_PREFERENCES: WatchlistUiPreferences = {
+export const DEFAULT_WATCHLIST_UI_PREFERENCES: WatchlistUiPreferences = {
   collapsedGroups: {},
   sectorThemeCollapsedGroups: {},
   sectorThemePeriod: '1M',
   sectorThemeSortMode: 'smartPriority',
   sectorThemeTypeFilter: 'all',
   sortMode: 'smartPriority',
+  listControls: DEFAULT_LIST_CONTROL_PREFERENCES,
 };
 
 let memoryPreferences = loadStoredPreferences();
@@ -34,7 +45,7 @@ let memoryPreferences = loadStoredPreferences();
 export function useWatchlistUiPreferences() {
   const [preferences, setPreferences] = useState(memoryPreferences);
 
-  const updatePreferences = useCallback((patch: Partial<WatchlistUiPreferences>) => {
+  const updatePreferences = useCallback((patch: WatchlistUiPreferencesPatch) => {
     memoryPreferences = {
       ...memoryPreferences,
       ...patch,
@@ -46,6 +57,7 @@ export function useWatchlistUiPreferences() {
         ...memoryPreferences.sectorThemeCollapsedGroups,
         ...patch.sectorThemeCollapsedGroups,
       },
+      listControls: mergeListControlPreferences(memoryPreferences.listControls, patch.listControls),
     };
     savePreferences(memoryPreferences);
     setPreferences(memoryPreferences);
@@ -55,7 +67,30 @@ export function useWatchlistUiPreferences() {
 }
 
 export function resetWatchlistUiPreferencesForTests() {
-  memoryPreferences = DEFAULT_PREFERENCES;
+  memoryPreferences = DEFAULT_WATCHLIST_UI_PREFERENCES;
+}
+
+export function resetCategoryListPreferences(
+  preferences: WatchlistUiPreferences,
+  category: WatchlistCategory,
+): WatchlistUiPreferences {
+  return {
+    ...preferences,
+    listControls: resetListControlCategory(preferences.listControls, category),
+  };
+}
+
+export function normalizeWatchlistUiPreferences(value: unknown): WatchlistUiPreferences {
+  const parsed = isRecord(value) ? value as Partial<WatchlistUiPreferences> : {};
+  return {
+    collapsedGroups: parsed.collapsedGroups ?? {},
+    listControls: normalizeListControlPreferences(parsed.listControls),
+    sectorThemeCollapsedGroups: parsed.sectorThemeCollapsedGroups ?? {},
+    sectorThemePeriod: isHeatmapInterval(parsed.sectorThemePeriod) ? parsed.sectorThemePeriod : '1M',
+    sectorThemeSortMode: isSectorThemeSortMode(parsed.sectorThemeSortMode) ? parsed.sectorThemeSortMode : 'smartPriority',
+    sectorThemeTypeFilter: isSectorThemeTypeFilter(parsed.sectorThemeTypeFilter) ? parsed.sectorThemeTypeFilter : 'all',
+    sortMode: isSortMode(parsed.sortMode) ? parsed.sortMode : 'smartPriority',
+  };
 }
 
 function loadStoredPreferences(): WatchlistUiPreferences {
@@ -63,21 +98,34 @@ function loadStoredPreferences(): WatchlistUiPreferences {
     const storage = getLocalStorage();
     const raw = storage?.getItem(STORAGE_KEY);
     if (!raw) {
-      return DEFAULT_PREFERENCES;
+      return DEFAULT_WATCHLIST_UI_PREFERENCES;
     }
-    const parsed = JSON.parse(raw) as Partial<WatchlistUiPreferences>;
-    return {
-      collapsedGroups: parsed.collapsedGroups ?? {},
-      sectorThemeCollapsedGroups: parsed.sectorThemeCollapsedGroups ?? {},
-      sectorThemePeriod: isHeatmapInterval(parsed.sectorThemePeriod) ? parsed.sectorThemePeriod : '1M',
-      sectorThemeSortMode: isSectorThemeSortMode(parsed.sectorThemeSortMode) ? parsed.sectorThemeSortMode : 'smartPriority',
-      sectorThemeTypeFilter: isSectorThemeTypeFilter(parsed.sectorThemeTypeFilter) ? parsed.sectorThemeTypeFilter : 'all',
-      sortMode: isSortMode(parsed.sortMode) ? parsed.sortMode : 'smartPriority',
-    };
+    return normalizeWatchlistUiPreferences(JSON.parse(raw));
   } catch {
-    return DEFAULT_PREFERENCES;
+    return DEFAULT_WATCHLIST_UI_PREFERENCES;
   }
 }
+
+function mergeListControlPreferences(
+  current: Record<WatchlistCategory, ListControlPreferences>,
+  patch?: Partial<Record<WatchlistCategory, ListControlPreferences>>,
+) {
+  if (!patch) return current;
+  return (['stocks', 'sectors', 'themes'] as const).reduce<Record<WatchlistCategory, ListControlPreferences>>(
+    (next, category) => {
+      next[category] = patch[category]
+        ? { ...current[category], ...patch[category], filters: [...patch[category]!.filters] }
+        : current[category];
+      return next;
+    },
+    { ...current },
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
 
 function isHeatmapInterval(value: unknown): value is TestHeatmapInterval {
   return value === '1D' || value === '1W' || value === '1M' || value === '3M' || value === '6M' || value === '1Y';

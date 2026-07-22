@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "stage7-copilot-visual-review-v1",
+  "overallStatus": "passed",
+  "recordedAt": "2026-07-22T04:00:00Z",
+  "environment": {
+    "desktopViewport": "1280x720",
+    "mobileViewport": "390x844",
+    "browser": "Codex in-app browser",
+    "consoleErrors": 0
+  },
+  "reviewChecks": [
+    "readability",
+    "answerDensity",
+    "hierarchy",
+    "buttonPlacement",
+    "evidenceExpansion",
+    "deepLinkClarity",
+    "loadingAndCancellation",
+    "safeAreas",
+    "keyboardHandling",
+    "bottomNavigationInteraction"
+  ],
+  "screenshots": [
+    {
+      "ordinal": 1,
+      "file": "01-default-copilot.png",
+      "subject": "Default Copilot screen",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:41:00Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "answerDensity": "passed", "hierarchy": "passed", "buttonPlacement": "passed", "safeAreas": "passed"},
+      "notes": ["Default prompts, context bar, fixed composer, and corrected web back icon are visible."]
+    },
+    {
+      "ordinal": 2,
+      "file": "02-market-answer.png",
+      "subject": "Market answer",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:41:30Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "answerDensity": "passed", "hierarchy": "passed", "freshnessVisibility": "passed"},
+      "notes": ["Direct answer, confidence, freshness, and cited evidence are visible without a prose wall."]
+    },
+    {
+      "ordinal": 3,
+      "file": "03-stock-decision.png",
+      "subject": "Stock decision answer",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:42:00Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "answerDensity": "passed", "hierarchy": "passed", "evidenceExpansion": "passed"},
+      "notes": ["Insufficient-evidence stance and stale source state are prominent; Show all expansion was exercised separately."]
+    },
+    {
+      "ordinal": 4,
+      "file": "04-challenge-mode.png",
+      "subject": "Challenge-mode answer",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:51:00Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "answerDensity": "passed", "hierarchy": "passed", "opposingEvidence": "passed"},
+      "notes": ["Supporting stock evidence and opposing report-thesis evidence remain visually distinct."]
+    },
+    {
+      "ordinal": 5,
+      "file": "05-report-research-focus.png",
+      "subject": "Report Research Focus answer",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:43:00Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "answerDensity": "passed", "hierarchy": "passed", "partialStateVisibility": "passed"},
+      "notes": ["Research Focus evidence is readable and the partial-state limitation is not hidden."]
+    },
+    {
+      "ordinal": 6,
+      "file": "06-navigation-action.png",
+      "subject": "Navigation response",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:43:20Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "buttonPlacement": "passed", "deepLinkClarity": "passed", "bottomNavigationInteraction": "passed"},
+      "notes": ["Fear & Greed action reached the decision/fear-greed target; Breadth action separately reached the breadth tab and section."]
+    },
+    {
+      "ordinal": 7,
+      "file": "07-stale-data.png",
+      "subject": "Stale-data response",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:43:40Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "hierarchy": "passed", "staleStateVisibility": "passed", "falseCertaintyAvoided": "passed"},
+      "notes": ["The stale badge and constrained breadth conclusion are visible."]
+    },
+    {
+      "ordinal": 8,
+      "file": "08-partial-data.png",
+      "subject": "Partial-data response",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:44:00Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "hierarchy": "passed", "partialStateVisibility": "passed", "falseCertaintyAvoided": "passed"},
+      "notes": ["The Partial Data notice explains that missing evidence was not inferred."]
+    },
+    {
+      "ordinal": 9,
+      "file": "09-follow-up-context.png",
+      "subject": "Follow-up conversation",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:57:45Z",
+      "viewport": "1280x720",
+      "review": {"readability": "passed", "hierarchy": "passed", "contextContinuity": "passed", "deepLinkClarity": "passed"},
+      "notes": ["“What confirms it?” remains a FOLLOW UP and displays ARM evidence rather than falling back to a generic report."]
+    },
+    {
+      "ordinal": 10,
+      "file": "10-mobile-390x844.png",
+      "subject": "Compact 390x844 viewport",
+      "status": "captured_reviewed",
+      "capturedAt": "2026-07-22T03:53:00Z",
+      "viewport": "390x844",
+      "review": {"readability": "passed", "answerDensity": "passed", "buttonPlacement": "passed", "safeAreas": "passed", "keyboardHandling": "passed"},
+      "notes": ["Composer focus, sticky placement, prompt wrapping, and safe-area spacing were inspected at 390x844; a native software keyboard was not emulated in the web browser."]
+    }
+  ],
+  "interactionReview": {
+    "evidenceExpansion": "passed",
+    "loadingAndCancellation": "passed",
+    "retryAfterCancellation": "passed",
+    "exactFearGreedDestination": "passed",
+    "exactBreadthDestination": "passed",
+    "exactArmDestination": "passed",
+    "consoleErrors": []
+  }
+}

@@ -622,17 +622,25 @@ function buildMarketCapScore(items: MarketCapRotationItem[], category: string) {
 }
 
 function buildFocus(dashboard: DecisionDashboardResponse) {
-  const hasSpecifics = Boolean(dashboard.playbook?.top_sector || dashboard.playbook?.top_industry_group || dashboard.playbook?.cap_rotation_leader);
-  return hasSpecifics ? 'Leading sectors, static strategy preferences, and stronger market-cap groups' : null;
+  const hasLiveTheme = qualifiedThemeSignals(dashboard).length > 0;
+  const hasSpecifics = Boolean(dashboard.playbook?.top_sector || dashboard.playbook?.top_industry_group || dashboard.playbook?.cap_rotation_leader || hasLiveTheme);
+  return hasSpecifics ? `Leading sectors, ${hasLiveTheme ? 'qualified live Theme signals' : 'static strategy preferences'}, and stronger market-cap groups` : null;
 }
 
 function buildLeadershipFocus(dashboard: DecisionDashboardResponse) {
+  const liveSignals = qualifiedThemeSignals(dashboard);
+  const liveNames = new Set(liveSignals.map((signal) => signal.display_name?.toLowerCase()).filter((value): value is string => Boolean(value)));
   const staticPreference = dashboard.playbook?.top_industry_group
+    && !liveNames.has(dashboard.playbook.top_industry_group.toLowerCase())
     ? `${dashboard.playbook.top_industry_group} (Static strategy preference)`
     : null;
-  const items = [dashboard.playbook?.top_sector, staticPreference, dashboard.playbook?.cap_rotation_leader]
+  const items = [dashboard.playbook?.top_sector, ...liveSignals.map((signal) => `${signal.display_name} · Live Theme Signal`), staticPreference, dashboard.playbook?.cap_rotation_leader]
     .filter((item): item is string => Boolean(item));
   return Array.from(new Set(items)).slice(0, 3);
+}
+
+function qualifiedThemeSignals(dashboard: DecisionDashboardResponse) {
+  return (dashboard.theme_intelligence?.qualified_decision_theme_signals ?? []).filter((signal) => signal.source_type === 'live_theme_signal');
 }
 
 function riskLabel(score: number | null) {

@@ -1,0 +1,34 @@
+{
+  "applied": false,
+  "canonical_theme_id": "cybersecurity",
+  "definition_status": "proposed",
+  "dry_run": true,
+  "errors": [
+    "definition_not_reviewed",
+    "human_review_metadata_required",
+    "member_review_metadata_required"
+  ],
+  "member_count": 4,
+  "missing_security_master_records": [
+    "PANW",
+    "CRWD",
+    "FTNT",
+    "ZS"
+  ],
+  "missing_security_records": [
+    "PANW",
+    "CRWD",
+    "FTNT",
+    "ZS"
+  ],
+  "provider_mapping_warnings": [],
+  "reason_code": "human_review_required",
+  "requested_theme_id": "cybersecurity",
+  "review_gate": "human reviewed metadata is required before apply",
+  "reviewed": false,
+  "reviewed_at": null,
+  "reviewer": null,
+  "status": "BLOCKED",
+  "theme_id": "cybersecurity",
+  "version": "v1"
+}

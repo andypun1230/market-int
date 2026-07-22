@@ -1,0 +1,438 @@
+{
+  "blockers": [
+    "human_review_required"
+  ],
+  "definitions_found": 10,
+  "failures": [],
+  "fixture_paths": [
+    "frontend/src/data/sectorTabTestData.ts"
+  ],
+  "generated_at": "2026-07-20T05:46:02.237776+00:00",
+  "live_verified_paths": [
+    "backend/app/themes/",
+    "backend/app/theme_snapshots/"
+  ],
+  "mode": "all",
+  "overall_result": "PASS",
+  "snapshot": {
+    "snapshot_id": "theme-2026-07-17-f8ca1be84c",
+    "source_state": "live",
+    "status": "complete"
+  },
+  "static_strategy_preference_paths": [
+    "backend/app/services/theme_provenance.py",
+    "frontend/src/features/market/marketOverviewAnalysis.ts",
+    "frontend/src/app/report.tsx"
+  ],
+  "themes": [
+    {
+      "active": false,
+      "blockers": [
+        "human_review_required"
+      ],
+      "data_mode": "unavailable",
+      "definition_status": "proposed",
+      "display_name": "AI Infrastructure",
+      "member_count": 5,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "proposed_unreviewed",
+      "review_status": "awaiting_review",
+      "snapshot_status": "unavailable",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "NVIDIA data center",
+          "url": "https://www.nvidia.com/en-us/data-center/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Broadcom about",
+          "url": "https://www.broadcom.com/company/about-us"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Arista company",
+          "url": "https://www.arista.com/en/company"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Dell about",
+          "url": "https://www.dell.com/en-us/dt/corporate/about-us.htm"
+        }
+      ],
+      "theme_id": "ai_infrastructure"
+    },
+    {
+      "active": false,
+      "blockers": [
+        "human_review_required"
+      ],
+      "data_mode": "unavailable",
+      "definition_status": "proposed",
+      "display_name": "Cloud & Data Centers",
+      "member_count": 5,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "proposed_unreviewed",
+      "review_status": "awaiting_review",
+      "snapshot_status": "unavailable",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Microsoft about",
+          "url": "https://www.microsoft.com/en-us/about"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "AWS about",
+          "url": "https://aws.amazon.com/about-aws/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Oracle corporate",
+          "url": "https://www.oracle.com/corporate/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Equinix company",
+          "url": "https://www.equinix.com/company"
+        }
+      ],
+      "theme_id": "cloud_data_centers"
+    },
+    {
+      "active": false,
+      "blockers": [
+        "human_review_required"
+      ],
+      "data_mode": "unavailable",
+      "definition_status": "proposed",
+      "display_name": "Cybersecurity",
+      "member_count": 4,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "proposed_unreviewed",
+      "review_status": "awaiting_review",
+      "snapshot_status": "unavailable",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Palo Alto Networks company",
+          "url": "https://www.paloaltonetworks.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "CrowdStrike about",
+          "url": "https://www.crowdstrike.com/about-us/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Fortinet about",
+          "url": "https://www.fortinet.com/corporate/about-us"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Zscaler company",
+          "url": "https://www.zscaler.com/company"
+        }
+      ],
+      "theme_id": "cybersecurity"
+    },
+    {
+      "active": true,
+      "blockers": [],
+      "data_mode": "unavailable",
+      "definition_status": "active",
+      "display_name": "Cybersecurity",
+      "member_count": 7,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "live_verified",
+      "review_status": "reviewed",
+      "snapshot_status": "unavailable",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Palo Alto Networks company",
+          "url": "https://www.paloaltonetworks.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "CrowdStrike about",
+          "url": "https://www.crowdstrike.com/about-us/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Fortinet about",
+          "url": "https://www.fortinet.com/corporate/about-us"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Zscaler company",
+          "url": "https://www.zscaler.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "SentinelOne company",
+          "url": "https://www.sentinelone.com/company/"
+        }
+      ],
+      "theme_id": "cybersecurity"
+    },
+    {
+      "active": true,
+      "blockers": [],
+      "data_mode": "live",
+      "definition_status": "active",
+      "display_name": "Cybersecurity",
+      "member_count": 7,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "live_verified",
+      "review_status": "reviewed",
+      "snapshot_status": "complete",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "Palo Alto Networks company",
+          "url": "https://www.paloaltonetworks.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "CrowdStrike about",
+          "url": "https://www.crowdstrike.com/about-us/"
+        },
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "Fortinet about",
+          "url": "https://www.fortinet.com/corporate/about-us"
+        },
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "Zscaler company",
+          "url": "https://www.zscaler.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "SentinelOne company",
+          "url": "https://www.sentinelone.com/company/"
+        }
+      ],
+      "theme_id": "cybersecurity"
+    },
+    {
+      "active": false,
+      "blockers": [
+        "human_review_required"
+      ],
+      "data_mode": "unavailable",
+      "definition_status": "proposed",
+      "display_name": "Defense & Aerospace",
+      "member_count": 5,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "proposed_unreviewed",
+      "review_status": "awaiting_review",
+      "snapshot_status": "unavailable",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Lockheed Martin who we are",
+          "url": "https://www.lockheedmartin.com/en-us/who-we-are.html"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Northrop Grumman",
+          "url": "https://www.northropgrumman.com/who-we-are"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "RTX company",
+          "url": "https://www.rtx.com/our-company"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "General Dynamics about",
+          "url": "https://www.gd.com/about-gd"
+        }
+      ],
+      "theme_id": "defense_aerospace"
+    },
+    {
+      "active": false,
+      "blockers": [
+        "human_review_required"
+      ],
+      "data_mode": "unavailable",
+      "definition_status": "proposed",
+      "display_name": "Memory & Storage",
+      "member_count": 4,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "proposed_unreviewed",
+      "review_status": "awaiting_review",
+      "snapshot_status": "unavailable",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Micron corporate profile",
+          "url": "https://www.micron.com/about/company/corporate-profile"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Western Digital company",
+          "url": "https://www.westerndigital.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Seagate company",
+          "url": "https://www.seagate.com/company/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Sandisk about",
+          "url": "https://www.sandisk.com/about/"
+        }
+      ],
+      "theme_id": "memory_storage"
+    },
+    {
+      "active": true,
+      "blockers": [],
+      "data_mode": "unavailable",
+      "definition_status": "active",
+      "display_name": "Memory & Storage",
+      "member_count": 7,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "live_verified",
+      "review_status": "reviewed",
+      "snapshot_status": "unavailable",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Micron corporate profile",
+          "url": "https://www.micron.com/about/company/corporate-profile"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Western Digital company",
+          "url": "https://www.westerndigital.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Seagate company",
+          "url": "https://www.seagate.com/company/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Sandisk about",
+          "url": "https://www.sandisk.com/about/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Everpure SEC 8-K",
+          "url": "https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm"
+        }
+      ],
+      "theme_id": "memory_storage"
+    },
+    {
+      "active": true,
+      "blockers": [],
+      "data_mode": "live",
+      "definition_status": "active",
+      "display_name": "Memory & Storage",
+      "member_count": 7,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "live_verified",
+      "review_status": "reviewed",
+      "snapshot_status": "complete",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "Micron corporate profile",
+          "url": "https://www.micron.com/about/company/corporate-profile"
+        },
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "Western Digital company",
+          "url": "https://www.westerndigital.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "Seagate company",
+          "url": "https://www.seagate.com/company/"
+        },
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "Sandisk about",
+          "url": "https://www.sandisk.com/about/"
+        },
+        {
+          "retrieved_at": "2026-07-20",
+          "title": "Everpure SEC 8-K",
+          "url": "https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm"
+        }
+      ],
+      "theme_id": "memory_storage"
+    },
+    {
+      "active": false,
+      "blockers": [
+        "human_review_required"
+      ],
+      "data_mode": "unavailable",
+      "definition_status": "proposed",
+      "display_name": "Semiconductors",
+      "member_count": 5,
+      "package_errors": [],
+      "production_exposure": false,
+      "provenance_classification": "proposed_unreviewed",
+      "review_status": "awaiting_review",
+      "snapshot_status": "unavailable",
+      "source_references": [
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "NVIDIA company",
+          "url": "https://www.nvidia.com/en-us/about-nvidia/"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "AMD corporate",
+          "url": "https://www.amd.com/en/corporate.html"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Qualcomm company",
+          "url": "https://www.qualcomm.com/company"
+        },
+        {
+          "retrieved_at": "2026-07-19",
+          "title": "Texas Instruments company",
+          "url": "https://www.ti.com/about-ti/company.html"
+        }
+      ],
+      "theme_id": "semiconductors"
+    }
+  ],
+  "themes_audited": [
+    "ai_infrastructure",
+    "cloud_data_centers",
+    "cybersecurity",
+    "cybersecurity",
+    "cybersecurity",
+    "defense_aerospace",
+    "memory_storage",
+    "memory_storage",
+    "memory_storage",
+    "semiconductors"
+  ],
+  "unavailable_paths": [
+    "frontend/src/app/(tabs)/sectors.tsx",
+    "backend/app/services/sector_dashboard.py"
+  ],
+  "unknown_paths": []
+}

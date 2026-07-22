@@ -1,0 +1,596 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 23,
+    "caseId": "no-prior-report",
+    "title": "No prior report",
+    "request": {
+      "message": "What changed since the previous report?",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "first-report-no-history",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "REPORT_QUERY",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "report"
+      ],
+      "optionalAgents": [
+        "research"
+      ],
+      "entities": [
+        {
+          "type": "report",
+          "id": "latest"
+        }
+      ],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "partial",
+        "unavailable"
+      ],
+      "allowedFreshnessStates": [
+        "cached",
+        "partial",
+        "unavailable"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "report",
+          "route": "/report",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": "latest",
+          "highlightTarget": null
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "missing_history_explicit",
+        "no_change_narrative",
+        "no_historical_outcome_invented"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-23-no-prior-report",
+    "planId": "plan-stage7-no-prior-report",
+    "threadId": "stage7-thread-no-prior-report",
+    "startedAt": "2026-07-22T05:09:08.492922+00:00",
+    "completedAt": "2026-07-22T05:09:08.493731+00:00",
+    "elapsedMs": 0.711,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-no-prior-report",
+      "intent": "REPORT_QUERY",
+      "subIntent": "report_change",
+      "entities": [
+        {
+          "entityId": "latest",
+          "entityType": "report",
+          "displayName": "Latest Report",
+          "symbol": null,
+          "confidence": 1.0,
+          "resolutionSource": "fixture-report-registry"
+        }
+      ],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "report_date",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.94,
+      "requiredAgents": [
+        "report"
+      ],
+      "optionalAgents": [],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-no-prior-report",
+      "intentId": "intent-stage7-no-prior-report",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-report",
+          "order": 1,
+          "agent": "report",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 1000,
+          "purpose": "Collect validated report evidence."
+        }
+      ],
+      "requiredAgents": [
+        "report"
+      ],
+      "optionalAgents": [],
+      "dependencies": {
+        "step-1-report": []
+      },
+      "requiredEntities": [
+        "latest"
+      ],
+      "evidenceRequirements": [
+        {
+          "category": "report",
+          "required": true,
+          "entities": [
+            "latest"
+          ],
+          "minimumItems": 1
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "report"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 1200,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "report",
+        "status": "partial",
+        "observations": [],
+        "conclusions": [],
+        "contradictions": [],
+        "metrics": {},
+        "levels": [],
+        "sourceReferences": [],
+        "evidence": [],
+        "freshness": {
+          "state": "partial",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 0.5,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "report"
+        ],
+        "warnings": [
+          "No prior immutable report is available."
+        ],
+        "missingData": [
+          "A prior report is unavailable, so no change narrative was generated."
+        ],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "There is insufficient validated evidence to answer this reliably.",
+      "stance": "insufficient_evidence",
+      "confidenceLabel": "limited",
+      "thesis": "The evidence is insufficient for a reliable market conclusion.",
+      "supportingFactors": [],
+      "contradictoryFactors": [],
+      "keyRisks": [
+        {
+          "statement": "Evidence state is partial; the conclusion is monitoring-only.",
+          "evidenceIds": []
+        }
+      ],
+      "confirmationConditions": [],
+      "invalidationConditions": [],
+      "missingEvidence": [
+        "A prior report is unavailable, so no change narrative was generated.",
+        "Required report evidence is unavailable."
+      ],
+      "personalizationNote": null,
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "report"
+      ],
+      "disclaimerClass": "educational_market_decision_support"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-23-no-prior-report",
+      "planId": "plan-stage7-no-prior-report",
+      "threadId": "stage7-thread-no-prior-report",
+      "status": "partial",
+      "answer": "There is insufficient validated evidence to answer this reliably.\n\nMissing evidence: A prior report is unavailable, so no change narrative was generated. Required report evidence is unavailable.",
+      "answerSections": {
+        "directAnswer": "There is insufficient validated evidence to answer this reliably.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [],
+        "mainCaution": "Evidence state is partial; the conclusion is monitoring-only.",
+        "whatWouldConfirm": [],
+        "whatWouldInvalidate": [],
+        "whatWouldChange": []
+      },
+      "grounding": {
+        "contextUsed": [],
+        "sourceState": "partial",
+        "generatedAt": "2026-07-22T05:09:08.493505+00:00",
+        "evidenceIds": []
+      },
+      "suggestedFollowUps": [
+        "What would invalidate the report thesis?",
+        "Open Research Focus."
+      ],
+      "confidence": 42,
+      "answerConfidence": {
+        "level": "limited",
+        "reasons": [
+          "Intent confidence: 94%.",
+          "Evidence freshness: partial.",
+          "Some required evidence is unavailable."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-no-prior-report",
+        "intent": "REPORT_QUERY",
+        "subIntent": "report_change",
+        "entities": [
+          {
+            "entityId": "latest",
+            "entityType": "report",
+            "displayName": "Latest Report",
+            "symbol": null,
+            "confidence": 1.0,
+            "resolutionSource": "fixture-report-registry"
+          }
+        ],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "report_date",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.94,
+        "requiredAgents": [
+          "report"
+        ],
+        "optionalAgents": [],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-no-prior-report",
+        "intentId": "intent-stage7-no-prior-report",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-report",
+            "order": 1,
+            "agent": "report",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 1000,
+            "purpose": "Collect validated report evidence."
+          }
+        ],
+        "requiredAgents": [
+          "report"
+        ],
+        "optionalAgents": [],
+        "dependencies": {
+          "step-1-report": []
+        },
+        "requiredEntities": [
+          "latest"
+        ],
+        "evidenceRequirements": [
+          {
+            "category": "report",
+            "required": true,
+            "entities": [
+              "latest"
+            ],
+            "minimumItems": 1
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "report"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 1200,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "There is insufficient validated evidence to answer this reliably.",
+        "stance": "insufficient_evidence",
+        "confidenceLabel": "limited",
+        "thesis": "The evidence is insufficient for a reliable market conclusion.",
+        "supportingFactors": [],
+        "contradictoryFactors": [],
+        "keyRisks": [
+          {
+            "statement": "Evidence state is partial; the conclusion is monitoring-only.",
+            "evidenceIds": []
+          }
+        ],
+        "confirmationConditions": [],
+        "invalidationConditions": [],
+        "missingEvidence": [
+          "A prior report is unavailable, so no change narrative was generated.",
+          "Required report evidence is unavailable."
+        ],
+        "personalizationNote": null,
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "report"
+        ],
+        "disclaimerClass": "educational_market_decision_support"
+      },
+      "evidence": [],
+      "actions": [
+        {
+          "actionId": "action-report-latest",
+          "label": "Open Daily Report",
+          "actionType": "navigate",
+          "destinationId": "report",
+          "route": "/report",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": "latest",
+          "highlightTarget": null,
+          "parameters": {
+            "entity": "latest"
+          }
+        }
+      ],
+      "warnings": [
+        "No prior immutable report is available.",
+        "Evidence freshness is partial; conclusions are constrained accordingly.",
+        "A prior report is unavailable, so no change narrative was generated.",
+        "Required report evidence is unavailable."
+      ],
+      "freshnessSummary": {
+        "overallState": "partial",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 0,
+        "staleCount": 0,
+        "partialCount": 1,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "report": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-report-latest",
+        "label": "Open Daily Report",
+        "actionType": "navigate",
+        "destinationId": "report",
+        "route": "/report",
+        "tab": null,
+        "subTab": null,
+        "sectionId": null,
+        "entity": "latest",
+        "highlightTarget": null,
+        "parameters": {
+          "entity": "latest"
+        }
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed REPORT_QUERY; expected REPORT_QUERY."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['report']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status partial."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness partial."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:missing_history_explicit",
+          "status": "passed",
+          "detail": "The missing prior report is explicit."
+        },
+        {
+          "check": "assertion:no_change_narrative",
+          "status": "passed",
+          "detail": "No change narrative is generated without prior history."
+        },
+        {
+          "check": "assertion:no_historical_outcome_invented",
+          "status": "passed",
+          "detail": "No historical outcome is invented."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

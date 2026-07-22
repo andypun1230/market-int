@@ -1,0 +1,425 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 18,
+    "caseId": "ambiguous-ticker",
+    "title": "Ambiguous ticker",
+    "request": {
+      "message": "Analyse ABC.",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "unregistered-ticker",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "UNSUPPORTED_OR_AMBIGUOUS",
+      "inheritedIntent": null,
+      "requiredAgents": [],
+      "optionalAgents": [],
+      "entities": [],
+      "ambiguity": "high",
+      "allowedResponseStatuses": [
+        "unavailable",
+        "partial"
+      ],
+      "allowedFreshnessStates": [
+        "unavailable"
+      ],
+      "challengeMode": false,
+      "actions": [],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "unknown_ticker_not_inferred",
+        "one_concise_clarification",
+        "no_provider_call"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-18-ambiguous-ticker",
+    "planId": "plan-stage7-ambiguous-ticker",
+    "threadId": "stage7-thread-ambiguous-ticker",
+    "startedAt": "2026-07-22T05:09:08.485976+00:00",
+    "completedAt": "2026-07-22T05:09:08.486553+00:00",
+    "elapsedMs": 0.527,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-ambiguous-ticker",
+      "intent": "UNSUPPORTED_OR_AMBIGUOUS",
+      "subIntent": "unresolved_security",
+      "entities": [],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": false,
+      "ambiguityLevel": "high",
+      "confidence": 0.4,
+      "requiredAgents": [],
+      "optionalAgents": [],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [
+        "ABC"
+      ],
+      "clarificationQuestion": "I could not resolve ABC to a validated security. Which ticker did you mean?"
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-ambiguous-ticker",
+      "intentId": "intent-stage7-ambiguous-ticker",
+      "orderedSteps": [],
+      "requiredAgents": [],
+      "optionalAgents": [],
+      "dependencies": {},
+      "requiredEntities": [],
+      "evidenceRequirements": [],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 3000,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [],
+    "evidence": [],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "I could not validate a grounded answer. No market conclusion has been promoted.",
+      "stance": "insufficient_evidence",
+      "confidenceLabel": "limited",
+      "thesis": "No market conclusion is presented because grounding validation did not pass.",
+      "supportingFactors": [],
+      "contradictoryFactors": [],
+      "keyRisks": [],
+      "confirmationConditions": [],
+      "invalidationConditions": [],
+      "missingEvidence": [
+        "The response contains a security-like symbol that was not resolved by the intent or evidence registry."
+      ],
+      "personalizationNote": null,
+      "relatedResearch": [],
+      "recommendedAppDestinations": [],
+      "disclaimerClass": "grounding_validation_fallback"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-18-ambiguous-ticker",
+      "planId": "plan-stage7-ambiguous-ticker",
+      "threadId": "stage7-thread-ambiguous-ticker",
+      "status": "unavailable",
+      "answer": "I could not validate a grounded answer. No market conclusion has been promoted.\n\nMissing evidence: The response contains a security-like symbol that was not resolved by the intent or evidence registry.",
+      "answerSections": {
+        "directAnswer": "I could not validate a grounded answer. No market conclusion has been promoted.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [],
+        "mainCaution": "The response contains a security-like symbol that was not resolved by the intent or evidence registry.",
+        "whatWouldConfirm": [],
+        "whatWouldInvalidate": [],
+        "whatWouldChange": []
+      },
+      "grounding": {
+        "contextUsed": [],
+        "sourceState": "unavailable",
+        "generatedAt": "2026-07-22T05:09:08.486416+00:00",
+        "evidenceIds": []
+      },
+      "suggestedFollowUps": [],
+      "confidence": 25,
+      "answerConfidence": {
+        "level": "limited",
+        "reasons": [
+          "Intent confidence: 40%.",
+          "Evidence freshness: unavailable.",
+          "Some required evidence is unavailable."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-ambiguous-ticker",
+        "intent": "UNSUPPORTED_OR_AMBIGUOUS",
+        "subIntent": "unresolved_security",
+        "entities": [],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": false,
+        "ambiguityLevel": "high",
+        "confidence": 0.4,
+        "requiredAgents": [],
+        "optionalAgents": [],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [
+          "ABC"
+        ],
+        "clarificationQuestion": "I could not resolve ABC to a validated security. Which ticker did you mean?"
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-ambiguous-ticker",
+        "intentId": "intent-stage7-ambiguous-ticker",
+        "orderedSteps": [],
+        "requiredAgents": [],
+        "optionalAgents": [],
+        "dependencies": {},
+        "requiredEntities": [],
+        "evidenceRequirements": [],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 3000,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "I could not validate a grounded answer. No market conclusion has been promoted.",
+        "stance": "insufficient_evidence",
+        "confidenceLabel": "limited",
+        "thesis": "No market conclusion is presented because grounding validation did not pass.",
+        "supportingFactors": [],
+        "contradictoryFactors": [],
+        "keyRisks": [],
+        "confirmationConditions": [],
+        "invalidationConditions": [],
+        "missingEvidence": [
+          "The response contains a security-like symbol that was not resolved by the intent or evidence registry."
+        ],
+        "personalizationNote": null,
+        "relatedResearch": [],
+        "recommendedAppDestinations": [],
+        "disclaimerClass": "grounding_validation_fallback"
+      },
+      "evidence": [],
+      "actions": [],
+      "warnings": [
+        "Evidence freshness is unavailable; conclusions are constrained accordingly.",
+        "The response contains a security-like symbol that was not resolved by the intent or evidence registry."
+      ],
+      "freshnessSummary": {
+        "overallState": "unavailable",
+        "marketDates": [],
+        "generatedTimestamps": [],
+        "currentCount": 0,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "fallback",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [
+          {
+            "check": "tickers",
+            "severity": "error",
+            "message": "The response contains a security-like symbol that was not resolved by the intent or evidence registry."
+          }
+        ],
+        "fallbackUsed": true
+      },
+      "agentTimingsMs": {},
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed UNSUPPORTED_OR_AMBIGUOUS; expected UNSUPPORTED_OR_AMBIGUOUS."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: []."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status unavailable."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness unavailable."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: fallback."
+        },
+        {
+          "check": "exact_actions",
+          "status": "not_applicable",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:unknown_ticker_not_inferred",
+          "status": "passed",
+          "detail": "The unknown ticker stays unresolved and produces no market evidence."
+        },
+        {
+          "check": "assertion:one_concise_clarification",
+          "status": "passed",
+          "detail": "The intent carries one concise clarification question."
+        },
+        {
+          "check": "assertion:no_provider_call",
+          "status": "passed",
+          "detail": "No evidence agent/provider executes for an unresolved ticker."
+        }
+      ],
+      "responseValidator": {
+        "status": "fallback",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [
+          {
+            "check": "tickers",
+            "severity": "error",
+            "message": "The response contains a security-like symbol that was not resolved by the intent or evidence registry."
+          }
+        ],
+        "fallbackUsed": true
+      },
+      "issues": [
+        {
+          "check": "tickers",
+          "severity": "error",
+          "message": "The response contains a security-like symbol that was not resolved by the intent or evidence registry."
+        }
+      ],
+      "fallbackUsed": true
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-07-19T18:42:00Z",
+  "overall_result": "PASS",
+  "review_authorization": {
+    "reviewed_by": "AndyPun123123",
+    "review_commit": "3b48aae2f371f88087cf4d09220198dfd3af7e03",
+    "amendment": "memory_storage v1.1; verified same-issuer corporate name and ticker change PSTG to P"
+  },
+  "configuration": {
+    "history_provider": "polygon",
+    "quote_provider": "finnhub",
+    "polygon_key_loaded": true,
+    "polygon_key_length": 32,
+    "finnhub_key_loaded": true,
+    "finnhub_key_length": 40,
+    "mock_fallback": false,
+    "credentials_redacted": true
+  },
+  "active_pilot_baskets": {
+    "memory_storage": ["MU", "SNDK", "WDC", "STX", "MRVL", "NTAP", "P"],
+    "cybersecurity": ["CRWD", "PANW", "FTNT", "ZS", "OKTA", "CHKP", "S"],
+    "inactive_excluded": ["CYBR"]
+  },
+  "approved_ticker_checks": [
+    {"ticker": "MU", "polygon_reference_request_id": "fa1dea0e84fb2a6568f4ab46473c131b", "polygon_exchange": "XNAS", "polygon_history_request_id": "9aaa21d026cc1b2e288e49a3b12ebed3", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "SNDK", "polygon_reference_request_id": "ded7009dd8d954ce4f3d6e113d017d14", "polygon_exchange": "XNAS", "polygon_history_request_id": "b1272643a971ee057c2a8d63ac698e7b", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "WDC", "polygon_reference_request_id": "b7130aaa830885536626579ce21932f5", "polygon_exchange": "XNAS", "polygon_history_request_id": "5e36e2dab470e8fcb22e9b7702e9b609", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "STX", "polygon_reference_request_id": "c6db481d587da7131a4c12f7da1f929c", "polygon_exchange": "XNAS", "polygon_history_request_id": "9f83667e002f017f3aa4d648d7aa3fbe", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "MRVL", "polygon_reference_request_id": "5bd4a72e7c604cef4f51d75c2fb745c7", "polygon_exchange": "XNAS", "polygon_history_request_id": "63e20f4490fa9f794a2f2ca52e70e9", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "NTAP", "polygon_reference_request_id": "54405e1fe675cb5b55f8ad9d853d6ba4", "polygon_exchange": "XNAS", "polygon_history_request_id": "20d6c5e1c0799bdd1ec04ab6be7f7af6", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "P", "former_ticker": "PSTG", "corporate_action_continuity": "verified_same_issuer", "polygon_reference_request_id": "2f77ede893f37a899cf2309cd9118210", "polygon_exchange": "XNYS", "polygon_history_request_id": "25466fb3c39004399463c422346095d3", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "CRWD", "polygon_reference_request_id": "6581bb69e9182890ffac5ce87a2ea1d9", "polygon_exchange": "XNAS", "polygon_history_request_id": "06a9ceaf1714078a13644155835e4de6", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "PANW", "polygon_reference_request_id": "5bafe39510ee53b5c07bf25b6d0b83ac", "polygon_exchange": "XNAS", "polygon_history_request_id": "cd6a148c11f9919ed5b8c01f22ac3593", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "FTNT", "polygon_reference_request_id": "8e1e0cf41b32b41a316081609d39d33b", "polygon_exchange": "XNAS", "polygon_history_request_id": "232f0529fd471f45fc94f871c913bdfe", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "ZS", "polygon_reference_request_id": "ed4f8af277483f2f90e7de5b815fec7e", "polygon_exchange": "XNAS", "polygon_history_request_id": "c4b92ffb899edf090a974395bdf8d42d", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "OKTA", "polygon_reference_request_id": "259e848b173c8b0126b64c989b2fe60c", "polygon_exchange": "XNAS", "polygon_history_request_id": "e187e655aea38ca8a117a9d6c47b64e2", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "CHKP", "polygon_reference_request_id": "ee40638685934a7738c7b680975cf2ec", "polygon_exchange": "XNAS", "polygon_history_request_id": "1ece6553da8884f156cfda68d2a46185", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"},
+    {"ticker": "S", "polygon_reference_request_id": "e7b670b60ae82e00af89881e8154079d", "polygon_exchange": "XNYS", "polygon_history_request_id": "247101c7218af81faf6a40185a140f8e", "polygon_history_latest": "2026-07-17", "finnhub_quote": "available", "result": "PASS"}
+  ],
+  "cybr_check": {"active_reference": false, "polygon_delisted_utc": "2026-02-12T00:00:00Z", "treatment": "inactive and excluded from the active cybersecurity basket", "seed_requested": false},
+  "provider_calls": {"polygon_reference_probe_calls": 14, "polygon_history_probe_calls": 14, "finnhub_quote_probe_calls": 14, "polygon_rate_limit_events": 0, "durable_history_writes": 0},
+  "blockers": [],
+  "next_gate": "strict-live durable history seeding for the fourteen reviewed pilot securities"
+}

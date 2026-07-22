@@ -34,6 +34,41 @@ class SecurityRecord:
 
 
 @dataclass(frozen=True)
+class SecurityAlias:
+    """A retired display ticker that resolves to one active canonical security."""
+
+    alias_ticker: str
+    security_id: str
+    former_company_name: str | None
+    effective_to: str
+    corporate_action_type: str
+    continuity_status: str
+    source: str
+    verified_at: str
+
+    def model_dump(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class SecurityProviderSymbol:
+    """A date-bounded provider symbol for one canonical security and purpose."""
+
+    security_id: str
+    provider: str
+    purpose: str
+    provider_symbol: str
+    effective_from: str
+    effective_to: str | None
+    source: str
+    verified_at: str
+    corporate_action_lineage: str | None = None
+
+    def model_dump(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class BreadthUniverse:
     universe_id: str
     name: str

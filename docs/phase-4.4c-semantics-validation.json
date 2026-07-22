@@ -45,7 +45,7 @@
     "decision_confidence_consistency": {
       "details": {
         "canonical": {
-          "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+          "calculated_at": "2026-07-19T20:16:38.266270+00:00",
           "contributors": [
             {
               "label": "Market Health",
@@ -96,7 +96,7 @@
         },
         "sources": {
           "detail": {
-            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "calculated_at": "2026-07-19T20:16:38.266270+00:00",
             "contributors": [
               {
                 "label": "Market Health",
@@ -146,7 +146,7 @@
             "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
           },
           "health": {
-            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "calculated_at": "2026-07-19T20:16:38.266270+00:00",
             "contributors": [
               {
                 "label": "Market Health",
@@ -196,7 +196,7 @@
             "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
           },
           "home": {
-            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "calculated_at": "2026-07-19T20:16:38.266270+00:00",
             "contributors": [
               {
                 "label": "Market Health",
@@ -246,7 +246,7 @@
             "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
           },
           "snapshot": {
-            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "calculated_at": "2026-07-19T20:16:38.266270+00:00",
             "contributors": [
               {
                 "label": "Market Health",
@@ -462,7 +462,7 @@
             "source_snapshot_id": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb"
           },
           "decision_confidence": {
-            "calculated_at": "2026-07-19T10:18:52.907421+00:00",
+            "calculated_at": "2026-07-19T20:16:38.266270+00:00",
             "contributors": [
               {
                 "label": "Market Health",
@@ -589,8 +589,9 @@
           },
           "snapshot_ids": {
             "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
-            "market": "market-20260719T101853Z-b1a9743d",
-            "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+            "market": "market-20260719T201638Z-0560a3a1",
+            "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+            "theme": "theme-2026-07-17-f8ca1be84c"
           },
           "theme_provenance": {}
         }
@@ -679,7 +680,7 @@
     },
     "semantic_regressions": {
       "details": {
-        "output": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n....................\n----------------------------------------------------------------------\nRan 20 tests in 1.391s\n\nOK\n"
+        "output": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n....................\n----------------------------------------------------------------------\nRan 20 tests in 1.805s\n\nOK\n"
       },
       "passed": true
     },
@@ -688,35 +689,35 @@
         "provider_history_calls": 0,
         "routes": {
           "/home/dashboard": {
-            "latency_ms": 7.92,
+            "latency_ms": 16.15,
             "status": 200
           },
           "/market/breadth": {
-            "latency_ms": 20.48,
+            "latency_ms": 22.06,
             "status": 200
           },
           "/market/breadth/snapshot/latest": {
-            "latency_ms": 2.45,
+            "latency_ms": 2.72,
             "status": 200
           },
           "/market/decision-dashboard": {
-            "latency_ms": 2.87,
+            "latency_ms": 9.49,
             "status": 200
           },
           "/market/details/decision": {
-            "latency_ms": 2.42,
+            "latency_ms": 12.31,
             "status": 200
           },
           "/market/health": {
-            "latency_ms": 5.33,
+            "latency_ms": 3.62,
             "status": 200
           },
           "/market/sectors/snapshot/latest": {
-            "latency_ms": 4.81,
+            "latency_ms": 6.04,
             "status": 200
           },
           "/market/snapshot/latest": {
-            "latency_ms": 8.01,
+            "latency_ms": 12.21,
             "status": 200
           }
         }

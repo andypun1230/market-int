@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
-import { Share } from 'react-native';
+import { Platform, Share } from 'react-native';
 
 import { getDailyReport, getDailyReportPdfUrl } from '@/services/api';
+import { useWatchlist } from '@/features/watchlist/store';
 
 import {
   buildReportFileName,
@@ -23,6 +24,7 @@ const GENERATION_STAGES = [
 ];
 
 export function useDailyReportLibrary() {
+  const watchlist = useWatchlist();
   const [records, setRecords] = useState<DailyReportRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [workingId, setWorkingId] = useState<string | null>(null);
@@ -54,6 +56,11 @@ export function useDailyReportLibrary() {
 
   const grouped = useMemo(() => groupReportRecords(records), [records]);
   const todayRecordCount = records.filter((record) => record.metadata.marketDate === new Date().toISOString().slice(0, 10)).length;
+  const researchPreferences = useMemo(() => ({
+    sectors: watchlist.groupItems.filter((item) => item.type === 'sector').map((item) => item.id),
+    stocks: watchlist.stockItems.map((item) => item.ticker),
+    themes: watchlist.groupItems.filter((item) => item.type === 'theme').map((item) => item.id),
+  }), [watchlist.groupItems, watchlist.stockItems]);
 
   const updateRecord = useCallback((id: string, patch: Partial<DailyReportRecord>) => {
     setRecords((current) => {
@@ -74,16 +81,18 @@ export function useDailyReportLibrary() {
         setGenerationMessage(stage);
         await delay(80);
       }
-      const report = await getDailyReport();
+      const report = await getDailyReport(researchPreferences);
       if (!isMinimumViableReport(report)) {
         throw new Error('minimum_report_unavailable');
       }
       const record = createReportRecord({
         existingRecords: records,
-        pdfUrl: getDailyReportPdfUrl(),
+        pdfUrl: getDailyReportPdfUrl(report.report_id),
         report,
       });
-      const next = [record, ...records];
+      const next = records.some((item) => item.id === record.id)
+        ? records.map((item) => item.id === record.id ? record : item)
+        : [record, ...records];
       setRecords(next);
       saveRecords(next);
       setGenerationMessage('Report ready to download.');
@@ -95,7 +104,7 @@ export function useDailyReportLibrary() {
     } finally {
       setWorkingId(null);
     }
-  }, [records, workingId]);
+  }, [records, researchPreferences, workingId]);
 
   const downloadReport = useCallback(async (record: DailyReportRecord) => {
     if (workingId) {
@@ -125,10 +134,11 @@ export function useDailyReportLibrary() {
       if (record.localPdfUri) {
         await deleteLocalPdf(record.localPdfUri);
       }
-      setRecords((current) => {
-        const next = current.filter((item) => item.id !== record.id);
-        saveRecords(next);
-        return next;
+      updateRecord(record.id, {
+        fileSizeBytes: null,
+        localPdfUri: null,
+        metadata: { ...record.metadata, downloadedAt: null },
+        status: 'ready',
       });
       return true;
     } catch {
@@ -137,9 +147,13 @@ export function useDailyReportLibrary() {
     } finally {
       setWorkingId(null);
     }
-  }, [workingId]);
+  }, [updateRecord, workingId]);
 
   const shareReport = useCallback(async (record: DailyReportRecord) => {
+    if (Platform.OS === 'web' && record.remotePdfUrl) {
+      await shareReportOnWeb(record);
+      return;
+    }
     let target = record;
     if (!target.localPdfUri) {
       const downloaded = await downloadReport(record);
@@ -149,8 +163,8 @@ export function useDailyReportLibrary() {
       target = downloaded;
     }
     await Share.share({
-      message: `Daily Market Report ${target.metadata.marketDate}`,
-      title: `Daily Market Report ${target.metadata.marketDate}`,
+      message: `Daily Market Intelligence Briefing ${target.metadata.marketDate}`,
+      title: `Daily Market Intelligence Briefing ${target.metadata.marketDate}`,
       url: target.localPdfUri ?? undefined,
     });
   }, [downloadReport]);
@@ -194,7 +208,7 @@ function saveRecords(records: DailyReportRecord[]) {
 async function reconcileDownloadedRecords(records: DailyReportRecord[]) {
   const reconciled: DailyReportRecord[] = [];
   for (const record of records) {
-    if (record.status === 'downloaded' && record.localPdfUri) {
+    if (record.status === 'downloaded' && record.localPdfUri && !isRemoteUri(record.localPdfUri)) {
       const info = await FileSystem.getInfoAsync(record.localPdfUri);
       if (!info.exists) {
         reconciled.push({
@@ -213,15 +227,21 @@ async function reconcileDownloadedRecords(records: DailyReportRecord[]) {
 }
 
 async function downloadPdfForRecord(record: DailyReportRecord): Promise<Partial<DailyReportRecord>> {
+  if (Platform.OS === 'web') {
+    return downloadPdfForWeb(record);
+  }
   const baseDirectory = FileSystem.documentDirectory ?? FileSystem.cacheDirectory;
   if (!baseDirectory) {
     throw new Error('file_storage_unavailable');
   }
   const directory = `${baseDirectory}reports/`;
   await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
-  const fileName = record.fileName ?? buildReportFileName(record.metadata.marketDate, record.metadata.version);
+  const fileName = record.fileName ?? buildReportFileName(record.metadata.marketDate, record.metadata.version, record.snapshot?.report_id);
   const destination = `${directory}${fileName}`;
-  const result = await FileSystem.downloadAsync(record.remotePdfUrl ?? getDailyReportPdfUrl(), destination);
+  if (!record.remotePdfUrl) {
+    throw new Error('report_id_required');
+  }
+  const result = await FileSystem.downloadAsync(record.remotePdfUrl, destination);
   if (result.status !== 200) {
     throw new Error('pdf_http_error');
   }
@@ -241,10 +261,54 @@ async function downloadPdfForRecord(record: DailyReportRecord): Promise<Partial<
 }
 
 async function deleteLocalPdf(uri: string) {
+  if (isRemoteUri(uri)) {
+    return;
+  }
   const info = await FileSystem.getInfoAsync(uri);
   if (info.exists) {
     await FileSystem.deleteAsync(uri, { idempotent: true });
   }
+}
+
+async function downloadPdfForWeb(record: DailyReportRecord): Promise<Partial<DailyReportRecord>> {
+  if (!record.remotePdfUrl) throw new Error('report_id_required');
+  const response = await fetch(record.remotePdfUrl);
+  if (!response.ok) throw new Error('pdf_http_error');
+  const blob = await response.blob();
+  const signature = new Uint8Array(await blob.slice(0, 5).arrayBuffer());
+  if (String.fromCharCode(...signature) !== '%PDF-') throw new Error('pdf_signature_invalid');
+  const fileName = record.fileName ?? buildReportFileName(record.metadata.marketDate, record.metadata.version, record.snapshot?.report_id);
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = objectUrl;
+  anchor.download = fileName;
+  anchor.style.display = 'none';
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1_000);
+  return {
+    errorCode: null,
+    fileName,
+    fileSizeBytes: blob.size,
+    localPdfUri: record.remotePdfUrl,
+    metadata: { ...record.metadata, downloadedAt: new Date().toISOString() },
+    status: 'downloaded',
+  };
+}
+
+async function shareReportOnWeb(record: DailyReportRecord) {
+  if (!record.remotePdfUrl) throw new Error('report_id_required');
+  const title = `Daily Market Intelligence Briefing ${record.metadata.marketDate}`;
+  if (typeof navigator.share === 'function') {
+    await navigator.share({ title, text: title, url: record.remotePdfUrl });
+    return;
+  }
+  window.open(record.remotePdfUrl, '_blank', 'noopener,noreferrer');
+}
+
+function isRemoteUri(value: string) {
+  return /^https?:\/\//i.test(value);
 }
 
 async function validatePdfFile(uri: string) {

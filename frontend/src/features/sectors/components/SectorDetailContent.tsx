@@ -4,6 +4,8 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { MetricTile } from '@/components/ui/MetricTile';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
+import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
+import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { useSectorDetail } from '@/hooks/useSectorSnapshot';
 import { formatClassification, formatCoverage, formatNullableCount, formatNullablePercent, sourceLabel, type SectorId } from '@/features/sectors/sectorSnapshot';
 import { WatchlistBookmarkButton } from '@/features/watchlist/WatchlistBookmarkButton';
@@ -17,6 +19,16 @@ export function SectorDetailContent({ sectorId }: { sectorId: SectorId }) {
   const analysed = b.advancing === null || b.declining === null || b.unchanged === null ? null : b.advancing + b.declining + b.unchanged;
   return <ScrollView contentContainerStyle={styles.stack} showsVerticalScrollIndicator={false}>
     <View style={styles.badges}><StatusBadge label={`#${row.rank}`} tone="info" /><StatusBadge label={formatClassification(row.classification)} tone={tone(row.classification)} /><StatusBadge label={`Composite ${row.compositeScore?.toFixed(1) ?? 'N/A'}`} tone="purple" /><StatusBadge label={sourceLabel(detail)} tone="muted" /></View>
+    <AskCopilotButton
+      context={createCopilotContext({
+        payload: { detail, selectedSector: row },
+        routeName: '/sectors',
+        screenTitle: `${row.displayName} Sector Detail`,
+        screenType: 'sector',
+        sourceState: detail.sourceState,
+      })}
+      prompt={`Why is ${row.displayName} ${row.classification.toLowerCase()}, and what would invalidate that view?`}
+    />
     <WatchlistBookmarkButton id={row.sectorId} name={row.displayName} type="sector" />
     <Text style={styles.context}>S&P 100 · {detail.marketDate} · {detail.providerHistory ?? 'provider unavailable'} · {formatCoverage(detail.coverage.constituentCoverage)} constituent coverage</Text>
     <Text style={styles.context}>Snapshot {detail.snapshotId}</Text>

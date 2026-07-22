@@ -102,6 +102,7 @@ function run() {
   const staleBreakout = classifyWatchlistItem(item({ is_stale: true, setup: 'Confirmed breakout', ticker: 'STALE' }));
   assert(staleBreakout.group === 'needs_attention', 'warning precedence beats high-priority setup');
   assert(staleBreakout.primarySignal === 'stale_data', 'stale data is primary warning');
+  assert(!shouldShowWatchlistStatusDot('stale', 'stale_data'), 'stale signal suppresses a duplicate stale data badge');
 
   const duplicateScore = calculateWatchlistScore(['breakout', 'breakout'], ['lost_support', 'lost_support']);
   assert(duplicateScore === 0, 'duplicate signals are not double-counted');

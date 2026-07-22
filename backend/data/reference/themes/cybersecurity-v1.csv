@@ -1,0 +1,5 @@
+ticker,company_name,role,weight,effective_from,active,membership_source,inclusion_reason,reviewed_at,reviewed_by,source_url,source_retrieved_at,notes
+PANW,Palo Alto Networks,core,0.25,2026-07-19,true,proposed-official-source,Proposed core cybersecurity platform supplier.,,,https://www.paloaltonetworks.com/company,2026-07-19,Human review required
+CRWD,CrowdStrike,core,0.25,2026-07-19,true,proposed-official-source,Proposed core endpoint and cloud security supplier.,,,https://www.crowdstrike.com/about-us/,2026-07-19,Human review required
+FTNT,Fortinet,core,0.25,2026-07-19,true,proposed-official-source,Proposed core network security supplier.,,,https://www.fortinet.com/corporate/about-us,2026-07-19,Human review required
+ZS,Zscaler,core,0.25,2026-07-19,true,proposed-official-source,Proposed core zero-trust cloud security supplier.,,,https://www.zscaler.com/company,2026-07-19,Human review required

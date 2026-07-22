@@ -9,7 +9,7 @@ Overall result: **PASS WITH CONDITIONS**
 | rotation 3m renderable | PASS |
 | rotation shallow transition history is non blocking | PASS |
 | watchlist canonical snapshot evaluation | PASS |
-| theme intelligence quarantine | PASS |
+| theme intelligence boundary | PASS |
 | report snapshot consistency | PASS |
 | copilot context consistency | PASS |
 | warm navigation provider isolation | PASS |

@@ -1,6 +1,7 @@
 from typing import Any
 
 from app.services.analysis import build_market_analysis, build_stock_analysis
+from app.services.theme_intelligence import build_theme_intelligence_context
 
 
 def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -34,6 +35,7 @@ def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str,
     sectors = market_analysis.get("sectors", {})
     institutional_activity = market_analysis.get("institutional_activity", {})
     semantic_context = market_analysis.get("semantic_context", {})
+    theme_intelligence = market_analysis.get("theme_intelligence") or build_theme_intelligence_context()
 
     breadth_status = regime.get("breadth", {}).get("status", "N/A")
     percent_above_50ema = breadth.get("percent_above_50ema")
@@ -104,6 +106,18 @@ def build_market_ai_context(analysis: dict[str, Any] | None = None) -> dict[str,
                 {"name": item.get("name", "N/A"), "parent_sector": item.get("parent_sector", "N/A")}
                 for item in industry_groups.get("items", [])[:3]
             ],
+        },
+        "theme_intelligence": {
+            "availability": theme_intelligence.get("availability"),
+            "available": theme_intelligence.get("available", False),
+            "snapshot_id": theme_intelligence.get("snapshot_id"),
+            "market_date": theme_intelligence.get("market_date"),
+            "source_state": theme_intelligence.get("source_state"),
+            "leaders": theme_intelligence.get("leaders", []),
+            "decision_theme_signals": theme_intelligence.get("decision_theme_signals", []),
+            "qualified_decision_theme_signals": theme_intelligence.get("qualified_decision_theme_signals", []),
+            "pilot_scope": theme_intelligence.get("pilot_scope", {}),
+            "warnings": theme_intelligence.get("warnings", []),
         },
         "cap_rotation": {
             "leader": cap_rotation.get("leader", "N/A"),

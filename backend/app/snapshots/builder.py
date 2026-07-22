@@ -16,6 +16,7 @@ from app.services.regime import build_market_regime, build_market_risk
 from app.services.risk_dashboard_v2 import build_risk_dashboard_v2
 from app.services.sectors_summary import build_sectors_summary
 from app.services.watchlist_summary import build_watchlist_summary
+from app.services.theme_intelligence import build_theme_intelligence_context
 from app.services.market_data_repository import get_market_data_repository
 from app.snapshots.input_bundle import MarketSnapshotInputBundle, fetch_input_bundle
 from app.snapshots.input_planner import MarketSnapshotInputPlanner
@@ -177,6 +178,7 @@ def build_core_payload(sections: dict[str, SnapshotSection]) -> dict[str, Any]:
         "top_sector": first_item(sectors, "top_sectors"),
         "lagging_sector": last_item(sectors, "top_sectors"),
         "top_industry_group": first_item(sectors, "top_industry_groups"),
+        "theme_intelligence": build_theme_intelligence_context(),
         "as_of": now_iso(),
         "overall_mode": "live",
         "bootstrap": False,

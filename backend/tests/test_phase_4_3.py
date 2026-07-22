@@ -209,11 +209,18 @@ class PolygonHistoryFixtureProvider(MarketDataProvider):
 
 class Phase43Tests(unittest.TestCase):
     def setUp(self) -> None:
-        os.environ["DATA_PROVIDER"] = "test"
-        os.environ["MARKET_DATA_PROVIDER"] = "test"
-        os.environ["QUOTE_DATA_PROVIDER"] = "test"
-        os.environ["HISTORY_DATA_PROVIDER"] = "test"
-        os.environ["MARKET_DATA_ALLOW_MOCK_FALLBACK"] = "true"
+        self._provider_environment = patch.dict(
+            os.environ,
+            {
+                "DATA_PROVIDER": "test",
+                "MARKET_DATA_PROVIDER": "test",
+                "QUOTE_DATA_PROVIDER": "test",
+                "HISTORY_DATA_PROVIDER": "test",
+                "MARKET_DATA_ALLOW_MOCK_FALLBACK": "true",
+            },
+        )
+        self._provider_environment.start()
+        self.addCleanup(self._restore_provider_environment)
         from app.services.market_data_repository import reset_market_data_repository
         from app.services.service_cache import invalidate_service_cache
         from app.services.history_request_coordinator import reset_history_request_coordinator
@@ -222,6 +229,14 @@ class Phase43Tests(unittest.TestCase):
         reset_market_data_repository()
         invalidate_service_cache("relative-strength")
         invalidate_service_cache("stock-ratings")
+
+    def _restore_provider_environment(self) -> None:
+        from app.services.history_request_coordinator import reset_history_request_coordinator
+        from app.services.market_data_repository import reset_market_data_repository
+
+        self._provider_environment.stop()
+        reset_history_request_coordinator()
+        reset_market_data_repository()
 
     def test_history_validation_accepts_ordered_candles(self) -> None:
         history = HistoryData(

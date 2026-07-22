@@ -9,6 +9,7 @@ type SegmentedOption = {
 
 type SegmentedControlProps = {
   compact?: boolean;
+  dense?: boolean;
   fullWidth?: boolean;
   label?: string;
   onChange: (key: string) => void;
@@ -20,6 +21,7 @@ type SegmentedControlProps = {
 
 export function SegmentedControl({
   compact = false,
+  dense = false,
   fullWidth = false,
   label,
   onChange,
@@ -42,12 +44,13 @@ export function SegmentedControl({
           styles.chip,
           isSwitch && styles.switchChip,
           compact && styles.compactChip,
+          dense && styles.denseChip,
           fullWidth && styles.fullWidthChip,
           selected && styles.selectedChip,
           isSwitch && selected && styles.selectedSwitchChip,
           pressed && styles.pressedChip,
         ]}>
-        <Text numberOfLines={1} style={[styles.label, compact && styles.compactLabel, fullWidth && styles.fullWidthLabel, selected && styles.selectedLabel]}>{option.label}</Text>
+        <Text numberOfLines={1} style={[styles.label, compact && styles.compactLabel, dense && styles.denseLabel, fullWidth && styles.fullWidthLabel, selected && styles.selectedLabel]}>{option.label}</Text>
       </Pressable>
     );
   });
@@ -99,6 +102,12 @@ const styles = StyleSheet.create({
   },
   compactLabel: {
     fontSize: 12,
+  },
+  denseChip: {
+    paddingHorizontal: Spacing.half,
+  },
+  denseLabel: {
+    fontSize: 11,
   },
   selectedChip: {
     backgroundColor: Theme.colors.accentSoft,

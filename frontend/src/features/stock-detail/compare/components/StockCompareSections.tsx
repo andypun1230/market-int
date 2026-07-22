@@ -152,9 +152,7 @@ export function StockCompareSections({
       <BenchmarkComparisonCard model={model} />
       <PerformanceSummaryCard model={model} />
       <RelativeStrengthCard model={model} />
-      <PeerRankingCard model={model} />
-      <PeerComparisonCard model={model} />
-      <LeadershipReadCard model={model} />
+      <PeerComparisonDashboard model={model} />
     </View>
   );
 }
@@ -406,11 +404,24 @@ function RelativeStrengthCard({ model }: { model: StockComparisonDashboardViewMo
   );
 }
 
+function PeerComparisonDashboard({ model }: { model: StockComparisonDashboardViewModel }) {
+  return (
+    <View style={styles.card}>
+      <SectionTitle subtitle={`${model.peerRanking.rankedCount} comparable symbols`} title="Peer Comparison" />
+      <PeerRankingCard model={model} />
+      <View style={styles.dashboardDivider} />
+      <PeerComparisonCard model={model} />
+      <View style={styles.dashboardDivider} />
+      <LeadershipReadCard model={model} />
+    </View>
+  );
+}
+
 function PeerRankingCard({ model }: { model: StockComparisonDashboardViewModel }) {
   const maxMagnitude = Math.max(...model.peerRanking.items.map((item) => Math.abs(item.periodReturn ?? 0)), 1);
   return (
-    <View style={styles.card}>
-      <SectionTitle subtitle={`${model.peerRanking.rankedCount} comparable symbols`} title="Peer Ranking" />
+    <View style={styles.dashboardSection}>
+      <SectionTitle title="Ranking" />
       {model.peerRanking.items.length >= 2 ? (
         <View style={styles.rankStack}>
           {model.peerRanking.items.slice(0, 7).map((item) => (
@@ -449,8 +460,8 @@ function PeerRankingCard({ model }: { model: StockComparisonDashboardViewModel }
 
 function PeerComparisonCard({ model }: { model: StockComparisonDashboardViewModel }) {
   return (
-    <View style={styles.card}>
-      <SectionTitle subtitle="Compact peer leadership checks" title="Peer Comparison" />
+    <View style={styles.dashboardSection}>
+      <SectionTitle subtitle="Compact leadership checks" title="Peers" />
       <View style={styles.peerList}>
         {model.peers.slice(0, 7).map((peer) => (
           <PeerRow key={peer.symbol} peer={peer} />
@@ -486,9 +497,9 @@ function PeerRow({ peer }: { peer: PeerComparisonViewModel }) {
 
 function LeadershipReadCard({ model }: { model: StockComparisonDashboardViewModel }) {
   return (
-    <View style={styles.card}>
+    <View style={styles.dashboardSection}>
       <View style={styles.sectionHeader}>
-        <SectionTitle title="Leadership Read" />
+        <SectionTitle title="Conclusion" />
         <StatusBadge label={model.leadership.classification} tone={relativeStrengthTone(model.relativeStrength.state)} />
       </View>
       <Text style={styles.bodyText}>{model.leadership.summary}</Text>
@@ -830,6 +841,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: CHART_TOP,
     width: 1,
+  },
+  dashboardDivider: {
+    backgroundColor: Theme.colors.border,
+    height: 1,
+  },
+  dashboardSection: {
+    gap: Spacing.two,
   },
   disclosure: {
     gap: Spacing.one,

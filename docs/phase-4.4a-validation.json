@@ -1,7 +1,7 @@
 {
   "aliases": {
     "DJI": {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "provider_symbol": "DIA",
       "requested_symbol": "DJI",
       "status_code": 200,
@@ -15,28 +15,28 @@
       "symbol": "QQQ"
     },
     "NDX": {
-      "elapsed_ms": 3,
+      "elapsed_ms": 6,
       "provider_symbol": "QQQ",
       "requested_symbol": "NDX",
       "status_code": 200,
       "symbol": "QQQ"
     },
     "QQQEW": {
-      "elapsed_ms": 2,
+      "elapsed_ms": 5,
       "provider_symbol": "QQEW",
       "requested_symbol": "QQQEW",
       "status_code": 200,
       "symbol": "QQEW"
     },
     "RUT": {
-      "elapsed_ms": 2,
+      "elapsed_ms": 3,
       "provider_symbol": "IWM",
       "requested_symbol": "RUT",
       "status_code": 200,
       "symbol": "IWM"
     },
     "SPX": {
-      "elapsed_ms": 3,
+      "elapsed_ms": 5,
       "provider_symbol": "SPY",
       "requested_symbol": "SPX",
       "status_code": 200,
@@ -46,13 +46,13 @@
   "failures": [],
   "indexes": {
     "latency": {
-      "/home/dashboard": 18,
-      "/market/core-snapshot": 4,
-      "/market/indexes": 1
+      "/home/dashboard": 103,
+      "/market/core-snapshot": 75,
+      "/market/indexes": 3
     },
     "mismatches": [],
     "snapshot_ids": [
-      "phase-4-4a-1784456436"
+      "phase-4-4a-1784492465"
     ],
     "symbols": [
       "DIA",
@@ -62,13 +62,13 @@
     ]
   },
   "mode": "test",
-  "synthetic_snapshot_id": "phase-4-4a-1784456436",
+  "synthetic_snapshot_id": "phase-4-4a-1784492465",
   "watchlist": {
     "coverage_ratio": 1.0,
-    "first_elapsed_ms": 12,
+    "first_elapsed_ms": 19,
     "membership_hash": "ee3a1b26f6f97c47",
     "status": "complete",
     "symbols_unavailable": [],
-    "warm_elapsed_ms": 0
+    "warm_elapsed_ms": 4
   }
 }

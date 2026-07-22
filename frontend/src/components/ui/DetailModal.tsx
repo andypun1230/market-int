@@ -1,19 +1,39 @@
 import type { ReactNode } from 'react';
-import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { AccessibilityInfo, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Spacing, Theme } from '@/constants/theme';
 
 type DetailModalProps = {
   children: ReactNode;
   onClose: () => void;
+  scrollHeader?: ReactNode;
+  stickyHeader?: ReactNode;
   subtitle?: string;
   title: string;
   visible: boolean;
 };
 
-export function DetailModal({ children, onClose, subtitle, title, visible }: DetailModalProps) {
+export function DetailModal({
+  children,
+  onClose,
+  scrollHeader,
+  stickyHeader,
+  subtitle,
+  title,
+  visible,
+}: DetailModalProps) {
+  const hasStickyHeader = stickyHeader != null;
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => subscription.remove();
+  }, []);
+
   return (
-    <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
+    <Modal animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onClose} transparent visible={visible}>
       <View style={styles.backdrop}>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.sheet}>
@@ -33,8 +53,13 @@ export function DetailModal({ children, onClose, subtitle, title, visible }: Det
               </Pressable>
             </View>
 
-            <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-              {children}
+            <ScrollView
+              contentContainerStyle={hasStickyHeader ? styles.stickyContent : styles.content}
+              showsVerticalScrollIndicator={false}
+              stickyHeaderIndices={hasStickyHeader ? [1] : undefined}>
+              {hasStickyHeader ? <View style={styles.scrollHeader}>{scrollHeader}</View> : null}
+              {hasStickyHeader ? <View style={styles.stickyHeader}>{stickyHeader}</View> : null}
+              {hasStickyHeader ? <View style={styles.scrollBody}>{children}</View> : children}
             </ScrollView>
           </View>
         </SafeAreaView>
@@ -117,5 +142,33 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
     padding: Spacing.three,
     paddingBottom: Spacing.five,
+  },
+  scrollBody: {
+    gap: Spacing.three,
+    paddingBottom: Spacing.five,
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.three,
+  },
+  scrollHeader: {
+    gap: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
+  },
+  stickyContent: {
+    paddingBottom: 0,
+  },
+  stickyHeader: {
+    backgroundColor: Theme.colors.background,
+    borderBottomColor: Theme.colors.border,
+    borderBottomWidth: 1,
+    elevation: 6,
+    paddingHorizontal: Spacing.one,
+    paddingVertical: Spacing.two,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    zIndex: 20,
   },
 });

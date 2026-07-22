@@ -8,14 +8,9 @@ import { Spacing, Theme } from '@/constants/theme';
 import {
   getRiskTone,
   stockToneColor,
-  stockToneSoftColor,
   stockToneToBadgeTone,
 } from '@/features/stock-detail/stockDetailSemanticColors';
-import type {
-  StockAssessmentEvidence,
-  StockDetailOverviewModel,
-  StockDetailTone,
-} from '@/features/stock-detail/stockDetailPresenter';
+import type { StockDetailOverviewModel, StockDetailTone } from '@/features/stock-detail/stockDetailPresenter';
 
 export function StockOverviewSections({ model }: { model: StockDetailOverviewModel }) {
   const [metricsOpen, setMetricsOpen] = useState(false);
@@ -25,21 +20,13 @@ export function StockOverviewSections({ model }: { model: StockDetailOverviewMod
     <View style={styles.sections}>
       <SectionSurface accentColor={stockToneColor(model.assessmentTone)}>
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Executive Summary</Text>
+          <Text style={styles.sectionTitle}>Decision Dashboard</Text>
           <Text style={styles.sourceLabel}>{summarySourceLabel(model.executiveSummary.source)}</Text>
         </View>
-        <Text style={styles.summaryHeadline}>{model.executiveSummary.headline}</Text>
-        <Text style={styles.summaryBody}>{model.executiveSummary.body}</Text>
-      </SectionSurface>
-
-      <SectionSurface>
-        <Text style={styles.sectionTitle}>Overall Assessment</Text>
         <View style={styles.assessmentTop}>
           <View style={styles.assessmentStatusBlock}>
-            <Text style={[styles.assessmentStatus, { color: stockToneColor(model.assessmentTone) }]}>
-              {model.assessmentLabel}
-            </Text>
-            <Text style={styles.assessmentStage}>{model.rating}</Text>
+            <Text style={styles.assessmentStage}>Overall rating</Text>
+            <Text style={[styles.assessmentStatus, { color: stockToneColor(model.assessmentTone) }]}>{model.rating}</Text>
           </View>
           <View style={styles.scoreBlock}>
             <Text style={styles.scoreValue}>{formatScore(model.overallScore)}</Text>
@@ -48,20 +35,10 @@ export function StockOverviewSections({ model }: { model: StockDetailOverviewMod
         </View>
         <ScoreMeter score={model.overallScore} tone={model.assessmentTone} />
         <View style={styles.badgeRow}>
-          <StatusBadge label={model.status} tone={stockToneToBadgeTone(model.assessmentTone)} />
+          <StatusBadge label={model.assessmentLabel} tone={stockToneToBadgeTone(model.assessmentTone)} />
           <StatusBadge label={`${model.riskLevel} risk`} tone={stockToneToBadgeTone(getRiskTone(model.riskLevel))} />
         </View>
-        {model.assessmentEvidence.length ? (
-          <View style={styles.evidenceStack}>
-            {model.assessmentEvidence.map((item) => (
-              <EvidenceRow key={item.label} item={item} />
-            ))}
-          </View>
-        ) : null}
-      </SectionSurface>
-
-      <SectionSurface>
-        <Text style={styles.sectionTitle}>Key Takeaways</Text>
+        <Text style={styles.summaryBody}>{shortenText(model.executiveSummary.body, 30)}</Text>
         <View style={styles.takeawayGrid}>
           <TakeawayColumn title="Strengths" items={model.strengths} tone="success" />
           <TakeawayColumn title="Risks" items={model.risks} tone="warning" />
@@ -69,7 +46,14 @@ export function StockOverviewSections({ model }: { model: StockDetailOverviewMod
       </SectionSurface>
 
       <SectionSurface>
-        <Text style={styles.sectionTitle}>Visual Factor Breakdown</Text>
+        <Text style={styles.sectionTitle}>Trade Plan</Text>
+        <View style={styles.tradeLevelGrid}>
+          <PlanMetric label="Entry" value={model.tradePlan.entry} tone="accent" />
+          <PlanMetric label="Current" value={model.tradePlan.currentPrice} tone="neutral" />
+          <PlanMetric label="Stop" value={model.tradePlan.stop} tone="danger" />
+          <PlanMetric label="Targets" value={model.tradePlan.targets.join(' · ') || 'N/A'} tone="success" />
+        </View>
+        <SubsectionLabel>Factor Scores</SubsectionLabel>
         <View style={styles.factorStack}>
           {model.factors.map((factor) => (
             <View key={factor.key} style={styles.factorRow}>
@@ -96,21 +80,13 @@ export function StockOverviewSections({ model }: { model: StockDetailOverviewMod
             </View>
           ))}
         </View>
-      </SectionSurface>
-
-      <SectionSurface>
-        <Text style={styles.sectionTitle}>What to Watch Next</Text>
-        <View style={styles.watchGrid}>
-          {model.watchItems.map((item) => (
-            <View key={`${item.label}-${item.value}`} style={[styles.watchTile, { backgroundColor: stockToneSoftColor(item.tone) }]}>
-              <Text style={styles.watchLabel}>{item.label}</Text>
-              <Text style={[styles.watchValue, { color: stockToneColor(item.tone) }]}>{item.value}</Text>
-            </View>
-          ))}
+        <View style={styles.tradeStateRow}>
+          <PlanMetric label="Volume" value={model.tradePlan.volume} tone="neutral" />
+          <PlanMetric label="Trend" value={model.tradePlan.trend} tone="neutral" />
         </View>
       </SectionSurface>
 
-      <SectionSurface>
+      <View style={styles.disclosurePanel}>
         <Text style={styles.sectionTitle}>Supporting Details</Text>
         <AccordionRow
           expanded={metricsOpen}
@@ -133,9 +109,22 @@ export function StockOverviewSections({ model }: { model: StockDetailOverviewMod
           onPress={() => setMethodologyOpen((open) => !open)}
         />
         {methodologyOpen ? <Text style={styles.methodText}>{model.methodology}</Text> : null}
-      </SectionSurface>
+      </View>
     </View>
   );
+}
+
+function PlanMetric({ label, tone, value }: { label: string; tone: StockDetailTone; value: string }) {
+  return (
+    <View style={styles.planMetric}>
+      <Text style={styles.watchLabel}>{label}</Text>
+      <Text numberOfLines={2} style={[styles.watchValue, { color: stockToneColor(tone) }]}>{value}</Text>
+    </View>
+  );
+}
+
+function SubsectionLabel({ children }: { children: ReactNode }) {
+  return <Text style={styles.subsectionLabel}>{children}</Text>;
 }
 
 function SectionSurface({
@@ -167,16 +156,6 @@ function ScoreMeter({ score, tone }: { score: number | null; tone: StockDetailTo
           ]}
         />
       )}
-    </View>
-  );
-}
-
-function EvidenceRow({ item }: { item: StockAssessmentEvidence }) {
-  const symbol = item.tone === 'success' || item.tone === 'accent' ? '✓' : item.tone === 'danger' ? '!' : '⚠';
-  return (
-    <View style={styles.evidenceRow}>
-      <Text style={[styles.evidenceIcon, { color: stockToneColor(item.tone) }]}>{symbol}</Text>
-      <Text style={styles.evidenceText}>{item.label}</Text>
     </View>
   );
 }
@@ -292,6 +271,10 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.border,
     height: 1,
   },
+  disclosurePanel: {
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.one,
+  },
   evidenceIcon: {
     fontSize: 12,
     fontWeight: '900',
@@ -359,6 +342,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 20,
   },
+  planMetric: {
+    backgroundColor: Theme.colors.backgroundMuted,
+    borderRadius: Theme.radii.small,
+    flexGrow: 1,
+    minWidth: '47%',
+    padding: Spacing.two,
+  },
   metricsGrid: {
     paddingTop: Spacing.one,
   },
@@ -404,6 +394,13 @@ const styles = StyleSheet.create({
     color: Theme.colors.textMuted,
     fontSize: 10,
     fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  subsectionLabel: {
+    color: Theme.colors.textMuted,
+    fontSize: 10,
+    fontWeight: '900',
+    paddingTop: Spacing.one,
     textTransform: 'uppercase',
   },
   summaryBody: {
@@ -460,6 +457,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '900',
     textTransform: 'uppercase',
+  },
+  tradeLevelGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+  },
+  tradeStateRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
   },
   watchGrid: {
     flexDirection: 'row',

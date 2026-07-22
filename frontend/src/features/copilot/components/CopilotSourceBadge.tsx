@@ -15,6 +15,10 @@ function labelForSource(sourceState: CopilotSourceState) {
       return 'Stale context';
     case 'mock':
       return 'Mock context';
+    case 'test':
+      return 'Test context';
+    case 'partial':
+      return 'Partial context';
     case 'mixed':
       return 'Mixed context';
     case 'delayed':
@@ -32,7 +36,9 @@ function toneForSource(sourceState: CopilotSourceState): Tone {
     case 'mixed':
       return 'info';
     case 'stale':
+    case 'test':
     case 'mock':
+    case 'partial':
     case 'delayed':
       return 'warning';
     default:

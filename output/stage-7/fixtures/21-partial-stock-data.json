@@ -1,0 +1,962 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 21,
+    "caseId": "partial-stock-data",
+    "title": "Partial stock data",
+    "request": {
+      "message": "Analyse ARM with the available data.",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "partial-stock-snapshot",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "STOCK_ANALYSIS",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "stock"
+      ],
+      "optionalAgents": [],
+      "entities": [
+        {
+          "type": "stock",
+          "id": "ARM"
+        }
+      ],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "partial"
+      ],
+      "allowedFreshnessStates": [
+        "partial"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "stock_detail",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": "ARM",
+          "highlightTarget": null
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "missing_fields_named",
+        "no_missing_metric_inference",
+        "confidence_limited"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-21-partial-stock-data",
+    "planId": "plan-stage7-partial-stock-data",
+    "threadId": "stage7-thread-partial-stock-data",
+    "startedAt": "2026-07-22T05:09:08.489987+00:00",
+    "completedAt": "2026-07-22T05:09:08.491098+00:00",
+    "elapsedMs": 1.006,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-partial-stock-data",
+      "intent": "STOCK_ANALYSIS",
+      "subIntent": "setup",
+      "entities": [
+        {
+          "entityId": "ARM",
+          "entityType": "stock",
+          "displayName": "Arm Holdings",
+          "symbol": "ARM",
+          "confidence": 1.0,
+          "resolutionSource": "fixture-registry"
+        }
+      ],
+      "tickerSymbols": [
+        "ARM"
+      ],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.94,
+      "requiredAgents": [
+        "stock"
+      ],
+      "optionalAgents": [
+        "market",
+        "leadership"
+      ],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-partial-stock-data",
+      "intentId": "intent-stage7-partial-stock-data",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-stock",
+          "order": 1,
+          "agent": "stock",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 2800,
+          "purpose": "Collect validated technical evidence."
+        }
+      ],
+      "requiredAgents": [
+        "stock"
+      ],
+      "optionalAgents": [
+        "market",
+        "leadership"
+      ],
+      "dependencies": {
+        "step-1-stock": []
+      },
+      "requiredEntities": [
+        "ARM"
+      ],
+      "evidenceRequirements": [
+        {
+          "category": "technical",
+          "required": true,
+          "entities": [
+            "ARM"
+          ],
+          "minimumItems": 1
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "stock_detail"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 3000,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "stock",
+        "status": "partial",
+        "observations": [
+          "The stock fixture adapter returned a reviewed durable observation."
+        ],
+        "conclusions": [
+          "The stock evidence remains conditional on its cited source."
+        ],
+        "contradictions": [
+          "A reviewed opposing condition remains unresolved."
+        ],
+        "metrics": {},
+        "levels": [
+          {
+            "label": "confirmation condition",
+            "value": "reviewed confirmation threshold",
+            "unit": null,
+            "evidenceId": "stage7:partial-stock-data:stock:1"
+          },
+          {
+            "label": "risk invalidation condition",
+            "value": "reviewed invalidation threshold",
+            "unit": null,
+            "evidenceId": "stage7:partial-stock-data:stock:2"
+          }
+        ],
+        "sourceReferences": [
+          {
+            "sourceId": "stage7:partial-stock-data:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:partial-stock-snapshot"
+          }
+        ],
+        "evidence": [
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:partial-stock-data:stock:1",
+            "category": "technical",
+            "entity": "ARM",
+            "metric": "technical setup",
+            "value": "partial monitoring signal",
+            "unit": null,
+            "currentState": "partial monitoring signal",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "engine_conclusion",
+            "source": {
+              "sourceId": "stage7:partial-stock-data:stock",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_stock_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:partial-stock-snapshot"
+            },
+            "freshness": {
+              "state": "partial",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 0.55,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [
+              "claim:partial-stock-data:support"
+            ],
+            "contradictsClaimIds": []
+          },
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:partial-stock-data:stock:2",
+            "category": "technical",
+            "entity": "ARM",
+            "metric": "setup confirmation",
+            "value": "unconfirmed risk condition",
+            "unit": null,
+            "currentState": "unconfirmed risk condition",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "contradiction",
+            "source": {
+              "sourceId": "stage7:partial-stock-data:stock",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_stock_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:partial-stock-snapshot"
+            },
+            "freshness": {
+              "state": "partial",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 0.55,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [],
+            "contradictsClaimIds": [
+              "claim:partial-stock-data:support"
+            ]
+          }
+        ],
+        "freshness": {
+          "state": "partial",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 0.55,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "stock_detail"
+        ],
+        "warnings": [],
+        "missingData": [
+          "Volume and risk-reference fields are unavailable in the partial fixture snapshot."
+        ],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:partial-stock-data:stock:1",
+        "category": "technical",
+        "entity": "ARM",
+        "metric": "technical setup",
+        "value": "partial monitoring signal",
+        "unit": null,
+        "currentState": "partial monitoring signal",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "engine_conclusion",
+        "source": {
+          "sourceId": "stage7:partial-stock-data:stock",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_stock_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:partial-stock-snapshot"
+        },
+        "freshness": {
+          "state": "partial",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 0.55,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [
+          "claim:partial-stock-data:support"
+        ],
+        "contradictsClaimIds": []
+      },
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:partial-stock-data:stock:2",
+        "category": "technical",
+        "entity": "ARM",
+        "metric": "setup confirmation",
+        "value": "unconfirmed risk condition",
+        "unit": null,
+        "currentState": "unconfirmed risk condition",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "contradiction",
+        "source": {
+          "sourceId": "stage7:partial-stock-data:stock",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_stock_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:partial-stock-snapshot"
+        },
+        "freshness": {
+          "state": "partial",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 0.55,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [],
+        "contradictsClaimIds": [
+          "claim:partial-stock-data:support"
+        ]
+      }
+    ],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.",
+      "stance": "insufficient_evidence",
+      "confidenceLabel": "limited",
+      "thesis": "The evidence is insufficient for a reliable market conclusion.",
+      "supportingFactors": [],
+      "contradictoryFactors": [
+        {
+          "statement": "ARM: technical setup is partial monitoring signal.",
+          "evidenceIds": [
+            "stage7:partial-stock-data:stock:1"
+          ]
+        },
+        {
+          "statement": "ARM: setup confirmation is unconfirmed risk condition.",
+          "evidenceIds": [
+            "stage7:partial-stock-data:stock:2"
+          ]
+        }
+      ],
+      "keyRisks": [
+        {
+          "statement": "ARM: technical setup is partial monitoring signal.",
+          "evidenceIds": [
+            "stage7:partial-stock-data:stock:1"
+          ]
+        },
+        {
+          "statement": "ARM: setup confirmation is unconfirmed risk condition.",
+          "evidenceIds": [
+            "stage7:partial-stock-data:stock:2"
+          ]
+        }
+      ],
+      "confirmationConditions": [
+        {
+          "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+          "evidenceIds": [
+            "stage7:partial-stock-data:stock:1"
+          ]
+        }
+      ],
+      "invalidationConditions": [
+        {
+          "statement": "The validated risk invalidation condition is reviewed invalidation threshold.",
+          "evidenceIds": [
+            "stage7:partial-stock-data:stock:2"
+          ]
+        }
+      ],
+      "missingEvidence": [
+        "Volume and risk-reference fields are unavailable in the partial fixture snapshot."
+      ],
+      "personalizationNote": null,
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "stock_detail"
+      ],
+      "disclaimerClass": "educational_market_decision_support"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-21-partial-stock-data",
+      "planId": "plan-stage7-partial-stock-data",
+      "threadId": "stage7-thread-partial-stock-data",
+      "status": "partial",
+      "answer": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.\n\nCounter-evidence: ARM: technical setup is partial monitoring signal. ARM: setup confirmation is unconfirmed risk condition.\n\nMissing evidence: Volume and risk-reference fields are unavailable in the partial fixture snapshot.",
+      "answerSections": {
+        "directAnswer": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [
+          "ARM: technical setup is partial monitoring signal.",
+          "ARM: setup confirmation is unconfirmed risk condition."
+        ],
+        "mainCaution": "ARM: technical setup is partial monitoring signal.",
+        "whatWouldConfirm": [
+          "The validated confirmation condition is reviewed confirmation threshold."
+        ],
+        "whatWouldInvalidate": [
+          "The validated risk invalidation condition is reviewed invalidation threshold."
+        ],
+        "whatWouldChange": [
+          "The validated confirmation condition is reviewed confirmation threshold.",
+          "The validated risk invalidation condition is reviewed invalidation threshold."
+        ]
+      },
+      "grounding": {
+        "contextUsed": [
+          "fixture_stock_snapshot"
+        ],
+        "sourceState": "partial",
+        "generatedAt": "2026-07-22T05:09:08.490900+00:00",
+        "evidenceIds": [
+          "stage7:partial-stock-data:stock:1",
+          "stage7:partial-stock-data:stock:2"
+        ]
+      },
+      "suggestedFollowUps": [
+        "What confirms it?",
+        "What would invalidate it?",
+        "Show me."
+      ],
+      "confidence": 42,
+      "answerConfidence": {
+        "level": "limited",
+        "reasons": [
+          "Intent confidence: 94%.",
+          "Evidence freshness: partial.",
+          "Some required evidence is unavailable."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-partial-stock-data",
+        "intent": "STOCK_ANALYSIS",
+        "subIntent": "setup",
+        "entities": [
+          {
+            "entityId": "ARM",
+            "entityType": "stock",
+            "displayName": "Arm Holdings",
+            "symbol": "ARM",
+            "confidence": 1.0,
+            "resolutionSource": "fixture-registry"
+          }
+        ],
+        "tickerSymbols": [
+          "ARM"
+        ],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.94,
+        "requiredAgents": [
+          "stock"
+        ],
+        "optionalAgents": [
+          "market",
+          "leadership"
+        ],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-partial-stock-data",
+        "intentId": "intent-stage7-partial-stock-data",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-stock",
+            "order": 1,
+            "agent": "stock",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 2800,
+            "purpose": "Collect validated technical evidence."
+          }
+        ],
+        "requiredAgents": [
+          "stock"
+        ],
+        "optionalAgents": [
+          "market",
+          "leadership"
+        ],
+        "dependencies": {
+          "step-1-stock": []
+        },
+        "requiredEntities": [
+          "ARM"
+        ],
+        "evidenceRequirements": [
+          {
+            "category": "technical",
+            "required": true,
+            "entities": [
+              "ARM"
+            ],
+            "minimumItems": 1
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "stock_detail"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 3000,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.",
+        "stance": "insufficient_evidence",
+        "confidenceLabel": "limited",
+        "thesis": "The evidence is insufficient for a reliable market conclusion.",
+        "supportingFactors": [],
+        "contradictoryFactors": [
+          {
+            "statement": "ARM: technical setup is partial monitoring signal.",
+            "evidenceIds": [
+              "stage7:partial-stock-data:stock:1"
+            ]
+          },
+          {
+            "statement": "ARM: setup confirmation is unconfirmed risk condition.",
+            "evidenceIds": [
+              "stage7:partial-stock-data:stock:2"
+            ]
+          }
+        ],
+        "keyRisks": [
+          {
+            "statement": "ARM: technical setup is partial monitoring signal.",
+            "evidenceIds": [
+              "stage7:partial-stock-data:stock:1"
+            ]
+          },
+          {
+            "statement": "ARM: setup confirmation is unconfirmed risk condition.",
+            "evidenceIds": [
+              "stage7:partial-stock-data:stock:2"
+            ]
+          }
+        ],
+        "confirmationConditions": [
+          {
+            "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+            "evidenceIds": [
+              "stage7:partial-stock-data:stock:1"
+            ]
+          }
+        ],
+        "invalidationConditions": [
+          {
+            "statement": "The validated risk invalidation condition is reviewed invalidation threshold.",
+            "evidenceIds": [
+              "stage7:partial-stock-data:stock:2"
+            ]
+          }
+        ],
+        "missingEvidence": [
+          "Volume and risk-reference fields are unavailable in the partial fixture snapshot."
+        ],
+        "personalizationNote": null,
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "stock_detail"
+        ],
+        "disclaimerClass": "educational_market_decision_support"
+      },
+      "evidence": [
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:partial-stock-data:stock:1",
+          "category": "technical",
+          "entity": "ARM",
+          "metric": "technical setup",
+          "value": "partial monitoring signal",
+          "unit": null,
+          "currentState": "partial monitoring signal",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "engine_conclusion",
+          "source": {
+            "sourceId": "stage7:partial-stock-data:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:partial-stock-snapshot"
+          },
+          "freshness": {
+            "state": "partial",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 0.55,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [
+            "claim:partial-stock-data:support"
+          ],
+          "contradictsClaimIds": []
+        },
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:partial-stock-data:stock:2",
+          "category": "technical",
+          "entity": "ARM",
+          "metric": "setup confirmation",
+          "value": "unconfirmed risk condition",
+          "unit": null,
+          "currentState": "unconfirmed risk condition",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "contradiction",
+          "source": {
+            "sourceId": "stage7:partial-stock-data:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:partial-stock-snapshot"
+          },
+          "freshness": {
+            "state": "partial",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 0.55,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [],
+          "contradictsClaimIds": [
+            "claim:partial-stock-data:support"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "action-stock_detail-arm",
+          "label": "Open Stock Detail",
+          "actionType": "open_entity",
+          "destinationId": "stock_detail",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": "stocks",
+          "entity": "ARM",
+          "highlightTarget": "stocks",
+          "parameters": {
+            "entity": "ARM",
+            "symbol": "ARM",
+            "sectionId": "stocks"
+          }
+        }
+      ],
+      "warnings": [
+        "Evidence freshness is partial; conclusions are constrained accordingly.",
+        "Volume and risk-reference fields are unavailable in the partial fixture snapshot."
+      ],
+      "freshnessSummary": {
+        "overallState": "partial",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 0,
+        "staleCount": 0,
+        "partialCount": 1,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "stock": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-stock_detail-arm",
+        "label": "Open Stock Detail",
+        "actionType": "open_entity",
+        "destinationId": "stock_detail",
+        "route": "/watchlist",
+        "tab": null,
+        "subTab": null,
+        "sectionId": "stocks",
+        "entity": "ARM",
+        "highlightTarget": "stocks",
+        "parameters": {
+          "entity": "ARM",
+          "symbol": "ARM",
+          "sectionId": "stocks"
+        }
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed STOCK_ANALYSIS; expected STOCK_ANALYSIS."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['stock']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status partial."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness partial."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:missing_fields_named",
+          "status": "passed",
+          "detail": "The partial snapshot names its unavailable fields."
+        },
+        {
+          "check": "assertion:no_missing_metric_inference",
+          "status": "passed",
+          "detail": "Unavailable fields are not promoted into reasoning factors."
+        },
+        {
+          "check": "assertion:confidence_limited",
+          "status": "passed",
+          "detail": "Partial evidence constrains confidence to limited."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

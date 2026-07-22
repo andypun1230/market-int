@@ -1,0 +1,6 @@
+ticker,company_name,role,weight,effective_from,active,membership_source,inclusion_reason,reviewed_at,reviewed_by,source_url,source_retrieved_at,notes
+MSFT,Microsoft,core,0.20,2026-07-19,true,proposed-official-source,Proposed cloud platform provider.,,,https://www.microsoft.com/en-us/about,2026-07-19,Human review required
+AMZN,Amazon.com,core,0.20,2026-07-19,true,proposed-official-source,Proposed cloud infrastructure provider through AWS.,,,https://aws.amazon.com/about-aws/,2026-07-19,Human review required
+GOOGL,Alphabet,core,0.20,2026-07-19,true,proposed-official-source,Proposed cloud and data platform provider.,,,https://about.google/,2026-07-19,Human review required
+ORCL,Oracle,core,0.20,2026-07-19,true,proposed-official-source,Proposed cloud infrastructure and database provider.,,,https://www.oracle.com/corporate/,2026-07-19,Human review required
+EQIX,Equinix,infrastructure,0.20,2026-07-19,true,proposed-official-source,Proposed data-center and interconnection provider.,,,https://www.equinix.com/company,2026-07-19,Human review required

@@ -1,0 +1,15 @@
+security_id,ticker,company_name,exchange,sector,industry,quote_provider_symbol,history_provider_symbol,effective_from,effective_to,reviewed_at,reviewed_by,source_url,source_retrieved_at
+sec-a24c631b902b547e,MU,MICRON TECHNOLOGY INC,NASDAQ,Information Technology,Semiconductors,MU,MU,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.micron.com/about/company/corporate-profile,2026-07-20
+theme-sec-sndk,SNDK,Sandisk Corporation,NASDAQ,Information Technology,Data Storage,SNDK,SNDK,2025-02-24,,2026-07-20T00:00:00Z,AndyPun123123,https://www.sandisk.com/about/,2026-07-20
+theme-sec-wdc,WDC,Western Digital,NASDAQ,Information Technology,Data Storage,WDC,WDC,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.westerndigital.com/company,2026-07-20
+theme-sec-stx,STX,Seagate Technology Holdings,NASDAQ,Information Technology,Data Storage,STX,STX,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.seagate.com/company/,2026-07-20
+theme-sec-mrvl,MRVL,Marvell Technology,NASDAQ,Information Technology,Semiconductors,MRVL,MRVL,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.marvell.com/company.html,2026-07-20
+theme-sec-ntap,NTAP,NetApp,NASDAQ,Information Technology,Data Storage,NTAP,NTAP,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.netapp.com/company/,2026-07-20
+theme-sec-everpure-1474432,P,Everpure,NYSE,Information Technology,Data Storage,P,P,2024-07-01,,2026-07-20T00:00:00Z,AndyPun123123,https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm,2026-07-20
+theme-sec-crwd,CRWD,CrowdStrike Holdings,NASDAQ,Information Technology,Cybersecurity,CRWD,CRWD,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.crowdstrike.com/about-us/,2026-07-20
+theme-sec-panw,PANW,Palo Alto Networks,NASDAQ,Information Technology,Cybersecurity,PANW,PANW,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.paloaltonetworks.com/company,2026-07-20
+theme-sec-ftnt,FTNT,Fortinet,NASDAQ,Information Technology,Cybersecurity,FTNT,FTNT,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.fortinet.com/corporate/about-us,2026-07-20
+theme-sec-zs,ZS,Zscaler,NASDAQ,Information Technology,Cybersecurity,ZS,ZS,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.zscaler.com/company,2026-07-20
+theme-sec-okta,OKTA,Okta,NASDAQ,Information Technology,Cybersecurity,OKTA,OKTA,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.okta.com/company/,2026-07-20
+theme-sec-chkp,CHKP,Check Point Software Technologies,NASDAQ,Information Technology,Cybersecurity,CHKP,CHKP,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.checkpoint.com/about-us/,2026-07-20
+theme-sec-s,S,SentinelOne,NYSE,Information Technology,Cybersecurity,S,S,2024-09-30,,2026-07-20T00:00:00Z,AndyPun123123,https://www.sentinelone.com/company/,2026-07-20

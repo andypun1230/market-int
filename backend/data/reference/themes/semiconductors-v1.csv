@@ -1,0 +1,6 @@
+ticker,company_name,role,weight,effective_from,active,membership_source,inclusion_reason,reviewed_at,reviewed_by,source_url,source_retrieved_at,notes
+NVDA,NVIDIA,core,0.20,2026-07-19,true,proposed-official-source,Proposed semiconductor compute supplier.,,,https://www.nvidia.com/en-us/about-nvidia/,2026-07-19,Human review required
+AVGO,Broadcom,core,0.20,2026-07-19,true,proposed-official-source,Proposed semiconductor and infrastructure supplier.,,,https://www.broadcom.com/company/about-us,2026-07-19,Human review required
+AMD,Advanced Micro Devices,core,0.20,2026-07-19,true,proposed-official-source,Proposed CPU and accelerator semiconductor supplier.,,,https://www.amd.com/en/corporate.html,2026-07-19,Human review required
+QCOM,Qualcomm,core,0.20,2026-07-19,true,proposed-official-source,Proposed wireless and edge semiconductor supplier.,,,https://www.qualcomm.com/company,2026-07-19,Human review required
+TXN,Texas Instruments,adjacent,0.20,2026-07-19,true,proposed-official-source,Proposed analog and embedded semiconductor supplier.,,,https://www.ti.com/about-ti/company.html,2026-07-19,Human review required

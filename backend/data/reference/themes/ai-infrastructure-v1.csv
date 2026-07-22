@@ -1,0 +1,6 @@
+ticker,company_name,role,weight,effective_from,active,membership_source,inclusion_reason,reviewed_at,reviewed_by,source_url,source_retrieved_at,notes
+NVDA,NVIDIA,core,0.20,2026-07-19,true,proposed-official-source,Proposed accelerator and AI platform supplier.,,,https://www.nvidia.com/en-us/data-center/,2026-07-19,Human review required
+AVGO,Broadcom,infrastructure,0.20,2026-07-19,true,proposed-official-source,Proposed networking and custom silicon infrastructure supplier.,,,https://www.broadcom.com/company/about-us,2026-07-19,Human review required
+ANET,Arista Networks,infrastructure,0.20,2026-07-19,true,proposed-official-source,Proposed data-center networking supplier.,,,https://www.arista.com/en/company,2026-07-19,Human review required
+DELL,Dell Technologies,infrastructure,0.20,2026-07-19,true,proposed-official-source,Proposed server and infrastructure systems supplier.,,,https://www.dell.com/en-us/dt/corporate/about-us.htm,2026-07-19,Human review required
+SMCI,Super Micro Computer,infrastructure,0.20,2026-07-19,true,proposed-official-source,Proposed AI server platform supplier.,,,https://www.supermicro.com/en/about-us,2026-07-19,Human review required

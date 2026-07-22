@@ -141,13 +141,31 @@ class SectorSnapshotTests(unittest.TestCase):
             {"id": "utilities", "name": "Utilities", "returns": {"1m": -5}, "metadata": {"rank": 1}},
         ]}))
         self.assertEqual([item["id"] for item in ranked], ["utilities", "energy"])
-        with patch("app.services.report.get_market_snapshot_service") as market, patch("app.services.report.get_sector_snapshot_service") as service, patch("app.services.report.calculate_market_breadth") as breadth, patch("app.services.report.get_or_compute") as cached:
+        with patch("app.services.report.get_market_snapshot_service") as market, patch("app.services.report.get_sector_snapshot_service") as service, patch("app.services.report.calculate_market_breadth") as breadth, patch("app.services.report.build_theme_intelligence_context") as themes, patch("app.services.report.get_daily_report_storage") as storage, patch("app.services.report.get_or_compute") as cached:
             market.return_value.get_latest_snapshot.return_value = None
             service.return_value.latest.return_value = SimpleNamespace(snapshot_id="sector-ranked")
             breadth.return_value = SimpleNamespace(snapshot_id="breadth-ranked")
+            themes.return_value = {"snapshot_id": "theme-ranked"}
+            storage.return_value.get_by_identity.return_value = None
             cached.return_value = DailyReportResponse.model_construct()
+            storage.return_value.save_if_absent.return_value = SimpleNamespace(report=cached.return_value)
             report.build_daily_report()
-        self.assertEqual(cached.call_args.args[0], "report:daily:v7:unavailable:sector-ranked:breadth-ranked")
+        cache_key = cached.call_args.args[0]
+        self.assertEqual(
+            cache_key.rsplit(":", 1)[0],
+            f"report:daily:{report.REPORT_SCHEMA_VERSION}:{report.REPORT_PDF_FORMAT_VERSION}:json:unavailable:breadth-ranked:sector-ranked:theme-ranked",
+        )
+        self.assertRegex(cache_key.rsplit(":", 1)[1], r"^[0-9a-f]{16}$")
+
+    def test_report_identity_changes_when_only_theme_snapshot_changes(self) -> None:
+        from app.services import report
+        with patch("app.services.report.latest_market_snapshot_id", return_value="market-1"), patch("app.services.report.latest_breadth_snapshot_id", return_value="breadth-1"), patch("app.services.report.latest_sector_snapshot_id", return_value="sector-1"), patch("app.services.report.latest_theme_snapshot_id", side_effect=["theme-1", "theme-2"]):
+            first = report.current_report_identity()
+            second = report.current_report_identity()
+        self.assertNotEqual(first["cache_key"], second["cache_key"])
+        self.assertNotEqual(first["identity_key"], second["identity_key"])
+        self.assertIn("theme-1", first["cache_key"])
+        self.assertIn("theme-2", second["cache_key"])
 
 
 def make_bars(ticker: str, offset: int) -> list[DailyBar]:

@@ -1070,6 +1070,7 @@ class DecisionDashboardResponse(BaseModel):
     industry_rotation: IndustryRotationResponse
     risk_dashboard: RiskDashboardV2Response
     institutional_intelligence: InstitutionalIntelligenceResponse
+    theme_intelligence: Dict[str, Any] = Field(default_factory=dict)
 
 
 class DailyVolumeAnalysis(BaseModel):
@@ -1121,6 +1122,10 @@ class DailyReportResponse(BaseModel):
     report_id: str | None = None
     market_date: str | None = None
     generated_time: str | None = None
+    generated_at: str | None = None
+    report_schema_version: str | None = None
+    report_cache_key: str | None = None
+    report_pdf_format_version: str | None = None
     report_snapshot: Dict[str, Any] = Field(default_factory=dict)
     report_narrative: Dict[str, Any] = Field(default_factory=dict)
     report_changes: Dict[str, Any] = Field(default_factory=dict)
@@ -1138,13 +1143,19 @@ class DailyReportResponse(BaseModel):
     report_commentary: Dict[str, Any] = Field(default_factory=dict)
     indexes: List[IndexSnapshot] = Field(default_factory=list)
     index_histories: Dict[str, List[float]] = Field(default_factory=dict)
+    index_ohlcv: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
     watchlist_summary: Dict[str, Any] | None = None
     sector_dashboard: Dict[str, Any] | None = None
     sector_snapshot_id: str | None = None
+    theme_intelligence: Dict[str, Any] = Field(default_factory=dict)
+    theme_report: Dict[str, Any] = Field(default_factory=dict)
     stock_charts: List[Dict[str, Any]] = Field(default_factory=list)
     economic_calendar: List[Dict[str, Any]] = Field(default_factory=list)
     macro: Dict[str, Any] = Field(default_factory=dict)
     semantic_context: Dict[str, Any] = Field(default_factory=dict)
+    research_preferences: Dict[str, List[str]] = Field(default_factory=dict)
+    security_taxonomy: List[Dict[str, Any]] = Field(default_factory=list)
+    report_document: Dict[str, Any] | None = None
 
 
 class MarketAnalysisResponse(BaseModel):

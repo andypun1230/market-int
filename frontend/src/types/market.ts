@@ -806,6 +806,7 @@ export type DecisionDashboardResponse = {
   industry_rotation: IndustryRotationResponse;
   risk_dashboard: RiskDashboardV2Response;
   institutional_intelligence: InstitutionalIntelligenceResponse;
+  theme_intelligence?: ThemeIntelligenceContext;
 };
 
 export type CacheMetadata = {
@@ -828,6 +829,7 @@ export type MarketCoreSnapshot = {
     main_risk?: string | null;
     decision_confidence?: DecisionConfidenceResponse | null;
   };
+  theme_intelligence?: ThemeIntelligenceContext;
   breadth_summary?: {
     breadth_score?: number | null;
     breadth_status?: string | null;
@@ -871,7 +873,10 @@ export type HomeDashboardResponse = {
       score?: number | null;
       main_setup?: string | null;
       source?: string | null;
+      source_state?: string | null;
+      data_source?: string | null;
       is_live?: boolean | null;
+      is_stale?: boolean | null;
       fallback_used?: boolean | null;
     }[];
   };
@@ -938,6 +943,10 @@ export type DailyReport = {
   report_id?: string | null;
   market_date?: string | null;
   generated_time?: string | null;
+  generated_at?: string | null;
+  report_schema_version?: string | null;
+  report_cache_key?: string | null;
+  report_pdf_format_version?: string | null;
   report_snapshot?: Record<string, unknown>;
   report_narrative?: Record<string, unknown>;
   report_changes?: Record<string, unknown>;
@@ -955,10 +964,487 @@ export type DailyReport = {
   report_commentary?: Record<string, unknown>;
   indexes?: IndexSnapshot[];
   index_histories?: Record<string, number[]>;
+  index_ohlcv?: Record<string, Record<string, unknown>>;
   watchlist_summary?: Record<string, unknown> | null;
   sector_dashboard?: Record<string, unknown> | null;
+  theme_intelligence?: ThemeIntelligenceContext;
+  theme_report?: ThemeReportSection;
   stock_charts?: Record<string, unknown>[];
   economic_calendar?: Record<string, unknown>[];
+  research_preferences?: { saved_stocks?: string[]; saved_sectors?: string[]; saved_themes?: string[] };
+  security_taxonomy?: Record<string, unknown>[];
+  report_document?: ReportDocument | null;
+};
+
+export type ReportQualityState = {
+  state: 'live' | 'cached' | 'stale' | 'test' | 'mixed' | 'partial' | 'unavailable';
+  completeness: number;
+  freshness: string;
+  transformation: string;
+  warnings?: string[];
+};
+
+export type ReportFigureSeries = {
+  series_id: string;
+  label: string;
+  unit: string;
+  points: Record<string, unknown>[];
+  source_id: string;
+  color?: string | null;
+  transformation?: string;
+};
+
+export type ReportFigureAnnotation = {
+  annotation_id: string;
+  annotation_type:
+    | 'support'
+    | 'resistance'
+    | 'breakout'
+    | 'failed_breakout'
+    | 'gap'
+    | 'pivot'
+    | 'ema'
+    | 'trendline'
+    | 'previous_report'
+    | 'current_thesis'
+    | 'risk'
+    | 'risk_level'
+    | 'confirmation'
+    | 'invalidation'
+    | (string & {});
+  label: string;
+  evidence_id: string;
+  freshness: string;
+  value?: number | null;
+  point_index?: number | null;
+  date?: string | null;
+  detail?: string | null;
+};
+
+export type ReportFigureReferenceLine = {
+  label?: string;
+  value?: number | string | null;
+  evidence_id?: string | null;
+  freshness?: string | null;
+  annotation_type?: string | null;
+};
+
+export type ReportFigure = {
+  figure_id: string;
+  figure_number: number;
+  title: string;
+  subtitle: string;
+  question_answered: string;
+  chart_type: string;
+  timeframe: string;
+  data_series: ReportFigureSeries[];
+  annotations?: ReportFigureAnnotation[];
+  reference_lines?: ReportFigureReferenceLine[];
+  source_ids: string[];
+  as_of?: string | null;
+  observation: string;
+  interpretation: string;
+  confirmation_condition: string;
+  risk_condition: string;
+  quality: ReportQualityState;
+};
+
+export type ReportResearchEvidenceLabel = 'High' | 'Medium' | 'Low';
+
+export type ReportResearchInquiry = {
+  status: 'qualified' | 'no_focus';
+  question: string;
+  executive_answer: string;
+  evidence_ids: string[];
+};
+
+export type ReportResearchEvidenceQuality = {
+  label: ReportResearchEvidenceLabel;
+  freshness: ReportResearchEvidenceLabel;
+  breadth: ReportResearchEvidenceLabel;
+  participation: ReportResearchEvidenceLabel;
+  completeness: ReportResearchEvidenceLabel;
+  consistency: ReportResearchEvidenceLabel;
+  rationale: string[];
+  evidence_ids: string[];
+};
+
+export type ReportResearchEvidenceMatrixRow = {
+  dimension: string;
+  finding: string;
+  stance: 'supports' | 'neutral' | 'contradicts';
+  implication: string;
+  evidence_ids: string[];
+};
+
+export type ReportResearchRelationshipNode = {
+  node_id: string;
+  label: string;
+  node_type: string;
+  depth: number;
+};
+
+export type ReportResearchRelationshipEdge = {
+  relationship_id: string;
+  source_node_id: string;
+  target_node_id: string;
+  relationship_type:
+    | 'sector_hierarchy'
+    | 'theme_hierarchy'
+    | 'relative_performance'
+    | 'benchmark_relationship'
+    | 'user_watchlist_overlap'
+    | 'validated_taxonomy'
+    | 'validated_supply_chain'
+    | (string & {});
+  label: string;
+  mapping_source: string;
+  structured_data: boolean;
+  evidence_ids: string[];
+};
+
+export type ReportResearchRelationshipGraph = {
+  nodes: ReportResearchRelationshipNode[];
+  edges: ReportResearchRelationshipEdge[];
+};
+
+export type ReportResearchSecuritySignal = {
+  symbol: string;
+  role: 'leader' | 'laggard';
+  metric_label: string;
+  metric_value: number | string | null;
+  timeframe: string;
+  reason: string;
+  saved: boolean;
+  evidence_ids: string[];
+};
+
+export type ReportResearchEvolution = {
+  previous_report_date?: string | null;
+  yesterday: string;
+  today: string;
+  tomorrow: string;
+  what_changed: string;
+  research_follow_up: string;
+  previous_focus?: string | null;
+  current_focus: string;
+  status: string;
+  evidence_ids: string[];
+};
+
+export type ReportEvidencePoint = {
+  evidence_id: string;
+  metric: string;
+  current_value: number | string | null;
+  previous_value?: number | string | null;
+  change?: number | string | null;
+  unit?: string | null;
+  timeframe: string;
+  source_id: string;
+  timestamp?: string | null;
+  freshness: string;
+  reliability: string;
+  observation_type: string;
+};
+
+export type ReportMarketTimelineEntry = {
+  market_date: string;
+  regime?: string | null;
+  market_health?: number | null;
+  breadth?: number | null;
+  leadership_concentration?: number | null;
+  risk?: number | null;
+  volatility_state?: string | null;
+  primary_leader?: string | null;
+  primary_laggard?: string | null;
+  research_focus?: string | null;
+};
+
+export type ReportDocument = {
+  document_version: string;
+  report_id: string;
+  pdf_format_version: string;
+  title: string;
+  report_type: string;
+  market_date: string;
+  generated_at: string;
+  data_cutoff: string;
+  timezone: string;
+  source_status: ReportQualityState['state'];
+  thesis: {
+    posture: string;
+    concise_thesis: string;
+    previous_thesis?: string | null;
+    thesis_change: string;
+    confirmation_conditions: string[];
+    invalidation_conditions: string[];
+    confidence_label: string;
+    data_completeness: number;
+  };
+  sections: {
+    section_id: string;
+    number: number;
+    title: string;
+    question?: string | null;
+    purpose: string;
+    paragraphs: string[];
+    claim_ids: string[];
+    figure_ids: string[];
+    table_ids: string[];
+    scenario_ids: string[];
+    security_ids: string[];
+    monitoring_condition_ids: string[];
+    quality_note?: string | null;
+  }[];
+  claims: {
+    claim_id: string;
+    statement: string;
+    interpretation: string;
+    trader_implication: string;
+    confidence: string;
+    evidence_ids: string[];
+    counter_evidence_ids?: string[];
+    evidence_quality?: ReportQualityState['state'];
+  }[];
+  evidence?: ReportEvidencePoint[];
+  figures: ReportFigure[];
+  tables: {
+    table_id: string;
+    title: string;
+    columns: string[];
+    rows: Record<string, unknown>[];
+    as_of?: string | null;
+  }[];
+  sources: {
+    source_id: string;
+    provider: string;
+    dataset: string;
+    timestamp?: string | null;
+    freshness: string;
+  }[];
+  scenarios: {
+    scenario_id: string;
+    label: string;
+    likelihood: string;
+    required_conditions: string[];
+    invalidation: string[];
+    operating_response: string;
+    position_sizing_implication: string;
+  }[];
+  securities: {
+    security_id: string;
+    symbol: string;
+    category: string;
+    setup_state: string;
+    summary: string;
+    figure_id?: string | null;
+    confirmation: string;
+    invalidation: string;
+    risk_considerations: string;
+    freshness: string;
+    actionable: boolean;
+    group?: string | null;
+    daily_change?: number | null;
+    relative_strength?: number | string | null;
+    trend?: string | null;
+    volume_condition?: string | null;
+    confirmation_level?: number | null;
+    invalidation_level?: number | null;
+    change_since_previous?: string | null;
+    research_classification?: string;
+    focus_relation?: string | null;
+    source_timestamp?: string | null;
+    monitoring_bias?: string;
+    evidence_ids?: string[];
+    reason_for_inclusion?: string;
+    source_ids?: string[];
+    why_here?: string | null;
+    context?: string | null;
+    sector?: string | null;
+    themes?: string[];
+    execution_consideration?: string | null;
+    selected_for_research?: boolean;
+  }[];
+  monitoring_conditions: {
+    condition_id: string;
+    metric: string;
+    threshold_or_condition: string;
+    rationale: string;
+    action_implication: string;
+  }[];
+  limitations: string[];
+  page_count_estimate: number;
+  figure_count: number;
+  approximate_word_count: number;
+  previous_report_available: boolean;
+  research_inquiry?: ReportResearchInquiry | null;
+  research_candidates?: ReportResearchCandidate[];
+  research_selection?: ReportResearchSelection | null;
+  research_focus?: ReportResearchFocus | null;
+  secondary_research_note?: {
+    candidate_id: string;
+    subject: string;
+    direction: string;
+    summary: string;
+    evidence_ids: string[];
+  } | null;
+  market_timeline?: ReportMarketTimelineEntry[];
+};
+
+export type ReportUserRelevance = {
+  tier: 'high' | 'moderate' | 'low';
+  score: number;
+  exact_saved_group: boolean;
+  saved_parent_group: boolean;
+  saved_security_symbols: string[];
+  stale: boolean;
+  rationale: string[];
+};
+
+export type ReportResearchCandidate = {
+  candidate_id: string;
+  name: string;
+  category: string;
+  direction: string;
+  current_rank?: number | null;
+  previous_rank?: number | null;
+  rank_change?: number | null;
+  current_relative_strength?: number | null;
+  breadth?: number | null;
+  participation?: number | null;
+  participation_change?: number | null;
+  momentum?: number | null;
+  qualifying_constituent_count: number;
+  user_relevance: ReportUserRelevance;
+  freshness: string;
+  evidence_ids: string[];
+  supported_figure_types: string[];
+  disqualifying_conditions: string[];
+  score: { total: number; materiality_threshold: number; missing_dimensions: string[] };
+};
+
+export type ReportResearchSelection = {
+  selected_candidate_id?: string | null;
+  secondary_candidate_id?: string | null;
+  materiality_threshold: number;
+  selected_because: string[];
+  no_selection_reason?: string | null;
+  omitted_candidate_count: number;
+  user_relevance_contribution: number;
+  missing_evidence: string[];
+  freshness_status: string;
+};
+
+export type ReportResearchFocus = {
+  candidate_id: string;
+  subject: string;
+  category: string;
+  direction: string;
+  priority_score: number;
+  classification_label: string;
+  question?: string | null;
+  executive_answer?: string | null;
+  evidence_quality?: ReportResearchEvidenceQuality | null;
+  evidence_matrix?: ReportResearchEvidenceMatrixRow[];
+  relationship_graph?: ReportResearchRelationshipGraph | null;
+  leading_securities?: ReportResearchSecuritySignal[];
+  lagging_securities?: ReportResearchSecuritySignal[];
+  execution_implications?: string[];
+  conclusion_change_conditions?: string[];
+  research_evolution?: ReportResearchEvolution | null;
+  user_relevance: ReportUserRelevance;
+  main_thesis: string;
+  counter_thesis: string;
+  why_selected: string[];
+  key_evidence: string[];
+  confirmation_conditions: string[];
+  invalidation_conditions: string[];
+  prose_sections: Record<string, string>;
+  figure_ids: string[];
+  affected_securities: {
+    symbol: string;
+    group: string;
+    setup_state: string;
+    relative_strength?: number | string | null;
+    trend: string;
+    volume_condition: string;
+    key_level: string;
+    change_since_previous: string;
+    relation_to_focus: string;
+    freshness: string;
+    reason_to_monitor: string;
+    evidence_ids: string[];
+  }[];
+  taxonomy_chain: { level: string; name: string; relationship: string }[];
+  evidence_ids: string[];
+  limitations: string[];
+};
+
+export type ThemeReportSection = {
+  available?: boolean;
+  theme_snapshot_id?: string | null;
+  market_date?: string | null;
+  generated_at?: string | null;
+  active_theme_count?: number;
+  definition_versions?: Record<string, string>;
+  pilot_scope?: Record<string, unknown>;
+  leadership?: Record<string, unknown>[];
+  rotation?: {
+    selected_interval?: string;
+    items?: Record<string, unknown>[];
+    provenance?: string;
+  };
+  methodology?: Record<string, unknown>;
+  warnings?: string[];
+};
+
+export type ThemeIntelligenceContext = {
+  available?: boolean;
+  availability?: string;
+  snapshot_id?: string | null;
+  market_date?: string | null;
+  source_state?: string;
+  leaders?: { theme_id?: string; display_name?: string; rank?: number; composite_score?: number; absolute_composite_score?: number; classification?: string; coverage_ratio?: number; score_semantics?: Record<string, unknown>; pilot_scope?: Record<string, unknown> }[];
+  decision_theme_signals?: { theme_id?: string; display_name?: string; source_type?: 'live_theme_signal' | 'static_strategy_preference' | string; qualified?: boolean; theme_snapshot_id?: string | null; rank?: number; classification?: string; score?: number | null; coverage?: number | null; signal_confidence?: number | null; qualification_reason?: string | null; disqualification_reason?: string | null }[];
+  qualified_decision_theme_signals?: { theme_id?: string; display_name?: string; source_type?: string; qualified?: boolean; theme_snapshot_id?: string | null; rank?: number; classification?: string; score?: number | null; coverage?: number | null; signal_confidence?: number | null; qualification_reason?: string | null }[];
+  live_theme_signal_overrides_static_preferences?: string[];
+  pilot_scope?: { active_reviewed_theme_count?: number; rank_scope?: string; proposed_inactive_themes_excluded?: boolean };
+  items?: Record<string, unknown>[];
+  warnings?: string[];
+};
+
+export type ThemeSnapshotResponse = {
+  snapshot_id?: string | null;
+  market_date?: string | null;
+  source_state?: string | null;
+  status?: string | null;
+  items?: Record<string, unknown>[];
+  rows?: Record<string, unknown>[];
+  alerts?: Record<string, unknown>[];
+  warnings?: string[];
+};
+
+export type ThemeStatusResponse = {
+  status?: 'awaiting_review' | 'awaiting_snapshot' | 'live' | string;
+  reason_code?: string | null;
+  architecture_ready?: boolean;
+  proposed_definition_count?: number;
+  reviewed_definition_count?: number;
+  active_definition_count?: number;
+  published_snapshot?: boolean;
+  latest_snapshot_id?: string | null;
+  snapshot_id?: string | null;
+  market_date?: string | null;
+  coverage?: Record<string, unknown>;
+  source_state?: string;
+  pilot_themes?: { theme_id?: string; display_name?: string; definition_status?: string; review_status?: string; missing_security_records?: string[] }[];
+  blockers?: string[];
+  package_errors?: string[];
+  definition_count?: number;
+  active_reviewed_definition_count?: number;
+  live_theme_intelligence?: boolean;
+  reason?: string | null;
+  test_fixtures_enabled?: boolean;
 };
 
 export type MarketAISummary = {

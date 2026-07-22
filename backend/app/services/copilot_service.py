@@ -21,6 +21,7 @@ from app.services.copilot_prompt_builder import COPILOT_SYSTEM_PROMPT, build_cop
 from app.services.copilot_reasoning import StrategicReasoningEngine
 from app.services.copilot_safety import FINANCIAL_DISCLAIMER, asks_for_personalized_advice
 from app.services.openai_client import generate_structured_chat_response
+from app.services.theme_intelligence import enrich_copilot_theme_context
 
 
 def answer_copilot_chat(
@@ -30,7 +31,7 @@ def answer_copilot_chat(
     thread_id: str | None = None,
 ) -> dict[str, Any]:
     normalized_message = " ".join(message.strip().split())
-    sanitized_context = sanitize_copilot_context(context)
+    sanitized_context = enrich_copilot_theme_context(normalized_message, sanitize_copilot_context(context))
     fallback = build_rule_copilot_response(normalized_message, sanitized_context, history)
     openai_response = generate_structured_chat_response(
         COPILOT_SYSTEM_PROMPT,
@@ -295,6 +296,26 @@ def explain_risk(context: dict[str, Any]) -> tuple[str, list[str], list[str], li
 def explain_leadership(context: dict[str, Any]) -> tuple[str, list[str], list[str], list[str]]:
     sector = find_focused_group(context)
     name = sector.get("name") or sector.get("sector") or sector.get("theme") or value_at(context, "focusedMetric.title") or "This group"
+    if sector.get("theme_id"):
+        performance = sector.get("performance") if isinstance(sector.get("performance"), dict) else {}
+        relative_strength = sector.get("relative_strength") if isinstance(sector.get("relative_strength"), dict) else {}
+        breadth = sector.get("breadth") if isinstance(sector.get("breadth"), dict) else {}
+        participation = sector.get("participation") if isinstance(sector.get("participation"), dict) else {}
+        concentration = sector.get("concentration") if isinstance(sector.get("concentration"), dict) else {}
+        score = sector.get("absolute_composite_score")
+        rank = sector.get("rank")
+        points = [
+            f"Absolute composite score: {format_copilot_value(score)} / 100; rank #{format_copilot_value(rank)} in the active pilot.",
+            f"Returns: 1M {format_copilot_value(performance.get('1m'))} and 3M {format_copilot_value(performance.get('3m'))}; 1M RS versus SPY {format_copilot_value(relative_strength.get('vs_spy_1m'))}.",
+            f"Breadth above EMA50: {format_copilot_value(breadth.get('percent_above_ema50'))}; positive-return participation: {format_copilot_value(participation.get('positive_return_participation_pct'))}%; concentration: {format_copilot_label(concentration.get('classification'))} (HHI {format_copilot_value(concentration.get('concentration_hhi'))}).",
+        ]
+        cautions = list_of_text(sector.get("warnings")) or ["Historical returns use the current reviewed basket until historical membership versions are available."]
+        return (
+            f"{name} is {format_copilot_label(sector.get('classification'))} in the live ThemeSnapshot because its audited absolute composite is {format_copilot_value(score)} / 100, with rank #{format_copilot_value(rank)} among the active reviewed pilot themes.",
+            points,
+            cautions,
+            ["Watch whether relative strength, breadth, participation, and concentration remain consistent in the next immutable ThemeSnapshot."],
+        )
     performance = sector.get("performance") or sector.get("return") or sector.get("selectedReturn")
     rotation = sector.get("rotation") or sector.get("quadrant") or sector.get("status") or sector.get("primaryStatus")
     breadth = sector.get("breadth") or sector.get("breadthStatus")

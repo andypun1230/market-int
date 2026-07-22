@@ -11,7 +11,7 @@
     "undefined",
     "NaN"
   ],
-  "generated_at": "2026-07-19T10:32:10.077256+00:00",
+  "generated_at": "2026-07-20T14:30:20.646531+00:00",
   "inventory": [
     {
       "allowed_source_states": [
@@ -1366,8 +1366,8 @@
     },
     "Market Breadth": {
       "FAIL": 0,
-      "PARTIAL": 1,
-      "PASS": 1,
+      "PARTIAL": 0,
+      "PASS": 2,
       "SKIP": 0
     },
     "Market Decision": {

@@ -1,10 +1,8 @@
 import { buildHomeSummary } from '../src/features/home/homeSummary';
-import type { HomeDashboardResponse, IndexSnapshot, MarketHealthResponse } from '../src/types/market';
+import type { HistoryData, HomeDashboardResponse, IndexSnapshot, MarketHealthResponse } from '../src/types/market';
 
 function assert(condition: unknown, message: string) {
-  if (!condition) {
-    throw new Error(message);
-  }
+  if (!condition) throw new Error(message);
 }
 
 function index(symbol: string, changePercent: number): IndexSnapshot {
@@ -14,6 +12,7 @@ function index(symbol: string, changePercent: number): IndexSnapshot {
     ema_20: 100,
     ema_50: 95,
     ema_200: 90,
+    previous_close: 104,
     price: 105,
     rsi_14: 60,
     sma_50: 95,
@@ -22,104 +21,88 @@ function index(symbol: string, changePercent: number): IndexSnapshot {
   };
 }
 
+function history(symbol: string, closes: number[], timeframe = '5'): HistoryData {
+  return {
+    as_of: '2026-07-20T09:30:00Z',
+    candles: closes.map((close, index) => ({
+      close,
+      high: close + 1,
+      low: close - 1,
+      open: close - 0.5,
+      timestamp: `2026-07-${String(index + 1).padStart(2, '0')}T00:00:00Z`,
+      volume: 1_000,
+    })),
+    fallback_used: false,
+    is_live: true,
+    is_stale: false,
+    source: 'polygon',
+    symbol,
+    timeframe,
+  };
+}
+
 function health(score: number, status = 'Very Healthy', volatility = 74, breadth = 75): MarketHealthResponse {
   return {
     component_explanations: {},
-    components: {
-      breadth,
-      institutional: 70,
-      momentum: 80,
-      sector_strength: 78,
-      trend: 82,
-      volatility,
-      volume: 68,
-    },
+    components: { breadth, institutional: 70, momentum: 80, sector_strength: 78, trend: 82, volatility, volume: 68 },
     improving_factors: [],
     overall_score: score,
     status,
-    summary: 'Trend and leadership remain constructive, but mixed breadth argues against chasing extended names.',
-    weakening_factors: [],
+    summary: 'Trend and leadership remain constructive.',
+    weakening_factors: ['Participation is uneven'],
   };
 }
 
 function dashboard(overrides: Partial<HomeDashboardResponse> = {}): HomeDashboardResponse {
   return {
     cache_status: 'fresh',
+    generated_at: '2026-07-20T09:30:00Z',
     core: {
-      breadth_summary: {
-        breadth_score: 72,
-        breadth_status: 'Strong',
-        coverage_percent: 88,
-        overall_mode: 'mixed',
-        percent_above_50ema: 61,
-        universe: 'core',
-      },
+      breadth_summary: { breadth_score: 72, breadth_status: 'Strong', percent_above_50ema: 61 },
       decision_summary: {
         aggressiveness: {
-          cautions: ['Sentiment elevated'],
+          cautions: ['Sentiment is elevated'],
           reasons: ['Leadership constructive'],
           score: 88,
           status: 'Moderately Aggressive',
-          suggested_exposure: {
-            cash: 22,
-            margin: 'Light / selective',
-            options: 'Suitable for strong setups only',
-            stocks: 78,
-          },
-          summary: 'Stay selectively aggressive while confirmation is mixed.',
+          suggested_exposure: { cash: 22, margin: 'Light', options: 'Selective', stocks: 78 },
+          summary: 'Stay selective.',
         },
         main_risk: 'Elevated sentiment',
         playbook: {
-          action_guidelines: ['Prioritize leaders'],
-          avoid: ['Chasing extended names'],
-          cap_rotation_leader: 'Mega Cap',
-          disclaimer: 'Educational market decision support only, not financial advice.',
-          headline: 'Stay selectively aggressive',
-          main_risk: 'Elevated sentiment',
-          preferred_strategy: 'Momentum Breakouts',
-          suggested_aggressiveness: 'Moderately Aggressive',
-          summary: 'Trend and leadership remain constructive, but mixed breadth argues against chasing extended names.',
-          top_industry_group: 'Semiconductors',
-          top_sector: 'Technology',
+          action_guidelines: ['Prioritize leaders'], avoid: ['Chasing'], cap_rotation_leader: 'Mega Cap',
+          disclaimer: 'Educational only.', headline: 'Stay selectively aggressive', main_risk: 'Elevated sentiment',
+          preferred_strategy: 'Momentum', suggested_aggressiveness: 'Moderately Aggressive', summary: 'Constructive.',
+          top_industry_group: 'Semiconductors', top_sector: 'Technology',
         },
-        preferred_style: 'Momentum Breakouts',
+        preferred_style: 'Momentum',
       },
       indexes: [index('SPY', 0.8), index('QQQ', 1.2), index('IWM', 0.3), index('DIA', 0.4)],
+      lagging_sector: { change: '-0.4%', name: 'Materials', rank: 11, relative_strength_score: 22, status: 'Lagging' },
       market_health: health(85),
-      overall_mode: 'mixed',
+      overall_mode: 'live',
       top_industry_group: {
-        breadth_above_50ema: 80,
-        name: 'Memory',
-        parent_sector: 'Technology',
-        rank: 1,
-        relative_strength_score: 92,
-        return_1d: 1,
-        return_1w: 4,
-        return_mtd: 6,
-        return_ytd: 40,
-        score: 94,
-        status: 'Leading',
+        breadth_above_50ema: 80, name: 'Memory', parent_sector: 'Technology', rank: 1,
+        relative_strength_score: 92, return_1d: 1, return_1w: 4, return_mtd: 6, return_ytd: 40,
+        score: 94, status: 'Leading',
       },
-      top_sector: {
-        change: '+1.2%',
-        name: 'Consumer Discretionary',
-        rank: 1,
-        relative_strength_score: 88,
-        status: 'Leading',
-      },
+      top_sector: { change: '+1.2%', name: 'Consumer Discretionary', rank: 1, relative_strength_score: 88, status: 'Leading' },
     },
     risk_summary: {
       score: 22,
       status: 'Low',
       summary: 'Elevated sentiment',
-      top_contributors: [{ explanation: 'Sentiment is elevated', impact: 'warning', label: 'Sentiment' }],
+      top_contributors: [
+        { explanation: 'Sentiment is elevated', impact: 'warning', label: 'Sentiment' },
+        { explanation: 'Participation is uneven', impact: 'warning', label: 'Participation' },
+      ],
     },
     watchlist_summary: {
       items: [
-        { change_percent: 1.1, main_setup: 'Near breakout', score: 88, source: 'mock', symbol: 'MU' },
-        { change_percent: 0.9, main_setup: 'Momentum', score: 86, source: 'mock', symbol: 'NVDA' },
-        { change_percent: -0.2, main_setup: 'Watching', score: 70, source: 'mock', symbol: 'ARM' },
-        { change_percent: 0.1, main_setup: 'Watching', score: 65, source: 'mock', symbol: 'SNDK' },
+        { change_percent: 1.1, symbol: 'MU' },
+        { change_percent: 0.9, symbol: 'NVDA' },
+        { change_percent: -0.2, symbol: 'ARM' },
+        { change_percent: 0.1, symbol: 'SNDK' },
       ],
     },
     ...overrides,
@@ -127,120 +110,109 @@ function dashboard(overrides: Partial<HomeDashboardResponse> = {}): HomeDashboar
 }
 
 function run() {
-  const summary = buildHomeSummary(dashboard());
-  assert(summary.recommendation === 'Stay Selectively Aggressive', 'playbook headline becomes the primary recommendation');
-  assert(summary.healthScore === 85, 'health score is preserved');
-  assert(summary.riskLabel === 'Low', 'risk label is preserved');
-  assert(summary.positioningLabel === 'Moderately Aggressive', 'positioning label comes from aggressiveness');
-  assert(summary.indexes.map((item) => item.symbol).join(',') === 'SPY,QQQ,IWM,DJI', 'market snapshot normalizes display indexes');
-  assert(summary.indexes.map((item) => item.changePercent).join(',') === '0.8,1.2,0.3,0.4', 'constructive test index moves are coherent');
-  assert(summary.indexes.every((item) => item.trendLabel === 'Bullish'), 'structural index trend remains separate from daily move');
-  assert(summary.breadth?.value === 'Strong', 'breadth metric uses core breadth summary');
-  assert(summary.volatility?.value === 'Contained', 'volatility metric derives from health component');
-  assert(summary.leaders.map((item) => item.label).join(',') === 'Consumer Discretionary,Memory', 'leadership includes coherent sector and theme');
-  assert(summary.laggardState === 'evaluated_empty', 'laggard empty state is only positive when leadership data was evaluated');
-  assert(summary.stockIdeas.length === 3, 'watchlist snapshot keeps only top three ideas');
-  assert(summary.upcomingEvents.length === 0, 'empty macro calendar is represented as no events');
-  assert(summary.summary === 'Trend and leadership remain constructive. Stay with leaders, but avoid chasing extended names.', 'playbook summary is generated as complete compact copy');
-  assert(!summary.summary.endsWith('...'), 'playbook summary does not end with ellipsis');
-  assert(summary.riskDriver === 'Main driver: Elevated sentiment and concentrated leadership.', 'risk driver is compact and factor-based');
-  assert(!(summary.riskDriver ?? '').includes('22/100'), 'risk driver does not repeat the score');
-  assert(summary.dailyInsight?.headline !== summary.recommendation, 'daily insight headline differs from playbook recommendation');
-  assert(summary.dailyInsight?.summary !== summary.summary, 'daily insight does not duplicate Today’s Playbook text exactly');
-  assert(summary.dailyInsight?.summary.includes('confirmed leaders'), 'daily insight adds interpretive guidance');
-  assert(!summary.dailyInsight?.summary.includes('22/100'), 'daily insight does not repeat visible scores');
-  assert(!summary.dailyInsight?.summary.endsWith('...'), 'daily insight is a complete sentence without ellipsis');
+  const summary = buildHomeSummary(dashboard(), {
+    SPY: history('SPY', [100, 101, 100.5, 103]),
+    QQQ: history('QQQ', [100, 102, 101, 105]),
+  });
 
-  const mockSummary = buildHomeSummary(dashboard({ core: { ...dashboard().core, overall_mode: 'mock' } }));
-  assert(mockSummary.sourceState === 'mock', 'mock source state is labelled');
+  assert(summary.marketPulse.label === 'Risk On', 'constructive health, breadth, volatility, and low risk produce Risk On');
+  assert(summary.marketPulse.factors.length === 3, 'Market Pulse has no more than three support factors');
+  assert(summary.breadth?.direction === null && summary.volatility?.direction === null, 'direction stays hidden without published comparison data');
+  assert(summary.marketEvents.length >= 5 && summary.marketEvents.length <= 8, 'Today’s Market contains five to eight factual observations');
+  assert(summary.marketEvents.every((event) => event.endsWith('.')), 'market observations are complete concise sentences');
+  assert(summary.marketEvents[0] === 'All four major indexes are higher.', 'the first observation compresses index participation');
+  assert(summary.marketEvents[2] === 'Consumer Discretionary leads while Materials lags.', 'the third observation compresses leadership');
+  assert(summary.indexes.map((item) => item.symbol).join(',') === 'SPY,QQQ,IWM,DIA', 'canonical index proxies are preserved');
+  assert(summary.indexes.find((item) => item.symbol === 'SPY')?.sparkline.join(',') === '100,101,100.5,103', 'sparkline uses real recent history closes');
+  assert(summary.indexes.find((item) => item.symbol === 'IWM')?.sparkline.length === 0, 'missing intraday history produces an unavailable sparkline');
+  const dailyHistory = buildHomeSummary(dashboard(), { SPY: history('SPY', [100, 101, 102], 'D') });
+  assert(dailyHistory.indexes.find((item) => item.symbol === 'SPY')?.sparkline.length === 0, 'daily bars are never presented as intraday');
+  assert(summary.indexes.every((item) => item.trendLabel === 'Uptrend'), 'trend labels are simplified');
+  assert(summary.leadership.map((item) => item.role).join(',') === 'Leading Sector,Leading Theme,Lagging Sector', 'leadership shows exactly the three requested roles');
+  assert(summary.leadership.map((item) => item.label).join(',') === 'Consumer Discretionary,Memory,Materials', 'leadership labels contain names only');
+  assert(summary.leadership.every((item) => !item.label.includes('#') && !item.label.includes('EMA') && !item.label.includes('Composite')), 'leadership removes rankings and technical details');
+  assert(summary.riskDrivers.length >= 2 && summary.riskDrivers.length <= 3, 'Risk Dashboard exposes two to three concise drivers');
+  assert(summary.stockIdeas.length === 4, 'compact ticker chips can show the available top ideas');
+  assert(summary.dailyInsight?.category === 'Cross-Market', 'Daily Insight has a compact category');
+  assert(summary.dailyInsight?.headline === 'Participation is broad', 'Daily Insight has one concise signal headline');
+  assert(!summary.dailyInsight?.summary.includes('Consumer Discretionary'), 'Daily Insight does not repeat Leadership');
+  assert(!summary.dailyInsight?.summary.includes('Sentiment'), 'Daily Insight does not repeat Risk drivers');
+  assert(summary.updatedAt === '2026-07-20T09:30:00Z', 'freshness timestamp is preserved');
 
-  const emptyWatchlist = buildHomeSummary(dashboard({ watchlist_summary: { items: [] } }));
-  assert(emptyWatchlist.stockIdeas.length === 0, 'empty watchlist is handled cleanly');
+  const translatedRisk = buildHomeSummary(dashboard({
+    risk_summary: {
+      score: 40,
+      status: 'Low',
+      summary: 'Risk is contained',
+      top_contributors: [
+        { explanation: 'Market health is Mixed at 68/100.', impact: 'warning', label: 'Health' },
+        { explanation: 'Only 56.0% of stocks are above the 50EMA.', impact: 'warning', label: 'Breadth' },
+        { explanation: 'Market Health changed -8.0, Breadth changed -6.5, Fear & Greed changed -27.0.', impact: 'warning', label: 'Change' },
+      ],
+    },
+  }));
+  assert(translatedRisk.riskDrivers.join(',') === 'Mixed market health,Narrow participation,Sentiment cooling', 'raw risk deltas are translated into compact supported concepts');
+  assert(translatedRisk.riskDrivers.every((driver) => !/[-+]\d+\.\d+/.test(driver)), 'risk drivers never expose raw score deltas');
+
+  const directional = buildHomeSummary(dashboard({
+    core: {
+      ...dashboard().core,
+      breadth_summary: { ...dashboard().core.breadth_summary!, trend: 'deteriorating' },
+      top_sector: { ...dashboard().core.top_sector!, status: 'Improving' },
+    },
+  }));
+  assert(directional.breadth?.direction === 'Narrowing', 'published breadth deterioration maps to Narrowing');
+  assert(directional.marketPulse.factors[0]?.direction === 'Improving', 'published sector classification supplies leadership direction');
+
+  const longLeadership = buildHomeSummary(dashboard({
+    core: {
+      ...dashboard().core,
+      lagging_sector: { ...dashboard().core.lagging_sector!, name: 'Consumer Discretionary Services' },
+      theme_intelligence: {
+        available: true,
+        leaders: [{ display_name: 'Next Generation Cybersecurity Infrastructure', theme_id: 'next-gen-cybersecurity' }],
+      },
+      top_sector: { ...dashboard().core.top_sector!, name: 'Communication Services' },
+    },
+  }));
+  assert(longLeadership.leadership.map((item) => item.label).join('|') === 'Communication Services|Next Generation Cybersecurity Infrastructure|Consumer Discretionary Services', 'long published names are preserved without display metadata');
+
+  const partial = buildHomeSummary({
+    core: {
+      decision_summary: {},
+      indexes: [index('SPY', -0.4)],
+      overall_mode: 'live',
+    },
+    risk_summary: { top_contributors: [] },
+    watchlist_summary: { items: [] },
+  } as unknown as HomeDashboardResponse);
+  assert(partial.indexes.length === 1 && partial.indexes[0].sparkline.length === 0, 'partial data keeps available index state and an honest unavailable chart');
+  assert(partial.marketEvents.length >= 5, 'partial data still produces a stable concise briefing');
+
+  const selective = buildHomeSummary(dashboard({
+    core: {
+      ...dashboard().core,
+      breadth_summary: { breadth_score: 52, breadth_status: 'Neutral', percent_above_50ema: 51 },
+      market_health: health(58, 'Mixed', 55, 52),
+    },
+    risk_summary: { score: 48, status: 'Moderate', summary: 'Uneven breadth', top_contributors: [] },
+  }));
+  assert(selective.marketPulse.label === 'Selective Risk', 'mixed conditions produce Selective Risk');
 
   const defensive = buildHomeSummary(dashboard({
     core: {
       ...dashboard().core,
-      breadth_summary: {
-        ...dashboard().core.breadth_summary!,
-        breadth_score: 35,
-        breadth_status: 'Weak',
-        percent_above_50ema: 38,
-      },
+      breadth_summary: { breadth_score: 35, breadth_status: 'Weak', percent_above_50ema: 38 },
       indexes: [index('SPY', -1.1), index('QQQ', -1.6), index('IWM', -1.3), index('DIA', -0.8)],
-      decision_summary: {
-        ...dashboard().core.decision_summary,
-        aggressiveness: {
-          ...dashboard().core.decision_summary.aggressiveness!,
-          score: 32,
-          status: 'Defensive',
-        },
-        playbook: {
-          ...dashboard().core.decision_summary.playbook!,
-          headline: 'Remain Defensive',
-          suggested_aggressiveness: 'Defensive',
-        },
-      },
       market_health: health(45, 'Weak', 35, 38),
     },
-    risk_summary: {
-      score: 78,
-      status: 'High',
-      summary: 'Volatility rising',
-      top_contributors: [],
-    },
+    risk_summary: { score: 78, status: 'High', summary: 'Volatility rising', top_contributors: [] },
   }));
-  assert(defensive.recommendation === 'Remain Defensive', 'defensive playbook headline is preserved');
-  assert(defensive.riskLabel === 'High', 'high risk state is preserved');
-  assert(defensive.summary.includes('Risk is elevated'), 'defensive state gets coherent defensive summary copy');
-  assert(defensive.volatility?.value === 'Rising', 'defensive state reflects elevated volatility');
+  assert(defensive.marketPulse.label === 'Risk Off', 'high risk and weak volatility produce Risk Off');
+  assert(defensive.todaysBias.toLowerCase().includes('protect capital'), 'Risk Off bias is defensive and concise');
 
-  const mixed = buildHomeSummary(dashboard({
-    core: {
-      ...dashboard().core,
-      breadth_summary: {
-        ...dashboard().core.breadth_summary!,
-        breadth_score: 52,
-        breadth_status: 'Neutral',
-        percent_above_50ema: 51,
-      },
-      indexes: [index('SPY', 0.1), index('QQQ', -0.2), index('IWM', 0), index('DIA', 0.2)],
-      market_health: health(58, 'Mixed', 55, 52),
-    },
-    risk_summary: {
-      score: 48,
-      status: 'Moderate',
-      summary: 'Uneven breadth',
-      top_contributors: [],
-    },
-  }));
-  assert(mixed.summary.includes('Market conditions are mixed') || mixed.riskLabel === 'Moderate', 'mixed state remains selective rather than aggressive');
-
-  const unavailableLeadership = buildHomeSummary(dashboard({
-    core: {
-      ...dashboard().core,
-      top_industry_group: null,
-      top_sector: undefined,
-    },
-  }));
-  assert(unavailableLeadership.laggardState === 'unavailable', 'missing leadership data does not imply no major laggards');
-
-  const canonicalLaggard = buildHomeSummary(dashboard({
-    core: {
-      ...dashboard().core,
-      lagging_sector: {
-        ...dashboard().core.top_sector!,
-        composite_score: 22.8,
-        eligible_members: 1,
-        name: 'Materials',
-        rank: 11,
-        status: 'Lagging',
-        total_members: 1,
-      },
-    },
-  }));
-  assert(canonicalLaggard.laggardState === 'canonical', 'a published lowest-ranked sector is used as the Home laggard');
-  assert(canonicalLaggard.laggards[0]?.label.includes('Materials · #11 overall · Lagging'), 'Home preserves canonical rank and classification for the laggard');
-  assert(canonicalLaggard.laggards[0]?.label.includes('limited breadth sample (1)'), 'small-sector reliability is visible without changing the rank');
+  const empty = buildHomeSummary(null);
+  assert(empty.sourceState === 'unavailable', 'missing dashboard has unavailable provenance');
 }
 
 run();

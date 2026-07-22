@@ -81,7 +81,7 @@ export default function MoreScreen() {
           <SettingsRow
             description="View, refresh, download, and share today’s market report."
             onPress={() => router.push('/report')}
-            title="Daily Market Report"
+            title="Daily Market Intelligence"
             value="Open"
           />
         </DashboardCard>

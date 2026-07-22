@@ -52,6 +52,8 @@ import {
   SupportResistanceResponse,
   ServiceCacheStatus,
   TrendlineResponse,
+  ThemeSnapshotResponse,
+  ThemeStatusResponse,
   TestDataScenariosResponse,
   TestDataStatus,
   UniverseStatus,
@@ -456,12 +458,42 @@ export function getLiquidityDashboardBySymbol(symbol: string) {
   return request<SymbolLiquidityResponse>(`/market/liquidity/${symbol}`);
 }
 
-export function getDailyReport() {
-  return request<DailyReport>('/report/daily');
+export function getDailyReport(preferences?: { stocks?: string[]; sectors?: string[]; themes?: string[] }) {
+  const params = new URLSearchParams();
+  if (preferences?.stocks?.length) params.set('stocks', [...new Set(preferences.stocks.map((item) => item.trim().toUpperCase()).filter(Boolean))].join(','));
+  if (preferences?.sectors?.length) params.set('sectors', [...new Set(preferences.sectors.map((item) => item.trim()).filter(Boolean))].join(','));
+  if (preferences?.themes?.length) params.set('themes', [...new Set(preferences.themes.map((item) => item.trim()).filter(Boolean))].join(','));
+  const query = params.toString();
+  return request<DailyReport>(`/report/daily${query ? `?${query}` : ''}`);
 }
 
-export function getDailyReportPdfUrl() {
-  return `${API_URL}/report/daily/pdf`;
+export function getDailyReportById(reportId: string) {
+  return request<DailyReport>(`/report/daily/${encodeURIComponent(reportId)}`);
+}
+
+export function getDailyReportHistory() {
+  return request<{ items: Record<string, unknown>[] }>('/report/daily/history');
+}
+
+export function getThemeSnapshot() {
+  return cachedRequest(
+    'theme-snapshot:latest:v1',
+    () => request<ThemeSnapshotResponse>('/market/themes/snapshot/latest'),
+    60_000,
+  );
+}
+
+export function getThemeStatus() {
+  return cachedRequest(
+    'theme-status:v1',
+    () => request<ThemeStatusResponse>('/market/themes/status'),
+    30_000,
+  );
+}
+
+export function getDailyReportPdfUrl(reportId?: string | null) {
+  const suffix = reportId ? `?report_id=${encodeURIComponent(reportId)}` : '';
+  return `${API_URL}/report/daily/pdf${suffix}`;
 }
 
 export function getMarketAISummary() {

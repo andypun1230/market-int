@@ -150,7 +150,7 @@
             "data_mode": "unverified_strategy_basket",
             "is_live_theme_intelligence": false,
             "label": "Static strategy preference",
-            "last_updated": "2026-07-19T08:56:01.992010+00:00",
+            "last_updated": "2026-07-20T05:40:33.643988+00:00",
             "reason": "Live Theme Intelligence is unavailable until reviewed membership, durable history, and a ThemeSnapshot are published.",
             "snapshot_id": null,
             "source": "configured industry-group basket",
@@ -209,82 +209,82 @@
     "endpoint_http_500_and_availability": {
       "details": {
         "/home/dashboard": {
-          "latency_ms": 21.82,
-          "snapshot_id": "market-20260719T130046Z-87f4ff39",
+          "latency_ms": 31.48,
+          "snapshot_id": "market-20260720T054032Z-c06d8b2b",
           "status": 200
         },
         "/market/breadth": {
-          "latency_ms": 7.93,
+          "latency_ms": 5.74,
           "snapshot_id": null,
           "status": 200
         },
         "/market/core-snapshot": {
-          "latency_ms": 5.71,
-          "snapshot_id": "market-20260719T130046Z-87f4ff39",
+          "latency_ms": 14.39,
+          "snapshot_id": "market-20260720T054032Z-c06d8b2b",
           "status": 200
         },
         "/market/decision-dashboard": {
-          "latency_ms": 2.92,
+          "latency_ms": 10.82,
           "snapshot_id": null,
           "status": 200
         },
         "/market/details/decision": {
-          "latency_ms": 3.15,
-          "snapshot_id": "market-20260719T130046Z-87f4ff39",
+          "latency_ms": 14.3,
+          "snapshot_id": "market-20260720T054032Z-c06d8b2b",
           "status": 200
         },
         "/market/details/institutional": {
-          "latency_ms": 2.28,
-          "snapshot_id": "market-20260719T130046Z-87f4ff39",
+          "latency_ms": 3.56,
+          "snapshot_id": "market-20260720T054032Z-c06d8b2b",
           "status": 200
         },
         "/market/details/structure": {
-          "latency_ms": 6.39,
-          "snapshot_id": "market-20260719T130046Z-87f4ff39",
+          "latency_ms": 6.26,
+          "snapshot_id": "market-20260720T054032Z-c06d8b2b",
           "status": 200
         },
         "/market/fear-greed": {
-          "latency_ms": 2.75,
+          "latency_ms": 3.56,
           "snapshot_id": null,
           "status": 200
         },
         "/market/health": {
-          "latency_ms": 2.1,
+          "latency_ms": 3.31,
           "snapshot_id": null,
           "status": 200
         },
         "/market/macro": {
-          "latency_ms": 39.77,
+          "latency_ms": 43.97,
           "snapshot_id": null,
           "status": 200
         },
         "/market/regime": {
-          "latency_ms": 2.31,
+          "latency_ms": 3.8,
           "snapshot_id": null,
           "status": 200
         },
         "/market/sectors": {
-          "latency_ms": 2.9,
+          "latency_ms": 3.64,
           "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
           "status": 200
         },
         "/market/sectors/rotation": {
-          "latency_ms": 38.72,
+          "latency_ms": 215.8,
           "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
           "status": 200
         },
         "/market/sectors/snapshot/latest": {
-          "latency_ms": 4.96,
+          "latency_ms": 6.19,
           "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
           "status": 200
         },
         "/market/snapshot/latest": {
-          "latency_ms": 9.54,
-          "snapshot_id": "market-20260719T130046Z-87f4ff39",
+          "latency_ms": 20.72,
+          "snapshot_id": "market-20260720T054032Z-c06d8b2b",
           "status": 200
         },
         "/report/daily": {
-          "latency_ms": 9717.28,
+          "latency_ms": 24.47,
           "snapshot_id": null,
           "status": 200
         }
@@ -295,7 +295,7 @@
     "home_market_health_decision_consistency": {
       "details": {
         "canonical_decision_confidence": {
-          "calculated_at": "2026-07-19T13:00:44.709507+00:00",
+          "calculated_at": "2026-07-20T05:40:28.383708+00:00",
           "contributors": [
             {
               "label": "Market Health",
@@ -347,7 +347,7 @@
         "health": 68,
         "other_confidences": [
           {
-            "calculated_at": "2026-07-19T13:00:44.709507+00:00",
+            "calculated_at": "2026-07-20T05:40:28.383708+00:00",
             "contributors": [
               {
                 "label": "Market Health",
@@ -397,7 +397,7 @@
             "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
           },
           {
-            "calculated_at": "2026-07-19T13:00:44.709507+00:00",
+            "calculated_at": "2026-07-20T05:40:28.383708+00:00",
             "contributors": [
               {
                 "label": "Market Health",
@@ -447,7 +447,7 @@
             "summary": "Decision confidence is mixed because 4 of 7 decision inputs meet the confirmation threshold."
           },
           {
-            "calculated_at": "2026-07-19T13:00:44.709507+00:00",
+            "calculated_at": "2026-07-20T05:40:28.383708+00:00",
             "contributors": [
               {
                 "label": "Market Health",
@@ -540,7 +540,7 @@
         },
         "laggard": "Materials",
         "leader": "Energy",
-        "market_snapshot_id": "market-20260719T130046Z-87f4ff39"
+        "market_snapshot_id": "market-20260720T054032Z-c06d8b2b"
       },
       "remediation": "Align home adapters with the durable sector and breadth snapshots.",
       "status": "PASS"
@@ -616,7 +616,7 @@
     "release_gate_regressions": {
       "details": {
         "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m unittest tests.test_release_gate_semantics tests.test_breadth_snapshot tests.test_sector_snapshot",
-        "output": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n..........................\n----------------------------------------------------------------------\nRan 26 tests in 1.406s\n\nOK\n"
+        "output": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n...........................\n----------------------------------------------------------------------\nRan 27 tests in 2.069s\n\nOK\n"
       },
       "remediation": "Repair the deterministic regression before accepting the release gate.",
       "status": "PASS"
@@ -626,8 +626,9 @@
         "date": "2026-07-17",
         "snapshot_ids": {
           "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
-          "market": "market-20260719T130108Z-0fee0eb0",
-          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+          "market": "market-20260720T054032Z-c06d8b2b",
+          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+          "theme": "theme-2026-07-17-f8ca1be84c"
         }
       },
       "remediation": "Cache and report context must remain stable for identical durable snapshots.",
@@ -635,12 +636,12 @@
     },
     "report_semantic_consistency": {
       "details": {
-        "http_report_id": "2026-07-17-d22dc036",
+        "http_report_id": "daily-2026-07-17-b74b5db9e204",
         "macro": {
-          "as_of": "2026-07-19T02:26:14.693751+00:00",
+          "as_of": "2026-07-20T02:40:26.473839+00:00",
           "assets": [
             {
-              "as_of": "2026-07-19T02:11:18.261503+00:00",
+              "as_of": "2026-07-20T02:29:07.762998+00:00",
               "asset_class": "equities",
               "is_live": true,
               "label": "Equities",
@@ -650,7 +651,7 @@
               "symbol": "SPY"
             },
             {
-              "as_of": "2026-07-19T02:26:14.433802+00:00",
+              "as_of": "2026-07-20T02:40:26.473839+00:00",
               "asset_class": "dollar",
               "is_live": true,
               "label": "US Dollar",
@@ -660,7 +661,7 @@
               "symbol": "UUP"
             },
             {
-              "as_of": "2026-07-19T02:26:14.693751+00:00",
+              "as_of": "2026-07-20T02:40:26.264448+00:00",
               "asset_class": "oil",
               "is_live": true,
               "label": "Oil",
@@ -670,7 +671,7 @@
               "symbol": "USO"
             },
             {
-              "as_of": "2026-07-19T02:11:20.102303+00:00",
+              "as_of": "2026-07-20T02:29:09.281278+00:00",
               "asset_class": "credit",
               "is_live": true,
               "label": "High-yield credit",
@@ -680,7 +681,7 @@
               "symbol": "HYG"
             },
             {
-              "as_of": "2026-07-19T02:11:21.469331+00:00",
+              "as_of": "2026-07-20T02:29:11.113271+00:00",
               "asset_class": "treasury_10y",
               "is_live": true,
               "label": "10Y Treasury bond proxy",
@@ -690,7 +691,7 @@
               "symbol": "IEF"
             },
             {
-              "as_of": "2026-07-19T02:11:16.259159+00:00",
+              "as_of": "2026-07-20T02:29:12.878936+00:00",
               "asset_class": "treasury_30y",
               "is_live": true,
               "label": "30Y Treasury bond proxy",
@@ -700,7 +701,7 @@
               "symbol": "TLT"
             },
             {
-              "as_of": "2026-07-19T02:11:19.935103+00:00",
+              "as_of": "2026-07-20T02:29:09.303838+00:00",
               "asset_class": "gold",
               "is_live": true,
               "label": "Gold",
@@ -717,9 +718,9 @@
           "histories": {
             "GLD": {
               "adjusted": true,
-              "as_of": "2026-07-19T02:11:19.935103+00:00",
+              "as_of": "2026-07-20T02:29:09.303838+00:00",
               "background_refresh_started": false,
-              "cache_age_seconds": 172197,
+              "cache_age_seconds": 232327,
               "cache_hit": true,
               "candles": [
                 {
@@ -1488,8 +1489,8 @@
                   "low": 363.6,
                   "open": 364.11,
                   "timestamp": "2026-07-17T04:00:00+00:00",
-                  "transactions": 155792,
-                  "volume": 6456613.022477,
+                  "transactions": 155790,
+                  "volume": 6456632.129162,
                   "vwap": 367.2865
                 }
               ],
@@ -1498,7 +1499,7 @@
               "expires_at": null,
               "fallback_reason": null,
               "fallback_used": false,
-              "fetched_at": "2026-07-19T02:11:19.936941+00:00",
+              "fetched_at": "2026-07-20T02:29:09.307090+00:00",
               "is_live": true,
               "is_stale": false,
               "memory_cache_hit": false,
@@ -1518,9 +1519,9 @@
             },
             "HYG": {
               "adjusted": true,
-              "as_of": "2026-07-19T02:11:20.102303+00:00",
+              "as_of": "2026-07-20T02:29:09.281278+00:00",
               "background_refresh_started": false,
-              "cache_age_seconds": 171896,
+              "cache_age_seconds": 232026,
               "cache_hit": true,
               "candles": [
                 {
@@ -2289,9 +2290,9 @@
                   "low": 79.63,
                   "open": 79.75,
                   "timestamp": "2026-07-17T04:00:00+00:00",
-                  "transactions": 43976,
-                  "volume": 43803564.626281,
-                  "vwap": 79.7356
+                  "transactions": 43974,
+                  "volume": 42020083.124502,
+                  "vwap": 79.7342
                 }
               ],
               "capability_state": null,
@@ -2299,7 +2300,7 @@
               "expires_at": null,
               "fallback_reason": null,
               "fallback_used": false,
-              "fetched_at": "2026-07-19T02:11:20.104099+00:00",
+              "fetched_at": "2026-07-20T02:29:09.283167+00:00",
               "is_live": true,
               "is_stale": false,
               "memory_cache_hit": false,
@@ -2319,9 +2320,9 @@
             },
             "IEF": {
               "adjusted": true,
-              "as_of": "2026-07-19T02:11:21.469331+00:00",
+              "as_of": "2026-07-20T02:29:11.113271+00:00",
               "background_refresh_started": false,
-              "cache_age_seconds": 171894,
+              "cache_age_seconds": 232024,
               "cache_hit": true,
               "candles": [
                 {
@@ -3090,9 +3091,9 @@
                   "low": 93.82,
                   "open": 93.96,
                   "timestamp": "2026-07-17T04:00:00+00:00",
-                  "transactions": 19349,
-                  "volume": 7576309.861937,
-                  "vwap": 93.9249
+                  "transactions": 19347,
+                  "volume": 7561338.487102,
+                  "vwap": 93.9255
                 }
               ],
               "capability_state": null,
@@ -3100,7 +3101,7 @@
               "expires_at": null,
               "fallback_reason": null,
               "fallback_used": false,
-              "fetched_at": "2026-07-19T02:11:21.472135+00:00",
+              "fetched_at": "2026-07-20T02:29:11.115038+00:00",
               "is_live": true,
               "is_stale": false,
               "memory_cache_hit": false,
@@ -3120,9 +3121,9 @@
             },
             "SPY": {
               "adjusted": true,
-              "as_of": "2026-07-19T02:11:18.261503+00:00",
+              "as_of": "2026-07-20T02:29:07.762998+00:00",
               "background_refresh_started": false,
-              "cache_age_seconds": 172198,
+              "cache_age_seconds": 232329,
               "cache_hit": true,
               "candles": [
                 {
@@ -3891,9 +3892,9 @@
                   "low": 740.8,
                   "open": 742.08,
                   "timestamp": "2026-07-17T04:00:00+00:00",
-                  "transactions": 735259,
-                  "volume": 63465699.972209,
-                  "vwap": 744.613
+                  "transactions": 735287,
+                  "volume": 62650961.641705,
+                  "vwap": 744.6511
                 }
               ],
               "capability_state": null,
@@ -3901,7 +3902,7 @@
               "expires_at": null,
               "fallback_reason": null,
               "fallback_used": false,
-              "fetched_at": "2026-07-19T02:11:18.265964+00:00",
+              "fetched_at": "2026-07-20T02:29:07.764818+00:00",
               "is_live": true,
               "is_stale": false,
               "memory_cache_hit": false,
@@ -3921,9 +3922,9 @@
             },
             "TLT": {
               "adjusted": true,
-              "as_of": "2026-07-19T02:11:16.259159+00:00",
+              "as_of": "2026-07-20T02:29:12.878936+00:00",
               "background_refresh_started": false,
-              "cache_age_seconds": 172142,
+              "cache_age_seconds": 232272,
               "cache_hit": true,
               "candles": [
                 {
@@ -4692,8 +4693,8 @@
                   "low": 84.49,
                   "open": 84.62,
                   "timestamp": "2026-07-17T04:00:00+00:00",
-                  "transactions": 62127,
-                  "volume": 22065624.770632,
+                  "transactions": 62125,
+                  "volume": 22065623.135226,
                   "vwap": 84.6058
                 }
               ],
@@ -4702,7 +4703,7 @@
               "expires_at": null,
               "fallback_reason": null,
               "fallback_used": false,
-              "fetched_at": "2026-07-19T02:11:16.265014+00:00",
+              "fetched_at": "2026-07-20T02:29:12.880647+00:00",
               "is_live": true,
               "is_stale": false,
               "memory_cache_hit": false,
@@ -4722,9 +4723,9 @@
             },
             "USO": {
               "adjusted": true,
-              "as_of": "2026-07-19T02:26:14.693751+00:00",
+              "as_of": "2026-07-20T02:40:26.264448+00:00",
               "background_refresh_started": false,
-              "cache_age_seconds": 172140,
+              "cache_age_seconds": 232271,
               "cache_hit": true,
               "candles": [
                 {
@@ -5493,8 +5494,8 @@
                   "low": 121.45,
                   "open": 123.2,
                   "timestamp": "2026-07-17T04:00:00+00:00",
-                  "transactions": 59970,
-                  "volume": 5952558.718162,
+                  "transactions": 59985,
+                  "volume": 5953863.718162,
                   "vwap": 123.4348
                 }
               ],
@@ -5503,7 +5504,7 @@
               "expires_at": null,
               "fallback_reason": null,
               "fallback_used": false,
-              "fetched_at": "2026-07-19T02:26:14.695482+00:00",
+              "fetched_at": "2026-07-20T02:40:26.266574+00:00",
               "is_live": true,
               "is_stale": false,
               "memory_cache_hit": false,
@@ -5523,9 +5524,9 @@
             },
             "UUP": {
               "adjusted": true,
-              "as_of": "2026-07-19T02:26:14.433802+00:00",
+              "as_of": "2026-07-20T02:40:26.473839+00:00",
               "background_refresh_started": false,
-              "cache_age_seconds": 172139,
+              "cache_age_seconds": 232269,
               "cache_hit": true,
               "candles": [
                 {
@@ -6304,7 +6305,7 @@
               "expires_at": null,
               "fallback_reason": null,
               "fallback_used": false,
-              "fetched_at": "2026-07-19T02:26:14.435464+00:00",
+              "fetched_at": "2026-07-20T02:40:26.475542+00:00",
               "is_live": true,
               "is_stale": false,
               "memory_cache_hit": false,
@@ -6350,11 +6351,12 @@
             "Gold is lagging equities."
           ]
         },
-        "report_id": "2026-07-17-c2170ab2",
+        "report_id": "daily-2026-07-17-b74b5db9e204",
         "snapshot_ids": {
           "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
-          "market": "market-20260719T130108Z-0fee0eb0",
-          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
+          "market": "market-20260720T054032Z-c06d8b2b",
+          "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+          "theme": "theme-2026-07-17-f8ca1be84c"
         },
         "themes_live": false
       },
@@ -6365,12 +6367,12 @@
       "details": {
         "after": {
           "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
-          "market": "market-20260719T130108Z-0fee0eb0",
+          "market": "market-20260720T054032Z-c06d8b2b",
           "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
         },
         "before": {
           "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
-          "market": "market-20260719T130108Z-0fee0eb0",
+          "market": "market-20260720T054032Z-c06d8b2b",
           "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
         }
       },
@@ -6484,7 +6486,7 @@
           "data_mode": "unverified_strategy_basket",
           "is_live_theme_intelligence": false,
           "label": "Static strategy preference",
-          "last_updated": "2026-07-19T08:56:01.992010+00:00",
+          "last_updated": "2026-07-20T05:40:33.643988+00:00",
           "reason": "Live Theme Intelligence is unavailable until reviewed membership, durable history, and a ThemeSnapshot are published.",
           "snapshot_id": null,
           "source": "configured industry-group basket",
@@ -6499,63 +6501,63 @@
         "provider_history_calls": 0,
         "routes": {
           "/home/dashboard": {
-            "latency_ms": 9.2,
+            "latency_ms": 15.31,
             "status": 200
           },
           "/market/breadth": {
-            "latency_ms": 4.42,
+            "latency_ms": 6.02,
             "status": 200
           },
           "/market/core-snapshot": {
-            "latency_ms": 5.46,
+            "latency_ms": 15.15,
             "status": 200
           },
           "/market/decision-dashboard": {
-            "latency_ms": 2.66,
+            "latency_ms": 11.18,
             "status": 200
           },
           "/market/details/decision": {
-            "latency_ms": 2.21,
+            "latency_ms": 13.66,
             "status": 200
           },
           "/market/details/institutional": {
-            "latency_ms": 2.08,
+            "latency_ms": 4.12,
             "status": 200
           },
           "/market/details/structure": {
-            "latency_ms": 3.96,
+            "latency_ms": 6.34,
             "status": 200
           },
           "/market/fear-greed": {
-            "latency_ms": 2.6,
+            "latency_ms": 3.63,
             "status": 200
           },
           "/market/health": {
-            "latency_ms": 2.07,
+            "latency_ms": 3.53,
             "status": 200
           },
           "/market/macro": {
-            "latency_ms": 2.68,
+            "latency_ms": 2.85,
             "status": 200
           },
           "/market/regime": {
-            "latency_ms": 2.32,
+            "latency_ms": 3.91,
             "status": 200
           },
           "/market/sectors": {
-            "latency_ms": 2.9,
+            "latency_ms": 3.6,
             "status": 200
           },
           "/market/sectors/rotation": {
-            "latency_ms": 37.67,
+            "latency_ms": 198.03,
             "status": 200
           },
           "/market/sectors/snapshot/latest": {
-            "latency_ms": 4.1,
+            "latency_ms": 5.24,
             "status": 200
           },
           "/market/snapshot/latest": {
-            "latency_ms": 9.61,
+            "latency_ms": 15.08,
             "status": 200
           }
         }
@@ -6572,7 +6574,7 @@
   "remediation_proposals": [],
   "snapshot_ids": {
     "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
-    "market": "market-20260719T130046Z-87f4ff39",
+    "market": "market-20260720T054032Z-c06d8b2b",
     "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6"
   },
   "totals": {

@@ -51,11 +51,8 @@ export function RiskPlanSection({
   };
   const content = (
     <View style={styles.dashboardStack}>
-      <RiskSummary model={model} riskColor={riskColor} />
-      <RiskMeter model={model} riskColor={riskColor} />
-      <CurrentRiskLevels model={model} />
+      <RiskOverview model={model} riskColor={riskColor} />
       <RiskRewardSection model={model} />
-      <RiskFactorsSection factors={model.factors} />
       <PositionGuidanceSection guidance={model.positionGuidance} />
       <IllustrativeRiskExample model={model} />
       <SupportingRiskDetails
@@ -95,12 +92,33 @@ export function RiskPlanSection({
   );
 }
 
+function RiskOverview({ model, riskColor }: { model: RiskDashboardModel; riskColor: string }) {
+  return (
+    <View style={styles.sectionCard}>
+      <View style={styles.inlineHeader}>
+        <Text style={styles.sectionLabel}>Risk Overview</Text>
+        <Text style={[styles.meterLabel, { color: riskColor }]}>{model.riskLevel ?? 'N/A'}</Text>
+      </View>
+      <RiskSummary model={model} riskColor={riskColor} />
+      <View style={styles.overviewDivider} />
+      <RiskMeter model={model} riskColor={riskColor} />
+      <View style={styles.overviewDivider} />
+      <CurrentRiskLevels model={model} />
+      {model.factors.length ? (
+        <>
+          <View style={styles.overviewDivider} />
+          <RiskFactorsSection factors={model.factors} />
+        </>
+      ) : null}
+    </View>
+  );
+}
+
 function RiskSummary({ model, riskColor }: { model: RiskDashboardModel; riskColor: string }) {
   return (
-    <View style={styles.summaryCard}>
+    <View style={styles.overviewSubsection}>
       <View style={styles.summaryHeader}>
         <View style={styles.summaryTitleBlock}>
-          <Text style={styles.kicker}>Risk Summary</Text>
           <Text style={styles.summaryTitle}>{model.headline}</Text>
         </View>
         <View style={styles.summaryScoreBlock}>
@@ -127,7 +145,7 @@ function RiskMeter({ model, riskColor }: { model: RiskDashboardModel; riskColor:
     <View
       accessibilityLabel={`Modeled risk level: ${modeledRiskLabel(activeRisk)}.`}
       accessible
-      style={styles.sectionCard}>
+      style={styles.overviewSubsection}>
       <View style={styles.inlineHeader}>
         <Text style={styles.sectionLabel}>Risk Meter</Text>
         <Text style={[styles.meterLabel, { color: riskColor }]}>{modeledRiskLabel(activeRisk)}</Text>
@@ -164,7 +182,7 @@ function RiskMeter({ model, riskColor }: { model: RiskDashboardModel; riskColor:
 function CurrentRiskLevels({ model }: { model: RiskDashboardModel }) {
   if (!model.trust.shouldLeadRiskTab) {
     return (
-      <View style={styles.sectionCard}>
+      <View style={styles.overviewSubsection}>
         <Text style={styles.sectionLabel}>Current Risk Levels</Text>
         <SectionSummary>
           Current calculations are unavailable because the available trade levels are not compatible with current risk context.
@@ -208,7 +226,7 @@ function RiskFactorsSection({ factors }: { factors: RiskFactor[] }) {
   const protective = factors.filter((factor) => factor.tone === 'success');
   const cautions = factors.filter((factor) => factor.tone !== 'success');
   return (
-    <View style={styles.sectionCard}>
+    <View style={styles.overviewSubsection}>
       <Text style={styles.sectionLabel}>Risk Drivers</Text>
       <View style={styles.factorStack}>
         <RiskFactorGroup items={protective} title="Protective" />
@@ -284,7 +302,7 @@ function SupportingRiskDetails({
   setOpen: (value: boolean) => void;
 }) {
   return (
-    <View style={styles.sectionCard}>
+    <View style={styles.disclosurePanel}>
       <Pressable
         accessibilityLabel={`${open ? 'Hide' : 'Show'} supporting risk details`}
         accessibilityRole="button"
@@ -493,6 +511,10 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.colors.border,
     borderBottomWidth: 1,
   },
+  disclosurePanel: {
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.one,
+  },
   factorDetail: {
     color: Theme.colors.textMuted,
     fontSize: 12,
@@ -633,6 +655,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
     lineHeight: 19,
+  },
+  overviewDivider: {
+    backgroundColor: Theme.colors.border,
+    height: 1,
+  },
+  overviewSubsection: {
+    gap: Spacing.two,
   },
   rewardDetail: {
     color: Theme.colors.textMuted,

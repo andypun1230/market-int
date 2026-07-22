@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { DetailModal } from '@/components/ui/DetailModal';
-import { TabbedDetailPanel } from '@/components/ui/TabbedDetailPanel';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import {
   SectionSummary,
 } from '@/components/watchlist/WatchlistPrimitives';
@@ -19,6 +19,8 @@ import { StockSignalsSections } from '@/features/stock-detail/signals/components
 import { StockTechnicalSections } from '@/features/stock-detail/technical/components/StockTechnicalSections';
 import { buildStockTechnicalViewModel } from '@/features/stock-detail/technical/technicalViewModel';
 import { DataStatusDot, WatchlistSignalBadge } from '@/features/watchlist/components/WatchlistSignalBadge';
+import { getWatchlistDecisionLabel, getWatchlistDecisionStatus } from '@/features/watchlist/watchlistDecision';
+import type { WatchlistViewMode } from '@/features/watchlist/watchlistListControls';
 import type { WatchlistClassification } from '@/features/watchlist/types';
 import { useStockAnalysisDetails } from '@/hooks/useStockAnalysisDetails';
 import type {
@@ -44,6 +46,10 @@ export function StockCard({
   trendline,
   volumeAnalysis,
   onRemove,
+  openDetails = false,
+  openDetailTab,
+  deepLinkNonce,
+  viewMode = 'detailed',
 }: {
   patterns?: DetectedPattern[];
   relativeStrength?: RelativeStrengthItem;
@@ -55,9 +61,21 @@ export function StockCard({
   trendline?: TrendlineResponse;
   volumeAnalysis?: VolumeAnalysis;
   onRemove?: (symbol: string) => void;
+  openDetails?: boolean;
+  openDetailTab?: string;
+  deepLinkNonce?: string;
+  viewMode?: WatchlistViewMode;
 }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
-  const detailState = useStockAnalysisDetails(stock.ticker, detailsVisible);
+  const deepLinkKey = openDetails ? `${stock.ticker}:${openDetailTab ?? 'overview'}:${deepLinkNonce ?? 'initial'}` : null;
+  const [dismissedDeepLinkKey, setDismissedDeepLinkKey] = useState<string | null>(null);
+  const [detailTabSelection, setDetailTabSelection] = useState({ deepLinkKey: null as string | null, tab: 'overview' });
+  const requestedDetailTab = openDetailTab && ['overview', 'technical', 'signals', 'risk', 'compare'].includes(openDetailTab)
+    ? openDetailTab
+    : 'overview';
+  const selectedDetailTab = detailTabSelection.deepLinkKey === deepLinkKey ? detailTabSelection.tab : requestedDetailTab;
+  const showDetails = detailsVisible || Boolean(openDetails && deepLinkKey !== dismissedDeepLinkKey);
+  const detailState = useStockAnalysisDetails(stock.ticker, showDetails);
   const activeMultiTimeframeSignals = detailState.data?.multiTimeframeSignals;
   const activeLeadershipSignal = detailState.data?.leadershipSignal;
   const activePatterns = detailState.data?.patterns ?? patterns;
@@ -122,6 +140,7 @@ export function StockCard({
         patterns: activePatterns,
         relativeStrength: activeRelativeStrength,
         riskPlan: activeRiskPlan,
+        selectedDetailTab,
         stock: detailStock,
         stockRating: activeStockRating,
         supportResistance: activeSupportResistance,
@@ -147,33 +166,114 @@ export function StockCard({
       classification,
       overviewModel,
       detailStock,
+      selectedDetailTab,
       stock.ticker,
       technicalModel,
     ],
   );
   const changeTone = getChangeTone(stock.change_percent);
+  const decisionStatus = classification
+    ? getWatchlistDecisionStatus(classification)
+    : stock.setup ?? 'Waiting for a clearer setup.';
+  const compactDecisionLabel = classification ? getWatchlistDecisionLabel(classification) : 'Waiting';
+  const compact = viewMode === 'compact';
+  const urgencyColor = getUrgencyColor(classification);
+  const detailTabs = [
+    {
+      key: 'overview',
+      label: 'Overview',
+      content: <StockOverviewSections model={overviewModel} />,
+    },
+    {
+      key: 'technical',
+      label: 'Technical',
+      content: (
+        <StockTechnicalSections
+          model={technicalModel}
+          pattern={mainPattern}
+          supportResistance={activeSupportResistance}
+          trendline={activeTrendline}
+          volumeAnalysis={activeVolumeAnalysis}
+        />
+      ),
+    },
+    {
+      key: 'signals',
+      label: 'Signals',
+      content: (
+        <StockSignalsSections
+          leadershipSignal={activeLeadershipSignal}
+          multiTimeframeSignals={activeMultiTimeframeSignals}
+          relativeStrength={activeRelativeStrength}
+          volumeAnalysis={activeVolumeAnalysis}
+        />
+      ),
+    },
+    {
+      key: 'risk',
+      label: 'Risk',
+      content: (
+        <RiskPlanSection
+          riskPlan={activeRiskPlan}
+          currentPrice={currentPrice}
+          showTitle
+          supportResistance={activeSupportResistance}
+        />
+      ),
+    },
+    {
+      key: 'compare',
+      label: 'Compare',
+      content: (
+        <StockCompareSections
+          stock={detailStock}
+          volumeAnalysis={activeVolumeAnalysis}
+        />
+      ),
+    },
+  ];
+  const activeDetailTab = detailTabs.find((tab) => tab.key === selectedDetailTab) ?? detailTabs[0];
 
   return (
     <>
-      <View style={styles.tickerRow}>
+      <View style={[styles.tickerRow, compact && styles.tickerRowCompact, classification ? { borderLeftColor: urgencyColor, borderLeftWidth: 3 } : null]}>
         <Pressable
           accessibilityLabel={`Open ${stock.ticker} full analysis${classification ? `, ${classification.reason}` : ''}`}
           accessibilityRole="button"
-          onPress={() => setDetailsVisible(true)}
-          style={styles.tickerRowContent}>
-          <View style={styles.tickerMain}>
-            <Text numberOfLines={1} style={styles.tickerSymbol}>{stock.ticker}</Text>
-          </View>
-          <Text style={[styles.changeValue, { color: changeTone }]}>
-            {formatNullablePercent(stock.change_percent)}
-          </Text>
-          {classification ? (
-            <View style={styles.signalBlock}>
-              <WatchlistSignalBadge classification={classification} />
-              <DataStatusDot primarySignal={classification.primarySignal} status={classification.dataStatus} />
+          onPress={() => {
+            setDetailsVisible(true);
+          }}
+          style={[styles.tickerRowContent, compact && styles.tickerRowContentCompact]}>
+          {compact ? (
+            <View style={styles.compactHeadline}>
+              <Text numberOfLines={1} style={styles.tickerSymbol}>{stock.ticker}</Text>
+              <Text style={[styles.changeValue, styles.compactChangeValue, { color: changeTone }]}>
+                {formatNullablePercent(stock.change_percent)}
+              </Text>
+              <Text numberOfLines={1} style={styles.compactDecision}>{compactDecisionLabel}</Text>
+              {classification ? <DataStatusDot primarySignal={classification.primarySignal} status={classification.dataStatus} /> : null}
+              <Text style={styles.compactChevron}>›</Text>
             </View>
-          ) : null}
-          <Text style={styles.chevron}>›</Text>
+          ) : (
+            <>
+              <View style={styles.tickerHeadline}>
+                <Text numberOfLines={1} style={styles.tickerSymbol}>{stock.ticker}</Text>
+                <Text style={[styles.changeValue, { color: changeTone }]}>
+                  {formatNullablePercent(stock.change_percent)}
+                </Text>
+                <Text style={styles.chevron}>›</Text>
+              </View>
+              <View style={styles.decisionRow}>
+                <Text numberOfLines={1} style={styles.decisionStatus}>{decisionStatus}</Text>
+                {classification ? (
+                  <View style={styles.signalBlock}>
+                    <WatchlistSignalBadge classification={classification} />
+                    <DataStatusDot primarySignal={classification.primarySignal} status={classification.dataStatus} />
+                  </View>
+                ) : null}
+              </View>
+            </>
+          )}
         </Pressable>
         {onRemove ? (
           <Pressable
@@ -188,77 +288,36 @@ export function StockCard({
       </View>
 
       <DetailModal
-        onClose={() => setDetailsVisible(false)}
+        onClose={() => {
+          setDismissedDeepLinkKey(deepLinkKey);
+          setDetailsVisible(false);
+        }}
+        scrollHeader={(
+          <>
+            {detailState.loading ? <SectionSummary>Loading detailed analysis...</SectionSummary> : null}
+            {detailState.data?.snapshotStatus === 'initializing' ? <SectionSummary>Preparing live history...</SectionSummary> : null}
+            {detailState.error ? <SectionSummary>{detailState.error}</SectionSummary> : null}
+            <AskCopilotButton
+              context={copilotContext}
+              prompt={`Explain ${stock.ticker}'s current setup and main risk.`}
+            />
+            <StockDetailHeader chartHistory={detailState.data?.chartHistory} model={overviewModel} />
+          </>
+        )}
+        stickyHeader={(
+          <SegmentedControl
+            compact
+            dense
+            fullWidth
+            options={detailTabs.map((tab) => ({ key: tab.key, label: tab.label }))}
+            selectedKey={activeDetailTab.key}
+            onChange={(tab) => setDetailTabSelection({ deepLinkKey, tab })}
+          />
+        )}
         subtitle="Stock intelligence"
         title={stock.ticker}
-        visible={detailsVisible}>
-        {detailState.loading ? <SectionSummary>Loading detailed analysis...</SectionSummary> : null}
-        {detailState.data?.snapshotStatus === 'initializing' ? <SectionSummary>Preparing live history...</SectionSummary> : null}
-        {detailState.error ? <SectionSummary>{detailState.error}</SectionSummary> : null}
-        <AskCopilotButton
-          context={copilotContext}
-          prompt={`Explain ${stock.ticker}'s current setup and main risk.`}
-        />
-        <StockDetailHeader chartHistory={detailState.data?.chartHistory} model={overviewModel} />
-        <TabbedDetailPanel
-          initialKey="overview"
-          tabs={[
-            {
-              key: 'overview',
-              label: 'Overview',
-              content: (
-                <StockOverviewSections model={overviewModel} />
-              ),
-            },
-            {
-              key: 'technical',
-              label: 'Technical',
-              content: (
-                <StockTechnicalSections
-                  model={technicalModel}
-                  pattern={mainPattern}
-                  supportResistance={activeSupportResistance}
-                  trendline={activeTrendline}
-                  volumeAnalysis={activeVolumeAnalysis}
-                />
-              ),
-            },
-            {
-              key: 'signals',
-              label: 'Signals',
-              content: (
-                <StockSignalsSections
-                  leadershipSignal={activeLeadershipSignal}
-                  multiTimeframeSignals={activeMultiTimeframeSignals}
-                  relativeStrength={activeRelativeStrength}
-                  volumeAnalysis={activeVolumeAnalysis}
-                />
-              ),
-            },
-            {
-              key: 'risk',
-              label: 'Risk',
-              content: (
-                <RiskPlanSection
-                  riskPlan={activeRiskPlan}
-                  currentPrice={currentPrice}
-                  showTitle
-                  supportResistance={activeSupportResistance}
-                />
-              ),
-            },
-            {
-              key: 'compare',
-              label: 'Compare',
-              content: (
-                <StockCompareSections
-                  stock={detailStock}
-                  volumeAnalysis={activeVolumeAnalysis}
-                />
-              ),
-            },
-          ]}
-        />
+        visible={showDetails}>
+        <View style={styles.detailTabContent}>{activeDetailTab.content}</View>
       </DetailModal>
     </>
   );
@@ -277,7 +336,18 @@ function getChangeTone(value?: number | null) {
   return Theme.colors.textMuted;
 }
 
+function getUrgencyColor(classification?: WatchlistClassification) {
+  if (!classification) return Theme.colors.border;
+  if (classification.severity === 'critical') return Theme.colors.danger;
+  if (classification.severity === 'warning') return Theme.colors.warning;
+  if (classification.severity === 'positive') return Theme.colors.success;
+  return Theme.colors.border;
+}
+
 const styles = StyleSheet.create({
+  detailTabContent: {
+    gap: Spacing.three,
+  },
   tickerRow: {
     alignItems: 'center',
     backgroundColor: Theme.colors.backgroundMuted,
@@ -286,31 +356,66 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     gap: Spacing.two,
-    minHeight: 56,
+    minHeight: 64,
     paddingHorizontal: Spacing.twoAndHalf,
     paddingVertical: Spacing.one,
   },
+  tickerRowCompact: {
+    minHeight: 52,
+    paddingVertical: Spacing.half,
+  },
   tickerRowContent: {
-    alignItems: 'center',
     flex: 1,
-    flexDirection: 'row',
-    gap: Spacing.two,
+    gap: Spacing.half,
     minWidth: 0,
   },
-  tickerMain: {
-    flex: 1,
-    minWidth: 0,
+  tickerRowContentCompact: {
+    justifyContent: 'center',
   },
   tickerSymbol: {
     color: Theme.colors.text,
+    flex: 1,
     fontSize: 18,
     fontWeight: '900',
   },
   changeValue: {
     fontSize: 15,
     fontWeight: '900',
-    minWidth: 74,
+    minWidth: 66,
     textAlign: 'right',
+  },
+  compactChangeValue: {
+    minWidth: 60,
+  },
+  compactChevron: {
+    color: Theme.colors.textMuted,
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  compactDecision: {
+    color: Theme.colors.textMuted,
+    fontSize: 11,
+    fontWeight: '900',
+    minWidth: 54,
+    textAlign: 'right',
+  },
+  compactHeadline: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.one,
+  },
+  decisionRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.one,
+    minWidth: 0,
+  },
+  decisionStatus: {
+    color: Theme.colors.textMuted,
+    flex: 1,
+    fontSize: 11,
+    fontWeight: '800',
+    minWidth: 0,
   },
   removeButton: {
     alignItems: 'center',
@@ -330,8 +435,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   signalBlock: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
     gap: Spacing.half,
-    minWidth: 104,
+    maxWidth: '48%',
+  },
+  tickerHeadline: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.two,
   },
 });

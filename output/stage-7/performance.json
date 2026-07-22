@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "stage7-copilot-performance-v1",
+  "overallStatus": "passed",
+  "recordedAt": "2026-07-22T05:09:08.568656+00:00",
+  "measurementPolicy": {
+    "durableSnapshotsOnly": true,
+    "liveProviderRefreshAllowed": false,
+    "adapter": "deterministic_stage7_fixture_adapter",
+    "requiredFields": [
+      "requestId",
+      "planId",
+      "elapsedMs",
+      "agentTimingsMs",
+      "evidenceCount"
+    ]
+  },
+  "scenarios": [
+    {
+      "scenarioId": "local-navigation",
+      "fixtureId": "navigation",
+      "targetMs": 500,
+      "status": "passed",
+      "samplesMs": [
+        0.549,
+        0.503,
+        0.461,
+        0.579,
+        0.54
+      ],
+      "p50Ms": 0.54,
+      "p95Ms": 0.579,
+      "sampleCount": 5,
+      "notes": []
+    },
+    {
+      "scenarioId": "cached-single-engine",
+      "fixtureId": "stock-analysis",
+      "targetMs": 2000,
+      "status": "passed",
+      "samplesMs": [
+        0.962,
+        1.128,
+        1.005,
+        1.011,
+        0.934
+      ],
+      "p50Ms": 1.005,
+      "p95Ms": 1.128,
+      "sampleCount": 5,
+      "notes": []
+    },
+    {
+      "scenarioId": "cached-multi-agent",
+      "fixtureId": "stock-decision-support",
+      "targetRangeMs": [
+        3000,
+        8000
+      ],
+      "status": "passed",
+      "samplesMs": [
+        1.703,
+        2.004,
+        1.939,
+        2.12,
+        1.82
+      ],
+      "p50Ms": 1.939,
+      "p95Ms": 2.12,
+      "sampleCount": 5,
+      "notes": [
+        "Deterministic fixture execution is faster than the lower production-latency planning range."
+      ]
+    }
+  ]
+}

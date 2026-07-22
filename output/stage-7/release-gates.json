@@ -1,0 +1,246 @@
+{
+  "schemaVersion": "stage7-copilot-release-gates-v1",
+  "finalStatus": "PASS WITH CONDITIONS",
+  "recordedAt": "2026-07-22T04:15:00Z",
+  "allowedFinalStatuses": [
+    "PASS",
+    "PASS WITH CONDITIONS",
+    "FAIL"
+  ],
+  "criteria": [
+    {
+      "ordinal": 1,
+      "criterion": "not_generic_chatbot",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 2,
+      "criterion": "intent_and_entities_reliable",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 3,
+      "criterion": "deterministic_minimal_plan",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 4,
+      "criterion": "structured_evidence_linked_agents",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 5,
+      "criterion": "all_factual_claims_grounded",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 6,
+      "criterion": "freshness_and_quality_visible",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 7,
+      "criterion": "decision_support_has_support_and_opposition",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 8,
+      "criterion": "contradictions_surfaced",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 9,
+      "criterion": "confirmation_and_invalidation_explicit",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 10,
+      "criterion": "no_invented_market_data",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 11,
+      "criterion": "saved_items_not_holdings",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 12,
+      "criterion": "portfolio_fallback_honest",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 13,
+      "criterion": "exact_deep_links",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 14,
+      "criterion": "follow_up_context",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 15,
+      "criterion": "report_v7_research_continuity",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 16,
+      "criterion": "streaming_and_cancellation",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 17,
+      "criterion": "partial_and_stale_limit_certainty",
+      "status": "passed",
+      "evidence": [
+        "fixtures/*.json",
+        "performance.json"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 18,
+      "criterion": "existing_behavior_intact",
+      "status": "passed",
+      "evidence": [
+        "backend full unittest discovery: 334/334 passed",
+        "frontend full release checks: 10/10 passed",
+        "manual-validation.json"
+      ],
+      "notes": [
+        "Existing report, market, stock, watchlist, sector, theme, command, and navigation coverage remained green."
+      ]
+    },
+    {
+      "ordinal": 19,
+      "criterion": "backend_and_frontend_tests_pass",
+      "status": "passed",
+      "evidence": [
+        "backend full unittest discovery: 334/334 passed",
+        "backend Copilot suite: 57/57 passed",
+        "frontend release checks: 10/10 passed",
+        "frontend named Copilot tests: 6/6 passed",
+        "frontend isolated Expo export: 25 routes, 51 files, 5.5 MB"
+      ],
+      "notes": []
+    },
+    {
+      "ordinal": 20,
+      "criterion": "manual_app_validation_complete",
+      "status": "passed",
+      "evidence": [
+        "manual-validation.json: 15/15 passed",
+        "visual-review.json: 10/10 captured and reviewed",
+        "screenshots/*.png"
+      ],
+      "notes": [
+        "Desktop and 390x844 web layouts, exact deep links, evidence expansion, cancellation/retry, and follow-up continuity were exercised."
+      ]
+    }
+  ],
+  "inheritedFailures": [],
+  "remainingDataGaps": [
+    "Some durable market, stock, and report sources are stale or partial; responses expose that state and constrain certainty.",
+    "No authenticated portfolio provider is connected.",
+    "Saved-list membership is device-local context; backend account scoping and authenticated watchlist ownership are unavailable.",
+    "Reliable prior immutable report continuity is not yet available for every report.",
+    "Direct yields, credit, economic, and news feeds remain data-source gaps.",
+    "Copilot sessions are process-local; production authentication, durable session storage, and rate limiting remain integration work.",
+    "A native software keyboard was not emulated during the web visual pass."
+  ],
+  "validationSummary": {
+    "executableFixtures": "30/30 passed",
+    "artifactFiles": "39/39 current before operator evidence indexing",
+    "backendTests": "334/334 passed",
+    "copilotBackendTests": "57/57 passed",
+    "frontendChecks": "10/10 passed",
+    "manualPrompts": "15/15 passed",
+    "visualShots": "10/10 captured and reviewed",
+    "runtimeConsoleErrors": 0,
+    "liveApiP95Ms": {
+      "navigation": 148.7,
+      "singleEngine": 160.6,
+      "multiAgent": 181.7
+    }
+  }
+}

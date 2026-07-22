@@ -1,0 +1,22 @@
+{
+  "applied": true,
+  "dry_run": false,
+  "errors": [],
+  "file": "data/reference/themes/pilot-security-master-v1.1.csv",
+  "records": [
+    "SNDK",
+    "WDC",
+    "STX",
+    "MRVL",
+    "NTAP",
+    "P",
+    "CRWD",
+    "PANW",
+    "FTNT",
+    "ZS",
+    "OKTA",
+    "CHKP",
+    "S"
+  ],
+  "review_gate": "Every record requires reviewer, review date, source URL, retrieval date, sector, and provider mapping."
+}

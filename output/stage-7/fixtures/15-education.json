@@ -1,0 +1,558 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 15,
+    "caseId": "education",
+    "title": "Educational question",
+    "request": {
+      "message": "What does breadth mean?",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "curated-education",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "EDUCATIONAL_QUERY",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "educational"
+      ],
+      "optionalAgents": [],
+      "entities": [
+        {
+          "type": "metric",
+          "id": "breadth"
+        }
+      ],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "complete"
+      ],
+      "allowedFreshnessStates": [
+        "unavailable"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "breadth",
+          "route": "/market",
+          "tab": "breadth",
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": "breadth"
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "bounded_definition",
+        "no_live_claim_without_evidence",
+        "minimal_plan"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-15-education",
+    "planId": "plan-stage7-education",
+    "threadId": "stage7-thread-education",
+    "startedAt": "2026-07-22T05:09:08.481274+00:00",
+    "completedAt": "2026-07-22T05:09:08.481889+00:00",
+    "elapsedMs": 0.491,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-education",
+      "intent": "EDUCATIONAL_QUERY",
+      "subIntent": "concept_explanation",
+      "entities": [
+        {
+          "entityId": "breadth",
+          "entityType": "metric",
+          "displayName": "Market Breadth",
+          "symbol": null,
+          "confidence": 1.0,
+          "resolutionSource": "fixture-route-registry"
+        }
+      ],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "educational",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.93,
+      "requiredAgents": [
+        "educational"
+      ],
+      "optionalAgents": [],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-education",
+      "intentId": "intent-stage7-education",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-educational",
+          "order": 1,
+          "agent": "educational",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 1000,
+          "purpose": "Collect validated educational evidence."
+        }
+      ],
+      "requiredAgents": [
+        "educational"
+      ],
+      "optionalAgents": [],
+      "dependencies": {
+        "step-1-educational": []
+      },
+      "requiredEntities": [
+        "breadth"
+      ],
+      "evidenceRequirements": [
+        {
+          "category": "educational",
+          "required": false,
+          "entities": [
+            "breadth"
+          ],
+          "minimumItems": 0
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "breadth"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 1200,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "educational",
+        "status": "complete",
+        "observations": [],
+        "conclusions": [
+          "Breadth describes how widely participation is distributed across a market universe."
+        ],
+        "contradictions": [],
+        "metrics": {},
+        "levels": [],
+        "sourceReferences": [],
+        "evidence": [],
+        "freshness": {
+          "state": "unavailable",
+          "marketDate": null,
+          "generatedAt": null,
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "breadth"
+        ],
+        "warnings": [],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "Breadth describes how widely participation is distributed across a market universe.",
+      "stance": "neutral",
+      "confidenceLabel": "high",
+      "thesis": "Breadth describes how widely participation is distributed across a market universe.",
+      "supportingFactors": [],
+      "contradictoryFactors": [],
+      "keyRisks": [],
+      "confirmationConditions": [],
+      "invalidationConditions": [],
+      "missingEvidence": [],
+      "personalizationNote": null,
+      "relatedResearch": [],
+      "recommendedAppDestinations": [],
+      "disclaimerClass": "market_education"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-15-education",
+      "planId": "plan-stage7-education",
+      "threadId": "stage7-thread-education",
+      "status": "complete",
+      "answer": "Breadth describes how widely participation is distributed across a market universe.",
+      "answerSections": {
+        "directAnswer": "Breadth describes how widely participation is distributed across a market universe.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [],
+        "mainCaution": "Evidence freshness is unavailable; conclusions are constrained accordingly.",
+        "whatWouldConfirm": [],
+        "whatWouldInvalidate": [],
+        "whatWouldChange": []
+      },
+      "grounding": {
+        "contextUsed": [],
+        "sourceState": "unavailable",
+        "generatedAt": "2026-07-22T05:09:08.481641+00:00",
+        "evidenceIds": []
+      },
+      "suggestedFollowUps": [],
+      "confidence": 25,
+      "answerConfidence": {
+        "level": "high",
+        "reasons": [
+          "Intent confidence: 93%.",
+          "Evidence freshness: unavailable."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-education",
+        "intent": "EDUCATIONAL_QUERY",
+        "subIntent": "concept_explanation",
+        "entities": [
+          {
+            "entityId": "breadth",
+            "entityType": "metric",
+            "displayName": "Market Breadth",
+            "symbol": null,
+            "confidence": 1.0,
+            "resolutionSource": "fixture-route-registry"
+          }
+        ],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "educational",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.93,
+        "requiredAgents": [
+          "educational"
+        ],
+        "optionalAgents": [],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-education",
+        "intentId": "intent-stage7-education",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-educational",
+            "order": 1,
+            "agent": "educational",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 1000,
+            "purpose": "Collect validated educational evidence."
+          }
+        ],
+        "requiredAgents": [
+          "educational"
+        ],
+        "optionalAgents": [],
+        "dependencies": {
+          "step-1-educational": []
+        },
+        "requiredEntities": [
+          "breadth"
+        ],
+        "evidenceRequirements": [
+          {
+            "category": "educational",
+            "required": false,
+            "entities": [
+              "breadth"
+            ],
+            "minimumItems": 0
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "breadth"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 1200,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "Breadth describes how widely participation is distributed across a market universe.",
+        "stance": "neutral",
+        "confidenceLabel": "high",
+        "thesis": "Breadth describes how widely participation is distributed across a market universe.",
+        "supportingFactors": [],
+        "contradictoryFactors": [],
+        "keyRisks": [],
+        "confirmationConditions": [],
+        "invalidationConditions": [],
+        "missingEvidence": [],
+        "personalizationNote": null,
+        "relatedResearch": [],
+        "recommendedAppDestinations": [],
+        "disclaimerClass": "market_education"
+      },
+      "evidence": [],
+      "actions": [
+        {
+          "actionId": "action-breadth-default",
+          "label": "Open Breadth",
+          "actionType": "navigate",
+          "destinationId": "breadth",
+          "route": "/market",
+          "tab": "breadth",
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": "breadth",
+          "parameters": {
+            "tab": "breadth"
+          }
+        }
+      ],
+      "warnings": [
+        "Evidence freshness is unavailable; conclusions are constrained accordingly."
+      ],
+      "freshnessSummary": {
+        "overallState": "unavailable",
+        "marketDates": [],
+        "generatedTimestamps": [],
+        "currentCount": 0,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 1,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "educational": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-breadth-default",
+        "label": "Open Breadth",
+        "actionType": "navigate",
+        "destinationId": "breadth",
+        "route": "/market",
+        "tab": "breadth",
+        "subTab": null,
+        "sectionId": null,
+        "entity": null,
+        "highlightTarget": "breadth",
+        "parameters": {
+          "tab": "breadth"
+        }
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed EDUCATIONAL_QUERY; expected EDUCATIONAL_QUERY."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['educational']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status complete."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness unavailable."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:bounded_definition",
+          "status": "passed",
+          "detail": "The educational response is a bounded curated definition."
+        },
+        {
+          "check": "assertion:no_live_claim_without_evidence",
+          "status": "passed",
+          "detail": "The definition makes no live market claim without evidence."
+        },
+        {
+          "check": "assertion:minimal_plan",
+          "status": "passed",
+          "detail": "The plan contains exactly the required agents and steps."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

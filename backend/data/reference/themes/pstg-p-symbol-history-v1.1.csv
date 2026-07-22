@@ -1,0 +1,4 @@
+canonical_ticker,security_id,alias_ticker,former_company_name,alias_effective_to,corporate_action_type,continuity_status,provider,purpose,provider_symbol,effective_from,effective_to,source,verified_at,corporate_action_lineage
+P,theme-sec-everpure-1474432,PSTG,Pure Storage,2026-04-16,ticker_and_name_change,verified,polygon,history,PSTG,1900-01-01,2026-04-16,https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm,2026-07-19T18:11:25Z,PSTG_to_P_same_issuer_verified
+P,theme-sec-everpure-1474432,,,,,,polygon,history,P,2026-04-17,,https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm,2026-07-19T18:11:25Z,PSTG_to_P_same_issuer_verified
+P,theme-sec-everpure-1474432,,,,,,finnhub,quote,P,2026-04-17,,https://www.sec.gov/files/company_tickers.json,2026-07-19T18:11:25Z,PSTG_to_P_same_issuer_verified

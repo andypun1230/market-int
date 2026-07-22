@@ -8,6 +8,8 @@ CopilotSourceState = Literal[
     "delayed",
     "cached",
     "stale",
+    "test",
+    "partial",
     "mock",
     "mixed",
     "unavailable",
@@ -20,14 +22,24 @@ class CopilotMessage(BaseModel):
 
 
 class CopilotChatRequest(BaseModel):
+    request_id: str | None = Field(default=None, alias="requestId")
     thread_id: str | None = Field(default=None, alias="threadId")
     message: str
     context: dict[str, Any] = Field(default_factory=dict)
+    screen_context: dict[str, Any] = Field(default_factory=dict, alias="screenContext")
+    session_context: dict[str, Any] | None = Field(default=None, alias="sessionContext")
     history: list[CopilotMessage] = Field(default_factory=list)
     response_depth: Literal["compact", "standard", "detailed"] = Field(default="compact", alias="responseDepth")
 
     class Config:
         populate_by_name = True
+
+    @property
+    def effective_context(self) -> dict[str, Any]:
+        # `context` is the existing transport field; `screenContext` is the
+        # Stage 7 typed alias.  Screen/member hints are merged, while the
+        # orchestrator still ignores any client-supplied market values.
+        return {**self.context, **self.screen_context}
 
 
 class CopilotGrounding(BaseModel):

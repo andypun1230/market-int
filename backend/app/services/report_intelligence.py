@@ -66,7 +66,7 @@ class ReportComparisonEngine:
         if not previous:
             return {
                 "available": False,
-                "summary": "No previous report snapshot is available yet.",
+                "summary": "Baseline report established.",
                 "items": [],
             }
 
@@ -844,6 +844,7 @@ def build_historical_metrics(snapshot: dict[str, Any]) -> dict[str, Any]:
     return {
         "reportId": snapshot.get("reportId"),
         "marketDate": snapshot.get("marketDate"),
+        "regime": snapshot.get("regime"),
         "health": number(get_path(snapshot, "marketHealth", "score")),
         "risk": number(get_path(snapshot, "risk", "score")),
         "breadth": number(get_path(snapshot, "breadth", "score")),
@@ -852,5 +853,8 @@ def build_historical_metrics(snapshot: dict[str, Any]) -> dict[str, Any]:
         "confidence": snapshot.get("confidence"),
         "playbook": get_path(snapshot, "playbook", "headline"),
         "sectorLeader": first_name(sectors, None) if sectors else None,
+        "sectorLaggard": first_name([sectors[-1]], None) if sectors else None,
+        "volatilityState": snapshot.get("volatilityState"),
+        "researchFocus": snapshot.get("researchFocus"),
         "topIdea": get_path(watchlist[0], "symbol") if watchlist else None,
     }

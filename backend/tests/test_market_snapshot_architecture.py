@@ -18,6 +18,7 @@ from app.snapshots.readers import (
     fallback_health,
     fallback_regime,
     fallback_risk,
+    snapshot_details_payload,
 )
 from app.snapshots.service import get_market_snapshot_service, reset_market_snapshot_service
 from app.snapshots.storage import MarketSnapshotStorage
@@ -316,6 +317,18 @@ class MarketSnapshotArchitectureTests(unittest.TestCase):
         self.assertTrue(all(response.status_code == 200 for response in responses))
         self.assertEqual(responses[0].json()["snapshot_id"], "market-test-warm")
         self.assertEqual(DecisionDashboardResponse.model_validate(responses[6].json()).playbook.headline, "Market snapshot initializing")
+
+    def test_decision_detail_hydrates_current_theme_without_mutating_market_snapshot(self) -> None:
+        refreshed = fallback_decision().model_copy(update={"theme_intelligence": {
+            "available": True, "snapshot_id": "theme-current", "source_state": "live",
+            "qualified_decision_theme_signals": [{"theme_id": "cybersecurity", "source_type": "live_theme_signal"}],
+        }})
+        with patch("app.snapshots.readers.latest_snapshot_or_trigger", return_value=make_snapshot("market-old")), \
+             patch("app.snapshots.readers.get_decision_dashboard_from_snapshot", return_value=refreshed) as reader:
+            payload = snapshot_details_payload("decision")
+        self.assertEqual(payload["decisionDashboard"]["theme_intelligence"]["snapshot_id"], "theme-current")
+        self.assertEqual(payload["decisionDashboard"]["theme_intelligence"]["qualified_decision_theme_signals"][0]["theme_id"], "cybersecurity")
+        reader.assert_called_once()
 
     def test_no_snapshot_home_returns_initializing_quickly(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

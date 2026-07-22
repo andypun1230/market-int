@@ -1,0 +1,44 @@
+{
+  "aliases": [
+    "PSTG"
+  ],
+  "applied": true,
+  "dry_run": false,
+  "errors": [],
+  "file": "data/reference/themes/pstg-p-symbol-history-v1.1.csv",
+  "provider_symbols": [
+    {
+      "corporate_action_lineage": "PSTG_to_P_same_issuer_verified",
+      "effective_from": "1900-01-01",
+      "effective_to": "2026-04-16",
+      "provider": "polygon",
+      "provider_symbol": "PSTG",
+      "purpose": "history",
+      "security_id": "theme-sec-everpure-1474432",
+      "source": "https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm",
+      "verified_at": "2026-07-19T18:11:25Z"
+    },
+    {
+      "corporate_action_lineage": "PSTG_to_P_same_issuer_verified",
+      "effective_from": "2026-04-17",
+      "effective_to": null,
+      "provider": "polygon",
+      "provider_symbol": "P",
+      "purpose": "history",
+      "security_id": "theme-sec-everpure-1474432",
+      "source": "https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm",
+      "verified_at": "2026-07-19T18:11:25Z"
+    },
+    {
+      "corporate_action_lineage": "PSTG_to_P_same_issuer_verified",
+      "effective_from": "2026-04-17",
+      "effective_to": null,
+      "provider": "finnhub",
+      "provider_symbol": "P",
+      "purpose": "quote",
+      "security_id": "theme-sec-everpure-1474432",
+      "source": "https://www.sec.gov/files/company_tickers.json",
+      "verified_at": "2026-07-19T18:11:25Z"
+    }
+  ]
+}

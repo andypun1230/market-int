@@ -31,6 +31,10 @@ class DailyBar:
     data_version: int = 1
     quality_status: str = "valid"
     payload_hash: str | None = None
+    canonical_security_id: str | None = None
+    canonical_ticker: str | None = None
+    source_symbol: str | None = None
+    corporate_action_lineage: str | None = None
 
     def validate(self) -> None:
         if not self.ticker or not self.provider:
@@ -49,7 +53,7 @@ class DailyBar:
     def database_values(self) -> tuple[object, ...]:
         fetched_at = self.fetched_at or datetime.now(timezone.utc).isoformat()
         payload_hash = self.payload_hash or hashlib.sha256(json.dumps(asdict(self), sort_keys=True).encode("utf-8")).hexdigest()
-        return (self.ticker.upper(), self.provider.lower(), self.session_date, self.timestamp, self.open, self.high, self.low, self.close, self.volume, int(self.adjusted), fetched_at, self.source_timestamp, self.data_version, self.quality_status, payload_hash)
+        return (self.ticker.upper(), self.provider.lower(), self.session_date, self.timestamp, self.open, self.high, self.low, self.close, self.volume, int(self.adjusted), fetched_at, self.source_timestamp, self.data_version, self.quality_status, payload_hash, self.canonical_security_id, (self.canonical_ticker or self.ticker).upper(), (self.source_symbol or self.ticker).upper(), self.corporate_action_lineage)
 
 
 class DailyBarStorage:
@@ -69,7 +73,17 @@ class DailyBarStorage:
                 quality_status TEXT NOT NULL, payload_hash TEXT,
                 PRIMARY KEY(ticker, provider, session_date, adjusted))"""
             )
+            columns = {row[1] for row in connection.execute("PRAGMA table_info(daily_price_bars)")}
+            for column, declaration in (
+                ("canonical_security_id", "TEXT"), ("canonical_ticker", "TEXT"),
+                ("source_symbol", "TEXT"), ("corporate_action_lineage", "TEXT"),
+            ):
+                if column not in columns:
+                    connection.execute(f"ALTER TABLE daily_price_bars ADD COLUMN {column} {declaration}")
+            connection.execute("UPDATE daily_price_bars SET canonical_ticker=ticker WHERE canonical_ticker IS NULL OR canonical_ticker='' ")
+            connection.execute("UPDATE daily_price_bars SET source_symbol=ticker WHERE source_symbol IS NULL OR source_symbol='' ")
             connection.execute("CREATE INDEX IF NOT EXISTS daily_price_bars_by_ticker ON daily_price_bars(ticker, provider, session_date)")
+            connection.execute("CREATE INDEX IF NOT EXISTS daily_price_bars_by_canonical_security ON daily_price_bars(canonical_security_id, provider, session_date)")
             connection.commit()
 
     def upsert(self, bars: list[DailyBar]) -> tuple[int, int]:
@@ -83,10 +97,12 @@ class DailyBarStorage:
                 values = bar.database_values()
                 row = connection.execute("SELECT payload_hash FROM daily_price_bars WHERE ticker=? AND provider=? AND session_date=? AND adjusted=?", (values[0], values[1], values[2], values[9])).fetchone()
                 if row is None:
-                    connection.execute("INSERT INTO daily_price_bars VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", values)
+                    connection.execute("""INSERT INTO daily_price_bars (ticker, provider, session_date, timestamp, open, high, low, close, volume, adjusted, fetched_at, source_timestamp, data_version, quality_status, payload_hash, canonical_security_id, canonical_ticker, source_symbol, corporate_action_lineage)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", values)
                     inserted += 1
                 elif row[0] != values[14]:
-                    connection.execute("UPDATE daily_price_bars SET timestamp=?, open=?, high=?, low=?, close=?, volume=?, fetched_at=?, source_timestamp=?, data_version=?, quality_status=?, payload_hash=? WHERE ticker=? AND provider=? AND session_date=? AND adjusted=?", (*values[3:9], values[10], values[11], values[12], values[13], values[14], values[0], values[1], values[2], values[9]))
+                    connection.execute("""UPDATE daily_price_bars SET timestamp=?, open=?, high=?, low=?, close=?, volume=?, fetched_at=?, source_timestamp=?, data_version=?, quality_status=?, payload_hash=?, canonical_security_id=?, canonical_ticker=?, source_symbol=?, corporate_action_lineage=?
+                    WHERE ticker=? AND provider=? AND session_date=? AND adjusted=?""", (*values[3:9], values[10], values[11], values[12], values[13], values[14], values[15], values[16], values[17], values[18], values[0], values[1], values[2], values[9]))
                     updated += 1
             connection.commit()
         return inserted, updated
@@ -101,7 +117,7 @@ class DailyBarStorage:
         sql += " ORDER BY session_date"
         with _lock, self._connect() as connection:
             rows = connection.execute(sql, args).fetchall()
-        return [DailyBar(*row[:10], fetched_at=row[10], source_timestamp=row[11], data_version=row[12], quality_status=row[13], payload_hash=row[14]) for row in rows]
+        return [DailyBar(*row[:10], fetched_at=row[10], source_timestamp=row[11], data_version=row[12], quality_status=row[13], payload_hash=row[14], canonical_security_id=row[15], canonical_ticker=row[16], source_symbol=row[17], corporate_action_lineage=row[18]) for row in rows]
 
     def latest_session(self, ticker: str, provider: str = "polygon") -> str | None:
         self.initialize()
@@ -112,6 +128,20 @@ class DailyBarStorage:
     def status(self, tickers: list[str], provider: str = "polygon") -> dict[str, object]:
         rows = {ticker: self.latest_session(ticker, provider) for ticker in tickers}
         return {"symbols_total": len(tickers), "symbols_seeded": sum(value is not None for value in rows.values()), "latest_sessions": rows}
+
+    def backfill_canonical_identity(self, ticker: str, security_id: str, *, provider: str = "polygon", lineage: str | None = None) -> int:
+        """Fill missing identity columns without altering prices or provider symbols."""
+        self.initialize()
+        with _lock, self._connect() as connection:
+            result = connection.execute(
+                """UPDATE daily_price_bars
+                SET canonical_security_id=?, canonical_ticker=?, corporate_action_lineage=COALESCE(corporate_action_lineage, ?)
+                WHERE ticker=? AND provider=? AND adjusted=1
+                  AND (canonical_security_id IS NULL OR canonical_security_id='')""",
+                (security_id, ticker.upper(), lineage, ticker.upper(), provider.lower()),
+            )
+            connection.commit()
+        return int(result.rowcount)
 
     def _connect(self) -> sqlite3.Connection:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,769 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 4,
+    "caseId": "breadth",
+    "title": "Breadth question",
+    "request": {
+      "message": "Does breadth confirm the current market stance?",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "durable-cached",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "BREADTH_QUERY",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "breadth"
+      ],
+      "optionalAgents": [
+        "market"
+      ],
+      "entities": [
+        {
+          "type": "metric",
+          "id": "breadth"
+        }
+      ],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "complete"
+      ],
+      "allowedFreshnessStates": [
+        "cached",
+        "delayed",
+        "live"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "breadth",
+          "route": "/market",
+          "tab": "breadth",
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": "breadth"
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "breadth_provenance",
+        "confirmation_is_conditional",
+        "freshness_visible"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-04-breadth",
+    "planId": "plan-stage7-breadth",
+    "threadId": "stage7-thread-breadth",
+    "startedAt": "2026-07-22T05:09:08.461889+00:00",
+    "completedAt": "2026-07-22T05:09:08.462755+00:00",
+    "elapsedMs": 0.773,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-breadth",
+      "intent": "BREADTH_QUERY",
+      "subIntent": "confirmation",
+      "entities": [
+        {
+          "entityId": "breadth",
+          "entityType": "metric",
+          "displayName": "Market Breadth",
+          "symbol": null,
+          "confidence": 1.0,
+          "resolutionSource": "fixture-route-registry"
+        }
+      ],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "current_session",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.96,
+      "requiredAgents": [
+        "breadth"
+      ],
+      "optionalAgents": [
+        "market"
+      ],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-breadth",
+      "intentId": "intent-stage7-breadth",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-breadth",
+          "order": 1,
+          "agent": "breadth",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 2800,
+          "purpose": "Collect validated breadth evidence."
+        }
+      ],
+      "requiredAgents": [
+        "breadth"
+      ],
+      "optionalAgents": [
+        "market"
+      ],
+      "dependencies": {
+        "step-1-breadth": []
+      },
+      "requiredEntities": [
+        "breadth"
+      ],
+      "evidenceRequirements": [
+        {
+          "category": "breadth",
+          "required": true,
+          "entities": [
+            "breadth"
+          ],
+          "minimumItems": 1
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "breadth"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 3000,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "breadth",
+        "status": "complete",
+        "observations": [
+          "The breadth fixture adapter returned a reviewed durable observation."
+        ],
+        "conclusions": [
+          "The breadth evidence remains conditional on its cited source."
+        ],
+        "contradictions": [],
+        "metrics": {},
+        "levels": [
+          {
+            "label": "risk invalidation condition",
+            "value": "reviewed invalidation threshold",
+            "unit": null,
+            "evidenceId": "stage7:breadth:breadth:1"
+          }
+        ],
+        "sourceReferences": [
+          {
+            "sourceId": "stage7:breadth:breadth",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_breadth_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:durable-cached"
+          }
+        ],
+        "evidence": [
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:breadth:breadth:1",
+            "category": "breadth",
+            "entity": "US equity universe",
+            "metric": "breadth classification",
+            "value": "narrow participation",
+            "unit": null,
+            "currentState": "narrow participation",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "contradiction",
+            "source": {
+              "sourceId": "stage7:breadth:breadth",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_breadth_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:durable-cached"
+            },
+            "freshness": {
+              "state": "cached",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [],
+            "contradictsClaimIds": [
+              "claim:breadth:support"
+            ]
+          }
+        ],
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "breadth"
+        ],
+        "warnings": [],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:breadth:breadth:1",
+        "category": "breadth",
+        "entity": "US equity universe",
+        "metric": "breadth classification",
+        "value": "narrow participation",
+        "unit": null,
+        "currentState": "narrow participation",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "contradiction",
+        "source": {
+          "sourceId": "stage7:breadth:breadth",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_breadth_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:durable-cached"
+        },
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [],
+        "contradictsClaimIds": [
+          "claim:breadth:support"
+        ]
+      }
+    ],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "The breadth engine classifies participation as narrow participation.",
+      "stance": "neutral",
+      "confidenceLabel": "limited",
+      "thesis": "The breadth engine classifies participation as narrow participation.",
+      "supportingFactors": [],
+      "contradictoryFactors": [
+        {
+          "statement": "US equity universe: breadth classification is narrow participation.",
+          "evidenceIds": [
+            "stage7:breadth:breadth:1"
+          ]
+        }
+      ],
+      "keyRisks": [
+        {
+          "statement": "US equity universe: breadth classification is narrow participation.",
+          "evidenceIds": [
+            "stage7:breadth:breadth:1"
+          ]
+        }
+      ],
+      "confirmationConditions": [],
+      "invalidationConditions": [
+        {
+          "statement": "The validated risk invalidation condition is reviewed invalidation threshold.",
+          "evidenceIds": [
+            "stage7:breadth:breadth:1"
+          ]
+        }
+      ],
+      "missingEvidence": [],
+      "personalizationNote": null,
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "breadth"
+      ],
+      "disclaimerClass": "educational_market_decision_support"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-04-breadth",
+      "planId": "plan-stage7-breadth",
+      "threadId": "stage7-thread-breadth",
+      "status": "complete",
+      "answer": "The breadth engine classifies participation as narrow participation.\n\nCounter-evidence: US equity universe: breadth classification is narrow participation.",
+      "answerSections": {
+        "directAnswer": "The breadth engine classifies participation as narrow participation.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [
+          "US equity universe: breadth classification is narrow participation."
+        ],
+        "mainCaution": "US equity universe: breadth classification is narrow participation.",
+        "whatWouldConfirm": [],
+        "whatWouldInvalidate": [
+          "The validated risk invalidation condition is reviewed invalidation threshold."
+        ],
+        "whatWouldChange": [
+          "The validated risk invalidation condition is reviewed invalidation threshold."
+        ]
+      },
+      "grounding": {
+        "contextUsed": [
+          "fixture_breadth_snapshot"
+        ],
+        "sourceState": "cached",
+        "generatedAt": "2026-07-22T05:09:08.462525+00:00",
+        "evidenceIds": [
+          "stage7:breadth:breadth:1"
+        ]
+      },
+      "suggestedFollowUps": [],
+      "confidence": 42,
+      "answerConfidence": {
+        "level": "limited",
+        "reasons": [
+          "Intent confidence: 96%.",
+          "Evidence freshness: cached."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-breadth",
+        "intent": "BREADTH_QUERY",
+        "subIntent": "confirmation",
+        "entities": [
+          {
+            "entityId": "breadth",
+            "entityType": "metric",
+            "displayName": "Market Breadth",
+            "symbol": null,
+            "confidence": 1.0,
+            "resolutionSource": "fixture-route-registry"
+          }
+        ],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "current_session",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.96,
+        "requiredAgents": [
+          "breadth"
+        ],
+        "optionalAgents": [
+          "market"
+        ],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-breadth",
+        "intentId": "intent-stage7-breadth",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-breadth",
+            "order": 1,
+            "agent": "breadth",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 2800,
+            "purpose": "Collect validated breadth evidence."
+          }
+        ],
+        "requiredAgents": [
+          "breadth"
+        ],
+        "optionalAgents": [
+          "market"
+        ],
+        "dependencies": {
+          "step-1-breadth": []
+        },
+        "requiredEntities": [
+          "breadth"
+        ],
+        "evidenceRequirements": [
+          {
+            "category": "breadth",
+            "required": true,
+            "entities": [
+              "breadth"
+            ],
+            "minimumItems": 1
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "breadth"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 3000,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "The breadth engine classifies participation as narrow participation.",
+        "stance": "neutral",
+        "confidenceLabel": "limited",
+        "thesis": "The breadth engine classifies participation as narrow participation.",
+        "supportingFactors": [],
+        "contradictoryFactors": [
+          {
+            "statement": "US equity universe: breadth classification is narrow participation.",
+            "evidenceIds": [
+              "stage7:breadth:breadth:1"
+            ]
+          }
+        ],
+        "keyRisks": [
+          {
+            "statement": "US equity universe: breadth classification is narrow participation.",
+            "evidenceIds": [
+              "stage7:breadth:breadth:1"
+            ]
+          }
+        ],
+        "confirmationConditions": [],
+        "invalidationConditions": [
+          {
+            "statement": "The validated risk invalidation condition is reviewed invalidation threshold.",
+            "evidenceIds": [
+              "stage7:breadth:breadth:1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "personalizationNote": null,
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "breadth"
+        ],
+        "disclaimerClass": "educational_market_decision_support"
+      },
+      "evidence": [
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:breadth:breadth:1",
+          "category": "breadth",
+          "entity": "US equity universe",
+          "metric": "breadth classification",
+          "value": "narrow participation",
+          "unit": null,
+          "currentState": "narrow participation",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "contradiction",
+          "source": {
+            "sourceId": "stage7:breadth:breadth",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_breadth_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:durable-cached"
+          },
+          "freshness": {
+            "state": "cached",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [],
+          "contradictsClaimIds": [
+            "claim:breadth:support"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "action-breadth-default",
+          "label": "Open Breadth",
+          "actionType": "navigate",
+          "destinationId": "breadth",
+          "route": "/market",
+          "tab": "breadth",
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": "breadth",
+          "parameters": {
+            "tab": "breadth"
+          }
+        }
+      ],
+      "warnings": [],
+      "freshnessSummary": {
+        "overallState": "cached",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 1,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "breadth": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-breadth-default",
+        "label": "Open Breadth",
+        "actionType": "navigate",
+        "destinationId": "breadth",
+        "route": "/market",
+        "tab": "breadth",
+        "subTab": null,
+        "sectionId": null,
+        "entity": null,
+        "highlightTarget": "breadth",
+        "parameters": {
+          "tab": "breadth"
+        }
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed BREADTH_QUERY; expected BREADTH_QUERY."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['breadth']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status complete."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness cached."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:breadth_provenance",
+          "status": "passed",
+          "detail": "Breadth evidence retains category and source provenance."
+        },
+        {
+          "check": "assertion:confirmation_is_conditional",
+          "status": "passed",
+          "detail": "Breadth confirmation remains conditional on grounded levels."
+        },
+        {
+          "check": "assertion:freshness_visible",
+          "status": "passed",
+          "detail": "Aggregate and item-level freshness metadata is present."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

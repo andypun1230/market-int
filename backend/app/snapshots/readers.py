@@ -36,6 +36,7 @@ from app.models.market import (
 from app.snapshots.models import MarketSnapshot, SnapshotSection, now_iso
 from app.snapshots.service import get_market_snapshot_service, snapshot_age_seconds
 from app.services.market_data import canonicalize_index_payloads
+from app.services.theme_intelligence import build_theme_intelligence_context
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -78,14 +79,14 @@ def get_section_payload(name: str) -> Any:
 def get_home_dashboard_from_snapshot() -> dict[str, Any]:
     payload = get_section_payload("home")
     if isinstance(payload, dict):
-        return decorate_payload(payload)
+        return hydrate_current_theme(decorate_payload(payload))
     return initializing_home_dashboard()
 
 
 def get_core_snapshot_from_snapshot() -> dict[str, Any]:
     payload = get_section_payload("core")
     if isinstance(payload, dict):
-        decorated = decorate_payload(payload)
+        decorated = hydrate_current_theme(decorate_payload(payload))
         decorated.setdefault("as_of", decorated.get("generated_at") or now_iso())
         return decorated
     return initializing_core_snapshot()
@@ -130,7 +131,8 @@ def get_decision_from_snapshot(model: type[T], fallback: T) -> T:
 
 
 def get_decision_dashboard_from_snapshot() -> DecisionDashboardResponse:
-    return get_model_from_snapshot("decision", DecisionDashboardResponse, fallback_decision())
+    value = get_model_from_snapshot("decision", DecisionDashboardResponse, fallback_decision())
+    return value.model_copy(update={"theme_intelligence": build_theme_intelligence_context()})
 
 
 def snapshot_details_payload(group: str) -> dict[str, Any]:
@@ -153,10 +155,14 @@ def snapshot_details_payload(group: str) -> dict[str, Any]:
             "errors": {},
         }
     if group == "decision":
+        # The MarketSnapshot remains immutable. Its detail facade must still
+        # expose the current durable ThemeSnapshot, matching the standalone
+        # Decision endpoint and avoiding stale pre-pilot Theme provenance.
+        decision = get_decision_dashboard_from_snapshot().model_dump()
         return {
-            "decisionDashboard": snapshot.section_payload("decision"),
-            "probabilities": (snapshot.section_payload("decision") or {}).get("probabilities") if isinstance(snapshot.section_payload("decision"), dict) else None,
-            "comparison": (snapshot.section_payload("decision") or {}).get("comparison") if isinstance(snapshot.section_payload("decision"), dict) else None,
+            "decisionDashboard": decision,
+            "probabilities": decision.get("probabilities"),
+            "comparison": decision.get("comparison"),
             "riskDashboard": snapshot.section_payload("risk_dashboard"),
             "partial": snapshot.status != "complete",
             "cache_status": "snapshot",
@@ -240,6 +246,17 @@ def decorate_payload(payload: dict[str, Any]) -> dict[str, Any]:
         result["snapshot_id"] = snapshot.snapshot_id
         result["snapshot_status"] = snapshot.status
         result["snapshot_age_seconds"] = snapshot_age_seconds(snapshot)
+    return result
+
+
+def hydrate_current_theme(payload: dict[str, Any]) -> dict[str, Any]:
+    """Attach the durable ThemeSnapshot at read time without a provider request."""
+    result = dict(payload)
+    theme = build_theme_intelligence_context()
+    result["theme_intelligence"] = theme
+    core = result.get("core")
+    if isinstance(core, dict):
+        result["core"] = {**core, "theme_intelligence": theme}
     return result
 
 

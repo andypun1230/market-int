@@ -5,7 +5,8 @@ from typing import Any
 
 from app.providers.models import HistoryData
 from app.services.candle_data import get_symbol_history
-from app.services.service_cache import get_or_compute, get_service_ttl
+from app.services.report_read_context import is_report_snapshot_read
+from app.services.service_cache import get_cached_service_value, get_or_compute, get_service_ttl, invalidate_service_cache
 
 
 # These ETF proxies intentionally match the documented Macro tab inputs. They
@@ -29,8 +30,19 @@ def build_macro_state(days: int = 110) -> dict[str, Any]:
     usable input. Consumers receive an unavailable state instead of invented
     mock values when cross-asset coverage is incomplete.
     """
+    cache_key = f"macro-state:v3:{days}"
+    cached = get_cached_service_value(cache_key)
+    if isinstance(cached, dict):
+        if is_report_snapshot_read() or cached.get("source_state") in {"live", "cached"}:
+            return cached
+        # A report read must never promote its no-fetch fallback into the
+        # shared Macro cache. Rebuild that invalid value only on a normal
+        # Macro consumer, where provider work is explicitly allowed.
+        invalidate_service_cache(cache_key)
+    if is_report_snapshot_read():
+        return build_macro_state_from_histories({})
     return get_or_compute(
-        f"macro-state:v3:{days}",
+        cache_key,
         get_service_ttl("SERVICE_CACHE_MACRO_TTL_SECONDS", 300),
         lambda: _build_macro_state_uncached(days),
     )

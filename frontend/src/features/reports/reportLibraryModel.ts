@@ -47,11 +47,20 @@ export function createReportRecord({
   report: DailyReport;
 }): DailyReportRecord {
   const marketDate = normalizeMarketDate(report.date, now);
+  const backendReportId = report.report_id?.trim() || null;
+  const existing = backendReportId ? existingRecords.find((record) => record.id === backendReportId) : null;
+  if (existing) {
+    return {
+      ...existing,
+      remotePdfUrl: pdfUrl,
+      snapshot: report,
+    };
+  }
   const version = nextVersionForDate(existingRecords, marketDate);
-  const id = `daily-${marketDate}-v${version}`;
+  const id = backendReportId ?? `daily-${marketDate}-v${version}`;
   const metadata: ReportMetadata = {
     downloadedAt: null,
-    generatedAt: now.toISOString(),
+    generatedAt: report.generated_at ?? report.generated_time ?? now.toISOString(),
     generatedTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local',
     id,
     marketDate,
@@ -63,7 +72,7 @@ export function createReportRecord({
 
   return {
     errorCode: null,
-    fileName: buildReportFileName(marketDate, version),
+    fileName: buildReportFileName(marketDate, version, backendReportId),
     fileSizeBytes: null,
     id,
     localPdfUri: null,
@@ -74,12 +83,58 @@ export function createReportRecord({
   };
 }
 
-export function groupReportRecords(records: DailyReportRecord[]) {
+export function groupReportRecords(records: DailyReportRecord[], now = new Date()) {
   const sorted = [...records].sort(compareReportRecords);
+  const downloaded = sorted.filter((record) => record.status === 'downloaded');
+  const active = sorted.filter((record) => record.status !== 'downloaded');
+  const today = localDateKey(now);
+  const weekStart = startOfLocalWeek(now);
+  const archiveCutoff = new Date(now);
+  archiveCutoff.setDate(archiveCutoff.getDate() - 30);
+  archiveCutoff.setHours(0, 0, 0, 0);
+
   return {
-    downloaded: sorted.filter((record) => record.status === 'downloaded'),
-    ready: sorted.filter((record) => record.status !== 'downloaded'),
+    archived: active.filter((record) => isArchivedRecord(record, archiveCutoff)),
+    downloaded,
+    previous: active.filter((record) => {
+      const date = reportGenerationDate(record);
+      return !isArchivedRecord(record, archiveCutoff) && date < weekStart;
+    }),
+    ready: active,
+    thisWeek: active.filter((record) => {
+      const date = reportGenerationDate(record);
+      return !isArchivedRecord(record, archiveCutoff) && localDateKey(date) !== today && date >= weekStart;
+    }),
+    today: active.filter((record) => localDateKey(reportGenerationDate(record)) === today && !isArchivedRecord(record, archiveCutoff)),
   };
+}
+
+function isArchivedRecord(record: DailyReportRecord, archiveCutoff: Date) {
+  return record.status === 'stale'
+    || record.status === 'generation_failed'
+    || reportGenerationDate(record) < archiveCutoff;
+}
+
+function reportGenerationDate(record: DailyReportRecord) {
+  const generated = new Date(record.metadata.generatedAt);
+  if (!Number.isNaN(generated.getTime())) return generated;
+  const marketDate = new Date(`${record.metadata.marketDate}T12:00:00`);
+  return Number.isNaN(marketDate.getTime()) ? new Date(0) : marketDate;
+}
+
+function startOfLocalWeek(now: Date) {
+  const start = new Date(now);
+  const day = start.getDay();
+  start.setDate(start.getDate() - (day === 0 ? 6 : day - 1));
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+
+function localDateKey(value: Date) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, '0');
+  const day = String(value.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 export function compareReportRecords(left: DailyReportRecord, right: DailyReportRecord) {
@@ -100,8 +155,9 @@ export function nextVersionForDate(records: DailyReportRecord[], marketDate: str
   return versions.length ? Math.max(...versions) + 1 : 1;
 }
 
-export function buildReportFileName(marketDate: string, version: number) {
-  return `Market-Intelligence-Report-${marketDate}-v${version}.pdf`;
+export function buildReportFileName(marketDate: string, version: number, reportId?: string | null) {
+  const suffix = reportId ? `-${reportId}` : `-v${version}`;
+  return `Market-Intelligence-Report-${marketDate}${suffix}.pdf`;
 }
 
 export function deriveReportSourceState(report: DailyReport): ReportSourceState {
@@ -189,7 +245,13 @@ export function migrateReportRecords(value: unknown): DailyReportRecord[] {
       downloadedAt: record.metadata.downloadedAt ?? null,
       sourceUpdatedAt: record.metadata.sourceUpdatedAt ?? null,
     },
+    remotePdfUrl: isUnpinnedPdfUrl(record.remotePdfUrl) ? null : record.remotePdfUrl,
+    status: isUnpinnedPdfUrl(record.remotePdfUrl) && record.status !== 'downloaded' ? 'stale' : record.status,
   }));
+}
+
+function isUnpinnedPdfUrl(value: string | null | undefined) {
+  return Boolean(value && /\/report\/daily\/pdf(?:$|\?[^]*$)/.test(value) && !value.includes('report_id='));
 }
 
 function isReportRecord(value: unknown): value is DailyReportRecord {

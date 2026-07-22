@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from html import escape
 from io import BytesIO
+from hashlib import sha256
 from math import isfinite
 from typing import Any, Dict, List
 
@@ -53,7 +54,6 @@ from app.services.industry_groups import build_industry_groups
 from app.services.industry_rotation import build_industry_rotation_dashboard
 from app.services.institutional_intelligence import build_institutional_intelligence_dashboard
 from app.services.leadership import build_leadership_dashboard
-from app.services.ai_summary import generate_market_narrative
 from app.services.candle_data import get_symbol_history
 from app.services.market_cap_rotation import build_market_cap_rotation
 from app.services.market_health import calculate_market_health
@@ -74,6 +74,17 @@ from app.services.support_resistance import calculate_support_resistance
 from app.services.volume_analysis import build_volume_analysis
 from app.services.watchlist_summary import build_watchlist_summary
 from app.snapshots.service import get_market_snapshot_service
+from app.services.theme_intelligence import build_theme_intelligence_context
+from app.services.report_read_context import report_snapshot_read
+from app.reports.storage import get_daily_report_storage
+from app.reports.document_builder import build_report_document
+from app.reports.pdf_v6 import generate_report_pdf_v6
+from app.reports.pdf_v7 import generate_report_pdf_v7
+from app.securities.service import get_security_master_service
+
+
+REPORT_SCHEMA_VERSION = "daily-report-v23"
+REPORT_PDF_FORMAT_VERSION = "daily-report-pdf-v7"
 
 
 def build_daily_volume_analysis() -> DailyVolumeAnalysis:
@@ -116,13 +127,58 @@ def build_daily_multi_timeframe() -> DailyMultiTimeframe:
     return DailyMultiTimeframe(**build_daily_multi_timeframe_summary())
 
 
-def build_daily_report() -> DailyReportResponse:
+def build_daily_report(
+    *,
+    saved_stocks: list[str] | None = None,
+    saved_sectors: list[str] | None = None,
+    saved_themes: list[str] | None = None,
+) -> DailyReportResponse:
+    identity = current_report_identity(saved_stocks=saved_stocks, saved_sectors=saved_sectors, saved_themes=saved_themes)
+    storage = get_daily_report_storage()
+    persisted = storage.get_by_identity(identity["identity_key"])
+    if persisted is not None:
+        storage.mark_latest(
+            persisted.report.report_id or "",
+            persisted.report.generated_at or persisted.report.generated_time or "unknown",
+        )
+        return persisted.report
     value = get_or_compute(
-        f"report:daily:v7:{latest_market_snapshot_id()}:{latest_sector_snapshot_id()}:{latest_breadth_snapshot_id()}",
+        identity["cache_key"],
         get_service_ttl("SERVICE_CACHE_REPORT_TTL_SECONDS", 300),
-        _build_daily_report_uncached,
+        lambda: _build_daily_report_uncached(identity),
     )
-    return value if isinstance(value, DailyReportResponse) else DailyReportResponse.model_validate(value)
+    report = value if isinstance(value, DailyReportResponse) else DailyReportResponse.model_validate(value)
+    return storage.save_if_absent(
+        report,
+        identity_key=identity["identity_key"],
+        cache_key=identity["cache_key"],
+        schema_version=REPORT_SCHEMA_VERSION,
+    ).report
+
+
+def get_daily_report_by_id(report_id: str) -> DailyReportResponse | None:
+    stored = get_daily_report_storage().get(report_id)
+    return stored.report if stored is not None else None
+
+
+def get_latest_daily_report() -> DailyReportResponse | None:
+    stored = get_daily_report_storage().latest()
+    return stored.report if stored is not None else None
+
+
+def get_daily_report_history(limit: int = 30) -> list[dict[str, Any]]:
+    return get_daily_report_storage().history(limit)
+
+
+def get_daily_report_pdf_bytes(report_id: str | None = None) -> tuple[DailyReportResponse, bytes]:
+    storage = get_daily_report_storage()
+    report = get_daily_report_by_id(report_id) if report_id else build_daily_report()
+    if report is None:
+        raise KeyError(f"Unknown report id: {report_id}")
+    pdf = storage.get_pdf(report.report_id or "")
+    if pdf is None:
+        pdf = storage.save_pdf_if_absent(report.report_id or "", generate_daily_report_pdf(report).getvalue())
+    return report, pdf
 
 
 def latest_market_snapshot_id() -> str:
@@ -148,48 +204,221 @@ def latest_breadth_snapshot_id() -> str:
         return "unavailable"
 
 
-def _build_daily_report_uncached() -> DailyReportResponse:
-    institutional_activity = calculate_institutional_bias()
-    volume_analysis = build_daily_volume_analysis()
-    risk_plans = build_daily_risk_plans()
-    multi_timeframe = build_daily_multi_timeframe()
-    market_health = calculate_market_health()
-    market_regime = build_market_regime()
-    decision_dashboard = build_decision_dashboard()
-    probabilities = build_probability_engine()
-    leadership = build_leadership_dashboard()
-    decision_confidence = calculate_decision_confidence()
-    breadth = calculate_market_breadth()
-    comparison = build_dashboard_comparison()
-    industry_rotation = build_industry_rotation_dashboard()
-    risk_dashboard = build_risk_dashboard_v2()
-    institutional_intelligence = build_institutional_intelligence_dashboard()
-    sector_etfs = build_sector_etf_dashboard()
-    industry_groups = build_industry_groups()
-    cap_rotation = build_market_cap_rotation()
-    fear_greed = build_fear_greed_index()
-    macro = build_macro_state()
-    ai_summary = generate_market_narrative()
-    indexes = safe_build_index_snapshots()
-    index_histories = safe_build_index_histories()
-    watchlist_summary = safe_build_watchlist_summary()
-    stock_charts = safe_build_selected_stock_charts(watchlist_summary)
-    sector_dashboard = safe_build_sector_dashboard()
+def latest_theme_snapshot_id() -> str:
+    return str(build_theme_intelligence_context().get("snapshot_id") or "unavailable")
+
+
+def current_report_identity(
+    *,
+    saved_stocks: list[str] | None = None,
+    saved_sectors: list[str] | None = None,
+    saved_themes: list[str] | None = None,
+) -> dict[str, Any]:
+    personalization = normalize_research_preferences(saved_stocks, saved_sectors, saved_themes)
+    snapshot_ids = {
+        "market": latest_market_snapshot_id(),
+        "breadth": latest_breadth_snapshot_id(),
+        "sector": latest_sector_snapshot_id(),
+        "theme": latest_theme_snapshot_id(),
+    }
+    cache_key = ":".join(
+        [
+            "report:daily",
+            REPORT_SCHEMA_VERSION,
+            REPORT_PDF_FORMAT_VERSION,
+            "json",
+            snapshot_ids["market"],
+            snapshot_ids["breadth"],
+            snapshot_ids["sector"],
+            snapshot_ids["theme"],
+            sha256(str(personalization).encode()).hexdigest()[:16],
+        ]
+    )
+    return {
+        "snapshot_ids": snapshot_ids,
+        "cache_key": cache_key,
+        "identity_key": sha256(cache_key.encode()).hexdigest(),
+        "personalization": personalization,
+    }
+
+
+def report_id_for_identity(market_date: str, identity_key: str) -> str:
+    return f"daily-{market_date}-{identity_key[:12]}"
+
+
+def normalize_research_preferences(
+    saved_stocks: list[str] | None,
+    saved_sectors: list[str] | None,
+    saved_themes: list[str] | None,
+) -> dict[str, list[str]]:
+    def normalized(values: list[str] | None, *, uppercase: bool, limit: int) -> list[str]:
+        result = set()
+        for value in values or []:
+            text = str(value or "").strip()
+            if not text:
+                continue
+            result.add(text.upper() if uppercase else text.lower().replace("&", "and").replace("-", "_").replace(" ", "_"))
+        return sorted(result)[:limit]
+
+    return {
+        "saved_stocks": normalized(saved_stocks, uppercase=True, limit=50),
+        "saved_sectors": normalized(saved_sectors, uppercase=False, limit=25),
+        "saved_themes": normalized(saved_themes, uppercase=False, limit=25),
+    }
+
+
+def capture_daily_report_inputs(personalization: dict[str, list[str]] | None = None) -> dict[str, Any]:
+    """Read existing report inputs without allowing report-time provider work."""
+    with report_snapshot_read():
+        inputs = {
+            "institutional_activity": calculate_institutional_bias(),
+            "volume_analysis": build_daily_volume_analysis(),
+            "risk_plans": build_daily_risk_plans(),
+            "multi_timeframe": build_daily_multi_timeframe(),
+            "market_health": calculate_market_health(),
+            "market_regime": build_market_regime(),
+            "decision_dashboard": build_decision_dashboard(),
+            "probabilities": build_probability_engine(),
+            "leadership": build_leadership_dashboard(),
+            "decision_confidence": calculate_decision_confidence(),
+            "breadth": calculate_market_breadth(),
+            "comparison": build_dashboard_comparison(),
+            "industry_rotation": build_industry_rotation_dashboard(),
+            "risk_dashboard": build_risk_dashboard_v2(),
+            "institutional_intelligence": build_institutional_intelligence_dashboard(),
+            "sector_etfs": build_sector_etf_dashboard(),
+            "industry_groups": build_industry_groups(),
+            "cap_rotation": build_market_cap_rotation(),
+            "fear_greed": build_fear_greed_index(),
+            "macro": build_macro_state(),
+            "indexes": safe_build_index_snapshots(),
+            "index_histories": safe_build_index_histories(),
+            "index_ohlcv": safe_build_index_ohlcv(),
+            "watchlist_summary": safe_build_watchlist_summary((personalization or {}).get("saved_stocks")),
+            "sector_dashboard": safe_build_sector_dashboard(),
+            "theme_intelligence": build_theme_intelligence_context(),
+            "security_taxonomy": build_security_taxonomy(),
+        }
+    # The interactive narrative calls build_market_analysis(), which owns a
+    # shared cache for Copilot and live screens. A report read must not seed
+    # that cache with a deliberately no-fetch view, so its brief is derived
+    # only from the frozen values captured above.
+    inputs["ai_summary"] = build_captured_report_ai_summary(inputs)
+    return inputs
+
+
+def build_captured_report_ai_summary(inputs: dict[str, Any]) -> dict[str, Any]:
+    """Create a report-local brief without invoking shared live analysis."""
+    health = inputs["market_health"]
+    regime = inputs["market_regime"]
+    decision = inputs["decision_dashboard"]
+    breadth = inputs["breadth"]
+    risk_dashboard = inputs["risk_dashboard"]
+    cap_rotation = inputs["cap_rotation"]
+    sector_dashboard = inputs.get("sector_dashboard") or {}
+    sectors = sector_dashboard.get("sectors") if isinstance(sector_dashboard, dict) else []
+    leader = next(
+        (
+            str(item.get("name") or item.get("sector"))
+            for item in (sectors or [])
+            if isinstance(item, dict) and (item.get("name") or item.get("sector"))
+        ),
+        "the leading sector",
+    )
+    confidence = getattr(inputs["decision_confidence"], "score", None)
+    playbook = decision.playbook
+    health_score = getattr(health, "overall_score", "N/A")
+    health_status = getattr(health, "status", "N/A")
+    regime_status = getattr(regime, "status", "N/A")
+    breadth_status = getattr(breadth, "breadth_status", "unavailable")
+    percent_above_50ema = getattr(breadth, "percent_above_50ema", None)
+    breadth_display = f"{percent_above_50ema:.1f}%" if isinstance(percent_above_50ema, (int, float)) else "N/A"
+    risk_score = getattr(risk_dashboard, "score", "N/A")
+    cap_leader = getattr(cap_rotation, "leader", "N/A")
+
+    return {
+        "type": "market_ai_summary",
+        "headline": playbook.headline or "Stay selective with the current market evidence",
+        "summary": (
+            f"This immutable report captures a {regime_status} regime. Market health is {health_status} "
+            f"at {health_score}/100, while breadth is {breadth_status} with {breadth_display} above the 50 EMA. "
+            f"{leader} leads the durable sector snapshot, {cap_leader} leads cap rotation, and the risk dashboard "
+            f"is {risk_score}/100."
+        ),
+        "confidence": confidence if isinstance(confidence, (int, float)) else 70,
+        "generated_by": "captured_report_snapshot",
+        "next_update": "Next Daily Report",
+        "key_points": [
+            f"Market health: {health_status} ({health_score}/100).",
+            f"Breadth: {breadth_status} with {breadth_display} above the 50 EMA.",
+            f"Current sector leader: {leader}.",
+        ],
+        "opportunities": [f"Follow confirmed leadership in {leader} while the playbook remains valid."],
+        "risks": [playbook.main_risk or "Monitor the current risk dashboard and market breadth."],
+        "what_to_watch": [
+            f"Whether the regime remains {regime_status}.",
+            f"Whether breadth holds near {breadth_display} above the 50 EMA.",
+            f"Whether {leader} continues to lead the sector snapshot.",
+        ],
+        "disclaimer": "This is educational market analysis only and not financial advice.",
+    }
+
+
+def _build_daily_report_uncached(identity: dict[str, Any] | None = None) -> DailyReportResponse:
+    identity = identity or current_report_identity()
+    inputs = capture_daily_report_inputs(identity.get("personalization"))
+    institutional_activity = inputs["institutional_activity"]
+    volume_analysis = inputs["volume_analysis"]
+    risk_plans = inputs["risk_plans"]
+    multi_timeframe = inputs["multi_timeframe"]
+    market_health = inputs["market_health"]
+    market_regime = inputs["market_regime"]
+    decision_dashboard = inputs["decision_dashboard"]
+    probabilities = inputs["probabilities"]
+    leadership = inputs["leadership"]
+    decision_confidence = inputs["decision_confidence"]
+    breadth = inputs["breadth"]
+    comparison = inputs["comparison"]
+    industry_rotation = inputs["industry_rotation"]
+    risk_dashboard = inputs["risk_dashboard"]
+    institutional_intelligence = inputs["institutional_intelligence"]
+    sector_etfs = inputs["sector_etfs"]
+    industry_groups = inputs["industry_groups"]
+    cap_rotation = inputs["cap_rotation"]
+    fear_greed = inputs["fear_greed"]
+    macro = inputs["macro"]
+    ai_summary = inputs["ai_summary"]
+    indexes = inputs["indexes"]
+    index_histories = inputs["index_histories"]
+    index_ohlcv = inputs["index_ohlcv"]
+    watchlist_summary = inputs["watchlist_summary"]
+    with report_snapshot_read():
+        stock_charts = safe_build_selected_stock_charts(watchlist_summary)
+    sector_dashboard = inputs["sector_dashboard"]
+    theme_intelligence = inputs["theme_intelligence"]
+    security_taxonomy = inputs["security_taxonomy"]
+    theme_report = build_theme_report_section(theme_intelligence)
     sector_names = [
         str(item.get("name") or item.get("sector") or "")
         for item in (sector_dashboard or {}).get("sectors", [])
         if isinstance(item, dict) and (item.get("name") or item.get("sector"))
     ]
-    market_date = breadth.market_date or (sector_dashboard or {}).get("market_date") or datetime.utcnow().date().isoformat()
+    market_date = breadth.market_date or (sector_dashboard or {}).get("market_date") or datetime.now(timezone.utc).date().isoformat()
     leading_sector = sector_names[0] if sector_names else "Sector leadership"
+    generated_at = datetime.now(timezone.utc).isoformat()
+    report_id = report_id_for_identity(market_date, identity["identity_key"])
     base_report = DailyReportResponse(
         date=market_date,
-        title="Daily Market Report",
+        title="Daily Market Intelligence Briefing",
         executive_summary=(
             f"Market regime is {market_regime.status}. {leading_sector} is the current durable sector leader, "
             f"while breadth is {breadth.breadth_status or 'unavailable'} with "
             f"{breadth.percent_above_50ema:.1f}% above the 50 EMA. "
-            "Live Theme Intelligence is not published in this report."
+            + (
+                f" {theme_intelligence['leaders'][0]['display_name']} leads the reviewed live ThemeSnapshot."
+                if theme_intelligence.get("available") and theme_intelligence.get("leaders")
+                else " Live Theme Intelligence is not published in this report."
+            )
         ),
         market_regime=market_regime.status,
         key_drivers=[
@@ -223,16 +452,37 @@ def _build_daily_report_uncached() -> DailyReportResponse:
         ai_summary=ai_summary,
         indexes=indexes,
         index_histories=index_histories,
+        index_ohlcv=index_ohlcv,
         watchlist_summary=watchlist_summary,
         sector_dashboard=sector_dashboard,
         sector_snapshot_id=(sector_dashboard or {}).get("snapshot_id") if isinstance(sector_dashboard, dict) else None,
+        theme_intelligence=theme_intelligence,
+        theme_report=theme_report,
         stock_charts=stock_charts,
         economic_calendar=build_economic_calendar(risk_dashboard.upcoming_events),
-        semantic_context=build_report_semantic_context(breadth, decision_confidence, industry_groups, macro),
+        semantic_context=build_report_semantic_context(breadth, decision_confidence, industry_groups, macro, snapshot_ids=identity["snapshot_ids"]),
+        report_id=report_id,
+        market_date=market_date,
+        generated_time=generated_at,
+        generated_at=generated_at,
+        report_schema_version=REPORT_SCHEMA_VERSION,
+        report_cache_key=identity["cache_key"],
+        report_pdf_format_version=REPORT_PDF_FORMAT_VERSION,
+        research_preferences=identity.get("personalization") or {},
+        security_taxonomy=security_taxonomy,
     )
     report_history = load_report_history()
     previous_snapshot = report_history[-1] if report_history else None
     current_snapshot = build_report_snapshot(base_report)
+    # Report intelligence must reason from the same frozen Theme payload the
+    # JSON and PDF expose; it never reads a live ThemeSnapshot after this point.
+    current_snapshot["reportId"] = report_id
+    current_snapshot["marketDate"] = market_date
+    current_snapshot["generatedTime"] = generated_at
+    current_snapshot["reportSchemaVersion"] = REPORT_SCHEMA_VERSION
+    current_snapshot["reportCacheKey"] = identity["cache_key"]
+    current_snapshot["snapshotIds"] = identity["snapshot_ids"]
+    current_snapshot["themeRanking"] = list(theme_report.get("leadership") or [])
     intelligence = build_report_intelligence(previous_snapshot, current_snapshot, report_history)
     current_snapshot["conviction"] = intelligence["conviction"].get("score")
     current_snapshot["confidence"] = intelligence["confidence"].get("score")
@@ -241,9 +491,8 @@ def _build_daily_report_uncached() -> DailyReportResponse:
         "conviction": current_snapshot["conviction"],
         "confidence": current_snapshot["confidence"],
     }
-    base_report.report_id = current_snapshot.get("reportId")
-    base_report.market_date = current_snapshot.get("marketDate")
-    base_report.generated_time = current_snapshot.get("generatedTime")
+    theme_report["report_generated_at"] = generated_at
+    theme_report["report_schema_version"] = REPORT_SCHEMA_VERSION
     base_report.report_snapshot = current_snapshot
     base_report.report_changes = intelligence["changes"]
     base_report.signal_convergence = intelligence["convergence"]
@@ -259,6 +508,14 @@ def _build_daily_report_uncached() -> DailyReportResponse:
     base_report.trade_off_analysis = intelligence["commentary"].get("tradeOff", {})
     base_report.report_commentary = intelligence["commentary"]
     base_report.report_narrative = intelligence["narrative"]
+    report_document = build_report_document(base_report, previous_snapshot)
+    base_report.report_document = report_document.model_dump(mode="json")
+    current_focus = report_document.research_focus.subject if report_document.research_focus else None
+    current_snapshot["researchFocus"] = current_focus
+    current_snapshot["historicalMetrics"] = {
+        **current_snapshot.get("historicalMetrics", {}),
+        "researchFocus": current_focus,
+    }
     save_report_history([*report_history, current_snapshot])
     return base_report
 
@@ -268,6 +525,7 @@ def build_report_semantic_context(
     decision_confidence: DecisionConfidenceResponse,
     industry_groups: IndustryGroupResponse | None = None,
     macro: dict[str, Any] | None = None,
+    snapshot_ids: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     sector_snapshot = get_sector_snapshot_service().latest()
     return {
@@ -283,15 +541,131 @@ def build_report_semantic_context(
         "decision_confidence": decision_confidence.model_dump(),
         "theme_provenance": industry_groups.theme_provenance if industry_groups else {},
         "macro": macro or {},
-        "snapshot_ids": {
+        "snapshot_ids": snapshot_ids or {
             "market": latest_market_snapshot_id(),
             "breadth": getattr(breadth, "snapshot_id", None),
             "sector": sector_snapshot.snapshot_id if sector_snapshot else None,
+            "theme": latest_theme_snapshot_id(),
         },
         "sector_breadth_representativeness": [
             {"sector": row.get("display_name"), "eligible_members": row.get("eligible_members"), "representativeness": row.get("breadth_representativeness"), "reason": row.get("representativeness_reason")}
             for row in (sector_snapshot.sectors if sector_snapshot else ())
         ],
+    }
+
+
+def build_theme_report_section(theme_intelligence: dict[str, Any]) -> dict[str, Any]:
+    """Freeze ThemeSnapshot evidence into the report payload without recalculation."""
+    available = bool(theme_intelligence.get("available"))
+    base = {
+        "available": available,
+        "theme_snapshot_id": theme_intelligence.get("snapshot_id"),
+        "market_date": theme_intelligence.get("market_date"),
+        "generated_at": theme_intelligence.get("generated_at"),
+        "active_theme_count": 0,
+        "definition_versions": {},
+        "pilot_scope": theme_intelligence.get("pilot_scope") or {},
+        "leadership": [],
+        "rotation": {
+            "selected_interval": "1M",
+            "items": [],
+            "provenance": "Published ThemeSnapshot rotation series; no report-time calculation.",
+        },
+        "methodology": {
+            "basket_method": "Daily-rebalanced equal-weight current reviewed baskets.",
+            "historical_disclosure": theme_intelligence.get("historical_disclosure"),
+            "ranking_disclosure": ((theme_intelligence.get("pilot_scope") or {}).get("rank_scope")),
+        },
+        "warnings": list(theme_intelligence.get("warnings") or []),
+    }
+    if not available:
+        base["reason"] = theme_intelligence.get("reason") or "no_published_theme_snapshot"
+        return base
+
+    rows = [item for item in (theme_intelligence.get("items") or []) if isinstance(item, dict)]
+    leaders: list[dict[str, Any]] = []
+    rotations: list[dict[str, Any]] = []
+    versions: dict[str, str] = {}
+    for row in rows:
+        theme_id = str(row.get("theme_id") or "")
+        version = row.get("version")
+        if theme_id and version:
+            versions[theme_id] = str(version)
+        selected_rotation = canonical_theme_rotation(row, "1M")
+        leader = {
+            "theme_id": theme_id,
+            "display_name": row.get("display_name"),
+            "rank": row.get("rank"),
+            "classification": row.get("classification"),
+            "absolute_composite_score": row.get("composite_score"),
+            "score_semantics": row.get("score_semantics") or {},
+            "performance": row.get("performance") or {},
+            "relative_strength": row.get("relative_strength") or {},
+            "breadth": row.get("breadth") or {},
+            "coverage_ratio": row.get("coverage_ratio"),
+            "participation": row.get("participation") or {},
+            "concentration": row.get("concentration") or {},
+            "signal_confidence": row.get("signal_confidence") or {},
+            "data_confidence": row.get("data_confidence") or {},
+            "representativeness": row.get("representativeness") or {},
+            "definition_version": version,
+            "parent_sector_labels": ((row.get("definition") or {}).get("parent_sector_labels") or []),
+            "rotation": selected_rotation,
+        }
+        leaders.append(leader)
+        rotations.append({
+            "theme_id": theme_id,
+            "display_name": row.get("display_name"),
+            **selected_rotation,
+        })
+    base["active_theme_count"] = len(leaders)
+    base["definition_versions"] = versions
+    base["leadership"] = sorted(leaders, key=lambda item: int(item.get("rank") or 999))
+    base["rotation"]["items"] = sorted(rotations, key=lambda item: int(item.get("rank") or 999))
+    return base
+
+
+def canonical_theme_rotation(row: dict[str, Any], interval: str) -> dict[str, Any]:
+    series = row.get("rotation_series") if isinstance(row.get("rotation_series"), dict) else {}
+    selected = series.get(interval) if isinstance(series.get(interval), dict) else {}
+    current = selected.get("current_point") if isinstance(selected.get("current_point"), dict) else {}
+    trail_points = [
+        {
+            "market_date": point.get("market_date"),
+            "relative_strength": point.get("plotted_x"),
+            "relative_momentum": point.get("plotted_y"),
+            "raw_relative_strength": point.get("raw_rs"),
+            "raw_relative_momentum": point.get("raw_momentum"),
+            "quadrant": point.get("quadrant"),
+            "source_provider": point.get("source_provider"),
+            "source_series_ids": point.get("source_series_ids") or [],
+            "is_synthetic": point.get("is_synthetic"),
+        }
+        for point in selected.get("trail_points") or []
+        if isinstance(point, dict)
+    ]
+    return {
+        "rank": row.get("rank"),
+        "selected_interval": interval,
+        "current": {
+            "market_date": current.get("market_date"),
+            "relative_strength": current.get("plotted_x"),
+            "relative_momentum": current.get("plotted_y"),
+            "raw_relative_strength": current.get("raw_rs"),
+            "raw_relative_momentum": current.get("raw_momentum"),
+            "quadrant": current.get("quadrant"),
+            "source_provider": current.get("source_provider"),
+            "source_series_ids": current.get("source_series_ids") or [],
+            "is_synthetic": current.get("is_synthetic"),
+        },
+        "trail_points": trail_points,
+        "trail_provenance": {
+            "source_state": selected.get("source_state"),
+            "data_mode": selected.get("data_mode"),
+            "formula_version": selected.get("formula_version"),
+            "normalization_version": selected.get("normalization_version"),
+            "synthetic_point_count": selected.get("synthetic_point_count"),
+        },
     }
 
 
@@ -354,11 +728,64 @@ def safe_build_index_histories() -> dict[str, list[float]]:
     return histories
 
 
-def safe_build_watchlist_summary() -> dict[str, Any]:
+def safe_build_index_ohlcv() -> dict[str, dict[str, Any]]:
+    """Freeze cached OHLCV without allowing a report read to initiate provider work."""
+    histories: dict[str, dict[str, Any]] = {}
+    for symbol in ["SPY", "QQQ", "IWM", "DIA"]:
+        try:
+            history, validation = get_symbol_history(symbol, days=450, minimum_candles=20)
+            candles = [candle.model_dump(mode="json") for candle in history.candles]
+            if candles:
+                histories[symbol] = {
+                    "symbol": symbol,
+                    "provider": history.provider or history.source,
+                    "source_state": history.source_state,
+                    "as_of": history.as_of,
+                    "quality_score": validation.get("quality_score"),
+                    "candles": candles,
+                }
+        except Exception:
+            continue
+    return histories
+
+
+def safe_build_watchlist_summary(symbols: list[str] | None = None) -> dict[str, Any]:
     try:
-        return build_watchlist_summary()
+        return build_watchlist_summary(symbols)
     except Exception:
         return {"items": [], "summary": "Watchlist snapshot unavailable."}
+
+
+def build_security_taxonomy() -> list[dict[str, Any]]:
+    """Freeze validated sector/industry membership without provider traffic."""
+    try:
+        service = get_security_master_service()
+        storage = service.storage
+        universe = storage.get_active_universe("sp100")
+        symbols = {member.ticker for member in storage.members(universe.universe_id)} if universe else set()
+        theme_context = build_theme_intelligence_context()
+        for row in theme_context.get("items") or []:
+            symbols.update(str(item.get("ticker") or "").upper() for item in row.get("members") or [] if isinstance(item, dict))
+        result = []
+        for symbol in sorted(item for item in symbols if item):
+            record = storage.security(symbol)
+            if record is None:
+                continue
+            result.append({
+                "security_id": record.security_id,
+                "ticker": record.ticker,
+                "company_name": record.company_name,
+                "sector": record.sector,
+                "sector_id": record.sector_id,
+                "industry": record.industry,
+                "source": record.source,
+                "source_timestamp": record.source_timestamp,
+                "verified_at": record.verified_at,
+                "mapping_type": "validated_security_master_membership",
+            })
+        return result
+    except Exception:
+        return []
 
 
 def safe_build_sector_dashboard() -> dict[str, Any] | None:
@@ -1156,10 +1583,16 @@ class ScatterChartFlowable(Flowable):
         left, right, bottom, top = 24, 14, 20, 28
         plot_w = self.width - left - right
         plot_h = self.height - bottom - top
-        x_min = min(float(item["x"]) for item in self.items)
-        x_max = max(float(item["x"]) for item in self.items)
-        y_min = min(float(item["y"]) for item in self.items)
-        y_max = max(float(item["y"]) for item in self.items)
+        all_points = [
+            point
+            for item in self.items
+            for point in [{"x": item["x"], "y": item["y"]}, *(item.get("trail") or [])]
+            if is_number(point.get("x")) and is_number(point.get("y"))
+        ]
+        x_min = min(float(item["x"]) for item in all_points)
+        x_max = max(float(item["x"]) for item in all_points)
+        y_min = min(float(item["y"]) for item in all_points)
+        y_max = max(float(item["y"]) for item in all_points)
         x_min, x_max = widen_range(x_min, x_max, 100)
         y_min, y_max = widen_range(y_min, y_max, 100)
         neutral_x = left + ((100 - x_min) / (x_max - x_min)) * plot_w
@@ -1173,10 +1606,24 @@ class ScatterChartFlowable(Flowable):
         canvas.drawString(left + 3, bottom + plot_h - 8, "Improving")
         canvas.drawString(left + 3, bottom + 4, "Lagging")
         canvas.drawString(left + plot_w - 48, bottom + 4, "Weakening")
+        def plot_point(point: dict[str, Any]) -> tuple[float, float]:
+            return (
+                left + ((float(point["x"]) - x_min) / (x_max - x_min)) * plot_w,
+                bottom + ((float(point["y"]) - y_min) / (y_max - y_min)) * plot_h,
+            )
+
         for item in self.items[:11]:
-            x = left + ((float(item["x"]) - x_min) / (x_max - x_min)) * plot_w
-            y = bottom + ((float(item["y"]) - y_min) / (y_max - y_min)) * plot_h
-            canvas.setFillColor(item.get("color", REPORT_COLORS["blue"]))
+            color = item.get("color", REPORT_COLORS["blue"])
+            trail = [point for point in item.get("trail") or [] if is_number(point.get("x")) and is_number(point.get("y"))]
+            if len(trail) > 1:
+                canvas.setStrokeColor(color)
+                canvas.setLineWidth(0.8)
+                for previous, current in zip(trail, trail[1:]):
+                    start_x, start_y = plot_point(previous)
+                    end_x, end_y = plot_point(current)
+                    canvas.line(start_x, start_y, end_x, end_y)
+            x, y = plot_point(item)
+            canvas.setFillColor(color)
             canvas.circle(x, y, 3, fill=1, stroke=0)
             canvas.setFillColor(REPORT_COLORS["ink"])
             canvas.setFont("Helvetica", 5.8)
@@ -1187,32 +1634,59 @@ class ScatterChartFlowable(Flowable):
 def generate_daily_report_pdf(report: DailyReportResponse | dict[str, Any]) -> BytesIO:
     if isinstance(report, dict):
         report = DailyReportResponse(**report)
+    if report.report_pdf_format_version == "daily-report-pdf-v7":
+        document = report.report_document or build_report_document(report).model_dump(mode="json")
+        return generate_report_pdf_v7(document)
+    if report.report_pdf_format_version == "daily-report-pdf-v6":
+        document = report.report_document
+        if not document:
+            document = build_report_document(report).model_copy(
+                update={"pdf_format_version": "daily-report-pdf-v6"}
+            ).model_dump(mode="json")
+        return generate_report_pdf_v6(document)
+    return generate_daily_report_pdf_v5(report)
+
+
+def generate_daily_report_pdf_v5(report: DailyReportResponse | dict[str, Any]) -> BytesIO:
+    if isinstance(report, dict):
+        report = DailyReportResponse(**report)
     buffer = BytesIO()
     document = SimpleDocTemplate(
         buffer,
         pagesize=letter,
         rightMargin=0.38 * inch,
         leftMargin=0.38 * inch,
-        topMargin=0.48 * inch,
+        topMargin=0.68 * inch,
         bottomMargin=0.46 * inch,
         title=report.title,
     )
     styles = build_visual_report_styles()
     story: list[Any] = []
     context = build_report_narrative_context(report)
-    story.extend(build_executive_dashboard(report, styles, context))
+    story.extend(build_briefing_cover(report, styles, context))
     story.append(PageBreak())
-    story.extend(build_market_index_page(report, styles, context))
+    story.extend(build_briefing_executive_summary(report, styles, context))
     story.append(PageBreak())
-    story.extend(build_sector_theme_page(report, styles, context))
+    story.extend(build_briefing_changes_page(report, styles, context))
     story.append(PageBreak())
-    story.extend(build_risk_sentiment_page(report, styles, context))
+    story.extend(build_briefing_relationships_page(report, styles, context))
     story.append(PageBreak())
-    story.extend(build_watchlist_page(report, styles, context))
+    story.extend(build_briefing_cross_market_page(report, styles, context))
     story.append(PageBreak())
-    story.extend(build_macro_page(report, styles, context))
+    story.extend(build_briefing_leadership_page(report, styles, context))
     story.append(PageBreak())
-    story.extend(build_final_page(report, styles, context))
+    story.extend(build_briefing_risk_page(report, styles, context))
+    story.append(PageBreak())
+    story.extend(build_briefing_scenarios_page(report, styles, context))
+    story.append(PageBreak())
+    story.extend(build_briefing_watchlist_page(report, styles, context))
+    story.append(PageBreak())
+    story.extend(build_briefing_tomorrow_page(report, styles, context))
+    if (report.market_evolution or {}).get("available"):
+        story.append(PageBreak())
+        story.extend(build_briefing_history_page(report, styles, context))
+    story.append(PageBreak())
+    story.extend(build_briefing_appendix(report, styles, context))
     source_state = infer_report_source_state(report)
     document.build(
         story,
@@ -1357,6 +1831,247 @@ def build_report_narrative_context(report: DailyReportResponse) -> dict[str, Any
     return context
 
 
+def build_briefing_cover(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    confidence = report.recommendation_confidence or {}
+    themes = get_theme_items(report)
+    primary_theme = themes[0].get("name") if themes else (report.sector_leaders[0] if report.sector_leaders else "No qualified theme")
+    if primary_theme == "Communication Services":
+        primary_theme = "Comm. Services"
+    cover_risk = str(context["primary_risk"])
+    if "breadth" in cover_risk.lower():
+        cover_risk = "Narrow Breadth"
+    elif "volatil" in cover_risk.lower():
+        cover_risk = "Volatility Risk"
+    narrative = context.get("market_narrative") or report.executive_summary
+    return [
+        build_cover_header(report, styles),
+        Spacer(1, 0.18 * inch),
+        interpretation_callout("Overall Thesis", narrative, styles, width=6.9 * inch),
+        Spacer(1, 0.16 * inch),
+        metric_cards([
+            ("Market Regime", fit_text(report.market_regime, 28), "Current market posture", REPORT_COLORS["green"]),
+            ("Confidence", f"{confidence.get('score', 'N/A')}%", str(confidence.get("rating") or "Unavailable"), REPORT_COLORS["blue"]),
+            ("Primary Theme", fit_text(str(primary_theme), 24), "Highest-ranked available leadership", REPORT_COLORS["purple"]),
+            ("Major Risk", fit_text(cover_risk, 25), "Primary thesis constraint", REPORT_COLORS["orange"]),
+        ], styles),
+        Spacer(1, 0.16 * inch),
+        two_column(
+            panel_table("What Happened", [p(shorten_text(narrative, 420), styles["body"])], styles, width=3.35 * inch),
+            panel_table("What Matters Next", [compact_list(list(context.get("action_summary") or report.tomorrow_watch), styles)], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.16 * inch),
+        chart_panel("Market Context: SPY 6M", build_spy_chart(report), styles, width=6.9 * inch),
+    ]
+
+
+def build_briefing_executive_summary(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    return [
+        section_title("Executive Summary", styles),
+        p("WHAT IS THE MARKET POSTURE?", styles["kicker"]),
+        Spacer(1, 0.06 * inch),
+        interpretation_callout("Strategist's Read", context.get("market_narrative") or report.executive_summary, styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        two_column(
+            panel_table("Market Conviction", [market_conviction_table(report, styles)], styles, width=3.35 * inch),
+            panel_table("Confidence & Alignment", [signal_convergence_table(report, styles)], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        two_column(
+            panel_table("Primary Drivers", [compact_list(briefing_primary_drivers(report), styles)], styles, width=3.35 * inch),
+            panel_table("Largest Risk", [p(context["primary_risk"], styles["body"])], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        interpretation_callout("Highest Conviction", context["primary_opportunity"], styles, width=6.9 * inch),
+    ]
+
+
+def build_briefing_changes_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    changes = report.report_changes or {}
+    story: list[Any] = [
+        section_title("What Changed Today", styles),
+        p("WHAT IS DIFFERENT FROM THE PREVIOUS BRIEFING?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+    ]
+    if not changes.get("available"):
+        story.extend([
+            interpretation_callout("Change Baseline", "Baseline report established.", styles, width=6.9 * inch),
+            Spacer(1, 0.12 * inch),
+            panel_table("Current Baseline", [market_scoreboard(report, context, styles, 6.55 * inch)], styles, width=6.9 * inch),
+        ])
+        return story
+    story.extend([
+        panel_table("Meaningful Changes Only", [report_changes_detail_table(report, styles)], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        two_column(
+            panel_table("Previous Playbook Review", [previous_playbook_table(report, styles)], styles, width=3.35 * inch),
+            panel_table("Recent Evolution", [market_evolution_wide_table(report, styles)], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        interpretation_callout("Why The Change Matters", changes.get("summary") or "No meaningful changes since the previous report.", styles, width=6.9 * inch),
+    ])
+    return story
+
+
+def build_briefing_relationships_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    relationships = report.signal_relationships or (report.report_narrative or {}).get("relationships") or []
+    relationship_copy = context.get("cross_tab_narrative") or "No supported cross-signal relationship materially changes the base case."
+    return [
+        section_title("Why It Happened", styles),
+        p("HOW DO THE SIGNALS CONNECT?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        interpretation_callout("Connected Narrative", relationship_copy, styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        panel_table("Evidence Chain", [relationship_flow_table(relationships, styles)], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        two_column(
+            panel_table("Signal Agreement", [signal_convergence_table(report, styles)], styles, width=3.35 * inch),
+            panel_table("Trade-Off", [p(build_tradeoff_summary(report), styles["body"])], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+    ]
+
+
+def build_briefing_cross_market_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    return [
+        section_title("Cross-Market Analysis", styles),
+        p("DO INDEX, BREADTH, VOLATILITY, AND MACRO AGREE?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        chart_panel("Normalized Index Returns", index_comparison_chart(report, 6.65 * inch, 2.05 * inch), styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        two_column(
+            panel_table("Market Structure", [market_scoreboard(report, context, styles, 3.0 * inch)], styles, width=3.35 * inch),
+            panel_table("Captured Cross-Asset Evidence", [cross_asset_summary_table(report, styles)], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        interpretation_callout("Synthesis", build_market_health_interpretation(report, context), styles, width=6.9 * inch),
+    ]
+
+
+def build_briefing_leadership_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    return [
+        section_title("Leadership Intelligence", styles),
+        p("WHERE IS LEADERSHIP STRENGTHENING OR WEAKENING?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        panel_table("Leadership Map", [leadership_intelligence_table(report, styles)], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        two_column(
+            chart_panel("Sector Rotation", sector_rotation_chart(report, 3.2 * inch, 1.8 * inch), styles, width=3.35 * inch),
+            chart_panel("Theme Rotation", theme_rotation_chart(report, 3.2 * inch, 1.8 * inch), styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        interpretation_callout("Why Leadership Matters", build_leadership_interpretation(report, context), styles, width=6.9 * inch),
+    ]
+
+
+def build_briefing_risk_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    invalidation = (report.report_narrative or {}).get("invalidation") or context["invalidation_conditions"]
+    return [
+        section_title("Risk Assessment", styles),
+        p("WHAT COULD INVALIDATE TODAY'S THESIS?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        two_column(
+            panel_table("Risk Posture", [risk_summary_table(report, styles)], styles, width=2.6 * inch),
+            panel_table("Risk Drivers", [risk_driver_table(report, styles)], styles, width=4.1 * inch),
+            [2.65 * inch, 4.15 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        two_column(
+            panel_table("Hidden Weaknesses", [hidden_warnings_table(report, styles)], styles, width=3.35 * inch),
+            panel_table("Hidden Strengths", [hidden_confirmations_table(report, styles)], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        panel_table("Thesis Invalidation", [checkbox_list(invalidation, styles, checked=False, width=6.45 * inch)], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        interpretation_callout("Risk Interpretation", build_risk_interpretation(report, context), styles, width=6.9 * inch),
+    ]
+
+
+def build_briefing_scenarios_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    return [
+        section_title("Scenario Planning", styles),
+        p("WHAT WOULD CHANGE THE BASE CASE?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        panel_table("Bull, Base, and Bear Paths", [scenario_briefing_table(report, styles)], styles, width=6.9 * inch),
+        Spacer(1, 0.12 * inch),
+        interpretation_callout("How To Use These Scenarios", "The scenarios are conditional, not predictions. Probability is shown only because the existing conviction engine produced it; conditions and response should be rechecked as evidence changes.", styles, width=6.9 * inch),
+        Spacer(1, 0.12 * inch),
+        panel_table("Current Decision Checklist", [decision_checklist_table(report, styles)], styles, width=6.9 * inch),
+    ]
+
+
+def build_briefing_watchlist_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    return [
+        section_title("Watchlist Intelligence", styles),
+        p("WHICH PERSONAL POSITIONS DESERVE ATTENTION?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        panel_table("Personalized Priorities", [watchlist_intelligence_table(report, styles)], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        interpretation_callout("Portfolio Read", build_watchlist_interpretation(report, context), styles, width=6.9 * inch),
+    ]
+
+
+def build_briefing_tomorrow_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    return [
+        section_title("Tomorrow's Checklist", styles),
+        p("WHAT MUST TRADERS VERIFY NEXT?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        two_column(
+            panel_table("Signal Checklist", [decision_checklist_wide_table(report, styles)], styles, width=3.35 * inch),
+            panel_table("Tomorrow Watch", [checkbox_list(report.tomorrow_watch, styles, checked=False, width=3.0 * inch)], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        panel_table("Upcoming Economic Events", [economic_calendar_table(report, styles)], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        two_column(
+            panel_table("Levels To Monitor", [market_levels_table(report, styles)], styles, width=3.35 * inch),
+            panel_table("Invalidation Watch", [checkbox_list(context["invalidation_conditions"], styles, checked=False, width=3.0 * inch)], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+    ]
+
+
+def build_briefing_history_page(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    return [
+        section_title("Historical Context", styles),
+        p("HOW HAS THE MARKET EVIDENCE EVOLVED?", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        panel_table("Recent Report History", [market_evolution_wide_table(report, styles)], styles, width=6.9 * inch),
+        Spacer(1, 0.12 * inch),
+        panel_table("Previous Playbook Review", [previous_playbook_table(report, styles)], styles, width=6.9 * inch),
+        Spacer(1, 0.12 * inch),
+        interpretation_callout("Evidence Boundary", "Historical context is limited to prior frozen report snapshots. No analogous-period statistics are shown because the current report pipeline does not capture validated similarity outcomes.", styles, width=6.9 * inch),
+    ]
+
+
+def build_briefing_appendix(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
+    return [
+        section_title("Appendix", styles),
+        p("PROVENANCE, METHODOLOGY, AND DATA LIMITS", styles["kicker"]),
+        Spacer(1, 0.08 * inch),
+        two_column(
+            panel_table("Report Identity", [report_identity_table(report, styles)], styles, width=3.35 * inch),
+            panel_table("Data Sources", [p(f"Source state: {infer_report_source_state(report)}. Provider, cache, stale, fallback, and test states remain labelled from the frozen report snapshot.", styles["body"])], styles, width=3.35 * inch),
+            [3.4 * inch, 3.4 * inch],
+        ),
+        Spacer(1, 0.1 * inch),
+        panel_table("Methodology", [p("Market posture, change detection, conviction, scenarios, leadership, risk, and watchlist priorities are derived from existing deterministic application engines and the immutable inputs captured at generation time.", styles["body"])], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        panel_table("Theme Methodology", [p(theme_methodology_disclosure(report), styles["small"])], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        panel_table("Unavailable or Partial Data", [checkbox_list(build_unavailable_data_notes(report), styles, checked=False, width=6.45 * inch)], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
+        interpretation_callout("Disclaimer", "This report is for informational and educational purposes only and does not constitute investment advice. Investing involves risk, including possible loss of principal. Data may be delayed, incomplete, cached, simulated, or unavailable.", styles, width=6.9 * inch),
+    ]
+
+
 def build_executive_dashboard(report: DailyReportResponse, styles: dict[str, ParagraphStyle], context: dict[str, Any]) -> list[Any]:
     health = report.market_health
     risk = report.risk_dashboard
@@ -1442,13 +2157,13 @@ def build_sector_theme_page(report: DailyReportResponse, styles: dict[str, Parag
         Spacer(1, 0.06 * inch),
         two_column(
             panel_table("Top Sectors", [sector_snapshot_table(report, styles)], styles, width=3.35 * inch),
-            panel_table("Themes", [p("Theme intelligence is unavailable until Phase 4.4D.", styles["small"])], styles, width=3.35 * inch),
+            panel_table("Themes", theme_leadership_panel(report, styles), styles, width=3.35 * inch),
             [3.4 * inch, 3.4 * inch],
         ),
         Spacer(1, 0.06 * inch),
         two_column(
             chart_panel("Sector Rotation", sector_rotation_chart(report, 3.25 * inch, 1.65 * inch), styles, width=3.35 * inch),
-            panel_table("Theme Rotation", [p("Unavailable until Phase 4.4D.", styles["small"])], styles, width=3.35 * inch),
+            panel_table("Theme Rotation", theme_rotation_panel(report, styles), styles, width=3.35 * inch),
             [3.4 * inch, 3.4 * inch],
         ),
         Spacer(1, 0.06 * inch),
@@ -1458,8 +2173,6 @@ def build_sector_theme_page(report: DailyReportResponse, styles: dict[str, Parag
             ranking_panel("Laggards", ranking_items(list(reversed(get_sector_items(report))), "1m", limit=5, preserve_order=True), styles, width=2.15 * inch),
             [2.25 * inch, 2.25 * inch, 2.25 * inch],
         ),
-        Spacer(1, 0.06 * inch),
-        interpretation_callout("What This Means", build_leadership_interpretation(report, context), styles, width=6.9 * inch),
     ]
 
 
@@ -1543,6 +2256,8 @@ def build_final_page(report: DailyReportResponse, styles: dict[str, ParagraphSty
             [3.4 * inch, 3.4 * inch],
         ),
         Spacer(1, 0.1 * inch),
+        panel_table("Theme Methodology", [p(theme_methodology_disclosure(report), styles["small"])], styles, width=6.9 * inch),
+        Spacer(1, 0.1 * inch),
         panel_table("Unavailable or Partial Data", [compact_list(build_unavailable_data_notes(report), styles)], styles, width=6.9 * inch),
         Spacer(1, 0.1 * inch),
         interpretation_callout("Disclaimer", "This report is for informational and educational purposes only and does not constitute investment advice. Investing involves risk, including possible loss of principal. Data may be delayed, incomplete, cached, simulated, or unavailable.", styles, width=6.9 * inch),
@@ -1552,11 +2267,11 @@ def build_final_page(report: DailyReportResponse, styles: dict[str, ParagraphSty
 def build_cover_header(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
     left = [
         p("Market Intelligence", styles["kicker"]),
-        p("Daily Market Report", styles["title"]),
-        p(f"{format_report_date(report.date)} | {session_label()} | Version 1", styles["subtitle"]),
+        p("Daily Market Intelligence Briefing", styles["title"]),
+        p(f"{format_report_date(report.date)} | {session_label()} | {report.report_schema_version or 'Version 1'}", styles["subtitle"]),
     ]
     right = [
-        p(f"Generated: {datetime.now().strftime('%I:%M %p')}", styles["subtitle"]),
+        p(f"Generated: {format_generated_time(report.generated_at or report.generated_time)}", styles["subtitle"]),
         p(f"Data Source: {infer_report_source_state(report)}", styles["subtitle"]),
         badge_paragraph(infer_report_source_state(report), styles),
     ]
@@ -1658,7 +2373,7 @@ def recommendation_card(report: DailyReportResponse, context: dict[str, Any], st
     confidence = report.recommendation_confidence or {}
     cells = [
         [
-            p("TODAY'S PLAYBOOK", styles["kicker"]),
+            p("TODAY'S INTELLIGENCE", styles["kicker"]),
             Paragraph(f"<font color='{REPORT_COLORS['green'].hexval()}'><b>{escape(context['recommendation'])}</b></font>", styles["title"]),
             p(shorten_text(playbook.summary or report.executive_summary, 210), styles["body"]),
         ],
@@ -1748,7 +2463,7 @@ def report_changes_table(report: DailyReportResponse, styles: dict[str, Paragrap
     changes = report.report_changes or {}
     items = changes.get("items") or []
     if not changes.get("available"):
-        return data_table([[p(changes.get("summary") or "No previous report snapshot is available yet.", styles["table_cell"])]], [3.0 * inch], header=False)
+        return data_table([[p(changes.get("summary") or "Baseline report established.", styles["table_cell"])]], [3.0 * inch], header=False)
     rows = [[p("Area", styles["table_header"]), p("Importance", styles["table_header"]), p("Why", styles["table_header"])]]
     for item in items[:5]:
         rows.append([
@@ -1759,6 +2474,172 @@ def report_changes_table(report: DailyReportResponse, styles: dict[str, Paragrap
     if len(rows) == 1:
         rows.append([p("No meaningful changes", styles["table_cell"]), p("-", styles["table_cell"]), p("-", styles["table_cell"])])
     return data_table(rows, [1.25 * inch, 0.7 * inch, 1.0 * inch])
+
+
+def report_changes_detail_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
+    items = (report.report_changes or {}).get("items") or []
+    rows = [[p(value, styles["table_header"]) for value in ["Area", "Before", "Now", "Read", "Evidence"]]]
+    for item in items[:8]:
+        rows.append([
+            p(shorten_text(item.get("label"), 30), styles["table_cell"]),
+            p(str(item.get("previous", "N/A")), styles["table_cell"]),
+            p(str(item.get("current", "N/A")), styles["table_cell"]),
+            p(str(item.get("direction", "changed")).title(), styles["table_cell"]),
+            p(shorten_text(item.get("reason") or "No supported explanation was captured.", 88), styles["table_cell"]),
+        ])
+    if len(rows) == 1:
+        rows.append([p("No meaningful changes", styles["table_cell"]), p("-", styles["table_cell"]), p("-", styles["table_cell"]), p("Stable", styles["table_cell"]), p("No threshold-level change was detected.", styles["table_cell"])])
+    return data_table(rows, [1.08 * inch, 0.68 * inch, 0.68 * inch, 0.72 * inch, 3.29 * inch])
+
+
+def market_evolution_wide_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
+    evolution = report.market_evolution or {}
+    points = evolution.get("points") or []
+    if len(points) < 2:
+        return data_table([[p("Insufficient report history.", styles["table_cell"])]], [3.0 * inch], header=False)
+    previous, latest = points[-2], points[-1]
+    rows = [[p("Evidence", styles["table_header"]), p("Previous", styles["table_header"]), p("Current", styles["table_header"])]]
+    for label, key in [("Health", "health"), ("Risk", "risk"), ("Breadth", "breadth"), ("Conviction", "conviction"), ("Confidence", "confidence")]:
+        rows.append([p(label, styles["table_cell"]), p(format_number(previous.get(key)), styles["table_cell"]), p(format_number(latest.get(key)), styles["table_cell"])])
+    return data_table(rows, [1.3 * inch, 0.82 * inch, 0.82 * inch])
+
+
+def relationship_flow_table(relationships: list[Any], styles: dict[str, ParagraphStyle]) -> Table:
+    supported = [str(item) for item in relationships if item]
+    if not supported:
+        supported = ["No supported cross-signal relationship is available for this report snapshot."]
+    rows = []
+    for index, item in enumerate(supported[:5], 1):
+        rows.append([
+            Paragraph(f"<font color='{REPORT_COLORS['blue'].hexval()}'><b>{index}</b></font>", styles["metric"]),
+            p(shorten_text(item, 190), styles["body"]),
+        ])
+    return data_table(rows, [0.5 * inch, 5.95 * inch], header=False)
+
+
+def build_tradeoff_summary(report: DailyReportResponse) -> str:
+    tradeoff = report.trade_off_analysis or (report.report_commentary or {}).get("tradeOff") or (report.report_narrative or {}).get("tradeOff") or {}
+    if isinstance(tradeoff, dict):
+        return str(tradeoff.get("overall") or tradeoff.get("summary") or "No supported trade-off analysis is available.")
+    return str(tradeoff or "No supported trade-off analysis is available.")
+
+
+def briefing_primary_drivers(report: DailyReportResponse) -> list[str]:
+    contributors = [item for item in (report.market_conviction or {}).get("contributors", []) if isinstance(item, dict) and parse_number(item.get("score")) is not None]
+    contributors.sort(key=lambda item: parse_number(item.get("score")) or 0, reverse=True)
+    output = [f"{item.get('label', 'Signal')} {format_number(item.get('score'))}/100." for item in contributors[:3]]
+    output.extend(report.hidden_confirmations or [])
+    output.extend(report.key_drivers or [])
+    return list(dict.fromkeys(output))[:4]
+
+
+def leadership_intelligence_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
+    sectors = get_sector_items(report)
+    themes = get_theme_items(report)
+    current = [str(item.get("name") or "N/A") for item in sectors[:3]]
+    emerging = leadership_names_by_state(sectors, ("improving", "emerging")) + leadership_names_by_state(themes, ("improving", "emerging"))
+    weakening = leadership_names_by_state(sectors, ("weakening", "lagging", "at risk")) + leadership_names_by_state(themes, ("weakening", "lagging", "at risk"))
+    rotation_changes = [
+        str(item.get("reason"))
+        for item in (report.report_changes or {}).get("items", [])
+        if isinstance(item, dict) and "leadership" in str(item.get("label", "")).lower()
+    ]
+    rows = [[p("Read", styles["table_header"]), p("Groups", styles["table_header"]), p("Evidence", styles["table_header"])]]
+    rows.extend([
+        [p("Current Leaders", styles["table_cell"]), p(", ".join(current) or "Unavailable", styles["table_cell"]), p("Highest-ranked captured sector and theme evidence.", styles["table_cell"])],
+        [p("Emerging", styles["table_cell"]), p(", ".join(dict.fromkeys(emerging[:4])) or "No qualified signal", styles["table_cell"]), p("Classification explicitly indicates improving or emerging.", styles["table_cell"])],
+        [p("Weakening", styles["table_cell"]), p(", ".join(dict.fromkeys(weakening[:4])) or "No qualified signal", styles["table_cell"]), p("Classification explicitly indicates weakening or lagging.", styles["table_cell"])],
+        [p("Rotation Change", styles["table_cell"]), p(shorten_text(rotation_changes[0], 80) if rotation_changes else "No threshold-level change", styles["table_cell"]), p("Compared with the previous frozen report.", styles["table_cell"])],
+    ])
+    return data_table(rows, [1.05 * inch, 2.25 * inch, 3.15 * inch])
+
+
+def leadership_names_by_state(items: list[dict[str, Any]], states: tuple[str, ...]) -> list[str]:
+    names = []
+    for item in items:
+        metadata = item.get("metadata") if isinstance(item.get("metadata"), dict) else {}
+        state = f"{item.get('classification', '')} {item.get('status', '')} {metadata.get('status', '')}".lower()
+        if any(value in state for value in states):
+            names.append(str(item.get("name") or item.get("display_name") or "N/A"))
+    return names
+
+
+def checkbox_list(items: Any, styles: dict[str, ParagraphStyle], *, checked: bool, width: float) -> Table:
+    values = items if isinstance(items, list) else [items] if items else []
+    mark = "[x]" if checked else "[ ]"
+    rows = [[p(f"{mark} {shorten_text(item, 150)}", styles["table_cell"])] for item in values[:8]]
+    if not rows:
+        rows = [[p("[ ] No supported checklist item is available.", styles["table_cell"])]]
+    return data_table(rows, [width], header=False)
+
+
+def scenario_briefing_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
+    scenarios = [item for item in (report.scenario_plan or []) if isinstance(item, dict)]
+    rows = [[p(value, styles["table_header"]) for value in ["Scenario", "Probability", "Conditions", "Expectation", "What Changes It", "Response"]]]
+    for item in scenarios[:3]:
+        probability = f"{item.get('probability')}%" if item.get("probability") is not None else str(item.get("probabilityBand") or "Qualitative")
+        rows.append([
+            p(str(item.get("name") or "Scenario"), styles["table_cell"]),
+            p(probability, styles["table_cell"]),
+            p(shorten_text(item.get("conditions") or "Unavailable", 70), styles["table_cell"]),
+            p(shorten_text(item.get("expectedBehaviour") or item.get("expectation") or "Unavailable", 70), styles["table_cell"]),
+            p(shorten_text(item.get("changesProbability") or item.get("invalidation") or "Unavailable", 70), styles["table_cell"]),
+            p(shorten_text(item.get("suggestedResponse") or "Unavailable", 70), styles["table_cell"]),
+        ])
+    if len(rows) == 1:
+        rows.append([p("Unavailable", styles["table_cell"]), p("-", styles["table_cell"]), p("No supported scenario evidence.", styles["table_cell"]), p("-", styles["table_cell"]), p("-", styles["table_cell"]), p("-", styles["table_cell"])])
+    return data_table(rows, [0.82 * inch, 0.58 * inch, 1.17 * inch, 1.17 * inch, 1.17 * inch, 1.54 * inch])
+
+
+def watchlist_intelligence_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
+    items = [item for item in (report.watchlist_summary or {}).get("items", []) if isinstance(item, dict)]
+    rows = [[p(value, styles["table_header"]) for value in ["Priority", "Ticker", "Evidence-Based Read"]]]
+    if not items:
+        fallback = [item for item in report.stock_charts if isinstance(item, dict)][:4]
+        for item in fallback:
+            rows.append([p("Market Idea", styles["table_cell"]), p(str(item.get("symbol") or item.get("ticker") or "N/A"), styles["table_cell"]), p(shorten_text(item.get("reason") or "Captured highest-conviction setup.", 100), styles["table_cell"])])
+    else:
+        by_score = sorted(items, key=lambda item: parse_number(item.get("overall_score") if item.get("overall_score") is not None else item.get("score")) or -999, reverse=True)
+        by_change = sorted(items, key=lambda item: parse_number(item.get("change_percent")) or -999, reverse=True)
+        risk_item = next((item for item in items if any(word in f"{item.get('risk_flag', '')} {item.get('rating', '')}".lower() for word in ("risk", "weak", "avoid", "sell", "below"))), None)
+        selections = [
+            ("Highest Opportunity", by_score[0] if by_score else None),
+            ("Most Improved", next((item for item in by_change if (parse_number(item.get("change_percent")) or 0) > 0), None)),
+            ("Needs Review", by_score[-1] if by_score else None),
+            ("Highest Risk", risk_item),
+        ]
+        for category, item in selections:
+            if not item:
+                continue
+            setup = item.get("main_setup") or item.get("setup") or item.get("rating") or item.get("risk_flag") or "No setup detail available."
+            change = parse_number(item.get("change_percent"))
+            detail = f"{setup} | {format_percent(change)} today" if change is not None else str(setup)
+            rows.append([p(category, styles["table_cell"]), p(str(item.get("symbol") or item.get("ticker") or "N/A"), styles["table_cell"]), p(shorten_text(detail, 110), styles["table_cell"])])
+    if len(rows) == 1:
+        rows.append([p("Unavailable", styles["table_cell"]), p("N/A", styles["table_cell"]), p("No personal watchlist or supported fallback ideas were captured.", styles["table_cell"])])
+    return data_table(rows, [1.28 * inch, 0.72 * inch, 4.45 * inch])
+
+
+def decision_checklist_wide_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
+    checklist = report.decision_checklist or {}
+    rows = []
+    for item in (checklist.get("items") or [])[:7]:
+        status = str(item.get("status") or "Watch")
+        mark = "[x]" if status.lower() == "pass" else "[ ]"
+        rows.append([p(f"{mark} {item.get('label', 'Condition')}", styles["table_cell"]), p(status, styles["table_cell"]), p(format_number(item.get("value")), styles["table_cell"])])
+    if not rows:
+        rows = [[p("[ ] Checklist unavailable", styles["table_cell"]), p("Watch", styles["table_cell"]), p("N/A", styles["table_cell"])]]
+    return data_table(rows, [1.75 * inch, 0.65 * inch, 0.55 * inch], header=False)
+
+
+def report_identity_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
+    rows = [
+        [p("Report ID", styles["table_cell"]), p(shorten_text(report.report_id or "Unavailable", 50), styles["table_cell"])],
+        [p("Market Date", styles["table_cell"]), p(str(report.market_date or report.date), styles["table_cell"])],
+        [p("Schema", styles["table_cell"]), p(str(report.report_schema_version or "Unavailable"), styles["table_cell"])],
+        [p("PDF Format", styles["table_cell"]), p(str(report.report_pdf_format_version or REPORT_PDF_FORMAT_VERSION), styles["table_cell"])],
+    ]
+    return data_table(rows, [0.85 * inch, 2.15 * inch], header=False)
 
 
 def signal_convergence_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
@@ -1780,7 +2661,8 @@ def signal_convergence_table(report: DailyReportResponse, styles: dict[str, Para
 
 
 def hidden_warnings_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
-    warnings = report.hidden_warnings or ["No significant market contradictions detected."]
+    warnings = [item for item in (report.hidden_warnings or []) if not str(item).startswith("No significant")]
+    warnings = warnings or ["No material hidden weakness was detected."]
     return data_table([[p(f"• {shorten_text(item, 92)}", styles["table_cell"])] for item in warnings[:4]], [3.0 * inch], header=False)
 
 
@@ -2032,19 +2914,20 @@ def cross_asset_table(report: DailyReportResponse, styles: dict[str, ParagraphSt
 
 def theme_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
     themes = get_theme_items(report)[:8]
-    rows = [[p(value, styles["table_header"]) for value in ["Theme", "Sector", "1M", "RS", "Status", "Remark"]]]
+    rows = [[p(value, styles["table_header"]) for value in ["#", "Theme", "1M", "Score", "State"]]]
     for item in themes:
         meta = item.get("metadata") or {}
         returns = item.get("returns") or {}
         rows.append([
+            p(f"#{meta.get('rank') or 'N/A'}", styles["table_cell"]),
             p(item.get("name", "N/A"), styles["table_cell"]),
-            p(str(item.get("parent_sector") or "N/A"), styles["table_cell"]),
             colored_percent(returns.get("1m"), styles),
-            p(format_number(item.get("relative_strength_score") or extract_rotation_value(item, "1m", "relative_strength")), styles["table_cell"]),
+            p(f"{format_number(meta.get('composite_score'))}/100", styles["table_cell"]),
             p(str(meta.get("status") or "Updating"), styles["table_cell"]),
-            p("Leadership remains data-driven from theme basket returns.", styles["table_cell"]),
         ])
-    return data_table(rows, [1.35 * inch, 1.0 * inch, 0.55 * inch, 0.55 * inch, 0.8 * inch, 2.35 * inch])
+    if len(rows) == 1:
+        rows.append([p("N/A", styles["table_cell"]), p("No published ThemeSnapshot.", styles["table_cell"]), "", "", ""])
+    return data_table(rows, [0.3 * inch, 1.05 * inch, 0.48 * inch, 0.58 * inch, 0.65 * inch])
 
 
 def sector_snapshot_table(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> Table:
@@ -2230,7 +3113,8 @@ def sector_rotation_chart(report: DailyReportResponse, width: float, height: flo
 
 
 def theme_rotation_chart(report: DailyReportResponse, width: float, height: float) -> ScatterChartFlowable:
-    return ScatterChartFlowable(rotation_items(get_theme_items(report)), width, height, title="RS vs momentum")
+    interval = ((report.theme_report or {}).get("rotation") or {}).get("selected_interval") or "1M"
+    return ScatterChartFlowable(theme_rotation_items(report), width, height, title=f"RS vs momentum - {interval}")
 
 
 def rotation_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -2242,6 +3126,30 @@ def rotation_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         momentum = rotation.get("relative_momentum") or rotation.get("relativeMomentum")
         output.append({"label": item.get("name"), "x": rs, "y": momentum, "color": palette[index % len(palette)]})
     return output
+
+
+def theme_rotation_items(report: DailyReportResponse) -> list[dict[str, Any]]:
+    theme_report = report.theme_report if isinstance(report.theme_report, dict) else {}
+    rotation = theme_report.get("rotation") if isinstance(theme_report.get("rotation"), dict) else {}
+    palette = [REPORT_COLORS["green"], REPORT_COLORS["blue"], REPORT_COLORS["orange"], REPORT_COLORS["purple"]]
+    items: list[dict[str, Any]] = []
+    for index, item in enumerate(rotation.get("items") or []):
+        if not isinstance(item, dict):
+            continue
+        current = item.get("current") if isinstance(item.get("current"), dict) else {}
+        trail = [
+            {"x": point.get("relative_strength"), "y": point.get("relative_momentum")}
+            for point in item.get("trail_points") or []
+            if isinstance(point, dict)
+        ]
+        items.append({
+            "label": item.get("display_name"),
+            "x": current.get("relative_strength"),
+            "y": current.get("relative_momentum"),
+            "trail": trail,
+            "color": palette[index % len(palette)],
+        })
+    return items
 
 
 def build_breadth_component_items(report: DailyReportResponse) -> list[tuple[str, float]]:
@@ -2359,11 +3267,18 @@ def build_page_insights(report: DailyReportResponse, context: dict[str, Any], pa
         top = sectors[0] if sectors else {}
         top_meta = top.get("metadata") or {}
         top_support = f"{format_percent(top_meta.get('percent_above_50ema'))} above EMA50" if top_meta.get("percent_above_50ema") is not None else "breadth data unavailable"
+        theme_report = report.theme_report if isinstance(report.theme_report, dict) else {}
+        leaders = theme_report.get("leadership") if theme_report.get("available") else []
+        theme_insight = (
+            f"{leaders[0].get('display_name')} leads the {theme_report.get('active_theme_count')} active reviewed pilot themes with an absolute composite of {format_number(leaders[0].get('absolute_composite_score'))}/100."
+            if leaders and isinstance(leaders[0], dict)
+            else "No published ThemeSnapshot was available when this report was generated."
+        )
         return [
             f"{top_sector} is the top-ranked S&P 100 sector, supported by {top_support}.",
             f"Composite score {format_number(top_meta.get('composite_score'))}; 1M RS {format_percent(top_meta.get('relative_strength_1m'))}.",
             "Rank reflects the leadership composite; the return column is the selected ETF period.",
-            "Theme intelligence remains unavailable until Phase 4.4D.",
+            theme_insight,
         ]
     if page == "risk":
         return [
@@ -2410,9 +3325,16 @@ def build_market_health_interpretation(report: DailyReportResponse, context: dic
 
 
 def build_leadership_interpretation(report: DailyReportResponse, context: dict[str, Any]) -> str:
+    theme_report = report.theme_report if isinstance(report.theme_report, dict) else {}
+    theme_leader = (theme_report.get("leadership") or [{}])[0] if theme_report.get("available") else {}
+    theme_note = (
+        f" {theme_leader.get('display_name')} is the leading reviewed pilot Theme."
+        if isinstance(theme_leader, dict) and theme_leader.get("display_name")
+        else ""
+    )
     return (
         f"Leadership continues to favor {context['primary_opportunity']} Rotation still supports selective exposure "
-        "rather than broad aggressive buying, especially while weaker groups remain below leaders."
+        f"rather than broad aggressive buying, especially while weaker groups remain below leaders.{theme_note}"
     )
 
 
@@ -2460,18 +3382,75 @@ def get_sector_items(report: DailyReportResponse) -> list[dict[str, Any]]:
 
 
 def get_theme_items(report: DailyReportResponse) -> list[dict[str, Any]]:
-    dashboard = report.sector_dashboard if isinstance(report.sector_dashboard, dict) else {}
-    themes = dashboard.get("themes")
-    if isinstance(themes, list):
-        verified = [
-            item
-            for item in themes
-            if isinstance(item, dict)
-            and isinstance(item.get("provenance"), dict)
-            and item["provenance"].get("is_live_theme_intelligence") is True
-        ]
-        return sorted(verified, key=lambda item: ((item.get("returns") or {}).get("1m") or 0), reverse=True)
-    return []
+    theme_report = report.theme_report if isinstance(report.theme_report, dict) else {}
+    if not theme_report.get("available"):
+        return []
+    rows = []
+    for item in theme_report.get("leadership") or []:
+        if not isinstance(item, dict):
+            continue
+        current = item.get("rotation", {}).get("current", {}) if isinstance(item.get("rotation"), dict) else {}
+        rows.append({
+            "name": item.get("display_name"),
+            "parent_sector": ", ".join(str(value) for value in item.get("parent_sector_labels") or []) or "N/A",
+            "returns": item.get("performance") or {},
+            "rotation": {"1m": {"relative_strength": current.get("relative_strength"), "relative_momentum": current.get("relative_momentum")}},
+            "metadata": {
+                "status": item.get("classification"), "rank": item.get("rank"),
+                "composite_score": item.get("absolute_composite_score"), "coverage_ratio": item.get("coverage_ratio"),
+                "breadth": item.get("breadth"), "participation": item.get("participation"),
+                "concentration": item.get("concentration"), "representativeness": item.get("representativeness"),
+                "definition_version": item.get("definition_version"),
+            },
+            "provenance": {"is_live_theme_intelligence": True, "snapshot_id": theme_report.get("theme_snapshot_id")},
+        })
+    return sorted(rows, key=lambda item: int((item.get("metadata") or {}).get("rank") or 999))
+
+
+def theme_leadership_panel(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> list[Any]:
+    theme_report = report.theme_report if isinstance(report.theme_report, dict) else {}
+    if not theme_report.get("available"):
+        return [p("No published ThemeSnapshot was available when this report was generated.", styles["small"])]
+    return [
+        p(f"ThemeSnapshot: {theme_report.get('theme_snapshot_id')} | {theme_report.get('active_theme_count')} active reviewed pilot themes", styles["small"]),
+        Spacer(1, 0.03 * inch),
+        theme_table(report, styles),
+        Spacer(1, 0.03 * inch),
+        p(theme_methodology_disclosure(report), styles["small"]),
+    ]
+
+
+def theme_rotation_panel(report: DailyReportResponse, styles: dict[str, ParagraphStyle]) -> list[Any]:
+    theme_report = report.theme_report if isinstance(report.theme_report, dict) else {}
+    if not theme_report.get("available"):
+        return [p("No published Theme rotation was available when this report was generated.", styles["small"])]
+    rotation = theme_report.get("rotation") if isinstance(theme_report.get("rotation"), dict) else {}
+    coordinates = []
+    for item in rotation.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        current = item.get("current") if isinstance(item.get("current"), dict) else {}
+        coordinates.append(
+            f"{item.get('display_name')}: {current.get('quadrant') or 'N/A'} | RS {format_number(current.get('raw_relative_strength'))} | Momentum {format_number(current.get('raw_relative_momentum'))}"
+        )
+    return [
+        theme_rotation_chart(report, 3.25 * inch, 1.38 * inch),
+        Spacer(1, 0.02 * inch),
+        p(f"{rotation.get('selected_interval') or '1M'} current coordinates. " + " ; ".join(coordinates), styles["small"]),
+    ]
+
+
+def theme_methodology_disclosure(report: DailyReportResponse) -> str:
+    theme_report = report.theme_report if isinstance(report.theme_report, dict) else {}
+    methodology = theme_report.get("methodology") if isinstance(theme_report.get("methodology"), dict) else {}
+    if not theme_report.get("available"):
+        return "No published ThemeSnapshot was available for this historical report."
+    return (
+        "Theme rankings reflect the two currently active reviewed pilot themes. Historical performance uses the current reviewed "
+        "daily-rebalanced equal-weight baskets. "
+        f"ThemeSnapshot: {theme_report.get('theme_snapshot_id')}. "
+        f"{methodology.get('historical_disclosure') or ''}"
+    ).strip()
 
 
 def draw_page_frame(canvas: Any, doc: Any, report: DailyReportResponse, source_state: str) -> None:
@@ -2481,7 +3460,7 @@ def draw_page_frame(canvas: Any, doc: Any, report: DailyReportResponse, source_s
     canvas.rect(0, 0, width, height, fill=1, stroke=0)
     canvas.setFont("Helvetica-Bold", 7)
     canvas.setFillColor(REPORT_COLORS["muted"])
-    canvas.drawString(0.38 * inch, height - 0.28 * inch, "Market Intelligence - Daily Market Report")
+    canvas.drawString(0.38 * inch, height - 0.28 * inch, "Market Intelligence - Daily Briefing")
     canvas.drawRightString(width - 0.38 * inch, height - 0.28 * inch, source_state)
     canvas.setStrokeColor(colors.HexColor("#E2E8F0"))
     canvas.line(0.38 * inch, 0.32 * inch, width - 0.38 * inch, 0.32 * inch)
@@ -2534,6 +3513,15 @@ def format_number(value: Any, digits: int = 1) -> str:
     if abs(parsed) >= 100:
         return f"{parsed:,.0f}"
     return f"{parsed:,.{digits}f}"
+
+
+def format_generated_time(value: str | None) -> str:
+    if not value:
+        return "N/A"
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).strftime("%Y-%m-%d %I:%M %p UTC")
+    except ValueError:
+        return value
 
 
 def format_percent(value: Any) -> str:

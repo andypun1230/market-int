@@ -80,6 +80,7 @@ function buildBrief(dashboard: HomeDashboardResponse | null): MarketBrief | null
   const core = dashboard.core;
   const topSector = core.top_sector?.name;
   const topGroup = core.top_industry_group?.name;
+  const liveTheme = core.theme_intelligence?.available ? core.theme_intelligence.leaders?.[0]?.display_name : null;
   const playbook = core.decision_summary.playbook;
   const marketHealth = core.market_health;
 
@@ -87,7 +88,7 @@ function buildBrief(dashboard: HomeDashboardResponse | null): MarketBrief | null
     regime: marketHealth?.status ?? 'Unavailable',
     drivers: [
       topSector ? `${topSector} sector leadership` : null,
-      topGroup ? `${topGroup} static strategy preference` : null,
+      liveTheme ? `${liveTheme} reviewed live theme` : topGroup ? `${topGroup} static strategy preference` : null,
       core.decision_summary.preferred_style,
     ].filter((item): item is string => Boolean(item)),
     risks: [core.decision_summary.main_risk].filter((item): item is string => Boolean(item)),

@@ -1,0 +1,1447 @@
+{
+  "active_theme_versions": [
+    {
+      "theme_id": "cybersecurity",
+      "version": "v1.1"
+    },
+    {
+      "theme_id": "memory_storage",
+      "version": "v1.1"
+    }
+  ],
+  "alerts": [
+    {
+      "alert_id": "cybersecurity:Leading:2026-07-17",
+      "confidence": "High",
+      "explanation": "Cybersecurity entered Leading.",
+      "invalidation_condition": "A subsequent immutable ThemeSnapshot no longer supports the classification.",
+      "market_date": "2026-07-17",
+      "source_snapshot_id": null,
+      "theme_id": "cybersecurity",
+      "type": "entered_leading"
+    },
+    {
+      "alert_id": "memory_storage:Improving:2026-07-17",
+      "confidence": "Moderate",
+      "explanation": "Memory & Storage entered Improving.",
+      "invalidation_condition": "A subsequent immutable ThemeSnapshot no longer supports the classification.",
+      "market_date": "2026-07-17",
+      "source_snapshot_id": null,
+      "theme_id": "memory_storage",
+      "type": "entered_improving"
+    }
+  ],
+  "configuration_signature": "1b86559556ee803f3dc0",
+  "formula_version": "theme-leadership-composite-v1",
+  "generated_at": "2026-07-19T18:46:23.801308+00:00",
+  "input_hash": "a5bbc739928e3bb6d6aefcca81168d2e3f5424d5c1720dd658541d97efd2dceb",
+  "market_date": "2026-07-17",
+  "member_coverage": {
+    "cybersecurity": {
+      "coverage_ratio": 1.0,
+      "eligible_count": 7,
+      "member_count": 7
+    },
+    "memory_storage": {
+      "coverage_ratio": 1.0,
+      "eligible_count": 7,
+      "member_count": 7
+    }
+  },
+  "overlap_matrix": [
+    {
+      "classification": "low",
+      "common_members": [],
+      "jaccard_overlap": 0.0,
+      "left_theme_id": "cybersecurity",
+      "right_theme_id": "memory_storage",
+      "shared_count": 0,
+      "union_count": 14,
+      "weighted_overlap": 0
+    }
+  ],
+  "providers": [
+    "polygon"
+  ],
+  "published_at": "2026-07-19T18:46:23.801308+00:00",
+  "rankings": [
+    "cybersecurity",
+    "memory_storage"
+  ],
+  "rotation_summary": "Cybersecurity leads the reviewed live ThemeSnapshot.",
+  "rows": [
+    {
+      "breadth": {
+        "advance_decline_ratio": 2.5,
+        "advance_decline_ratio_display": "2.50",
+        "advance_decline_ratio_smoothed": 2.2,
+        "advancing": 5,
+        "coverage_dimensions": {
+          "ema20": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          },
+          "ema200": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          },
+          "ema50": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          },
+          "highs_lows": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          },
+          "universe": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          }
+        },
+        "declining": 2,
+        "eligible_counts": {
+          "advance_decline": 7,
+          "ema20": 7,
+          "ema200": 7,
+          "ema50": 7,
+          "highs_lows": 7
+        },
+        "new_52_week_highs": 1,
+        "new_52_week_lows": 0,
+        "percent_above_ema20": 100.0,
+        "percent_above_ema200": 71.4286,
+        "percent_above_ema50": 100.0,
+        "ratio_method": "raw=advancing/declining; smoothed=(advancing+0.5)/(declining+0.5)",
+        "unchanged": 0
+      },
+      "classification": "Leading",
+      "component_scores": {
+        "breadth": 100.0,
+        "concentration_quality": 100,
+        "momentum": 100.0,
+        "participation": 100.0,
+        "relative_strength": 100.0
+      },
+      "composite_score": 100.0,
+      "concentration": {
+        "classification": "low",
+        "contribution_hhi": 0.161473,
+        "denominator": "absolute contribution share",
+        "negative_contributor_count": 0,
+        "positive_contributor_count": 7,
+        "quality_score": 100,
+        "top_contributors": [
+          {
+            "absolute_contribution_share": 20.6132,
+            "ticker": "S"
+          },
+          {
+            "absolute_contribution_share": 19.4153,
+            "ticker": "OKTA"
+          },
+          {
+            "absolute_contribution_share": 19.2071,
+            "ticker": "PANW"
+          }
+        ],
+        "top_one_absolute_contribution_share": 20.6132,
+        "top_three_absolute_contribution_share": 59.2355
+      },
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete",
+      "data_confidence": {
+        "label": "High",
+        "reason": "7/7 active members have durable long-history eligibility; basket coverage is 100.0%.",
+        "score": 100
+      },
+      "definition": {
+        "amendment_reason": "approved pilot constituent completion",
+        "amends_version": "v1",
+        "corporate_action_amendment": false,
+        "description": "Reviewed curated basket of cybersecurity platform suppliers; not an official classification.",
+        "historical_disclosure": "Historical results use the current reviewed v1 constituent basket unless historical membership versions are available.",
+        "parent_sector_ids": [
+          "information_technology"
+        ],
+        "primary_benchmark": "SPY",
+        "secondary_benchmark": "XLK",
+        "weighting_policy": "equal_weight_v1"
+      },
+      "display_name": "Cybersecurity",
+      "eligible_count": 7,
+      "input_hash": "870da24fa0ae9101652ddc3d647cb8a637b886d6d144df1d700f8582adcad5de",
+      "member_count": 7,
+      "members": [
+        {
+          "company_name": "Check Point Software Technologies",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 7,
+          "inclusion_reason": "Network and cloud-security platform supplier.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 90,
+          "return_1m": 12.4139,
+          "role": "core",
+          "ticker": "CHKP",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "CrowdStrike Holdings",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 10,
+          "inclusion_reason": "Endpoint and cloud cybersecurity platform.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 95,
+          "return_1m": 19.5485,
+          "role": "core",
+          "ticker": "CRWD",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Fortinet",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 8,
+          "inclusion_reason": "Network-security platform supplier.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 90,
+          "return_1m": 9.9238,
+          "role": "core",
+          "ticker": "FTNT",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Okta",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 7,
+          "inclusion_reason": "Identity and access-management security platform.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 90,
+          "return_1m": 28.451,
+          "role": "core",
+          "ticker": "OKTA",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Palo Alto Networks",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 10,
+          "inclusion_reason": "Network and security-platform supplier.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 95,
+          "return_1m": 28.1458,
+          "role": "core",
+          "ticker": "PANW",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "SentinelOne",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 7,
+          "inclusion_reason": "Endpoint and AI-driven cybersecurity platform.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 90,
+          "return_1m": 30.2063,
+          "role": "core",
+          "ticker": "S",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Zscaler",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 8,
+          "inclusion_reason": "Zero-trust cloud-security platform.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 90,
+          "return_1m": 17.8496,
+          "role": "core",
+          "ticker": "ZS",
+          "weight": 0.142857142857
+        }
+      ],
+      "participation": {
+        "definition": "60% positive-member participation plus 40% positive absolute-contribution share; distinct from EMA50 breadth.",
+        "formula_version": "positive-return-and-contribution-v1",
+        "negative_member_count": 0,
+        "participation_score": 100.0,
+        "positive_contribution_share": 100.0,
+        "positive_member_count": 7,
+        "positive_return_participation": 100.0,
+        "selected_horizon_sessions": 21
+      },
+      "performance": {
+        "1d": 0.7315,
+        "1m": 21.0085,
+        "1w": 7.2083,
+        "1y": 22.8697,
+        "3m": 63.3592,
+        "6m": 38.7721
+      },
+      "provenance": {
+        "basket_formula_version": "equal-weight-current-basket-v1",
+        "category": "live_verified",
+        "corporate_action_amendment": false,
+        "current_basket_historical": true,
+        "definition_status": "active",
+        "history_provider": "polygon",
+        "review_commit": "3b48aae2f371f88087cf4d09220198dfd3af7e03",
+        "scoring_formula_version": "theme-leadership-composite-v1",
+        "source_state": "live"
+      },
+      "rank": 1,
+      "relative_strength": {
+        "trend": "Mixed",
+        "vs_spy_1m": 21.9468,
+        "vs_spy_1w": 8.7528,
+        "vs_spy_3m": 57.4261
+      },
+      "representativeness": {
+        "label": "Moderate",
+        "reason": "7 eligible constituents meet the 4-member threshold."
+      },
+      "rotation_series": {
+        "1M": {
+          "benchmark_symbol": "SPY",
+          "compatibility_signature": "47d36015795386c1895d",
+          "coverage_ratio": 1.0,
+          "current_point": {
+            "compatibility_signature": "47d36015795386c1895d",
+            "is_current": true,
+            "is_synthetic": false,
+            "market_date": "2026-07-17",
+            "plotted_x": 121.9468,
+            "plotted_y": 109.6898,
+            "quadrant": "leading",
+            "raw_momentum": 9.6898,
+            "raw_rs": 21.9468,
+            "snapshot_id": null,
+            "source_provider": "polygon",
+            "source_series_ids": [
+              "theme:cybersecurity:v1.1:polygon",
+              "SPY:polygon"
+            ]
+          },
+          "data_mode": "live",
+          "display_name": "Cybersecurity",
+          "earliest_market_date": "2026-06-17",
+          "entity_id": "cybersecurity",
+          "entity_type": "theme",
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "1M",
+          "latest_market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "point_count": 5,
+          "short_label": "cybersecurity",
+          "source_state": "live",
+          "status": "complete",
+          "synthetic_point_count": 0,
+          "trail_points": [
+            {
+              "compatibility_signature": "47d36015795386c1895d",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-06-17",
+              "plotted_x": 102.1355,
+              "plotted_y": 87.7786,
+              "quadrant": "weakening",
+              "raw_momentum": -12.2214,
+              "raw_rs": 2.1355,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "47d36015795386c1895d",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-06-25",
+              "plotted_x": 100.9706,
+              "plotted_y": 98.8351,
+              "quadrant": "weakening",
+              "raw_momentum": -1.1649,
+              "raw_rs": 0.9706,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "47d36015795386c1895d",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-02",
+              "plotted_x": 106.1045,
+              "plotted_y": 105.134,
+              "quadrant": "leading",
+              "raw_momentum": 5.134,
+              "raw_rs": 6.1045,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "47d36015795386c1895d",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-10",
+              "plotted_x": 112.2569,
+              "plotted_y": 106.1524,
+              "quadrant": "leading",
+              "raw_momentum": 6.1524,
+              "raw_rs": 12.2569,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "47d36015795386c1895d",
+              "is_current": true,
+              "is_synthetic": false,
+              "market_date": "2026-07-17",
+              "plotted_x": 121.9468,
+              "plotted_y": 109.6898,
+              "quadrant": "leading",
+              "raw_momentum": 9.6898,
+              "raw_rs": 21.9468,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            }
+          ],
+          "universe_id": "cybersecurity",
+          "universe_version": "v1.1",
+          "warnings": []
+        },
+        "1W": {
+          "benchmark_symbol": "SPY",
+          "compatibility_signature": "4cafaee26f94e4d64b15",
+          "coverage_ratio": 1.0,
+          "current_point": {
+            "compatibility_signature": "4cafaee26f94e4d64b15",
+            "is_current": true,
+            "is_synthetic": false,
+            "market_date": "2026-07-17",
+            "plotted_x": 108.7528,
+            "plotted_y": 107.5412,
+            "quadrant": "leading",
+            "raw_momentum": 7.5412,
+            "raw_rs": 8.7528,
+            "snapshot_id": null,
+            "source_provider": "polygon",
+            "source_series_ids": [
+              "theme:cybersecurity:v1.1:polygon",
+              "SPY:polygon"
+            ]
+          },
+          "data_mode": "live",
+          "display_name": "Cybersecurity",
+          "earliest_market_date": "2026-07-13",
+          "entity_id": "cybersecurity",
+          "entity_type": "theme",
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "1W",
+          "latest_market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "point_count": 5,
+          "short_label": "cybersecurity",
+          "source_state": "live",
+          "status": "complete",
+          "synthetic_point_count": 0,
+          "trail_points": [
+            {
+              "compatibility_signature": "4cafaee26f94e4d64b15",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-13",
+              "plotted_x": 96.3785,
+              "plotted_y": 100.2984,
+              "quadrant": "improving",
+              "raw_momentum": 0.2984,
+              "raw_rs": -3.6215,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "4cafaee26f94e4d64b15",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-14",
+              "plotted_x": 104.1142,
+              "plotted_y": 107.7357,
+              "quadrant": "leading",
+              "raw_momentum": 7.7357,
+              "raw_rs": 4.1142,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "4cafaee26f94e4d64b15",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-15",
+              "plotted_x": 103.9087,
+              "plotted_y": 99.7945,
+              "quadrant": "weakening",
+              "raw_momentum": -0.2055,
+              "raw_rs": 3.9087,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "4cafaee26f94e4d64b15",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-16",
+              "plotted_x": 101.2116,
+              "plotted_y": 97.3029,
+              "quadrant": "weakening",
+              "raw_momentum": -2.6971,
+              "raw_rs": 1.2116,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "4cafaee26f94e4d64b15",
+              "is_current": true,
+              "is_synthetic": false,
+              "market_date": "2026-07-17",
+              "plotted_x": 108.7528,
+              "plotted_y": 107.5412,
+              "quadrant": "leading",
+              "raw_momentum": 7.5412,
+              "raw_rs": 8.7528,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            }
+          ],
+          "universe_id": "cybersecurity",
+          "universe_version": "v1.1",
+          "warnings": []
+        },
+        "3M": {
+          "benchmark_symbol": "SPY",
+          "compatibility_signature": "7c4dba86dea48d02ef00",
+          "coverage_ratio": 1.0,
+          "current_point": {
+            "compatibility_signature": "7c4dba86dea48d02ef00",
+            "is_current": true,
+            "is_synthetic": false,
+            "market_date": "2026-07-17",
+            "plotted_x": 157.4261,
+            "plotted_y": 142.2257,
+            "quadrant": "leading",
+            "raw_momentum": 42.2257,
+            "raw_rs": 57.4261,
+            "snapshot_id": null,
+            "source_provider": "polygon",
+            "source_series_ids": [
+              "theme:cybersecurity:v1.1:polygon",
+              "SPY:polygon"
+            ]
+          },
+          "data_mode": "live",
+          "display_name": "Cybersecurity",
+          "earliest_market_date": "2026-04-21",
+          "entity_id": "cybersecurity",
+          "entity_type": "theme",
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "3M",
+          "latest_market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "point_count": 5,
+          "short_label": "cybersecurity",
+          "source_state": "live",
+          "status": "complete",
+          "synthetic_point_count": 0,
+          "trail_points": [
+            {
+              "compatibility_signature": "7c4dba86dea48d02ef00",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-04-21",
+              "plotted_x": 88.7648,
+              "plotted_y": 97.7019,
+              "quadrant": "lagging",
+              "raw_momentum": -2.2981,
+              "raw_rs": -11.2352,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "7c4dba86dea48d02ef00",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-05-12",
+              "plotted_x": 98.1364,
+              "plotted_y": 117.7329,
+              "quadrant": "improving",
+              "raw_momentum": 17.7329,
+              "raw_rs": -1.8636,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "7c4dba86dea48d02ef00",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-06-03",
+              "plotted_x": 129.724,
+              "plotted_y": 140.2867,
+              "quadrant": "leading",
+              "raw_momentum": 40.2867,
+              "raw_rs": 29.724,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "7c4dba86dea48d02ef00",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-06-25",
+              "plotted_x": 126.7993,
+              "plotted_y": 90.6572,
+              "quadrant": "weakening",
+              "raw_momentum": -9.3428,
+              "raw_rs": 26.7993,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "7c4dba86dea48d02ef00",
+              "is_current": true,
+              "is_synthetic": false,
+              "market_date": "2026-07-17",
+              "plotted_x": 157.4261,
+              "plotted_y": 142.2257,
+              "quadrant": "leading",
+              "raw_momentum": 42.2257,
+              "raw_rs": 57.4261,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:cybersecurity:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            }
+          ],
+          "universe_id": "cybersecurity",
+          "universe_version": "v1.1",
+          "warnings": []
+        }
+      },
+      "signal_confidence": {
+        "label": "High",
+        "reason": "5 supportive, 0 mixed, and 0 caution score dimensions.",
+        "score": 85
+      },
+      "theme_id": "cybersecurity",
+      "version": "v1.1",
+      "warnings": [
+        "Historical results use the current reviewed constituent basket; historical membership versions are not yet available."
+      ],
+      "weighted_contributions": {
+        "breadth": {
+          "score": 100.0,
+          "weight": 0.2,
+          "weighted_contribution": 20.0
+        },
+        "concentration_quality": {
+          "score": 100,
+          "weight": 0.1,
+          "weighted_contribution": 10.0
+        },
+        "momentum": {
+          "score": 100.0,
+          "weight": 0.25,
+          "weighted_contribution": 25.0
+        },
+        "participation": {
+          "score": 100.0,
+          "weight": 0.2,
+          "weighted_contribution": 20.0
+        },
+        "relative_strength": {
+          "score": 100.0,
+          "weight": 0.25,
+          "weighted_contribution": 25.0
+        }
+      }
+    },
+    {
+      "breadth": {
+        "advance_decline_ratio": 2.5,
+        "advance_decline_ratio_display": "2.50",
+        "advance_decline_ratio_smoothed": 2.2,
+        "advancing": 5,
+        "coverage_dimensions": {
+          "ema20": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          },
+          "ema200": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          },
+          "ema50": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          },
+          "highs_lows": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          },
+          "universe": {
+            "display": "7/7",
+            "eligible": 7,
+            "ratio": 1.0,
+            "total": 7
+          }
+        },
+        "declining": 2,
+        "eligible_counts": {
+          "advance_decline": 7,
+          "ema20": 7,
+          "ema200": 7,
+          "ema50": 7,
+          "highs_lows": 7
+        },
+        "new_52_week_highs": 0,
+        "new_52_week_lows": 0,
+        "percent_above_ema20": 14.2857,
+        "percent_above_ema200": 85.7143,
+        "percent_above_ema50": 14.2857,
+        "ratio_method": "raw=advancing/declining; smoothed=(advancing+0.5)/(declining+0.5)",
+        "unchanged": 0
+      },
+      "classification": "Improving",
+      "component_scores": {
+        "breadth": 14.2857,
+        "concentration_quality": 75,
+        "momentum": 100.0,
+        "participation": 9.03,
+        "relative_strength": 100.0
+      },
+      "composite_score": 62.16,
+      "concentration": {
+        "classification": "moderate",
+        "contribution_hhi": 0.19124,
+        "denominator": "absolute contribution share",
+        "negative_contributor_count": 6,
+        "positive_contributor_count": 1,
+        "quality_score": 75,
+        "top_contributors": [
+          {
+            "absolute_contribution_share": 22.8094,
+            "ticker": "MRVL"
+          },
+          {
+            "absolute_contribution_share": 22.5826,
+            "ticker": "SNDK"
+          },
+          {
+            "absolute_contribution_share": 21.1419,
+            "ticker": "WDC"
+          }
+        ],
+        "top_one_absolute_contribution_share": 22.8094,
+        "top_three_absolute_contribution_share": 66.5339
+      },
+      "coverage_ratio": 1.0,
+      "coverage_status": "complete",
+      "data_confidence": {
+        "label": "High",
+        "reason": "7/7 active members have durable long-history eligibility; basket coverage is 100.0%.",
+        "score": 100
+      },
+      "definition": {
+        "amendment_reason": "same-issuer corporate name and ticker change",
+        "amends_version": "v1",
+        "corporate_action_amendment": true,
+        "description": "Reviewed curated basket of memory and storage suppliers; not an official classification.",
+        "historical_disclosure": "Historical results use the current reviewed v1 constituent basket unless historical membership versions are available.",
+        "parent_sector_ids": [
+          "information_technology"
+        ],
+        "primary_benchmark": "SPY",
+        "secondary_benchmark": "XLK",
+        "weighting_policy": "equal_weight_v1"
+      },
+      "display_name": "Memory & Storage",
+      "eligible_count": 7,
+      "input_hash": "7d317982bda47c632767785361ba47cf707d313bc49e8550877d7e724466dc8f",
+      "member_count": 7,
+      "members": [
+        {
+          "company_name": "Marvell Technology",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 7,
+          "inclusion_reason": "Storage and data-infrastructure semiconductor exposure.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 80,
+          "return_1m": -32.2927,
+          "role": "enabler",
+          "ticker": "MRVL",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Micron Technology",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 10,
+          "inclusion_reason": "Primary DRAM and NAND memory producer.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 95,
+          "return_1m": -16.8316,
+          "role": "core",
+          "ticker": "MU",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "NetApp",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 7,
+          "inclusion_reason": "Enterprise data-storage systems and cloud data platforms.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 90,
+          "return_1m": 1.6247,
+          "role": "infrastructure",
+          "ticker": "NTAP",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Everpure",
+          "continuity_status": "verified",
+          "corporate_action_effective_date": "2026-04-17",
+          "corporate_action_type": "ticker_and_name_change",
+          "history_continuity_required": true,
+          "importance": 6,
+          "inclusion_reason": "enterprise flash-storage systems and data-storage platforms",
+          "previous_company_name": "Pure Storage",
+          "previous_ticker": "PSTG",
+          "purity": 90,
+          "return_1m": -5.2962,
+          "role": "infrastructure",
+          "ticker": "P",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Sandisk Corporation",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 8,
+          "inclusion_reason": "Flash-storage products and platforms.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 95,
+          "return_1m": -31.9716,
+          "role": "core",
+          "ticker": "SNDK",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Seagate Technology",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 7,
+          "inclusion_reason": "Mass-capacity storage supplier.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 90,
+          "return_1m": -23.6275,
+          "role": "core",
+          "ticker": "STX",
+          "weight": 0.142857142857
+        },
+        {
+          "company_name": "Western Digital",
+          "continuity_status": null,
+          "corporate_action_effective_date": null,
+          "corporate_action_type": null,
+          "history_continuity_required": false,
+          "importance": 8,
+          "inclusion_reason": "Storage devices and data infrastructure platforms.",
+          "previous_company_name": null,
+          "previous_ticker": null,
+          "purity": 90,
+          "return_1m": -29.9319,
+          "role": "core",
+          "ticker": "WDC",
+          "weight": 0.142857142857
+        }
+      ],
+      "participation": {
+        "definition": "60% positive-member participation plus 40% positive absolute-contribution share; distinct from EMA50 breadth.",
+        "formula_version": "positive-return-and-contribution-v1",
+        "negative_member_count": 6,
+        "participation_score": 9.03,
+        "positive_contribution_share": 1.1476,
+        "positive_member_count": 1,
+        "positive_return_participation": 14.2857,
+        "selected_horizon_sessions": 21
+      },
+      "performance": {
+        "1d": 1.1006,
+        "1m": -19.5954,
+        "1w": -15.8443,
+        "1y": 434.4508,
+        "3m": 49.3452,
+        "6m": 125.2557
+      },
+      "provenance": {
+        "basket_formula_version": "equal-weight-current-basket-v1",
+        "category": "live_verified",
+        "corporate_action_amendment": true,
+        "current_basket_historical": true,
+        "definition_status": "active",
+        "history_provider": "polygon",
+        "review_commit": "3b48aae2f371f88087cf4d09220198dfd3af7e03",
+        "scoring_formula_version": "theme-leadership-composite-v1",
+        "source_state": "live"
+      },
+      "rank": 2,
+      "relative_strength": {
+        "trend": "Mixed",
+        "vs_spy_1m": -18.6571,
+        "vs_spy_1w": -14.2998,
+        "vs_spy_3m": 43.4121
+      },
+      "representativeness": {
+        "label": "Moderate",
+        "reason": "7 eligible constituents meet the 4-member threshold."
+      },
+      "rotation_series": {
+        "1M": {
+          "benchmark_symbol": "SPY",
+          "compatibility_signature": "874c1b55862cb0be0f4a",
+          "coverage_ratio": 1.0,
+          "current_point": {
+            "compatibility_signature": "874c1b55862cb0be0f4a",
+            "is_current": true,
+            "is_synthetic": false,
+            "market_date": "2026-07-17",
+            "plotted_x": 81.3429,
+            "plotted_y": 76.0356,
+            "quadrant": "lagging",
+            "raw_momentum": -23.9644,
+            "raw_rs": -18.6571,
+            "snapshot_id": null,
+            "source_provider": "polygon",
+            "source_series_ids": [
+              "theme:memory_storage:v1.1:polygon",
+              "SPY:polygon"
+            ]
+          },
+          "data_mode": "live",
+          "display_name": "Memory & Storage",
+          "earliest_market_date": "2026-06-17",
+          "entity_id": "memory_storage",
+          "entity_type": "theme",
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "1M",
+          "latest_market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "point_count": 5,
+          "short_label": "memory_storage",
+          "source_state": "live",
+          "status": "complete",
+          "synthetic_point_count": 0,
+          "trail_points": [
+            {
+              "compatibility_signature": "874c1b55862cb0be0f4a",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-06-17",
+              "plotted_x": 142.3799,
+              "plotted_y": 130.6576,
+              "quadrant": "leading",
+              "raw_momentum": 30.6576,
+              "raw_rs": 42.3799,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "874c1b55862cb0be0f4a",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-06-25",
+              "plotted_x": 125.7873,
+              "plotted_y": 83.4074,
+              "quadrant": "weakening",
+              "raw_momentum": -16.5926,
+              "raw_rs": 25.7873,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "874c1b55862cb0be0f4a",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-02",
+              "plotted_x": 94.3311,
+              "plotted_y": 68.5438,
+              "quadrant": "lagging",
+              "raw_momentum": -31.4562,
+              "raw_rs": -5.6689,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "874c1b55862cb0be0f4a",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-10",
+              "plotted_x": 105.3073,
+              "plotted_y": 110.9762,
+              "quadrant": "leading",
+              "raw_momentum": 10.9762,
+              "raw_rs": 5.3073,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "874c1b55862cb0be0f4a",
+              "is_current": true,
+              "is_synthetic": false,
+              "market_date": "2026-07-17",
+              "plotted_x": 81.3429,
+              "plotted_y": 76.0356,
+              "quadrant": "lagging",
+              "raw_momentum": -23.9644,
+              "raw_rs": -18.6571,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            }
+          ],
+          "universe_id": "memory_storage",
+          "universe_version": "v1.1",
+          "warnings": []
+        },
+        "1W": {
+          "benchmark_symbol": "SPY",
+          "compatibility_signature": "24b2ee90eed23a9cfee0",
+          "coverage_ratio": 1.0,
+          "current_point": {
+            "compatibility_signature": "24b2ee90eed23a9cfee0",
+            "is_current": true,
+            "is_synthetic": false,
+            "market_date": "2026-07-17",
+            "plotted_x": 85.7002,
+            "plotted_y": 102.5463,
+            "quadrant": "improving",
+            "raw_momentum": 2.5463,
+            "raw_rs": -14.2998,
+            "snapshot_id": null,
+            "source_provider": "polygon",
+            "source_series_ids": [
+              "theme:memory_storage:v1.1:polygon",
+              "SPY:polygon"
+            ]
+          },
+          "data_mode": "live",
+          "display_name": "Memory & Storage",
+          "earliest_market_date": "2026-07-13",
+          "entity_id": "memory_storage",
+          "entity_type": "theme",
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "1W",
+          "latest_market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "point_count": 5,
+          "short_label": "memory_storage",
+          "source_state": "live",
+          "status": "complete",
+          "synthetic_point_count": 0,
+          "trail_points": [
+            {
+              "compatibility_signature": "24b2ee90eed23a9cfee0",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-13",
+              "plotted_x": 96.2137,
+              "plotted_y": 91.2473,
+              "quadrant": "lagging",
+              "raw_momentum": -8.7527,
+              "raw_rs": -3.7863,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "24b2ee90eed23a9cfee0",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-14",
+              "plotted_x": 103.1496,
+              "plotted_y": 106.9359,
+              "quadrant": "leading",
+              "raw_momentum": 6.9359,
+              "raw_rs": 3.1496,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "24b2ee90eed23a9cfee0",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-15",
+              "plotted_x": 92.5817,
+              "plotted_y": 89.4321,
+              "quadrant": "lagging",
+              "raw_momentum": -10.5679,
+              "raw_rs": -7.4183,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "24b2ee90eed23a9cfee0",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-07-16",
+              "plotted_x": 83.1539,
+              "plotted_y": 90.5722,
+              "quadrant": "lagging",
+              "raw_momentum": -9.4278,
+              "raw_rs": -16.8461,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "24b2ee90eed23a9cfee0",
+              "is_current": true,
+              "is_synthetic": false,
+              "market_date": "2026-07-17",
+              "plotted_x": 85.7002,
+              "plotted_y": 102.5463,
+              "quadrant": "improving",
+              "raw_momentum": 2.5463,
+              "raw_rs": -14.2998,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            }
+          ],
+          "universe_id": "memory_storage",
+          "universe_version": "v1.1",
+          "warnings": []
+        },
+        "3M": {
+          "benchmark_symbol": "SPY",
+          "compatibility_signature": "77387df5ec7dea1dc926",
+          "coverage_ratio": 1.0,
+          "current_point": {
+            "compatibility_signature": "77387df5ec7dea1dc926",
+            "is_current": true,
+            "is_synthetic": false,
+            "market_date": "2026-07-17",
+            "plotted_x": 143.4122,
+            "plotted_y": 36.7578,
+            "quadrant": "weakening",
+            "raw_momentum": -63.2422,
+            "raw_rs": 43.4122,
+            "snapshot_id": null,
+            "source_provider": "polygon",
+            "source_series_ids": [
+              "theme:memory_storage:v1.1:polygon",
+              "SPY:polygon"
+            ]
+          },
+          "data_mode": "live",
+          "display_name": "Memory & Storage",
+          "earliest_market_date": "2026-04-21",
+          "entity_id": "memory_storage",
+          "entity_type": "theme",
+          "formula_version": "relative-return-momentum-v1",
+          "interval": "3M",
+          "latest_market_date": "2026-07-17",
+          "normalization_version": "midpoint-100-relative-return-v1",
+          "point_count": 5,
+          "short_label": "memory_storage",
+          "source_state": "live",
+          "status": "complete",
+          "synthetic_point_count": 0,
+          "trail_points": [
+            {
+              "compatibility_signature": "77387df5ec7dea1dc926",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-04-21",
+              "plotted_x": 149.5484,
+              "plotted_y": 92.9153,
+              "quadrant": "weakening",
+              "raw_momentum": -7.0847,
+              "raw_rs": 49.5484,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "77387df5ec7dea1dc926",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-05-12",
+              "plotted_x": 174.3899,
+              "plotted_y": 124.5853,
+              "quadrant": "leading",
+              "raw_momentum": 24.5853,
+              "raw_rs": 74.3899,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "77387df5ec7dea1dc926",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-06-03",
+              "plotted_x": 237.3208,
+              "plotted_y": 186.2101,
+              "quadrant": "leading",
+              "raw_momentum": 86.2101,
+              "raw_rs": 137.3208,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "77387df5ec7dea1dc926",
+              "is_current": false,
+              "is_synthetic": false,
+              "market_date": "2026-06-25",
+              "plotted_x": 221.7872,
+              "plotted_y": 130.2627,
+              "quadrant": "leading",
+              "raw_momentum": 30.2627,
+              "raw_rs": 121.7872,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            },
+            {
+              "compatibility_signature": "77387df5ec7dea1dc926",
+              "is_current": true,
+              "is_synthetic": false,
+              "market_date": "2026-07-17",
+              "plotted_x": 143.4122,
+              "plotted_y": 36.7578,
+              "quadrant": "weakening",
+              "raw_momentum": -63.2422,
+              "raw_rs": 43.4122,
+              "snapshot_id": null,
+              "source_provider": "polygon",
+              "source_series_ids": [
+                "theme:memory_storage:v1.1:polygon",
+                "SPY:polygon"
+              ]
+            }
+          ],
+          "universe_id": "memory_storage",
+          "universe_version": "v1.1",
+          "warnings": []
+        }
+      },
+      "signal_confidence": {
+        "label": "Moderate",
+        "reason": "3 supportive, 0 mixed, and 2 caution score dimensions.",
+        "score": 65
+      },
+      "theme_id": "memory_storage",
+      "version": "v1.1",
+      "warnings": [
+        "Historical results use the current reviewed constituent basket; historical membership versions are not yet available."
+      ],
+      "weighted_contributions": {
+        "breadth": {
+          "score": 14.2857,
+          "weight": 0.2,
+          "weighted_contribution": 2.8571
+        },
+        "concentration_quality": {
+          "score": 75,
+          "weight": 0.1,
+          "weighted_contribution": 7.5
+        },
+        "momentum": {
+          "score": 100.0,
+          "weight": 0.25,
+          "weighted_contribution": 25.0
+        },
+        "participation": {
+          "score": 9.03,
+          "weight": 0.2,
+          "weighted_contribution": 1.806
+        },
+        "relative_strength": {
+          "score": 100.0,
+          "weight": 0.25,
+          "weighted_contribution": 25.0
+        }
+      }
+    }
+  ],
+  "schema_version": 1,
+  "snapshot_id": "theme-2026-07-17-82f25d1e5d",
+  "source_state": "live",
+  "status": "complete",
+  "warnings": [
+    "Historical results use the current reviewed constituent basket unless historical membership versions are available."
+  ]
+}

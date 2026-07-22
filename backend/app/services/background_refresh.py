@@ -135,6 +135,7 @@ def queue_refresh(scope: str = "core") -> dict[str, Any]:
         for name, fn in [
             ("refresh:breadth", refresh_breadth),
             ("refresh:sector-rotation", refresh_sector_rotation),
+            ("refresh:themes", refresh_theme_snapshot),
             ("refresh:industry-groups", refresh_industry_groups),
             ("refresh:leadership", refresh_leadership),
         ]:
@@ -342,6 +343,17 @@ def refresh_industry_groups() -> None:
 
     build_industry_groups()
     build_industry_rotation_dashboard()
+
+
+def refresh_theme_snapshot() -> object:
+    """Build only from reviewed durable inputs; never fetch constituents during navigation."""
+    from app.theme_snapshots.service import get_theme_snapshot_service
+
+    service = get_theme_snapshot_service()
+    status = service.status()
+    if not status.get("reviewed_definition_count"):
+        return {"status": "skipped", "reason_code": "human_review_required"}
+    return service.build_now()
 
 
 def refresh_leadership() -> None:

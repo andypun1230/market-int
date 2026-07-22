@@ -1,24 +1,32 @@
-import type { HomeDashboardResponse, IndexSnapshot } from '@/types/market';
+import type { HistoryData, HomeDashboardResponse, IndexSnapshot } from '@/types/market';
 
 export type HomeSourceState = 'live' | 'cached' | 'mock' | 'unavailable';
+export type HomeTone = 'positive' | 'warning' | 'negative' | 'neutral';
+export type MarketPulseLabel = 'Risk On' | 'Selective Risk' | 'Risk Off';
 
 export type HomeIndexSnapshot = {
   changePercent: number | null;
   direction: 'up' | 'down' | 'flat' | 'unavailable';
+  sparkline: number[];
   symbol: string;
   trendLabel: string | null;
 };
 
 export type HomeMetric = {
+  direction: string | null;
   label: string;
-  tone: 'positive' | 'warning' | 'negative' | 'neutral';
+  score: number | null;
+  tone: HomeTone;
   value: string;
 };
 
 export type HomeLeadershipItem = {
-  label: string;
+  direction: string | null;
+  id: string | null;
   kind: 'sector' | 'theme';
-  tone: 'positive' | 'warning' | 'negative' | 'neutral';
+  label: string;
+  role: 'Leading Sector' | 'Leading Theme' | 'Lagging Sector';
+  tone: HomeTone;
 };
 
 export type HomeStockIdea = {
@@ -27,9 +35,15 @@ export type HomeStockIdea = {
 };
 
 export type HomeDailyInsight = {
+  category: string;
   headline: string;
-  sourceLabel: 'Rules-based' | 'AI-generated';
   summary: string;
+};
+
+export type HomeMarketPulse = {
+  factors: HomeMetric[];
+  label: MarketPulseLabel;
+  tone: HomeTone;
 };
 
 export type HomeSummary = {
@@ -38,31 +52,40 @@ export type HomeSummary = {
   healthLabel: string;
   healthScore: number | null;
   indexes: HomeIndexSnapshot[];
-  laggards: HomeLeadershipItem[];
-  laggardState: 'canonical' | 'evaluated_empty' | 'unavailable';
-  leaders: HomeLeadershipItem[];
+  leadership: HomeLeadershipItem[];
+  marketEvents: string[];
+  marketPulse: HomeMarketPulse;
   positioningLabel: string;
   positioningScore: number | null;
   recommendation: string;
-  riskDriver: string | null;
+  riskDrivers: string[];
   riskLabel: string;
   riskScore: number | null;
   sourceState: HomeSourceState;
   stockIdeas: HomeStockIdea[];
-  summary: string;
-  upcomingEvents: { label: string; when: string }[];
+  todaysBias: string;
+  updatedAt: string | null;
   volatility: HomeMetric | null;
-  yield10Y: HomeMetric | null;
 };
 
 const DISPLAY_INDEXES = ['SPY', 'QQQ', 'IWM', 'DIA'];
 
-export function buildHomeSummary(dashboard: HomeDashboardResponse | null): HomeSummary {
+export function buildHomeSummary(
+  dashboard: HomeDashboardResponse | null,
+  histories: Partial<Record<string, HistoryData | null>> = {},
+): HomeSummary {
   const core = dashboard?.core ?? null;
   const health = core?.market_health ?? null;
   const playbook = core?.decision_summary.playbook ?? null;
   const aggressiveness = core?.decision_summary.aggressiveness ?? null;
   const riskSummary = dashboard?.risk_summary ?? null;
+  const healthScore = validNumber(health?.overall_score);
+  const riskScore = validNumber(riskSummary?.score);
+  const positioningScore = validNumber(aggressiveness?.score);
+  const breadth = buildBreadthMetric(core);
+  const volatility = buildVolatilityMetric(health);
+  const indexes = buildIndexSnapshots(core?.indexes ?? [], histories);
+  const leadership = buildLeadership(core);
   const recommendation = normalizeRecommendation(
     playbook?.headline
     ?? playbook?.suggested_aggressiveness
@@ -70,87 +93,67 @@ export function buildHomeSummary(dashboard: HomeDashboardResponse | null): HomeS
     ?? health?.status
     ?? null,
   );
-  const healthScore = validNumber(health?.overall_score);
-  const riskScore = validNumber(riskSummary?.score);
-  const positioningScore = validNumber(aggressiveness?.score);
-  const leaders = buildLeadership(core);
-  const laggards = buildLaggards(core);
-  const breadth = buildBreadthMetric(core);
-  const volatility = buildVolatilityMetric(health);
-  const rawRiskDriver = riskSummary?.summary ?? riskSummary?.top_contributors?.[0]?.explanation ?? core?.decision_summary.main_risk ?? null;
-  const riskDriver = derivePrimaryRiskDriver({
+  const riskLabelValue = riskSummary?.status ?? labelForRiskScore(riskScore);
+  const positioningLabel = aggressiveness?.status
+    ?? playbook?.suggested_aggressiveness
+    ?? scoreLabel(positioningScore, 'Positioning');
+  const stockIdeas = (dashboard?.watchlist_summary.items ?? []).slice(0, 5).map((item) => ({
+    changePercent: validNumber(item.change_percent),
+    symbol: item.symbol,
+  }));
+  const marketPulse = buildMarketPulse({ breadth, healthScore, leadership, riskScore, volatility });
+  const marketEvents = buildMarketEvents({
     breadth,
     healthLabel: health?.status ?? scoreLabel(healthScore, 'Health'),
-    healthScore,
-    leaders,
-    rawRiskDriver,
-    riskLabel: riskSummary?.status ?? riskLabel(riskScore),
-    volatility,
+    indexes,
+    leadership,
+    positioningLabel,
+    stockIdeas,
   });
-  const summary = formatCompactPlaybookSummary({
-    breadth,
-    healthScore,
-    leaders,
-    recommendation,
-    riskLabel: riskSummary?.status ?? riskLabel(riskScore),
-    volatility,
-  });
+  const riskDrivers = buildRiskDrivers(dashboard);
+
   return {
     breadth,
-    dailyInsight: buildDailyInsight({
-      breadth,
-      leaders,
-      playbookSummary: playbook?.summary ?? null,
-      recommendation,
-      riskDriver,
-      summary,
-      volatility,
-    }),
+    dailyInsight: buildDailyInsight({ indexes, volatility }),
     healthLabel: health?.status ?? scoreLabel(healthScore, 'Health'),
     healthScore,
-    indexes: buildIndexSnapshots(core?.indexes ?? []),
-    laggards,
-    laggardState: laggards.length ? 'canonical' : leaders.length ? 'evaluated_empty' : 'unavailable',
-    leaders,
-    positioningLabel: aggressiveness?.status ?? playbook?.suggested_aggressiveness ?? scoreLabel(positioningScore, 'Positioning'),
+    indexes,
+    leadership,
+    marketEvents,
+    marketPulse,
+    positioningLabel,
     positioningScore,
     recommendation,
-    riskDriver: formatCompactRiskDriver(riskDriver),
-    riskLabel: riskSummary?.status ?? riskLabel(riskScore),
+    riskDrivers,
+    riskLabel: riskLabelValue,
     riskScore,
     sourceState: deriveSourceState(dashboard),
-    stockIdeas: (dashboard?.watchlist_summary.items ?? []).slice(0, 3).map((item) => ({
-      changePercent: validNumber(item.change_percent),
-      symbol: item.symbol,
-    })),
-    summary,
-    upcomingEvents: [],
-    volatility: buildVolatilityMetric(health),
-    yield10Y: null,
+    stockIdeas,
+    todaysBias: buildTodaysBias(marketPulse.label, recommendation),
+    updatedAt: dashboard?.generated_at ?? core?.generated_at ?? core?.as_of ?? null,
+    volatility,
   };
 }
 
-function buildLaggards(core: HomeDashboardResponse['core'] | null): HomeLeadershipItem[] {
-  const sector = core?.lagging_sector;
-  if (!sector?.name) {
-    return [];
-  }
-  return [{
-    kind: 'sector',
-    label: `${sector.name} · #${sector.rank} overall · ${sector.status}${typeof sector.composite_score === 'number' ? ` · Composite ${sector.composite_score.toFixed(1)}` : ''}${typeof sector.total_members === 'number' && sector.total_members <= 3 ? ` · limited breadth sample (${sector.total_members})` : typeof sector.percent_above_50ema === 'number' ? ` · ${Math.round(sector.percent_above_50ema)}% above EMA50` : ''}`,
-    tone: 'negative',
-  }];
-}
-
-function buildIndexSnapshots(indexes: IndexSnapshot[]): HomeIndexSnapshot[] {
+function buildIndexSnapshots(
+  indexes: IndexSnapshot[],
+  histories: Partial<Record<string, HistoryData | null>>,
+): HomeIndexSnapshot[] {
   return DISPLAY_INDEXES.map((symbol) => indexes.find((index) => normalizeIndexSymbol(index.symbol) === symbol))
     .filter((index): index is IndexSnapshot => Boolean(index))
     .map((index) => {
+      const symbol = normalizeIndexSymbol(index.symbol);
       const changePercent = validNumber(index.change_percent);
+      const history = histories[symbol];
+      const historyPoints = isIntradayHistory(history) ? (history?.candles ?? [])
+        .map((candle) => validNumber(candle.close))
+        .filter((value): value is number => value !== null)
+        .slice(-24) : [];
       return {
         changePercent,
         direction: changePercent === null ? 'unavailable' : changePercent > 0.05 ? 'up' : changePercent < -0.05 ? 'down' : 'flat',
-        symbol: normalizeIndexSymbol(index.symbol) ?? index.symbol,
+        sparkline: historyPoints.length >= 2 ? historyPoints : [],
+        symbol,
         trendLabel: trendLabel(index),
       };
     });
@@ -161,274 +164,228 @@ function buildBreadthMetric(core: HomeDashboardResponse['core'] | null): HomeMet
   if (!summary) {
     return null;
   }
-  const score = validNumber(summary.breadth_score);
-  const above50 = validNumber(summary.percent_above_50ema);
+  const score = validNumber(summary.breadth_score) ?? validNumber(summary.percent_above_50ema);
   return {
+    direction: breadthDirection(summary.trend),
     label: 'Breadth',
-    tone: toneForScore(score ?? above50),
-    value: summary.breadth_status ?? (above50 === null ? 'Updating' : `${formatPercent(above50)} >50 EMA`),
+    score,
+    tone: toneForScore(score),
+    value: summary.breadth_status ?? (score === null ? 'Updating' : `${Math.round(score)}%`),
   };
 }
 
 function buildVolatilityMetric(health: HomeDashboardResponse['core']['market_health'] | null | undefined): HomeMetric | null {
-  const volatility = validNumber(health?.components?.volatility);
-  if (volatility === null) {
+  const score = validNumber(health?.components?.volatility);
+  if (score === null) {
     return null;
   }
   return {
+    direction: null,
     label: 'Volatility',
-    tone: volatility >= 70 ? 'positive' : volatility >= 50 ? 'warning' : 'negative',
-    value: volatility >= 70 ? 'Contained' : volatility >= 50 ? 'Manageable' : 'Rising',
+    score,
+    tone: score >= 70 ? 'positive' : score >= 50 ? 'warning' : 'negative',
+    value: score >= 70 ? 'Contained' : score >= 50 ? 'Manageable' : 'Rising',
   };
 }
 
 function buildLeadership(core: HomeDashboardResponse['core'] | null): HomeLeadershipItem[] {
-  return [
-    core?.top_sector?.name ? {
-      kind: 'sector' as const,
-      label: `${core.top_sector.name} · #${core.top_sector.rank} overall · ${core.top_sector.status}${typeof core.top_sector.composite_score === 'number' ? ` · Composite ${core.top_sector.composite_score.toFixed(1)}` : ''}${typeof core.top_sector.percent_above_50ema === 'number' ? ` · ${Math.round(core.top_sector.percent_above_50ema)}% above EMA50` : ''}`,
-      tone: toneForScore(validNumber(core.top_sector.relative_strength_score)),
-    } : null,
-    core?.top_industry_group?.name ? {
-      kind: 'theme' as const,
-      label: core.top_industry_group.name,
-      tone: toneForScore(validNumber(core.top_industry_group.relative_strength_score ?? core.top_industry_group.score)),
-    } : null,
-  ].filter((item): item is HomeLeadershipItem => item !== null).slice(0, 3);
+  const liveTheme = core?.theme_intelligence?.available ? core.theme_intelligence.leaders?.[0] : null;
+  const leadingSector: HomeLeadershipItem | null = core?.top_sector?.name ? {
+    direction: leadershipDirection(core.top_sector.status),
+    id: normalizeEntityId(core.top_sector.name),
+    kind: 'sector' as const,
+    label: core.top_sector.name,
+    role: 'Leading Sector' as const,
+    tone: 'positive' as const,
+  } : null;
+  const leadingTheme: HomeLeadershipItem | null = liveTheme?.display_name ? {
+    direction: leadershipDirection(liveTheme.classification),
+    id: liveTheme.theme_id ?? normalizeEntityId(liveTheme.display_name),
+    kind: 'theme' as const,
+    label: liveTheme.display_name,
+    role: 'Leading Theme' as const,
+    tone: 'positive' as const,
+  } : core?.top_industry_group?.name ? {
+    direction: leadershipDirection(core.top_industry_group.status),
+    id: normalizeEntityId(core.top_industry_group.name),
+    kind: 'theme' as const,
+    label: core.top_industry_group.name,
+    role: 'Leading Theme' as const,
+    tone: 'positive' as const,
+  } : null;
+  const laggingSector: HomeLeadershipItem | null = core?.lagging_sector?.name ? {
+    direction: leadershipDirection(core.lagging_sector.status),
+    id: normalizeEntityId(core.lagging_sector.name),
+    kind: 'sector' as const,
+    label: core.lagging_sector.name,
+    role: 'Lagging Sector' as const,
+    tone: 'negative' as const,
+  } : null;
+
+  return [leadingSector, leadingTheme, laggingSector]
+    .filter((item): item is HomeLeadershipItem => item !== null);
 }
 
-function buildDailyInsight({
+function buildMarketPulse({
   breadth,
-  leaders,
-  playbookSummary,
-  recommendation,
-  riskDriver,
-  summary,
+  healthScore,
+  leadership,
+  riskScore,
   volatility,
 }: {
   breadth: HomeMetric | null;
-  leaders: HomeLeadershipItem[];
-  playbookSummary: string | null;
-  recommendation: string;
-  riskDriver: string | null;
-  summary: string;
+  healthScore: number | null;
+  leadership: HomeLeadershipItem[];
+  riskScore: number | null;
   volatility: HomeMetric | null;
-}): HomeDailyInsight | null {
-  const insight = formatCompactDailyInsight({ breadth, leaders, playbookSummary, recommendation, riskDriver, summary, volatility });
-  if (!insight) {
-    return null;
-  }
-  const headline = dedupeInsightHeadline(buildInsightHeadline(leaders, recommendation), recommendation, insight);
+}): HomeMarketPulse {
+  const riskOff = (riskScore !== null && riskScore >= 65)
+    || (healthScore !== null && healthScore < 45)
+    || (volatility?.score !== null && volatility?.score !== undefined && volatility.score < 40);
+  const riskOn = !riskOff
+    && (healthScore ?? 0) >= 70
+    && (breadth?.score ?? 0) >= 60
+    && (riskScore === null || riskScore <= 35)
+    && (volatility?.score ?? 0) >= 60;
+  const label: MarketPulseLabel = riskOff ? 'Risk Off' : riskOn ? 'Risk On' : 'Selective Risk';
+  const leading = leadership.find((item) => item.role === 'Leading Sector');
+  const factors = [
+    leading ? {
+      direction: leading.direction,
+      label: 'Leadership',
+      score: null,
+      tone: leading.tone,
+      value: leading.label,
+    } satisfies HomeMetric : null,
+    breadth,
+    volatility,
+  ].filter((item): item is HomeMetric => item !== null).slice(0, 3);
+
   return {
-    headline,
-    sourceLabel: 'Rules-based',
-    summary: isMaterialDuplicate(insight, summary)
-      ? formatCompactDailyInsight({ breadth, leaders, playbookSummary: null, recommendation, riskDriver, summary: '', volatility })
-      : insight,
+    factors,
+    label,
+    tone: label === 'Risk On' ? 'positive' : label === 'Risk Off' ? 'negative' : 'warning',
   };
 }
 
-function normalizeRecommendation(value: string | null) {
-  const text = value?.trim();
-  if (!text) {
-    return 'Market Dashboard Updating';
-  }
-  if (text.toLowerCase().includes('selectively aggressive')) {
-    return 'Stay Selectively Aggressive';
-  }
-  return capitalizeWords(text);
-}
-
-function compactSentence(value: string) {
-  return value.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).slice(0, 2).join(' ');
-}
-
-function formatCompactPlaybookSummary({
-  breadth,
-  healthScore,
-  leaders,
-  recommendation,
-  riskLabel,
-  volatility,
-}: {
-  breadth: HomeMetric | null;
-  healthScore: number | null;
-  leaders: HomeLeadershipItem[];
-  recommendation: string;
-  riskLabel: string;
-  volatility: HomeMetric | null;
-}) {
-  const lowerRecommendation = recommendation.toLowerCase();
-  const lowerRisk = riskLabel.toLowerCase();
-  const breadthValue = breadth?.value.toLowerCase() ?? '';
-  const volatilityValue = volatility?.value.toLowerCase() ?? '';
-
-  if (lowerRecommendation.includes('defensive') || lowerRisk.includes('high') || (healthScore !== null && healthScore < 50)) {
-    return 'Risk is elevated and trend support is weaker. Keep exposure selective until conditions improve.';
-  }
-  if (breadthValue.includes('weak') || volatilityValue.includes('rising')) {
-    return 'Market conditions are mixed. Favor confirmed leaders and keep weaker groups on watch.';
-  }
-  if ((healthScore ?? 0) >= 70 && leaders.length) {
-    return 'Trend and leadership remain constructive. Stay with leaders, but avoid chasing extended names.';
-  }
-  return 'The market backdrop is still forming. Focus on confirmed strength and avoid low-quality setups.';
-}
-
-function formatCompactRiskDriver(value: string | null) {
-  const compact = stripTrailingPunctuation(value ?? '');
-  return compact ? `Main driver: ${compact}.` : null;
-}
-
-function derivePrimaryRiskDriver({
+function buildMarketEvents({
   breadth,
   healthLabel,
-  healthScore,
-  leaders,
-  rawRiskDriver,
-  riskLabel,
-  volatility,
+  indexes,
+  leadership,
+  positioningLabel,
+  stockIdeas,
 }: {
   breadth: HomeMetric | null;
   healthLabel: string;
-  healthScore: number | null;
-  leaders: HomeLeadershipItem[];
-  rawRiskDriver: string | null;
-  riskLabel: string;
-  volatility: HomeMetric | null;
+  indexes: HomeIndexSnapshot[];
+  leadership: HomeLeadershipItem[];
+  positioningLabel: string;
+  stockIdeas: HomeStockIdea[];
 }) {
-  const factors: string[] = [];
-  const raw = (rawRiskDriver ?? '').toLowerCase();
-  const breadthText = `${breadth?.value ?? ''} ${breadth?.label ?? ''}`.toLowerCase();
-  const volatilityText = `${volatility?.value ?? ''} ${volatility?.label ?? ''}`.toLowerCase();
-  const healthText = `${healthLabel} ${healthScore ?? ''}`.toLowerCase();
-
-  if (volatilityText.includes('rising') || volatilityText.includes('elevated')) {
-    factors.push('rising volatility');
-  }
-  if (breadthText.includes('weak') || breadthText.includes('deteriorat')) {
-    factors.push('weak breadth');
-  }
-  if (healthText.includes('weak') || (healthScore !== null && healthScore < 50)) {
-    factors.push('deteriorating index trend');
-  }
-  if (leaders.length >= 2) {
-    factors.push('concentrated leadership');
-  }
-  if (raw.includes('sentiment') || raw.includes('greed') || raw.includes('elevated')) {
-    factors.unshift('elevated sentiment');
-  }
-  if (riskLabel.toLowerCase().includes('low') && factors.length === 0) {
-    return 'No material risk driver detected';
-  }
-  return capitalizeSentence(formatList(dedupe(factors).slice(0, 2))) || 'No material risk driver detected';
+  const availableIndexes = indexes.filter((item) => item.changePercent !== null);
+  const rankedIndexes = [...availableIndexes].sort((left, right) => (right.changePercent ?? 0) - (left.changePercent ?? 0));
+  const weakest = rankedIndexes[rankedIndexes.length - 1];
+  const positiveCount = availableIndexes.filter((item) => (item.changePercent ?? 0) > 0.05).length;
+  const negativeCount = availableIndexes.filter((item) => (item.changePercent ?? 0) < -0.05).length;
+  const stockIdeasWithMove = stockIdeas.filter((item) => item.changePercent !== null);
+  const stockGainers = stockIdeasWithMove.filter((item) => (item.changePercent ?? 0) > 0).length;
+  const allHigher = availableIndexes.length > 0 && positiveCount === availableIndexes.length;
+  const allLower = availableIndexes.length > 0 && negativeCount === availableIndexes.length;
+  const events = [
+    allHigher ? 'All four major indexes are higher.' : allLower ? 'All four major indexes are lower.' : availableIndexes.length ? `${positiveCount} of ${availableIndexes.length} major indexes are higher.` : 'Major indexes are updating.',
+    weakest ? `${weakest.symbol} is the weakest major index at ${formatSignedPercent(weakest.changePercent)}.` : null,
+    buildLeadershipObservation(leadership),
+    breadth ? `Breadth remains ${breadth.value.toLowerCase()}${breadth.direction ? ` · ${breadth.direction}` : ''}.` : null,
+    `Market health is ${healthLabel.toLowerCase()}.`,
+    `Positioning is ${positioningLabel.toLowerCase()}.`,
+    stockIdeasWithMove.length ? `${stockGainers} of ${stockIdeasWithMove.length} highlighted stocks are higher.` : 'Watchlist participation is updating.',
+  ].filter((item): item is string => Boolean(item));
+  return events.slice(0, 7);
 }
 
-function formatCompactDailyInsight({
-  breadth,
-  leaders,
-  playbookSummary,
-  recommendation,
-  riskDriver,
-  summary,
+function buildRiskDrivers(dashboard: HomeDashboardResponse | null) {
+  const contributors = dashboard?.risk_summary.top_contributors ?? [];
+  const health = dashboard?.core.market_health;
+  const aggressiveness = dashboard?.core.decision_summary.aggressiveness;
+  const candidates = [
+    ...contributors.map((item) => item.explanation || item.label),
+    dashboard?.core.decision_summary.main_risk,
+    ...(health?.weakening_factors ?? []),
+    ...(aggressiveness?.cautions ?? []),
+  ];
+  return dedupeObservations(candidates
+    .map((item) => interpretRiskDriver(item))
+    .filter((item): item is string => Boolean(item)))
+    .slice(0, 3);
+}
+
+function buildDailyInsight({
+  indexes,
   volatility,
 }: {
-  breadth: HomeMetric | null;
-  leaders: HomeLeadershipItem[];
-  playbookSummary: string | null;
-  recommendation: string;
-  riskDriver: string | null;
-  summary: string;
+  indexes: HomeIndexSnapshot[];
   volatility: HomeMetric | null;
-}) {
-  const leaderText = formatList(leaders.map((item) => item.label));
-  const breadthText = breadth?.value.toLowerCase() ?? '';
-  const volatilityText = volatility?.value.toLowerCase() ?? '';
-
-  if (leaders.length >= 2) {
-    const participation = breadthText.includes('healthy') || breadthText.includes('strong')
-      ? 'participation supports the trend'
-      : 'participation remains selective';
-    return `${leaderText} are leading, but ${participation}. New exposure should focus on confirmed leaders rather than broad market chasing.`;
+}): HomeDailyInsight | null {
+  const moves = indexes.map((item) => item.changePercent).filter((value): value is number => value !== null);
+  if (!moves.length) {
+    return null;
   }
-  if (volatilityText.includes('contained')) {
-    return 'Volatility remains contained, which supports the current market plan. Keep new exposure focused on groups with confirmed relative strength.';
-  }
-  if (riskDriver && !riskDriver.toLowerCase().includes('no material')) {
-    return `${riskDriver}. Keep the dashboard bias in mind, but avoid extending into weaker groups.`;
-  }
-  const fallback = compactSentence(playbookSummary || summary || recommendation);
-  return isMaterialDuplicate(fallback, recommendation)
-    ? 'The dashboard is constructive, but confirmation still matters. Favor leaders and avoid forcing trades in weaker groups.'
-    : ensureCompleteSentence(fallback);
+  const positiveCount = moves.filter((move) => move > 0.05).length;
+  const spread = Math.max(...moves) - Math.min(...moves);
+  const participation = positiveCount === moves.length
+    ? 'Major indexes are moving together'
+    : positiveCount >= Math.ceil(moves.length / 2)
+      ? 'Index participation is positive but uneven'
+      : 'Index participation remains narrow';
+  const volatilityContext = volatility?.value === 'Contained'
+    ? 'contained volatility supports orderly price action'
+    : volatility?.value === 'Rising'
+      ? 'rising volatility raises the bar for new entries'
+      : 'volatility is not yet providing a clean confirmation';
+  return {
+    category: 'Cross-Market',
+    headline: positiveCount <= 1 ? 'Participation remains narrow' : positiveCount === moves.length ? 'Participation is broad' : 'Participation is uneven',
+    summary: spread >= 0.75
+      ? `${capitalizeSentence(volatilityContext)}, but the index spread still favors selective entries.`
+      : `${capitalizeSentence(volatilityContext)}, while ${participation.toLowerCase()}.`,
+  };
 }
 
-function buildInsightHeadline(leaders: HomeLeadershipItem[], recommendation: string) {
-  if (leaders.length >= 2) {
-    return 'Leadership Remains Concentrated';
+function buildTodaysBias(pulse: MarketPulseLabel, recommendation: string) {
+  if (pulse === 'Risk Off') {
+    return 'Protect capital and require stronger confirmation before adding exposure.';
   }
-  if (leaders.length === 1) {
-    return `${leaders[0].label} Leads`;
+  if (pulse === 'Risk On') {
+    return 'Stay constructive, prioritize liquid strength, and avoid chasing extended moves.';
   }
-  if (recommendation.toLowerCase().includes('defensive')) {
-    return 'Risk Remains Elevated';
-  }
-  return 'Market Context';
+  const normalized = recommendation.toLowerCase();
+  return normalized.includes('defensive')
+    ? 'Keep exposure measured until participation and volatility improve.'
+    : 'Stay selective and add exposure only where price and participation confirm.';
 }
 
-function dedupeInsightHeadline(headline: string, recommendation: string, body: string) {
-  if (!isMaterialDuplicate(headline, recommendation) && !isMaterialDuplicate(firstSentence(body), recommendation)) {
-    return headline;
+function trendLabel(index: IndexSnapshot) {
+  const rawTrend = index.trend?.trim().toLowerCase();
+  if (rawTrend?.includes('bull') || rawTrend?.includes('up')) {
+    return 'Uptrend';
   }
-  if (body.toLowerCase().includes('participation')) {
-    return 'Participation Is Still Selective';
+  if (rawTrend?.includes('bear') || rawTrend?.includes('down')) {
+    return 'Downtrend';
   }
-  if (body.toLowerCase().includes('volatility')) {
-    return 'Volatility Remains Contained';
+  const price = validNumber(index.price);
+  const ema50 = validNumber(index.ema_50 ?? index.sma_50);
+  const ema200 = validNumber(index.ema_200);
+  if (price === null || (ema50 === null && ema200 === null)) {
+    return null;
   }
-  return 'Leadership Remains Concentrated';
-}
-
-function isMaterialDuplicate(left: string, right: string) {
-  const normalizedLeft = normalizeForComparison(left);
-  const normalizedRight = normalizeForComparison(right);
-  return Boolean(normalizedLeft && normalizedRight && (
-    normalizedLeft === normalizedRight
-    || normalizedLeft.includes(normalizedRight)
-    || normalizedRight.includes(normalizedLeft)
-  ));
-}
-
-function normalizeForComparison(value: string) {
-  return value.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-function firstSentence(value: string) {
-  return value.split(/(?<=[.!?])\s+/)[0] ?? value;
-}
-
-function stripTrailingPunctuation(value: string) {
-  return value.replace(/\s+/g, ' ').trim().replace(/[.!?]+$/, '');
-}
-
-function ensureCompleteSentence(value: string) {
-  const compact = value.replace(/\s+/g, ' ').trim();
-  if (!compact) {
-    return compact;
+  if ((ema50 === null || price >= ema50) && (ema200 === null || price >= ema200)) {
+    return 'Uptrend';
   }
-  return /[.!?]$/.test(compact) ? compact : `${compact}.`;
-}
-
-function dedupe(values: string[]) {
-  return Array.from(new Set(values.filter(Boolean)));
-}
-
-function capitalizeSentence(value: string) {
-  const compact = value.trim();
-  if (!compact) {
-    return compact;
+  if ((ema50 === null || price < ema50) && (ema200 === null || price < ema200)) {
+    return 'Downtrend';
   }
-  return `${compact.charAt(0).toUpperCase()}${compact.slice(1)}`;
+  return 'Mixed';
 }
 
 function deriveSourceState(dashboard: HomeDashboardResponse | null): HomeSourceState {
@@ -438,79 +395,134 @@ function deriveSourceState(dashboard: HomeDashboardResponse | null): HomeSourceS
   if (dashboard.core.overall_mode === 'mock') {
     return 'mock';
   }
-  if (dashboard.cache_status || dashboard.core.cache_status || dashboard.refreshing || dashboard.core.refreshing) {
+  if (dashboard.cache_status === 'stale' || dashboard.refreshing || dashboard.core.refreshing) {
     return 'cached';
   }
   return dashboard.core.overall_mode === 'live' ? 'live' : 'cached';
 }
 
-function normalizeIndexSymbol(symbol: string) {
-  const upper = symbol.toUpperCase();
-  return upper;
+function normalizeRecommendation(value: string | null) {
+  const compact = value?.replace(/\s+/g, ' ').trim();
+  if (!compact) {
+    return 'Market conditions are updating';
+  }
+  if (compact.toLowerCase().includes('selectively aggressive')) {
+    return 'Stay selectively aggressive';
+  }
+  return `${compact.charAt(0).toUpperCase()}${compact.slice(1)}`;
 }
 
-function trendLabel(index: IndexSnapshot) {
-  if (index.price && index.ema_20 && index.ema_50 && index.price > index.ema_20 && index.ema_20 >= index.ema_50) {
-    return 'Bullish';
-  }
-  if (index.price && index.ema_50 && index.price < index.ema_50) {
-    return 'Weak';
-  }
-  return 'Neutral';
+function compactObservation(value: string | null | undefined) {
+  const compact = value?.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/)[0]?.replace(/[.!?]+$/, '');
+  return compact ? `${compact}.` : null;
 }
 
-function toneForScore(score: number | null): HomeMetric['tone'] {
-  if (score === null) {
-    return 'neutral';
+function interpretRiskDriver(value: string | null | undefined) {
+  const compact = compactObservation(value);
+  if (!compact) return null;
+  const lower = compact.toLowerCase();
+  if (lower.includes('fear & greed') || lower.includes('fear and greed') || lower.includes('sentiment')) {
+    return lower.includes('changed -') || lower.includes('cool') ? 'Sentiment cooling' : 'Elevated sentiment';
   }
-  if (score >= 70) {
-    return 'positive';
+  if (lower.includes('market health') && lower.includes('mixed')) return 'Mixed market health';
+  if (lower.includes('stocks are above') || lower.includes('participation')) {
+    const percent = Number(lower.match(/([0-9]+(?:\.[0-9]+)?)%/)?.[1]);
+    return Number.isFinite(percent) && percent < 65 ? 'Narrow participation' : 'Uneven participation';
   }
-  if (score >= 50) {
-    return 'warning';
-  }
-  return 'negative';
+  if (lower.includes('breadth') && (lower.includes('changed -') || lower.includes('weak') || lower.includes('deteriorat'))) return 'Weakening breadth';
+  if (lower.includes('leadership') && (lower.includes('concentrat') || lower.includes('narrow'))) return 'Concentrated leadership';
+  if (lower.includes('volatility') && lower.includes('contained')) return 'Contained volatility';
+  if (lower.includes('volatility') && (lower.includes('rising') || lower.includes('elevated'))) return 'Rising volatility';
+  if (lower.includes('event') && (lower.includes('risk') || lower.includes('rising'))) return 'Rising event risk';
+  if (lower.includes('defensive') || lower.includes('risk-off')) return 'Defensive rotation';
+  if (/\bchanged\s+[+-]?\d/.test(lower) || compact.length > 56) return null;
+  return compact.replace(/[.]$/, '');
 }
 
-function riskLabel(score: number | null) {
-  if (score === null) {
-    return 'Updating';
-  }
-  if (score < 35) {
-    return 'Low';
-  }
-  if (score < 55) {
-    return 'Moderate';
-  }
-  if (score < 75) {
-    return 'Elevated';
-  }
-  return 'High';
+function buildLeadershipObservation(leadership: HomeLeadershipItem[]) {
+  const leader = leadership.find((item) => item.role === 'Leading Sector');
+  const laggard = leadership.find((item) => item.role === 'Lagging Sector');
+  if (leader && laggard) return `${leader.label} leads while ${laggard.label} lags.`;
+  if (leader) return `${leader.label} leads sector performance.`;
+  return null;
+}
+
+function breadthDirection(value: string | null | undefined) {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'improving' || normalized === 'broadening') return 'Broadening';
+  if (normalized === 'deteriorating' || normalized === 'weakening' || normalized === 'narrowing') return 'Narrowing';
+  if (normalized === 'stable') return 'Stable';
+  return null;
+}
+
+function leadershipDirection(value: string | null | undefined) {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'improving') return 'Improving';
+  if (normalized === 'weakening' || normalized === 'lagging') return 'Weakening';
+  if (normalized === 'stable' || normalized === 'leading') return 'Stable';
+  return null;
+}
+
+function isIntradayHistory(history: HistoryData | null | undefined) {
+  if (!history) return false;
+  const timeframe = history.timeframe.trim().toUpperCase();
+  return !['D', '1D', 'DAY', 'DAILY'].includes(timeframe);
+}
+
+function capitalizeSentence(value: string) {
+  const compact = value.trim();
+  return compact ? `${compact.charAt(0).toUpperCase()}${compact.slice(1)}` : compact;
+}
+
+function labelForRiskScore(score: number | null) {
+  if (score === null) return 'Updating';
+  if (score >= 65) return 'High';
+  if (score >= 35) return 'Moderate';
+  return 'Low';
 }
 
 function scoreLabel(score: number | null, fallback: string) {
-  if (score === null) {
-    return `${fallback} Updating`;
-  }
-  return score >= 70 ? 'Strong' : score >= 50 ? 'Mixed' : 'Weak';
+  if (score === null) return `${fallback} updating`;
+  if (score >= 70) return 'Strong';
+  if (score >= 50) return 'Mixed';
+  return 'Weak';
 }
 
-function validNumber(value: unknown) {
+function toneForScore(score: number | null): HomeTone {
+  if (score === null) return 'neutral';
+  if (score >= 70) return 'positive';
+  if (score >= 50) return 'warning';
+  return 'negative';
+}
+
+function normalizeIndexSymbol(symbol: string) {
+  return symbol.trim().toUpperCase();
+}
+
+function normalizeEntityId(value: string) {
+  return value.trim().toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function formatSignedPercent(value: number | null) {
+  if (value === null) return 'N/A';
+  return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
+}
+
+function validNumber(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
-function formatPercent(value: number) {
-  const rounded = Math.round(value * 10) / 10;
-  return `${Number.isInteger(rounded) ? rounded.toFixed(0) : rounded.toFixed(1)}%`;
-}
-
-function formatList(items: string[]) {
-  if (items.length <= 1) {
-    return items[0] ?? '';
-  }
-  return `${items.slice(0, -1).join(', ')} and ${items.at(-1)}`;
-}
-
-function capitalizeWords(value: string) {
-  return value.replace(/\b\w/g, (letter) => letter.toUpperCase());
+function dedupeObservations(values: string[]) {
+  const seen = new Set<string>();
+  return values.filter((value) => {
+    const key = value.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((word) => word && !['a', 'an', 'and', 'are', 'is', 'the'].includes(word))
+      .sort()
+      .join(' ');
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }

@@ -86,6 +86,9 @@ from app.services.sector_dashboard import build_sector_dashboard
 from app.services.sectors import build_market_sectors
 from app.services.sectors_summary import build_sectors_summary
 from app.sector_snapshots.service import get_sector_snapshot_service
+from app.theme_snapshots.readers import rotation_payload as theme_rotation_payload, snapshot_payload as theme_snapshot_payload
+from app.theme_snapshots.service import get_theme_snapshot_service
+from app.themes.identifiers import normalize_theme_id
 from app.services.stock_rating import build_stock_ratings
 from app.services.support_resistance import calculate_support_resistance
 from app.services.trendline import analyze_trendline, analyze_watchlist_trendlines
@@ -172,6 +175,64 @@ async def get_market_sector_dashboard() -> dict[str, object]:
     """Return normalized sector and theme heatmap/rotation data."""
     record_client_activity("sectors")
     return await run_in_threadpool(build_sector_dashboard)
+
+
+@router.get("/market/themes/snapshot/latest")
+async def get_latest_theme_snapshot() -> dict:
+    return theme_snapshot_payload(get_theme_snapshot_service().latest())
+
+
+@router.get("/market/themes/history")
+async def get_theme_snapshot_history(days: int = Query(default=90, ge=1, le=260)) -> dict:
+    service = get_theme_snapshot_service(); latest = service.latest()
+    return {"snapshot_id": latest.snapshot_id if latest else None, "market_date": latest.market_date if latest else None, "items": service.history(days), "limitation": "History contains only immutable ThemeSnapshots actually published; no historical values are fabricated."}
+
+
+@router.get("/market/themes/rotation")
+async def get_theme_rotation(interval: str = Query(default="1m")) -> dict:
+    try: return theme_rotation_payload(get_theme_snapshot_service().latest(), interval)
+    except ValueError: return {**theme_snapshot_payload(None), "interval": interval.upper(), "series": [], "warnings": ["Unsupported Theme Rotation interval."]}
+
+
+@router.get("/market/themes/alerts")
+async def get_theme_alerts() -> dict:
+    snapshot = get_theme_snapshot_service().latest()
+    return {"snapshot_id": snapshot.snapshot_id if snapshot else None, "market_date": snapshot.market_date if snapshot else None, "source_state": snapshot.source_state if snapshot else "unavailable", "items": list(snapshot.alerts) if snapshot else []}
+
+
+@router.get("/market/themes/overlap")
+async def get_theme_overlap() -> dict:
+    snapshot = get_theme_snapshot_service().latest()
+    return {"snapshot_id": snapshot.snapshot_id if snapshot else None, "market_date": snapshot.market_date if snapshot else None, "source_state": snapshot.source_state if snapshot else "unavailable", "items": list(snapshot.overlap_matrix) if snapshot else [], "warning": "Overlap is disclosed and is not independent confirmation."}
+
+
+@router.get("/market/themes/status")
+async def get_theme_status() -> dict:
+    return get_theme_snapshot_service().status()
+
+
+@router.post("/market/themes/snapshot/refresh")
+async def refresh_theme_snapshot() -> dict:
+    snapshot = await run_in_threadpool(get_theme_snapshot_service().build_now)
+    return theme_snapshot_payload(snapshot)
+
+
+@router.get("/market/themes")
+async def get_market_themes() -> dict:
+    return theme_snapshot_payload(get_theme_snapshot_service().latest())
+
+
+@router.get("/market/themes/{theme_id}")
+async def get_theme_detail(theme_id: str) -> dict:
+    snapshot = get_theme_snapshot_service().latest()
+    try:
+        canonical_id = normalize_theme_id(theme_id)
+    except ValueError:
+        canonical_id = None
+    row = next((row for row in snapshot.rows if row.get("theme_id") == canonical_id) if snapshot and canonical_id else None, None)
+    if row is None: return {**theme_snapshot_payload(None), "theme": None, "requested_theme_id": theme_id, "canonical_theme_id": canonical_id}
+    matching_overlap = [item for item in snapshot.overlap_matrix if canonical_id in {item.get("left_theme_id"), item.get("right_theme_id")}]
+    return {"snapshot_id": snapshot.snapshot_id, "market_date": snapshot.market_date, "source_state": snapshot.source_state, "status": snapshot.status, "requested_theme_id": theme_id, "canonical_theme_id": canonical_id, "theme": row, "alerts": [item for item in snapshot.alerts if item.get("theme_id") == canonical_id], "overlap": matching_overlap, "historical_disclosure": "Historical results use the current reviewed constituent basket unless historical membership versions are available."}
 
 
 @router.get("/market/sectors/{sector_id}")

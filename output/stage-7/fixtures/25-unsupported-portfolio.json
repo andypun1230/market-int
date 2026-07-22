@@ -1,0 +1,538 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 25,
+    "caseId": "unsupported-portfolio",
+    "title": "Unsupported portfolio question",
+    "request": {
+      "message": "How concentrated is my portfolio?",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "portfolio-provider-unavailable",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "PORTFOLIO_QUERY",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "portfolio"
+      ],
+      "optionalAgents": [],
+      "entities": [],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "unavailable"
+      ],
+      "allowedFreshnessStates": [
+        "unavailable"
+      ],
+      "challengeMode": false,
+      "actions": [],
+      "requiredResponseText": [
+        "Portfolio holdings are not yet connected. I can analyse your watchlist and saved themes instead."
+      ],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "exact_honest_portfolio_fallback",
+        "watchlist_not_holdings",
+        "no_exposure_or_concentration_inference"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-25-unsupported-portfolio",
+    "planId": "plan-stage7-unsupported-portfolio",
+    "threadId": "stage7-thread-unsupported-portfolio",
+    "startedAt": "2026-07-22T05:09:08.495870+00:00",
+    "completedAt": "2026-07-22T05:09:08.496606+00:00",
+    "elapsedMs": 0.66,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-unsupported-portfolio",
+      "intent": "PORTFOLIO_QUERY",
+      "subIntent": "portfolio_intelligence",
+      "entities": [],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": true,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.98,
+      "requiredAgents": [
+        "portfolio"
+      ],
+      "optionalAgents": [],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-unsupported-portfolio",
+      "intentId": "intent-stage7-unsupported-portfolio",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-portfolio",
+          "order": 1,
+          "agent": "portfolio",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 1000,
+          "purpose": "Collect validated portfolio evidence."
+        }
+      ],
+      "requiredAgents": [
+        "portfolio"
+      ],
+      "optionalAgents": [],
+      "dependencies": {
+        "step-1-portfolio": []
+      },
+      "requiredEntities": [],
+      "evidenceRequirements": [
+        {
+          "category": "portfolio",
+          "required": false,
+          "entities": [],
+          "minimumItems": 0
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "watchlist"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 1200,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "portfolio",
+        "status": "unavailable",
+        "observations": [],
+        "conclusions": [],
+        "contradictions": [],
+        "metrics": {},
+        "levels": [],
+        "sourceReferences": [],
+        "evidence": [],
+        "freshness": {
+          "state": "unavailable",
+          "marketDate": null,
+          "generatedAt": null,
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 0.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": [
+            "Portfolio holdings are not connected."
+          ]
+        },
+        "deepLinkTargets": [
+          "watchlist"
+        ],
+        "warnings": [
+          "Portfolio holdings are not connected."
+        ],
+        "missingData": [
+          "Portfolio holdings are not connected."
+        ],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "Portfolio holdings are not yet connected. I can analyse your watchlist and saved themes instead.",
+      "stance": "insufficient_evidence",
+      "confidenceLabel": "high",
+      "thesis": "Portfolio holdings are not yet connected. I can analyse your watchlist and saved themes instead.",
+      "supportingFactors": [],
+      "contradictoryFactors": [],
+      "keyRisks": [],
+      "confirmationConditions": [],
+      "invalidationConditions": [],
+      "missingEvidence": [
+        "Portfolio holdings are not connected."
+      ],
+      "personalizationNote": "Saved items are not treated as owned positions.",
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "watchlist"
+      ],
+      "disclaimerClass": "portfolio_data_unavailable"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-25-unsupported-portfolio",
+      "planId": "plan-stage7-unsupported-portfolio",
+      "threadId": "stage7-thread-unsupported-portfolio",
+      "status": "unavailable",
+      "answer": "Portfolio holdings are not yet connected. I can analyse your watchlist and saved themes instead.\n\nMissing evidence: Portfolio holdings are not connected.",
+      "answerSections": {
+        "directAnswer": "Portfolio holdings are not yet connected. I can analyse your watchlist and saved themes instead.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [],
+        "mainCaution": "Portfolio holdings are not connected.",
+        "whatWouldConfirm": [],
+        "whatWouldInvalidate": [],
+        "whatWouldChange": []
+      },
+      "grounding": {
+        "contextUsed": [],
+        "sourceState": "unavailable",
+        "generatedAt": "2026-07-22T05:09:08.496395+00:00",
+        "evidenceIds": []
+      },
+      "suggestedFollowUps": [],
+      "confidence": 25,
+      "answerConfidence": {
+        "level": "high",
+        "reasons": [
+          "Intent confidence: 98%.",
+          "Evidence freshness: unavailable.",
+          "Some required evidence is unavailable."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-unsupported-portfolio",
+        "intent": "PORTFOLIO_QUERY",
+        "subIntent": "portfolio_intelligence",
+        "entities": [],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": true,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.98,
+        "requiredAgents": [
+          "portfolio"
+        ],
+        "optionalAgents": [],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-unsupported-portfolio",
+        "intentId": "intent-stage7-unsupported-portfolio",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-portfolio",
+            "order": 1,
+            "agent": "portfolio",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 1000,
+            "purpose": "Collect validated portfolio evidence."
+          }
+        ],
+        "requiredAgents": [
+          "portfolio"
+        ],
+        "optionalAgents": [],
+        "dependencies": {
+          "step-1-portfolio": []
+        },
+        "requiredEntities": [],
+        "evidenceRequirements": [
+          {
+            "category": "portfolio",
+            "required": false,
+            "entities": [],
+            "minimumItems": 0
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "watchlist"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 1200,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "Portfolio holdings are not yet connected. I can analyse your watchlist and saved themes instead.",
+        "stance": "insufficient_evidence",
+        "confidenceLabel": "high",
+        "thesis": "Portfolio holdings are not yet connected. I can analyse your watchlist and saved themes instead.",
+        "supportingFactors": [],
+        "contradictoryFactors": [],
+        "keyRisks": [],
+        "confirmationConditions": [],
+        "invalidationConditions": [],
+        "missingEvidence": [
+          "Portfolio holdings are not connected."
+        ],
+        "personalizationNote": "Saved items are not treated as owned positions.",
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "watchlist"
+        ],
+        "disclaimerClass": "portfolio_data_unavailable"
+      },
+      "evidence": [],
+      "actions": [
+        {
+          "actionId": "action-watchlist-default",
+          "label": "Open Watchlist",
+          "actionType": "navigate",
+          "destinationId": "watchlist",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": null,
+          "parameters": {}
+        }
+      ],
+      "warnings": [
+        "Portfolio holdings are not connected.",
+        "Evidence freshness is unavailable; conclusions are constrained accordingly."
+      ],
+      "freshnessSummary": {
+        "overallState": "unavailable",
+        "marketDates": [],
+        "generatedTimestamps": [],
+        "currentCount": 0,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 1,
+        "testCount": 0,
+        "warnings": [
+          "Portfolio holdings are not connected."
+        ]
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "portfolio": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": [
+        "portfolio:unavailable"
+      ]
+    },
+    "actions": [
+      {
+        "actionId": "action-watchlist-default",
+        "label": "Open Watchlist",
+        "actionType": "navigate",
+        "destinationId": "watchlist",
+        "route": "/watchlist",
+        "tab": null,
+        "subTab": null,
+        "sectionId": null,
+        "entity": null,
+        "highlightTarget": null,
+        "parameters": {}
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed PORTFOLIO_QUERY; expected PORTFOLIO_QUERY."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['portfolio']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status unavailable."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness unavailable."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "not_applicable",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "passed",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "portfolio_fallback_exact",
+          "status": "passed",
+          "detail": "The exact honest portfolio fallback was returned."
+        },
+        {
+          "check": "assertion:exact_honest_portfolio_fallback",
+          "status": "passed",
+          "detail": "The exact honest portfolio fallback is returned."
+        },
+        {
+          "check": "assertion:watchlist_not_holdings",
+          "status": "passed",
+          "detail": "The fallback distinguishes watchlist membership from holdings."
+        },
+        {
+          "check": "assertion:no_exposure_or_concentration_inference",
+          "status": "passed",
+          "detail": "No exposure or concentration value is inferred."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

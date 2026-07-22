@@ -6,8 +6,8 @@
   "duplicate_requests": [],
   "errors": [],
   "failures": [],
-  "first_usable_render_readiness_ms": 20,
-  "full_primary_analysis_readiness_ms": 20,
+  "first_usable_render_readiness_ms": 32,
+  "full_primary_analysis_readiness_ms": 32,
   "history_requests_by_window": {
     "chart_period_switch": [],
     "selected": [
@@ -22,8 +22,8 @@
   },
   "refresh_duration_ms": null,
   "restart_persistence": {
-    "after_snapshot_id": "stock-validation-1784456429",
-    "before_snapshot_id": "stock-validation-1784456429",
+    "after_snapshot_id": "stock-validation-1784492462",
+    "before_snapshot_id": "stock-validation-1784492462",
     "same_snapshot_id": true
   },
   "section_statuses": {
@@ -50,9 +50,18 @@
   "timeouts": [],
   "warm_reads": [
     {
-      "elapsed_ms": 20,
+      "elapsed_ms": 32,
       "path": "/market/stock-analysis/NVDA",
-      "snapshot_id": "stock-validation-1784456429",
+      "snapshot_id": "stock-validation-1784492462",
+      "snapshot_status": "partial",
+      "source_state": "test",
+      "status_code": 200,
+      "target_ms": 500
+    },
+    {
+      "elapsed_ms": 5,
+      "path": "/market/stock-snapshot/NVDA",
+      "snapshot_id": "stock-validation-1784492462",
       "snapshot_status": "partial",
       "source_state": "test",
       "status_code": 200,
@@ -60,17 +69,8 @@
     },
     {
       "elapsed_ms": 4,
-      "path": "/market/stock-snapshot/NVDA",
-      "snapshot_id": "stock-validation-1784456429",
-      "snapshot_status": "partial",
-      "source_state": "test",
-      "status_code": 200,
-      "target_ms": 500
-    },
-    {
-      "elapsed_ms": 3,
       "path": "/market/stock-snapshot/NVDA/status",
-      "snapshot_id": "stock-validation-1784456429",
+      "snapshot_id": "stock-validation-1784492462",
       "snapshot_status": "partial",
       "source_state": null,
       "status_code": 200,
@@ -92,7 +92,7 @@
       "trend": "complete",
       "volume": "complete"
     },
-    "snapshot_id": "stock-validation-1784456429",
+    "snapshot_id": "stock-validation-1784492462",
     "status": "partial"
   }
 }

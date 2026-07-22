@@ -24,6 +24,7 @@ from app.services.ai_context import build_market_ai_context, build_stock_ai_cont
 from app.services.analysis import build_market_analysis
 from app.services.market_data_repository import get_market_data_repository
 from app.services.report import build_daily_report
+from app.services.theme_intelligence import build_theme_intelligence_context
 from app.services.theme_provenance import is_live_theme_intelligence
 from app.stock_snapshots.service import get_stock_snapshot_service, reset_stock_snapshot_service
 
@@ -193,15 +194,51 @@ def audit_watchlist(matrix: dict[str, Any], client: TestClient, endpoints: dict[
 
 def audit_themes(matrix: dict[str, Any]) -> None:
     industry = build_market_analysis().get("industry_groups") or {}
-    provenance = industry.get("theme_provenance") or {}
-    items = industry.get("items") or []
-    frontend = (REPO_ROOT / "frontend/src/app/(tabs)/sectors.tsx").read_text()
-    ok = (
-        not is_live_theme_intelligence(provenance)
-        and all(not is_live_theme_intelligence(item.get("provenance")) for item in items if isinstance(item, dict))
-        and "Live theme rotation is not yet available." in frontend
+    static_provenance = industry.get("theme_provenance") or {}
+    static_items = industry.get("items") or []
+    live = build_theme_intelligence_context()
+    live_items = live.get("items") or []
+
+    # Industry-group preferences remain a separately labelled static surface.
+    # A reviewed ThemeSnapshot may now coexist beside it for the approved pilot,
+    # but it must never be silently represented as one of those static items.
+    static_boundary_ok = (
+        not is_live_theme_intelligence(static_provenance)
+        and all(
+            not is_live_theme_intelligence(item.get("provenance"))
+            for item in static_items
+            if isinstance(item, dict)
+        )
     )
-    add(matrix, "theme_intelligence_quarantine", ok, {"provenance": provenance, "item_count": len(items)}, "Keep static strategy preferences separate from live Theme Intelligence until Phase 4.4D.")
+    if live.get("available"):
+        live_boundary_ok = (
+            live.get("source_state") == "live"
+            and bool(live.get("snapshot_id"))
+            and bool(live_items)
+            and all(
+                ((item.get("provenance") or {}).get("source_state") == "live")
+                for item in live_items
+                if isinstance(item, dict)
+            )
+        )
+    else:
+        live_boundary_ok = True
+    add(
+        matrix,
+        "theme_intelligence_boundary",
+        static_boundary_ok and live_boundary_ok,
+        {
+            "static_provenance": static_provenance,
+            "static_item_count": len(static_items),
+            "live_theme": {
+                "available": live.get("available"),
+                "snapshot_id": live.get("snapshot_id"),
+                "source_state": live.get("source_state"),
+                "item_count": len(live_items),
+            },
+        },
+        "Keep static strategy preferences separately labelled; allow only a published, reviewed live ThemeSnapshot alongside them.",
+    )
 
 
 def audit_report_and_copilot(matrix: dict[str, Any], client: TestClient, endpoints: dict[str, Any], *, include_report: bool, include_copilot: bool, watchlist: dict[str, Any]) -> None:
@@ -209,13 +246,16 @@ def audit_report_and_copilot(matrix: dict[str, Any], client: TestClient, endpoin
         market_snapshot, market_endpoint = get_json(client, "/market/snapshot/latest")
         breadth, breadth_endpoint = get_json(client, "/market/breadth")
         sector_snapshot, sector_endpoint = get_json(client, "/market/sectors/snapshot/latest")
+        theme_snapshot, theme_endpoint = get_json(client, "/market/themes/snapshot/latest")
         endpoints[market_endpoint["path"]] = market_endpoint
         endpoints[breadth_endpoint["path"]] = breadth_endpoint
         endpoints[sector_endpoint["path"]] = sector_endpoint
+        endpoints[theme_endpoint["path"]] = theme_endpoint
         pre_report_canonical_ids = {
             "market": market_snapshot.get("snapshot_id"),
             "breadth": (breadth.get("market") or {}).get("snapshot_id"),
             "sector": sector_snapshot.get("snapshot_id"),
+            "theme": theme_snapshot.get("snapshot_id"),
         }
         payload, endpoint = get_json(client, "/report/daily")
         endpoints[endpoint["path"]] = endpoint
@@ -223,18 +263,21 @@ def audit_report_and_copilot(matrix: dict[str, Any], client: TestClient, endpoin
         market_snapshot, market_endpoint = get_json(client, "/market/snapshot/latest")
         breadth, breadth_endpoint = get_json(client, "/market/breadth")
         sector_snapshot, sector_endpoint = get_json(client, "/market/sectors/snapshot/latest")
+        theme_snapshot, theme_endpoint = get_json(client, "/market/themes/snapshot/latest")
         endpoints[market_endpoint["path"]] = market_endpoint
         endpoints[breadth_endpoint["path"]] = breadth_endpoint
         endpoints[sector_endpoint["path"]] = sector_endpoint
+        endpoints[theme_endpoint["path"]] = theme_endpoint
         endpoint_snapshot_ids = (payload.get("semantic_context") or {}).get("snapshot_ids") or {}
         snapshot_ids = report.semantic_context.get("snapshot_ids", {}) if report.semantic_context else {}
         canonical_ids = {
             "market": market_snapshot.get("snapshot_id"),
             "breadth": (breadth.get("market") or {}).get("snapshot_id"),
             "sector": sector_snapshot.get("snapshot_id"),
+            "theme": theme_snapshot.get("snapshot_id"),
         }
         ok = endpoint["status"] == 200 and endpoint_snapshot_ids == canonical_ids and all(snapshot_ids.get(key) for key in ("market", "breadth", "sector"))
-        add(matrix, "report_snapshot_consistency", ok, {"http_report_id": payload.get("report_id"), "report_id": report.report_id, "pre_report_canonical_ids": pre_report_canonical_ids, "endpoint_snapshot_ids": endpoint_snapshot_ids, "canonical_ids": canonical_ids, "rebuilt_snapshot_ids": snapshot_ids}, "Build the report from the canonical Market, Breadth, and Sector snapshots only.")
+        add(matrix, "report_snapshot_consistency", ok, {"http_report_id": payload.get("report_id"), "report_id": report.report_id, "pre_report_canonical_ids": pre_report_canonical_ids, "endpoint_snapshot_ids": endpoint_snapshot_ids, "canonical_ids": canonical_ids, "rebuilt_snapshot_ids": snapshot_ids}, "Build the report from the canonical Market, Breadth, Sector, and published Theme snapshots.")
     if include_copilot:
         first_market = build_market_ai_context(build_market_analysis())
         second_market = build_market_ai_context(build_market_analysis())

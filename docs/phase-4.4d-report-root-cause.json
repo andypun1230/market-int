@@ -1,0 +1,72 @@
+{
+  "classification": "D",
+  "classification_label": "PDF template ignoring valid JSON Theme data",
+  "screenshot_report": {
+    "report_id": "2026-07-17-9218a5db",
+    "status": "current pre-store capture, not an old immutable pre-pilot report",
+    "theme_snapshot_id": "theme-2026-07-17-f8ca1be84c",
+    "json_theme_rows": [
+      {"display_name": "Cybersecurity", "rank": 1, "classification": "Leading", "absolute_composite_score": 100.0},
+      {"display_name": "Memory & Storage", "rank": 2, "classification": "Improving", "absolute_composite_score": 62.16}
+    ],
+    "pdf_problem": "Hardcoded unavailable placeholders ignored valid report JSON.",
+    "legacy_report_cache_key": null
+  },
+  "root_cause": {
+    "json_hydration": "Live ThemeSnapshot was present.",
+    "pdf_renderer": "Theme panels and leadership narrative used hardcoded unavailable copy.",
+    "frontend": "Generic PDF URL was not pinned to report_id.",
+    "persistence": "No immutable Daily Report storage or latest pointer existed.",
+    "secondary_live_read_issue": "The interactive narrative seeded the shared analysis cache during a report no-fetch read."
+  },
+  "resolution": {
+    "report_schema_version": "daily-report-v14",
+    "report_pdf_format_version": "daily-report-pdf-v4",
+    "identity_inputs": ["market_snapshot_id", "breadth_snapshot_id", "sector_snapshot_id", "theme_snapshot_id", "report_schema_version", "report_pdf_format_version"],
+    "storage": "SQLite immutable payload and write-once PDF with a separate latest pointer.",
+    "frontend": "Pinned /report/daily/pdf?report_id=<immutable-id> URL; legacy generic URLs migrate stale.",
+    "provider_isolation": "Report reads permit captured values only, suppress stale refresh tasks, and avoid the shared analysis cache.",
+    "test_isolation": "Visual PDF tests use a unique temporary Daily Report SQLite path and restore environment state."
+  },
+  "final_live_report": {
+    "report_id": "daily-2026-07-17-b74b5db9e204",
+    "generated_at": "2026-07-20T05:43:16.514953+00:00",
+    "market_date": "2026-07-17",
+    "snapshot_ids": {
+      "market": "market-20260720T054032Z-c06d8b2b",
+      "breadth": "breadth-sp100-v20260718-2026-07-17-56a0bae1cb",
+      "sector": "sector-sp100-v20260718-2026-07-17-5397be31d6",
+      "theme": "theme-2026-07-17-f8ca1be84c"
+    },
+    "cache_key": "report:daily:daily-report-v14:daily-report-pdf-v4:json:market-20260720T054032Z-c06d8b2b:breadth-sp100-v20260718-2026-07-17-56a0bae1cb:sector-sp100-v20260718-2026-07-17-5397be31d6:theme-2026-07-17-f8ca1be84c",
+    "active_theme_count": 2,
+    "themes": [
+      {"display_name": "Cybersecurity", "rank": 1, "classification": "Leading", "absolute_composite_score": 100.0},
+      {"display_name": "Memory & Storage", "rank": 2, "classification": "Improving", "absolute_composite_score": 62.16}
+    ],
+    "provider_metrics": {
+      "before": {"provider_calls": 16, "background_refreshes": 16},
+      "after_json": {"provider_calls": 16, "background_refreshes": 16},
+      "after_pdf": {"provider_calls": 16, "background_refreshes": 16},
+      "delta": {"provider_calls": 0, "background_refreshes": 0}
+    },
+    "pdf": {
+      "path": "backend/output/pdf/daily_market_report_daily-2026-07-17-b74b5db9e204.pdf",
+      "page_count": 7,
+      "theme_page": 3,
+      "visual_qa_image": "backend/tmp/phase-4.4d-report-final-render/latest-theme-page-3.png",
+      "contains_cybersecurity": true,
+      "contains_memory_storage": true,
+      "contains_theme_rotation": true,
+      "contains_theme_snapshot": true,
+      "contains_methodology_disclosure": true,
+      "contains_legacy_placeholder": false
+    }
+  },
+  "immutability": {
+    "existing_artifacts_rewritten": false,
+    "same_identity_returns_original_payload": true,
+    "latest_pointer_is_separate": true,
+    "temporary_test_database_deleted": true
+  }
+}

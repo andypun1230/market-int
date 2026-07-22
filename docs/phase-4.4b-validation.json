@@ -63,5 +63,5 @@
   "provider_calls_during_warm_read": 0,
   "snapshot_id": "breadth-sp100-test-v1-2026-07-17-71bf895808",
   "universe": "sp100-test-v1",
-  "warm_read_elapsed_ms": 27
+  "warm_read_elapsed_ms": 41
 }

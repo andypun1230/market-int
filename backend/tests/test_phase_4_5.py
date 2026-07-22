@@ -1,5 +1,6 @@
 import os
 import unittest
+from unittest.mock import patch
 
 from app.providers.cache import clear_provider_cache, get_provider_cache_status
 from app.providers.intelligence_models import OptionContractData, OptionsChainData, SourceMetadata
@@ -7,12 +8,31 @@ from app.providers.intelligence_models import OptionContractData, OptionsChainDa
 
 class Phase45InstitutionalIntelligenceTests(unittest.TestCase):
     def setUp(self) -> None:
-        os.environ["DATA_PROVIDER"] = "mock"
-        os.environ["QUOTE_PROVIDER"] = "mock"
-        os.environ["HISTORY_PROVIDER"] = "mock"
-        os.environ["OPTIONS_PROVIDER"] = "mock"
-        os.environ["TRADE_FLOW_PROVIDER"] = "mock"
+        self._provider_environment = patch.dict(
+            os.environ,
+            {
+                "DATA_PROVIDER": "mock",
+                "MARKET_DATA_PROVIDER": "mock",
+                "QUOTE_DATA_PROVIDER": "mock",
+                "HISTORY_DATA_PROVIDER": "mock",
+                "QUOTE_PROVIDER": "mock",
+                "HISTORY_PROVIDER": "mock",
+                "OPTIONS_PROVIDER": "mock",
+                "TRADE_FLOW_PROVIDER": "mock",
+            },
+        )
+        self._provider_environment.start()
+        self.addCleanup(self._restore_provider_environment)
         clear_provider_cache()
+
+    def _restore_provider_environment(self) -> None:
+        from app.services.history_request_coordinator import reset_history_request_coordinator
+        from app.services.market_data_repository import reset_market_data_repository
+
+        self._provider_environment.stop()
+        clear_provider_cache()
+        reset_history_request_coordinator()
+        reset_market_data_repository()
 
     def test_sentiment_component_calculation_and_mixed_put_call(self) -> None:
         from app.services.market_sentiment import build_market_sentiment_dashboard

@@ -1,0 +1,26 @@
+{
+  "already_completed": 0,
+  "checkpoint": "../tmp/phase-4.4d-pilot-history-checkpoint.json",
+  "elapsed_seconds": 9.599,
+  "failed": [],
+  "inserted_bars": 0,
+  "seeded": 14,
+  "strict_live": true,
+  "symbols": [
+    "CHKP",
+    "CRWD",
+    "FTNT",
+    "MRVL",
+    "MU",
+    "NTAP",
+    "OKTA",
+    "P",
+    "PANW",
+    "S",
+    "SNDK",
+    "STX",
+    "WDC",
+    "ZS"
+  ],
+  "updated_bars": 168
+}

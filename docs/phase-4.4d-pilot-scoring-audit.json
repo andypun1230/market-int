@@ -1,0 +1,173 @@
+{
+  "rows": [
+    {
+      "absolute_weighted_composite": 100.0,
+      "component_contributions": {
+        "breadth": {
+          "component_score": 100.0,
+          "weight": 0.2,
+          "weighted_contribution": 20.0
+        },
+        "concentration_quality": {
+          "component_score": 100,
+          "weight": 0.1,
+          "weighted_contribution": 10.0
+        },
+        "momentum": {
+          "component_score": 100.0,
+          "weight": 0.25,
+          "weighted_contribution": 25.0
+        },
+        "participation": {
+          "component_score": 100.0,
+          "weight": 0.2,
+          "weighted_contribution": 20.0
+        },
+        "relative_strength": {
+          "component_score": 100.0,
+          "weight": 0.25,
+          "weighted_contribution": 25.0
+        }
+      },
+      "cross_sectional_percentile": null,
+      "displayed_score": 100.0,
+      "participation_definition": "60% positive-return member participation plus 40% positive absolute-contribution share; distinct from EMA50 breadth.",
+      "rank": 1,
+      "score_semantics": {
+        "component_scores": {
+          "breadth": 100.0,
+          "concentration_quality": 100,
+          "momentum": 100.0,
+          "participation": 100.0,
+          "relative_strength": 100.0
+        },
+        "cross_sectional_percentile": null,
+        "display_label": "Absolute composite score",
+        "displayed_score_type": "absolute_weighted_composite",
+        "formula_version": "theme-leadership-composite-v1",
+        "interpretation": "The score is the audited weighted sum of component scores. Rank is separate and only relative to the active reviewed pilot themes.",
+        "relative_rank": 1,
+        "relative_rank_scope": "2 active reviewed pilot themes",
+        "scale": "0-100",
+        "score_type": "absolute_weighted_composite",
+        "weighted_contributions": {
+          "breadth": {
+            "score": 100.0,
+            "weight": 0.2,
+            "weighted_contribution": 20.0
+          },
+          "concentration_quality": {
+            "score": 100,
+            "weight": 0.1,
+            "weighted_contribution": 10.0
+          },
+          "momentum": {
+            "score": 100.0,
+            "weight": 0.25,
+            "weighted_contribution": 25.0
+          },
+          "participation": {
+            "score": 100.0,
+            "weight": 0.2,
+            "weighted_contribution": 20.0
+          },
+          "relative_strength": {
+            "score": 100.0,
+            "weight": 0.25,
+            "weighted_contribution": 25.0
+          }
+        }
+      },
+      "theme_id": "cybersecurity",
+      "valid": true
+    },
+    {
+      "absolute_weighted_composite": 62.16,
+      "component_contributions": {
+        "breadth": {
+          "component_score": 14.2857,
+          "weight": 0.2,
+          "weighted_contribution": 2.8571
+        },
+        "concentration_quality": {
+          "component_score": 75,
+          "weight": 0.1,
+          "weighted_contribution": 7.5
+        },
+        "momentum": {
+          "component_score": 100.0,
+          "weight": 0.25,
+          "weighted_contribution": 25.0
+        },
+        "participation": {
+          "component_score": 9.03,
+          "weight": 0.2,
+          "weighted_contribution": 1.806
+        },
+        "relative_strength": {
+          "component_score": 100.0,
+          "weight": 0.25,
+          "weighted_contribution": 25.0
+        }
+      },
+      "cross_sectional_percentile": null,
+      "displayed_score": 62.16,
+      "participation_definition": "60% positive-return member participation plus 40% positive absolute-contribution share; distinct from EMA50 breadth.",
+      "rank": 2,
+      "score_semantics": {
+        "component_scores": {
+          "breadth": 14.2857,
+          "concentration_quality": 75,
+          "momentum": 100.0,
+          "participation": 9.03,
+          "relative_strength": 100.0
+        },
+        "cross_sectional_percentile": null,
+        "display_label": "Absolute composite score",
+        "displayed_score_type": "absolute_weighted_composite",
+        "formula_version": "theme-leadership-composite-v1",
+        "interpretation": "The score is the audited weighted sum of component scores. Rank is separate and only relative to the active reviewed pilot themes.",
+        "relative_rank": 2,
+        "relative_rank_scope": "2 active reviewed pilot themes",
+        "scale": "0-100",
+        "score_type": "absolute_weighted_composite",
+        "weighted_contributions": {
+          "breadth": {
+            "score": 14.2857,
+            "weight": 0.2,
+            "weighted_contribution": 2.8571
+          },
+          "concentration_quality": {
+            "score": 75,
+            "weight": 0.1,
+            "weighted_contribution": 7.5
+          },
+          "momentum": {
+            "score": 100.0,
+            "weight": 0.25,
+            "weighted_contribution": 25.0
+          },
+          "participation": {
+            "score": 9.03,
+            "weight": 0.2,
+            "weighted_contribution": 1.806
+          },
+          "relative_strength": {
+            "score": 100.0,
+            "weight": 0.25,
+            "weighted_contribution": 25.0
+          }
+        }
+      },
+      "theme_id": "memory_storage",
+      "valid": true
+    }
+  ],
+  "snapshot_id": "theme-2026-07-17-f8ca1be84c",
+  "status": "pass",
+  "themes": [
+    "cybersecurity",
+    "memory_storage"
+  ],
+  "valid": true
+}

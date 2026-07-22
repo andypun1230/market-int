@@ -1,0 +1,735 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 1,
+    "caseId": "market-state",
+    "title": "Market-state question",
+    "request": {
+      "message": "What is the market condition?",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "durable-cached",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "MARKET_STATE",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "market"
+      ],
+      "optionalAgents": [],
+      "entities": [],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "complete"
+      ],
+      "allowedFreshnessStates": [
+        "cached",
+        "delayed",
+        "live"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "market_overview",
+          "route": "/market",
+          "tab": "overview",
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": null
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "grounded_factual_claims",
+        "freshness_visible",
+        "minimal_plan"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-01-market-state",
+    "planId": "plan-stage7-market-state",
+    "threadId": "stage7-thread-market-state",
+    "startedAt": "2026-07-22T05:09:08.453608+00:00",
+    "completedAt": "2026-07-22T05:09:08.457904+00:00",
+    "elapsedMs": 3.78,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-market-state",
+      "intent": "MARKET_STATE",
+      "subIntent": "current_posture",
+      "entities": [],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.94,
+      "requiredAgents": [
+        "market"
+      ],
+      "optionalAgents": [
+        "breadth",
+        "leadership",
+        "risk"
+      ],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-market-state",
+      "intentId": "intent-stage7-market-state",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-market",
+          "order": 1,
+          "agent": "market",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 2800,
+          "purpose": "Collect validated market evidence."
+        }
+      ],
+      "requiredAgents": [
+        "market"
+      ],
+      "optionalAgents": [
+        "breadth",
+        "leadership",
+        "risk"
+      ],
+      "dependencies": {
+        "step-1-market": []
+      },
+      "requiredEntities": [],
+      "evidenceRequirements": [
+        {
+          "category": "market",
+          "required": true,
+          "entities": [],
+          "minimumItems": 1
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "market_posture",
+      "deepLinkRequirements": [
+        "market_overview"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 3000,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "market",
+        "status": "complete",
+        "observations": [
+          "The market fixture adapter returned a reviewed durable observation."
+        ],
+        "conclusions": [
+          "The market evidence remains conditional on its cited source."
+        ],
+        "contradictions": [],
+        "metrics": {},
+        "levels": [
+          {
+            "label": "confirmation condition",
+            "value": "reviewed confirmation threshold",
+            "unit": null,
+            "evidenceId": "stage7:market-state:market:1"
+          }
+        ],
+        "sourceReferences": [
+          {
+            "sourceId": "stage7:market-state:market",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_market_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:durable-cached"
+          }
+        ],
+        "evidence": [
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:market-state:market:1",
+            "category": "market",
+            "entity": "US market",
+            "metric": "market posture",
+            "value": "constructive reviewed signal",
+            "unit": null,
+            "currentState": "constructive reviewed signal",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "engine_conclusion",
+            "source": {
+              "sourceId": "stage7:market-state:market",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_market_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:durable-cached"
+            },
+            "freshness": {
+              "state": "cached",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [
+              "claim:market-state:support"
+            ],
+            "contradictsClaimIds": []
+          }
+        ],
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "market_overview"
+        ],
+        "warnings": [],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:market-state:market:1",
+        "category": "market",
+        "entity": "US market",
+        "metric": "market posture",
+        "value": "constructive reviewed signal",
+        "unit": null,
+        "currentState": "constructive reviewed signal",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "engine_conclusion",
+        "source": {
+          "sourceId": "stage7:market-state:market",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_market_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:durable-cached"
+        },
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [
+          "claim:market-state:support"
+        ],
+        "contradictsClaimIds": []
+      }
+    ],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "The validated engine evidence supports a constructive market posture.",
+      "stance": "constructive",
+      "confidenceLabel": "limited",
+      "thesis": "The validated engine evidence supports a constructive market posture.",
+      "supportingFactors": [
+        {
+          "statement": "US market: market posture is constructive reviewed signal.",
+          "evidenceIds": [
+            "stage7:market-state:market:1"
+          ]
+        }
+      ],
+      "contradictoryFactors": [],
+      "keyRisks": [],
+      "confirmationConditions": [
+        {
+          "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+          "evidenceIds": [
+            "stage7:market-state:market:1"
+          ]
+        }
+      ],
+      "invalidationConditions": [],
+      "missingEvidence": [],
+      "personalizationNote": null,
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "market_overview"
+      ],
+      "disclaimerClass": "educational_market_decision_support"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-01-market-state",
+      "planId": "plan-stage7-market-state",
+      "threadId": "stage7-thread-market-state",
+      "status": "complete",
+      "answer": "The validated engine evidence supports a constructive market posture.\n\nWhy: US market: market posture is constructive reviewed signal.",
+      "answerSections": {
+        "directAnswer": "The validated engine evidence supports a constructive market posture.",
+        "why": [
+          "US market: market posture is constructive reviewed signal."
+        ],
+        "evidenceFor": [
+          "US market: market posture is constructive reviewed signal."
+        ],
+        "evidenceAgainst": [],
+        "mainCaution": null,
+        "whatWouldConfirm": [
+          "The validated confirmation condition is reviewed confirmation threshold."
+        ],
+        "whatWouldInvalidate": [],
+        "whatWouldChange": [
+          "The validated confirmation condition is reviewed confirmation threshold."
+        ]
+      },
+      "grounding": {
+        "contextUsed": [
+          "fixture_market_snapshot"
+        ],
+        "sourceState": "cached",
+        "generatedAt": "2026-07-22T05:09:08.457342+00:00",
+        "evidenceIds": [
+          "stage7:market-state:market:1"
+        ]
+      },
+      "suggestedFollowUps": [
+        "Does breadth confirm that?",
+        "Which sectors are leading?"
+      ],
+      "confidence": 42,
+      "answerConfidence": {
+        "level": "limited",
+        "reasons": [
+          "Intent confidence: 94%.",
+          "Evidence freshness: cached."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-market-state",
+        "intent": "MARKET_STATE",
+        "subIntent": "current_posture",
+        "entities": [],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.94,
+        "requiredAgents": [
+          "market"
+        ],
+        "optionalAgents": [
+          "breadth",
+          "leadership",
+          "risk"
+        ],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-market-state",
+        "intentId": "intent-stage7-market-state",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-market",
+            "order": 1,
+            "agent": "market",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 2800,
+            "purpose": "Collect validated market evidence."
+          }
+        ],
+        "requiredAgents": [
+          "market"
+        ],
+        "optionalAgents": [
+          "breadth",
+          "leadership",
+          "risk"
+        ],
+        "dependencies": {
+          "step-1-market": []
+        },
+        "requiredEntities": [],
+        "evidenceRequirements": [
+          {
+            "category": "market",
+            "required": true,
+            "entities": [],
+            "minimumItems": 1
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "market_posture",
+        "deepLinkRequirements": [
+          "market_overview"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 3000,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "The validated engine evidence supports a constructive market posture.",
+        "stance": "constructive",
+        "confidenceLabel": "limited",
+        "thesis": "The validated engine evidence supports a constructive market posture.",
+        "supportingFactors": [
+          {
+            "statement": "US market: market posture is constructive reviewed signal.",
+            "evidenceIds": [
+              "stage7:market-state:market:1"
+            ]
+          }
+        ],
+        "contradictoryFactors": [],
+        "keyRisks": [],
+        "confirmationConditions": [
+          {
+            "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+            "evidenceIds": [
+              "stage7:market-state:market:1"
+            ]
+          }
+        ],
+        "invalidationConditions": [],
+        "missingEvidence": [],
+        "personalizationNote": null,
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "market_overview"
+        ],
+        "disclaimerClass": "educational_market_decision_support"
+      },
+      "evidence": [
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:market-state:market:1",
+          "category": "market",
+          "entity": "US market",
+          "metric": "market posture",
+          "value": "constructive reviewed signal",
+          "unit": null,
+          "currentState": "constructive reviewed signal",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "engine_conclusion",
+          "source": {
+            "sourceId": "stage7:market-state:market",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_market_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:durable-cached"
+          },
+          "freshness": {
+            "state": "cached",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [
+            "claim:market-state:support"
+          ],
+          "contradictsClaimIds": []
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "action-market_overview-default",
+          "label": "Open Market Overview",
+          "actionType": "navigate",
+          "destinationId": "market_overview",
+          "route": "/market",
+          "tab": "overview",
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": null,
+          "parameters": {
+            "tab": "overview"
+          }
+        }
+      ],
+      "warnings": [],
+      "freshnessSummary": {
+        "overallState": "cached",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 1,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "market": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-market_overview-default",
+        "label": "Open Market Overview",
+        "actionType": "navigate",
+        "destinationId": "market_overview",
+        "route": "/market",
+        "tab": "overview",
+        "subTab": null,
+        "sectionId": null,
+        "entity": null,
+        "highlightTarget": null,
+        "parameters": {
+          "tab": "overview"
+        }
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed MARKET_STATE; expected MARKET_STATE."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['market']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status complete."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness cached."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:grounded_factual_claims",
+          "status": "passed",
+          "detail": "Factual reasoning is supported by resolvable evidence citations."
+        },
+        {
+          "check": "assertion:freshness_visible",
+          "status": "passed",
+          "detail": "Aggregate and item-level freshness metadata is present."
+        },
+        {
+          "check": "assertion:minimal_plan",
+          "status": "passed",
+          "detail": "The plan contains exactly the required agents and steps."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

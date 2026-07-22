@@ -1,0 +1,5 @@
+ticker,company_name,role,weight,effective_from,active,membership_source,inclusion_reason,reviewed_at,reviewed_by,source_url,source_retrieved_at,notes
+MU,Micron Technology,core,0.25,2026-07-19,true,proposed-official-source,Proposed core producer of DRAM and NAND memory.,,,https://www.micron.com/about,2026-07-19,Human review required
+WDC,Western Digital,core,0.25,2026-07-19,true,proposed-official-source,Proposed core storage device and platform supplier.,,,https://www.westerndigital.com/company,2026-07-19,Human review required
+STX,Seagate Technology,core,0.25,2026-07-19,true,proposed-official-source,Proposed core mass-capacity storage supplier.,,,https://www.seagate.com/company/,2026-07-19,Human review required
+SNDK,Sandisk,core,0.25,2026-07-19,true,proposed-official-source,Proposed core flash storage supplier subject to listing and security-master review.,,,https://www.sandisk.com/about/,2026-07-19,Human review required

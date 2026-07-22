@@ -1,261 +1,352 @@
-import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
-import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { QuickActionChip } from '@/components/ui/QuickActionChip';
-import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
-import { askMarketCopilot } from '@/features/copilot/api/copilotApi';
-import { buildStarterPrompts } from '@/features/copilot/context/contextRegistry';
 import { CopilotSourceBadge } from '@/features/copilot/components/CopilotSourceBadge';
-import type { CopilotContext, CopilotMessage } from '@/features/copilot/types';
+import { CopilotStructuredResponse } from '@/features/copilot/components/CopilotStructuredResponse';
+import { buildStarterPrompts } from '@/features/copilot/context/contextRegistry';
+import { CopilotTransportError, streamCopilotChat } from '@/features/copilot/api/copilotApi';
+import { resolveCopilotAction } from '@/features/copilot/navigation/copilotDestinations';
 import {
+  copilotConversationReducer,
+  createInitialCopilotState,
+  draftToCopilotResponse,
+} from '@/features/copilot/state/copilotReducer';
+import {
+  buildNextSessionContext,
   clearThreadMessages,
   consumeCopilotLaunchContext,
   getDefaultCopilotContext,
-  getThreadMessages,
+  hydrateCopilotStore,
   saveThreadMessages,
 } from '@/features/copilot/state/copilotStore';
+import { sanitizeCopilotContext } from '@/features/copilot/utils/sanitizeCopilotContext';
+import { mergeHydratedWatchlistMembership } from '@/features/copilot/utils/watchlistMembershipContext';
+import { useWatchlist } from '@/features/watchlist/store';
+import type {
+  CopilotActionV1,
+  CopilotChatRequest,
+  CopilotContext,
+  CopilotMessage,
+} from '@/features/copilot/types';
 
 export function CopilotScreen() {
+  const router = useRouter();
+  const { hydrated: watchlistHydrated, stockItems: savedStockItems } = useWatchlist();
   const launch = useMemo(() => consumeCopilotLaunchContext(), []);
   const [context, setContext] = useState<CopilotContext>(launch.context ?? getDefaultCopilotContext());
-  const [threadId, setThreadId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<CopilotMessage[]>(threadId ? getThreadMessages(threadId) : []);
   const [input, setInput] = useState(launch.initialPrompt ?? '');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(copilotConversationReducer, undefined, createInitialCopilotState);
+  const stateRef = useRef(state);
+  const abortRef = useRef<AbortController | null>(null);
+  const scrollRef = useRef<ScrollView | null>(null);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+  const busy = state.status === 'requesting' || state.status === 'streaming';
   const starterPrompts = buildStarterPrompts(context).slice(0, 6);
+  const requestContext = useMemo(() => sanitizeCopilotContext(
+    mergeHydratedWatchlistMembership(context, watchlistHydrated, savedStockItems),
+  ), [context, savedStockItems, watchlistHydrated]);
+
+  useEffect(() => {
+    let active = true;
+    void hydrateCopilotStore().then((session) => {
+      if (!active) return;
+      dispatch({
+        type: 'hydrate',
+        messages: session.messages,
+        sessionContext: session.sessionContext,
+        threadId: session.threadId,
+      });
+    });
+    return () => {
+      active = false;
+      abortRef.current?.abort();
+    };
+  }, []);
 
   async function send(promptOverride?: string) {
     const prompt = (promptOverride ?? input).trim();
-    if (!prompt || loading) {
-      return;
-    }
+    const current = stateRef.current;
+    if (!prompt || current.status === 'requesting' || current.status === 'streaming') return;
+    const requestId = createRequestId();
     const now = new Date().toISOString();
-    const userMessage: CopilotMessage = {
-      content: prompt,
-      createdAt: now,
-      id: `user-${now}`,
-      role: 'user',
+    const userMessage: CopilotMessage = { content: prompt, createdAt: now, id: `user-${requestId}`, role: 'user' };
+    const request: CopilotChatRequest = {
+      requestId,
+      context: requestContext,
+      history: current.messages.slice(-8).map((item) => ({ content: item.content, role: item.role })),
+      message: prompt,
+      responseDepth: 'compact',
+      sessionContext: current.sessionContext,
+      threadId: current.threadId,
     };
-    const nextMessages = [...messages, userMessage];
-    setMessages(nextMessages);
+    const messagesBeforeAssistant = [...current.messages, userMessage];
+    dispatch({ type: 'submit', request, userMessage });
     setInput('');
-    setLoading(true);
-    setError(null);
+    await runRequest(request, messagesBeforeAssistant);
+  }
 
+  async function runRequest(request: CopilotChatRequest, messagesBeforeAssistant: CopilotMessage[]) {
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
     try {
-      const response = await askMarketCopilot({
-        context,
-        history: nextMessages.slice(-8).map((item) => ({ content: item.content, role: item.role })),
-        message: prompt,
-        responseDepth: 'compact',
-        threadId,
+      const result = await streamCopilotChat(request, {
+        signal: controller.signal,
+        onEvent: (event) => dispatch({ type: 'stream_event', event }),
       });
+      const response = result.response;
       const assistantMessage: CopilotMessage = {
         content: response.answer,
         createdAt: response.grounding.generatedAt,
-        id: `assistant-${response.grounding.generatedAt}`,
+        id: `assistant-${response.requestId ?? createRequestId()}`,
         response,
         role: 'assistant',
       };
-      const finalMessages = [...nextMessages, assistantMessage];
-      setThreadId(response.threadId);
-      setMessages(finalMessages);
-      saveThreadMessages(response.threadId, finalMessages);
-    } catch {
-      setError('Market Copilot is temporarily unavailable.');
-      setMessages(messages);
+      const nextSessionContext = buildNextSessionContext({
+        context: request.context,
+        previous: stateRef.current.sessionContext,
+        question: request.message,
+        response,
+      });
+      const finalMessages = [...messagesBeforeAssistant, assistantMessage];
+      dispatch({ type: 'complete', response, assistantMessage });
+      dispatch({ type: 'set_session_context', sessionContext: nextSessionContext });
+      saveThreadMessages(response.threadId, finalMessages, nextSessionContext);
+    } catch (error) {
+      const transportError = error instanceof CopilotTransportError ? error : null;
+      if (transportError?.category === 'cancelled' || controller.signal.aborted) {
+        dispatch({ type: 'cancel' });
+      } else {
+        dispatch({
+          type: 'fail',
+          message: transportError?.message ?? 'Institutional Copilot is temporarily unavailable.',
+          partial: transportError?.partial,
+          retryable: transportError?.retryable ?? true,
+        });
+      }
     } finally {
-      setLoading(false);
+      if (abortRef.current === controller) abortRef.current = null;
     }
   }
 
+  async function retry() {
+    const current = stateRef.current;
+    if (!current.lastRequest || busy) return;
+    const request = {
+      ...current.lastRequest,
+      requestId: createRequestId(),
+      context: requestContext,
+      sessionContext: current.sessionContext,
+      threadId: current.threadId,
+    };
+    dispatch({ type: 'retry', request });
+    await runRequest(request, current.messages);
+  }
+
+  function cancel() {
+    abortRef.current?.abort();
+  }
+
   function clearConversation() {
-    if (threadId) {
-      clearThreadMessages(threadId);
-    }
-    setThreadId(null);
-    setMessages([]);
-    setError(null);
+    abortRef.current?.abort();
+    if (stateRef.current.threadId) clearThreadMessages(stateRef.current.threadId);
+    dispatch({ type: 'clear' });
+    setInput('');
   }
 
   function removeContext() {
     setContext(getDefaultCopilotContext());
   }
 
+  function openAction(action: CopilotActionV1) {
+    const destination = resolveCopilotAction(action);
+    if (!destination) return;
+    router.push({
+      pathname: destination.pathname,
+      params: { ...(destination.params ?? {}), actionNonce: `${Date.now()}` },
+    } as never);
+  }
+
+  const partialResponse = state.draft ? draftToCopilotResponse(state.draft, state.threadId) : null;
+
   return (
     <AppScreen
+      contentStyle={styles.appContent}
+      scroll={false}
       showBackButton
-      title="Market Copilot"
-      subtitle="Ask questions about today’s market, reports, sectors, risks, watchlist, and stocks.">
-      <DashboardCard title="Context" accentColor={Theme.colors.purple}>
-        <View style={styles.contextStack}>
-          <View style={styles.contextHeader}>
-            <View style={styles.contextTitleBlock}>
-              <Text style={styles.contextTitle}>{context.screenTitle}</Text>
-              <Text style={styles.contextMeta}>{context.screenType} · {context.routeName}</Text>
+      title="Institutional Copilot"
+      subtitle="Grounded market reasoning, evidence, and app-native actions.">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+        style={styles.keyboardView}>
+        <ScrollView
+          contentContainerStyle={styles.conversationContent}
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="handled"
+          onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
+          ref={scrollRef}
+          showsVerticalScrollIndicator={false}>
+          <CopilotContextBar context={context} onClearChat={clearConversation} onClearContext={removeContext} />
+
+          {!state.messages.length && !partialResponse ? (
+            <View style={styles.starterBlock}>
+              <Text style={styles.starterLabel}>START WITH A RESEARCH QUESTION</Text>
+              <View style={styles.promptRow}>
+                {starterPrompts.map((prompt) => (
+                  <QuickActionChip key={prompt} label={prompt} onPress={() => void send(prompt)} tone="purple" />
+                ))}
+              </View>
             </View>
-            <CopilotSourceBadge sourceState={context.sourceState} />
+          ) : null}
+
+          <View style={styles.messageStack}>
+            {state.messages.map((message) => (
+              <CopilotTurn
+                disabled={busy}
+                key={message.id}
+                message={message}
+                onAction={openAction}
+                onFollowUp={(prompt) => void send(prompt)}
+              />
+            ))}
+
+            {partialResponse ? (
+              <View style={styles.assistantTurn}>
+                <View accessibilityLiveRegion="polite" style={styles.streamStatus}>
+                  {busy ? <ActivityIndicator color={Theme.colors.purple} size="small" /> : null}
+                  <Text style={styles.streamStatusText}>{state.draft?.stageLabel ?? 'Partial answer'}</Text>
+                </View>
+                <CopilotStructuredResponse onAction={openAction} partial response={partialResponse} />
+              </View>
+            ) : busy ? (
+              <View accessibilityLiveRegion="polite" style={styles.streamStatus}>
+                <ActivityIndicator color={Theme.colors.purple} size="small" />
+                <Text style={styles.streamStatusText}>Classifying intent and routing validated engines…</Text>
+              </View>
+            ) : null}
+
+            {state.error ? (
+              <View accessibilityRole="alert" style={styles.errorPanel}>
+                <Text style={styles.errorTitle}>{state.status === 'cancelled' ? 'Request cancelled' : state.status === 'partial' ? 'Partial response preserved' : 'Copilot request incomplete'}</Text>
+                <Text style={styles.errorText}>{state.error}</Text>
+                {state.retryable ? <SmallAction label="Retry request" onPress={() => void retry()} /> : null}
+              </View>
+            ) : null}
           </View>
-          {context.focusedMetric ? (
-            <Text style={styles.contextText}>Focused on {context.focusedMetric.title}: {context.focusedMetric.value ?? 'N/A'}</Text>
-          ) : (
-            <Text style={styles.contextText}>Copilot will use the current screen context first, then app engines and report data where available.</Text>
-          )}
-          <View style={styles.inlineActions}>
-            <SmallAction label="Clear Context" onPress={removeContext} />
-            <SmallAction label="Clear Chat" onPress={clearConversation} />
+        </ScrollView>
+
+        <View style={styles.composerShell}>
+          <TextInput
+            accessibilityLabel="Ask Institutional Copilot"
+            editable={!busy}
+            multiline
+            onChangeText={setInput}
+            placeholder="Ask about a market condition, report thesis, stock setup, risk, or app destination…"
+            placeholderTextColor={Theme.colors.textMuted}
+            style={styles.input}
+            value={input}
+          />
+          <View style={styles.composerActions}>
+            <Text style={styles.composerHint}>Evidence first · no portfolio assumptions</Text>
+            {busy ? (
+              <Pressable accessibilityLabel="Cancel Copilot request" accessibilityRole="button" onPress={cancel} style={({ pressed }) => [styles.cancelButton, pressed && styles.pressed]}>
+                <Text style={styles.cancelText}>Cancel</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                accessibilityLabel="Send question to Institutional Copilot"
+                accessibilityRole="button"
+                disabled={!input.trim()}
+                onPress={() => void send()}
+                style={({ pressed }) => [styles.sendButton, !input.trim() && styles.disabled, pressed && styles.pressed]}>
+                <Text style={styles.sendText}>Send</Text>
+              </Pressable>
+            )}
           </View>
         </View>
-      </DashboardCard>
-
-      {!messages.length ? (
-        <View style={styles.promptStack}>
-          {starterPrompts.map((prompt) => (
-            <QuickActionChip key={prompt} label={prompt} onPress={() => send(prompt)} tone="purple" />
-          ))}
-        </View>
-      ) : null}
-
-      <View style={styles.messageStack}>
-        {messages.map((message) => (
-          <CopilotMessageBubble key={message.id} disabled={loading} message={message} onFollowUpPress={send} />
-        ))}
-        {loading ? (
-          <View style={styles.loadingRow}>
-            <ActivityIndicator color={Theme.colors.purple} />
-            <Text style={styles.loadingText}>{loadingTextForContext(context)}</Text>
-          </View>
-        ) : null}
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      </View>
-
-      <DashboardCard title="Ask Market Copilot" accentColor={Theme.colors.purple}>
-        <TextInput
-          multiline
-          onChangeText={setInput}
-          placeholder="Ask about this screen, a score, report, stock, sector, or watchlist..."
-          placeholderTextColor={Theme.colors.textMuted}
-          style={styles.input}
-          value={input}
-        />
-        <Pressable
-          accessibilityLabel="Send question to Market Copilot"
-          accessibilityRole="button"
-          disabled={!input.trim() || loading}
-          onPress={() => send()}
-          style={({ pressed }) => [
-            styles.sendButton,
-            (!input.trim() || loading) && styles.disabled,
-            pressed && styles.pressed,
-          ]}>
-          <Text style={styles.sendText}>{loading ? 'Reviewing…' : 'Send'}</Text>
-        </Pressable>
-      </DashboardCard>
-      <Text style={styles.footerDisclaimer}>Educational market decision support only, not financial advice.</Text>
+      </KeyboardAvoidingView>
     </AppScreen>
   );
 }
 
-function CopilotMessageBubble({
+function CopilotContextBar({
+  context,
+  onClearChat,
+  onClearContext,
+}: {
+  context: CopilotContext;
+  onClearChat: () => void;
+  onClearContext: () => void;
+}) {
+  return (
+    <View style={styles.contextBar}>
+      <View style={styles.contextCopy}>
+        <Text style={styles.contextEyebrow}>ACTIVE CONTEXT</Text>
+        <Text style={styles.contextTitle}>{context.screenTitle}</Text>
+        <Text style={styles.contextMeta}>{context.screenType} · {context.routeName}</Text>
+      </View>
+      <View style={styles.contextActions}>
+        <CopilotSourceBadge sourceState={context.sourceState} />
+        <SmallAction label="Clear context" onPress={onClearContext} />
+        <SmallAction label="Clear chat" onPress={onClearChat} />
+      </View>
+    </View>
+  );
+}
+
+function CopilotTurn({
   disabled,
   message,
-  onFollowUpPress,
+  onAction,
+  onFollowUp,
 }: {
   disabled: boolean;
   message: CopilotMessage;
-  onFollowUpPress: (prompt: string) => void;
+  onAction: (action: CopilotActionV1) => void;
+  onFollowUp: (prompt: string) => void;
 }) {
-  const isUser = message.role === 'user';
-  const sections = message.response?.answerSections;
-  const confidence = message.response?.answerConfidence;
+  if (message.role === 'user') {
+    return (
+      <View style={styles.userTurn}>
+        <Text style={styles.turnLabel}>YOU</Text>
+        <Text style={styles.userText}>{message.content}</Text>
+      </View>
+    );
+  }
+  if (!message.response) return <Text style={styles.userText}>{message.content}</Text>;
   return (
-    <View style={[styles.messageBubble, isUser ? styles.userBubble : styles.assistantBubble]}>
-      <Text style={styles.messageRole}>{isUser ? 'You' : 'Market Copilot'}</Text>
-      {sections && !isUser ? (
-        <View style={styles.answerStack}>
-          <Text style={styles.messageText}>{sections.directAnswer}</Text>
-          {sections.why.length ? <CompactList title="Why" items={sections.why.slice(0, 3)} /> : null}
-          {sections.mainCaution ? (
-            <View style={styles.cautionBox}>
-              <Text style={styles.sectionLabel}>Main caution</Text>
-              <Text style={styles.cautionText}>{sections.mainCaution}</Text>
-            </View>
-          ) : null}
-          {sections.whatWouldChange.length ? <CompactList title="What would change this" items={sections.whatWouldChange.slice(0, 2)} /> : null}
-        </View>
-      ) : (
-        <Text style={styles.messageText}>{message.content}</Text>
-      )}
-      {message.response ? (
-        <View style={styles.responseMeta}>
-          <View style={styles.badgeRow}>
-            <StatusBadge label={`${confidenceLabel(confidence?.level)} confidence`} showDot={false} tone={confidenceTone(confidence?.level)} />
-            <CopilotSourceBadge sourceState={message.response.grounding.sourceState} />
-          </View>
-          {confidence?.reasons.length ? (
-            <Text style={styles.confidenceText}>{confidence.reasons.slice(0, 2).join(' · ')}</Text>
-          ) : null}
-          {message.response.grounding.contextUsed.length ? (
-            <Text style={styles.groundingText}>Based on: {message.response.grounding.contextUsed.join(', ')}</Text>
-          ) : null}
-          {message.response.suggestedFollowUps.length ? (
-            <View style={styles.followUpRow}>
-              {message.response.suggestedFollowUps.slice(0, 3).map((item) => (
-                <QuickActionChip
-                  key={item}
-                  label={item}
-                  onPress={disabled ? undefined : () => onFollowUpPress(item)}
-                  tone="purple"
-                />
-              ))}
-            </View>
-          ) : null}
-          <View style={styles.feedbackRow}>
-            <SmallAction label="Helpful" onPress={() => undefined} />
-            <SmallAction label="Not Helpful" onPress={() => undefined} />
+    <View style={styles.assistantTurn}>
+      <Text style={styles.turnLabel}>INSTITUTIONAL COPILOT</Text>
+      <CopilotStructuredResponse onAction={onAction} response={message.response} />
+      {message.response.suggestedFollowUps.length ? (
+        <View style={styles.followUpBlock}>
+          <Text style={styles.starterLabel}>FOLLOW-UP</Text>
+          <View style={styles.promptRow}>
+            {message.response.suggestedFollowUps.slice(0, 4).map((item) => (
+              <QuickActionChip key={item} label={item} onPress={disabled ? undefined : () => onFollowUp(item)} tone="purple" />
+            ))}
           </View>
         </View>
       ) : null}
     </View>
   );
-}
-
-function CompactList({ items, title }: { items: string[]; title: string }) {
-  return (
-    <View style={styles.compactSection}>
-      <Text style={styles.sectionLabel}>{title}</Text>
-      {items.map((item, index) => (
-        <View key={`${title}-${item}-${index}`} style={styles.evidenceRow}>
-          <View style={styles.evidenceDot} />
-          <Text style={styles.evidenceText}>{item}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
-
-function confidenceLabel(level?: 'high' | 'moderate' | 'limited') {
-  if (level === 'high') {
-    return 'High';
-  }
-  if (level === 'limited') {
-    return 'Limited';
-  }
-  return 'Moderate';
-}
-
-function confidenceTone(level?: 'high' | 'moderate' | 'limited') {
-  if (level === 'high') {
-    return 'success' as const;
-  }
-  if (level === 'limited') {
-    return 'warning' as const;
-  }
-  return 'purple' as const;
 }
 
 function SmallAction({ label, onPress }: { label: string; onPress: () => void }) {
@@ -266,237 +357,44 @@ function SmallAction({ label, onPress }: { label: string; onPress: () => void })
   );
 }
 
-function loadingTextForContext(context: CopilotContext) {
-  if (context.screenType === 'report') {
-    return 'Reading the selected report…';
-  }
-  if (context.screenType === 'watchlist') {
-    return 'Comparing watchlist signals…';
-  }
-  if (context.focusedMetric) {
-    return 'Evaluating score contributors…';
-  }
-  return 'Reviewing today’s market context…';
+function createRequestId() {
+  return `copilot-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 const styles = StyleSheet.create({
-  assistantBubble: {
-    backgroundColor: Theme.colors.cardMuted,
-    borderColor: Theme.colors.border,
-  },
-  answerStack: {
-    gap: Spacing.two,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.one,
-  },
-  cautionBox: {
-    backgroundColor: Theme.colors.warningSoft,
-    borderColor: Theme.colors.warning,
-    borderRadius: Theme.radii.small,
-    borderWidth: 1,
-    gap: 4,
-    padding: Spacing.two,
-  },
-  cautionText: {
-    color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '800',
-    lineHeight: 19,
-  },
-  compactSection: {
-    gap: Spacing.one,
-  },
-  confidenceText: {
-    color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
-    lineHeight: 16,
-  },
-  contextHeader: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    justifyContent: 'space-between',
-  },
-  contextMeta: {
-    color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
-    textTransform: 'capitalize',
-  },
-  contextStack: {
-    gap: Spacing.two,
-  },
-  contextText: {
-    color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 19,
-  },
-  contextTitle: {
-    color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  contextTitleBlock: {
-    flex: 1,
-    gap: 2,
-    minWidth: 0,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  evidenceDot: {
-    backgroundColor: Theme.colors.purple,
-    borderRadius: 3,
-    height: 6,
-    marginTop: 7,
-    width: 6,
-  },
-  evidenceRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: Spacing.one,
-  },
-  evidenceText: {
-    color: Theme.colors.text,
-    flex: 1,
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 19,
-  },
-  errorText: {
-    color: Theme.colors.danger,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  feedbackRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.one,
-  },
-  followUpRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.one,
-  },
-  footerDisclaimer: {
-    color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
-    lineHeight: 16,
-    paddingHorizontal: Spacing.one,
-    textAlign: 'center',
-  },
-  groundingText: {
-    color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
-    lineHeight: 17,
-  },
-  inlineActions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-  },
-  input: {
-    backgroundColor: Theme.colors.backgroundMuted,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.small,
-    borderWidth: 1,
-    color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '700',
-    lineHeight: 20,
-    minHeight: 90,
-    padding: Spacing.twoAndHalf,
-    textAlignVertical: 'top',
-  },
-  loadingRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: Spacing.two,
-    padding: Spacing.two,
-  },
-  loadingText: {
-    color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  messageBubble: {
-    borderRadius: Theme.radii.small,
-    borderWidth: 1,
-    gap: Spacing.one,
-    padding: Spacing.twoAndHalf,
-  },
-  messageRole: {
-    color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-  },
-  messageStack: {
-    gap: Spacing.two,
-  },
-  messageText: {
-    color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '700',
-    lineHeight: 22,
-  },
-  pressed: {
-    opacity: 0.76,
-  },
-  promptStack: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-  },
-  responseMeta: {
-    gap: Spacing.two,
-    marginTop: Spacing.two,
-  },
-  sectionLabel: {
-    color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-  },
-  sendButton: {
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    backgroundColor: Theme.colors.purple,
-    borderRadius: Theme.radii.pill,
-    marginTop: Spacing.two,
-    minHeight: 42,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-  },
-  sendText: {
-    color: Theme.colors.background,
-    fontSize: 13,
-    fontWeight: '900',
-  },
-  smallAction: {
-    backgroundColor: Theme.colors.card,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.pill,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-  },
-  smallActionText: {
-    color: Theme.colors.text,
-    fontSize: 11,
-    fontWeight: '900',
-  },
-  userBubble: {
-    alignSelf: 'flex-end',
-    backgroundColor: Theme.colors.purpleSoft,
-    borderColor: Theme.colors.purple,
-    maxWidth: '92%',
-  },
+  appContent: { padding: 0 },
+  assistantTurn: { gap: Spacing.two },
+  cancelButton: { alignItems: 'center', borderColor: Theme.colors.warning, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 40, justifyContent: 'center', paddingHorizontal: Spacing.three },
+  cancelText: { color: Theme.colors.warning, fontSize: 13, fontWeight: '900' },
+  composerActions: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between' },
+  composerHint: { color: Theme.colors.textMuted, flex: 1, fontSize: 10, fontWeight: '700' },
+  composerShell: { backgroundColor: Theme.colors.background, borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: Spacing.two, padding: Spacing.three },
+  contextActions: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one, justifyContent: 'flex-end' },
+  contextBar: { alignItems: 'flex-start', backgroundColor: Theme.colors.card, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, justifyContent: 'space-between', padding: Spacing.twoAndHalf },
+  contextCopy: { flex: 1, gap: 2, minWidth: 190 },
+  contextEyebrow: { color: Theme.colors.purple, fontSize: 10, fontWeight: '900', letterSpacing: 0.6 },
+  contextMeta: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '700', textTransform: 'capitalize' },
+  contextTitle: { color: Theme.colors.text, fontSize: 14, fontWeight: '900' },
+  conversationContent: { gap: Spacing.three, padding: Spacing.three, paddingBottom: Spacing.four },
+  disabled: { opacity: 0.45 },
+  errorPanel: { alignItems: 'flex-start', backgroundColor: Theme.colors.dangerSoft, borderColor: Theme.colors.danger, borderRadius: Theme.radii.small, borderWidth: 1, gap: Spacing.one, padding: Spacing.twoAndHalf },
+  errorText: { color: Theme.colors.text, fontSize: 12, fontWeight: '700', lineHeight: 18 },
+  errorTitle: { color: Theme.colors.danger, fontSize: 12, fontWeight: '900' },
+  followUpBlock: { gap: Spacing.one },
+  input: { backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, color: Theme.colors.text, fontSize: 14, fontWeight: '700', lineHeight: 20, maxHeight: 130, minHeight: 56, padding: Spacing.twoAndHalf, textAlignVertical: 'top' },
+  keyboardView: { flex: 1 },
+  messageStack: { gap: Spacing.four },
+  pressed: { opacity: 0.74 },
+  promptRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+  sendButton: { alignItems: 'center', backgroundColor: Theme.colors.purple, borderRadius: Theme.radii.pill, justifyContent: 'center', minHeight: 40, paddingHorizontal: Spacing.four },
+  sendText: { color: Theme.colors.background, fontSize: 13, fontWeight: '900' },
+  smallAction: { backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, paddingHorizontal: Spacing.two, paddingVertical: Spacing.one },
+  smallActionText: { color: Theme.colors.text, fontSize: 10, fontWeight: '900' },
+  starterBlock: { gap: Spacing.two },
+  starterLabel: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: '900', letterSpacing: 0.6 },
+  streamStatus: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, paddingHorizontal: Spacing.one },
+  streamStatusText: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: '800' },
+  turnLabel: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: '900', letterSpacing: 0.6 },
+  userText: { color: Theme.colors.text, fontSize: 14, fontWeight: '700', lineHeight: 21 },
+  userTurn: { alignSelf: 'flex-end', backgroundColor: Theme.colors.purpleSoft, borderColor: Theme.colors.purple, borderRadius: Theme.radii.small, borderWidth: 1, gap: Spacing.one, maxWidth: '88%', padding: Spacing.twoAndHalf },
 });

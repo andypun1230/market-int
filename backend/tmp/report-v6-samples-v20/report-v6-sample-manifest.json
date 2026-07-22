@@ -1,0 +1,46 @@
+{
+  "complete-live-after-close": {
+    "approximate_word_count": 2524,
+    "data_completeness": 1.0,
+    "figure_count": 17,
+    "json": "tmp/report-v6-samples-v20/report-v6-complete-live-after-close.json",
+    "page_count_estimate": 14,
+    "pdf": "tmp/report-v6-samples-v20/report-v6-complete-live-after-close.pdf",
+    "report_id": "daily-2026-07-17-81a44def2580-fixture-after-close",
+    "report_type": "After Close",
+    "source_status": "live"
+  },
+  "first-baseline": {
+    "approximate_word_count": 2524,
+    "data_completeness": 1.0,
+    "figure_count": 17,
+    "json": "tmp/report-v6-samples-v20/report-v6-first-baseline.json",
+    "page_count_estimate": 14,
+    "pdf": "tmp/report-v6-samples-v20/report-v6-first-baseline.pdf",
+    "report_id": "daily-2026-07-17-81a44def2580-fixture-baseline",
+    "report_type": "Weekend / Holiday",
+    "source_status": "live"
+  },
+  "mixed-source": {
+    "approximate_word_count": 2524,
+    "data_completeness": 1.0,
+    "figure_count": 17,
+    "json": "tmp/report-v6-samples-v20/report-v6-mixed-source.json",
+    "page_count_estimate": 14,
+    "pdf": "tmp/report-v6-samples-v20/report-v6-mixed-source.pdf",
+    "report_id": "daily-2026-07-17-81a44def2580-fixture-mixed",
+    "report_type": "Weekend / Holiday",
+    "source_status": "mixed"
+  },
+  "weekend": {
+    "approximate_word_count": 2524,
+    "data_completeness": 1.0,
+    "figure_count": 17,
+    "json": "tmp/report-v6-samples-v20/report-v6-weekend.json",
+    "page_count_estimate": 14,
+    "pdf": "tmp/report-v6-samples-v20/report-v6-weekend.pdf",
+    "report_id": "daily-2026-07-17-81a44def2580-fixture-weekend",
+    "report_type": "Weekend / Holiday",
+    "source_status": "live"
+  }
+}

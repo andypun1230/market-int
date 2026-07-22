@@ -1,0 +1,1173 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 20,
+    "caseId": "stale-watchlist",
+    "title": "Stale watchlist",
+    "request": {
+      "message": "Which saved stock needs attention?",
+      "context": {
+        "screenType": "watchlist",
+        "routeName": "/watchlist",
+        "savedSymbols": [
+          "NVDA",
+          "ARM"
+        ]
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "stale-watchlist-snapshots",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "WATCHLIST_REVIEW",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "watchlist",
+        "stock"
+      ],
+      "optionalAgents": [],
+      "entities": [],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "stale",
+        "partial"
+      ],
+      "allowedFreshnessStates": [
+        "stale"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "watchlist",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": null
+        }
+      ],
+      "requiredResponseText": [
+        "stale"
+      ],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "stale_label_visible",
+        "no_current_actionability",
+        "saved_not_owned"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-20-stale-watchlist",
+    "planId": "plan-stage7-stale-watchlist",
+    "threadId": "stage7-thread-stale-watchlist",
+    "startedAt": "2026-07-22T05:09:08.487664+00:00",
+    "completedAt": "2026-07-22T05:09:08.489346+00:00",
+    "elapsedMs": 1.541,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-stale-watchlist",
+      "intent": "WATCHLIST_REVIEW",
+      "subIntent": "attention_review",
+      "entities": [],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": true,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.94,
+      "requiredAgents": [
+        "watchlist",
+        "stock"
+      ],
+      "optionalAgents": [
+        "market",
+        "risk"
+      ],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-stale-watchlist",
+      "intentId": "intent-stage7-stale-watchlist",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-watchlist",
+          "order": 1,
+          "agent": "watchlist",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 2800,
+          "purpose": "Collect validated watchlist evidence."
+        },
+        {
+          "stepId": "step-2-stock",
+          "order": 2,
+          "agent": "stock",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 2800,
+          "purpose": "Collect validated technical evidence."
+        }
+      ],
+      "requiredAgents": [
+        "watchlist",
+        "stock"
+      ],
+      "optionalAgents": [
+        "market",
+        "risk"
+      ],
+      "dependencies": {
+        "step-1-watchlist": [],
+        "step-2-stock": []
+      },
+      "requiredEntities": [],
+      "evidenceRequirements": [
+        {
+          "category": "watchlist",
+          "required": true,
+          "entities": [],
+          "minimumItems": 1
+        },
+        {
+          "category": "technical",
+          "required": true,
+          "entities": [],
+          "minimumItems": 1
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "watchlist"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 3000,
+      "parallelExecutionAllowed": true
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "watchlist",
+        "status": "stale",
+        "observations": [
+          "The watchlist fixture adapter returned a reviewed durable observation."
+        ],
+        "conclusions": [
+          "The watchlist evidence remains conditional on its cited source."
+        ],
+        "contradictions": [],
+        "metrics": {},
+        "levels": [
+          {
+            "label": "confirmation condition",
+            "value": "reviewed confirmation threshold",
+            "unit": null,
+            "evidenceId": "stage7:stale-watchlist:watchlist:1"
+          }
+        ],
+        "sourceReferences": [
+          {
+            "sourceId": "stage7:stale-watchlist:watchlist",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_watchlist_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:stale-watchlist-snapshots"
+          }
+        ],
+        "evidence": [
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:stale-watchlist:watchlist:1",
+            "category": "watchlist",
+            "entity": "saved list",
+            "metric": "saved membership",
+            "value": "stale monitoring signal",
+            "unit": null,
+            "currentState": "stale monitoring signal",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "engine_conclusion",
+            "source": {
+              "sourceId": "stage7:stale-watchlist:watchlist",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_watchlist_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:stale-watchlist-snapshots"
+            },
+            "freshness": {
+              "state": "stale",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [
+              "claim:stale-watchlist:support"
+            ],
+            "contradictsClaimIds": []
+          }
+        ],
+        "freshness": {
+          "state": "stale",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "watchlist"
+        ],
+        "warnings": [
+          "The fixture snapshot is stale and cannot support current actionability."
+        ],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      },
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "stock",
+        "status": "stale",
+        "observations": [
+          "The stock fixture adapter returned a reviewed durable observation."
+        ],
+        "conclusions": [
+          "The stock evidence remains conditional on its cited source."
+        ],
+        "contradictions": [
+          "A reviewed opposing condition remains unresolved."
+        ],
+        "metrics": {},
+        "levels": [
+          {
+            "label": "confirmation condition",
+            "value": "reviewed confirmation threshold",
+            "unit": null,
+            "evidenceId": "stage7:stale-watchlist:stock:1"
+          },
+          {
+            "label": "risk invalidation condition",
+            "value": "reviewed invalidation threshold",
+            "unit": null,
+            "evidenceId": "stage7:stale-watchlist:stock:2"
+          }
+        ],
+        "sourceReferences": [
+          {
+            "sourceId": "stage7:stale-watchlist:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:stale-watchlist-snapshots"
+          }
+        ],
+        "evidence": [
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:stale-watchlist:stock:1",
+            "category": "technical",
+            "entity": "stock",
+            "metric": "technical setup",
+            "value": "stale monitoring signal",
+            "unit": null,
+            "currentState": "stale monitoring signal",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "engine_conclusion",
+            "source": {
+              "sourceId": "stage7:stale-watchlist:stock",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_stock_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:stale-watchlist-snapshots"
+            },
+            "freshness": {
+              "state": "stale",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [
+              "claim:stale-watchlist:support"
+            ],
+            "contradictsClaimIds": []
+          },
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:stale-watchlist:stock:2",
+            "category": "technical",
+            "entity": "stock",
+            "metric": "setup confirmation",
+            "value": "unconfirmed risk condition",
+            "unit": null,
+            "currentState": "unconfirmed risk condition",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "contradiction",
+            "source": {
+              "sourceId": "stage7:stale-watchlist:stock",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_stock_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:stale-watchlist-snapshots"
+            },
+            "freshness": {
+              "state": "stale",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [],
+            "contradictsClaimIds": [
+              "claim:stale-watchlist:support"
+            ]
+          }
+        ],
+        "freshness": {
+          "state": "stale",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "stock_detail"
+        ],
+        "warnings": [
+          "The fixture snapshot is stale and cannot support current actionability."
+        ],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:stale-watchlist:watchlist:1",
+        "category": "watchlist",
+        "entity": "saved list",
+        "metric": "saved membership",
+        "value": "stale monitoring signal",
+        "unit": null,
+        "currentState": "stale monitoring signal",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "engine_conclusion",
+        "source": {
+          "sourceId": "stage7:stale-watchlist:watchlist",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_watchlist_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:stale-watchlist-snapshots"
+        },
+        "freshness": {
+          "state": "stale",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [
+          "claim:stale-watchlist:support"
+        ],
+        "contradictsClaimIds": []
+      },
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:stale-watchlist:stock:1",
+        "category": "technical",
+        "entity": "stock",
+        "metric": "technical setup",
+        "value": "stale monitoring signal",
+        "unit": null,
+        "currentState": "stale monitoring signal",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "engine_conclusion",
+        "source": {
+          "sourceId": "stage7:stale-watchlist:stock",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_stock_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:stale-watchlist-snapshots"
+        },
+        "freshness": {
+          "state": "stale",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [
+          "claim:stale-watchlist:support"
+        ],
+        "contradictsClaimIds": []
+      },
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:stale-watchlist:stock:2",
+        "category": "technical",
+        "entity": "stock",
+        "metric": "setup confirmation",
+        "value": "unconfirmed risk condition",
+        "unit": null,
+        "currentState": "unconfirmed risk condition",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "contradiction",
+        "source": {
+          "sourceId": "stage7:stale-watchlist:stock",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_stock_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:stale-watchlist-snapshots"
+        },
+        "freshness": {
+          "state": "stale",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [],
+        "contradictsClaimIds": [
+          "claim:stale-watchlist:support"
+        ]
+      }
+    ],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "There is insufficient cited caution-status evidence to single out a saved stock; continue monitoring, and holdings were not inferred.",
+      "stance": "neutral",
+      "confidenceLabel": "limited",
+      "thesis": "There is insufficient cited caution-status evidence to single out a saved stock; continue monitoring, and holdings were not inferred.",
+      "supportingFactors": [],
+      "contradictoryFactors": [
+        {
+          "statement": "saved list: saved membership is stale monitoring signal.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:watchlist:1"
+          ]
+        },
+        {
+          "statement": "stock: technical setup is stale monitoring signal.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:stock:1"
+          ]
+        },
+        {
+          "statement": "stock: setup confirmation is unconfirmed risk condition.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:stock:2"
+          ]
+        }
+      ],
+      "keyRisks": [
+        {
+          "statement": "saved list: saved membership is stale monitoring signal.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:watchlist:1"
+          ]
+        },
+        {
+          "statement": "stock: technical setup is stale monitoring signal.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:stock:1"
+          ]
+        },
+        {
+          "statement": "stock: setup confirmation is unconfirmed risk condition.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:stock:2"
+          ]
+        }
+      ],
+      "confirmationConditions": [
+        {
+          "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:watchlist:1"
+          ]
+        },
+        {
+          "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:stock:1"
+          ]
+        }
+      ],
+      "invalidationConditions": [
+        {
+          "statement": "The validated risk invalidation condition is reviewed invalidation threshold.",
+          "evidenceIds": [
+            "stage7:stale-watchlist:stock:2"
+          ]
+        }
+      ],
+      "missingEvidence": [],
+      "personalizationNote": "Saved-list membership is used only as monitoring context; holdings data was not inferred.",
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "watchlist",
+        "stock_detail"
+      ],
+      "disclaimerClass": "educational_market_decision_support"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-20-stale-watchlist",
+      "planId": "plan-stage7-stale-watchlist",
+      "threadId": "stage7-thread-stale-watchlist",
+      "status": "stale",
+      "answer": "There is insufficient cited caution-status evidence to single out a saved stock; continue monitoring, and holdings were not inferred.\n\nCounter-evidence: saved list: saved membership is stale monitoring signal. stock: technical setup is stale monitoring signal.",
+      "answerSections": {
+        "directAnswer": "There is insufficient cited caution-status evidence to single out a saved stock; continue monitoring, and holdings were not inferred.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [
+          "saved list: saved membership is stale monitoring signal.",
+          "stock: technical setup is stale monitoring signal.",
+          "stock: setup confirmation is unconfirmed risk condition."
+        ],
+        "mainCaution": "saved list: saved membership is stale monitoring signal.",
+        "whatWouldConfirm": [
+          "The validated confirmation condition is reviewed confirmation threshold.",
+          "The validated confirmation condition is reviewed confirmation threshold."
+        ],
+        "whatWouldInvalidate": [
+          "The validated risk invalidation condition is reviewed invalidation threshold."
+        ],
+        "whatWouldChange": [
+          "The validated confirmation condition is reviewed confirmation threshold.",
+          "The validated confirmation condition is reviewed confirmation threshold.",
+          "The validated risk invalidation condition is reviewed invalidation threshold."
+        ]
+      },
+      "grounding": {
+        "contextUsed": [
+          "fixture_watchlist_snapshot",
+          "fixture_stock_snapshot"
+        ],
+        "sourceState": "stale",
+        "generatedAt": "2026-07-22T05:09:08.489073+00:00",
+        "evidenceIds": [
+          "stage7:stale-watchlist:watchlist:1",
+          "stage7:stale-watchlist:stock:1",
+          "stage7:stale-watchlist:stock:2"
+        ]
+      },
+      "suggestedFollowUps": [],
+      "confidence": 42,
+      "answerConfidence": {
+        "level": "limited",
+        "reasons": [
+          "Intent confidence: 94%.",
+          "Evidence freshness: stale."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-stale-watchlist",
+        "intent": "WATCHLIST_REVIEW",
+        "subIntent": "attention_review",
+        "entities": [],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": true,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.94,
+        "requiredAgents": [
+          "watchlist",
+          "stock"
+        ],
+        "optionalAgents": [
+          "market",
+          "risk"
+        ],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-stale-watchlist",
+        "intentId": "intent-stage7-stale-watchlist",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-watchlist",
+            "order": 1,
+            "agent": "watchlist",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 2800,
+            "purpose": "Collect validated watchlist evidence."
+          },
+          {
+            "stepId": "step-2-stock",
+            "order": 2,
+            "agent": "stock",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 2800,
+            "purpose": "Collect validated technical evidence."
+          }
+        ],
+        "requiredAgents": [
+          "watchlist",
+          "stock"
+        ],
+        "optionalAgents": [
+          "market",
+          "risk"
+        ],
+        "dependencies": {
+          "step-1-watchlist": [],
+          "step-2-stock": []
+        },
+        "requiredEntities": [],
+        "evidenceRequirements": [
+          {
+            "category": "watchlist",
+            "required": true,
+            "entities": [],
+            "minimumItems": 1
+          },
+          {
+            "category": "technical",
+            "required": true,
+            "entities": [],
+            "minimumItems": 1
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "watchlist"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 3000,
+        "parallelExecutionAllowed": true
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "There is insufficient cited caution-status evidence to single out a saved stock; continue monitoring, and holdings were not inferred.",
+        "stance": "neutral",
+        "confidenceLabel": "limited",
+        "thesis": "There is insufficient cited caution-status evidence to single out a saved stock; continue monitoring, and holdings were not inferred.",
+        "supportingFactors": [],
+        "contradictoryFactors": [
+          {
+            "statement": "saved list: saved membership is stale monitoring signal.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:watchlist:1"
+            ]
+          },
+          {
+            "statement": "stock: technical setup is stale monitoring signal.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:stock:1"
+            ]
+          },
+          {
+            "statement": "stock: setup confirmation is unconfirmed risk condition.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:stock:2"
+            ]
+          }
+        ],
+        "keyRisks": [
+          {
+            "statement": "saved list: saved membership is stale monitoring signal.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:watchlist:1"
+            ]
+          },
+          {
+            "statement": "stock: technical setup is stale monitoring signal.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:stock:1"
+            ]
+          },
+          {
+            "statement": "stock: setup confirmation is unconfirmed risk condition.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:stock:2"
+            ]
+          }
+        ],
+        "confirmationConditions": [
+          {
+            "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:watchlist:1"
+            ]
+          },
+          {
+            "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:stock:1"
+            ]
+          }
+        ],
+        "invalidationConditions": [
+          {
+            "statement": "The validated risk invalidation condition is reviewed invalidation threshold.",
+            "evidenceIds": [
+              "stage7:stale-watchlist:stock:2"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "personalizationNote": "Saved-list membership is used only as monitoring context; holdings data was not inferred.",
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "watchlist",
+          "stock_detail"
+        ],
+        "disclaimerClass": "educational_market_decision_support"
+      },
+      "evidence": [
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:stale-watchlist:watchlist:1",
+          "category": "watchlist",
+          "entity": "saved list",
+          "metric": "saved membership",
+          "value": "stale monitoring signal",
+          "unit": null,
+          "currentState": "stale monitoring signal",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "engine_conclusion",
+          "source": {
+            "sourceId": "stage7:stale-watchlist:watchlist",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_watchlist_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:stale-watchlist-snapshots"
+          },
+          "freshness": {
+            "state": "stale",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [
+            "claim:stale-watchlist:support"
+          ],
+          "contradictsClaimIds": []
+        },
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:stale-watchlist:stock:1",
+          "category": "technical",
+          "entity": "stock",
+          "metric": "technical setup",
+          "value": "stale monitoring signal",
+          "unit": null,
+          "currentState": "stale monitoring signal",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "engine_conclusion",
+          "source": {
+            "sourceId": "stage7:stale-watchlist:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:stale-watchlist-snapshots"
+          },
+          "freshness": {
+            "state": "stale",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [
+            "claim:stale-watchlist:support"
+          ],
+          "contradictsClaimIds": []
+        },
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:stale-watchlist:stock:2",
+          "category": "technical",
+          "entity": "stock",
+          "metric": "setup confirmation",
+          "value": "unconfirmed risk condition",
+          "unit": null,
+          "currentState": "unconfirmed risk condition",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "contradiction",
+          "source": {
+            "sourceId": "stage7:stale-watchlist:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:stale-watchlist-snapshots"
+          },
+          "freshness": {
+            "state": "stale",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [],
+          "contradictsClaimIds": [
+            "claim:stale-watchlist:support"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "action-watchlist-default",
+          "label": "Open Watchlist",
+          "actionType": "navigate",
+          "destinationId": "watchlist",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": null,
+          "parameters": {}
+        }
+      ],
+      "warnings": [
+        "The fixture snapshot is stale and cannot support current actionability.",
+        "Evidence freshness is stale; conclusions are constrained accordingly."
+      ],
+      "freshnessSummary": {
+        "overallState": "stale",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 0,
+        "staleCount": 2,
+        "partialCount": 0,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "watchlist": 0.0,
+        "stock": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-watchlist-default",
+        "label": "Open Watchlist",
+        "actionType": "navigate",
+        "destinationId": "watchlist",
+        "route": "/watchlist",
+        "tab": null,
+        "subTab": null,
+        "sectionId": null,
+        "entity": null,
+        "highlightTarget": null,
+        "parameters": {}
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed WATCHLIST_REVIEW; expected WATCHLIST_REVIEW."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['watchlist', 'stock']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status stale."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness stale."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "passed",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:stale_label_visible",
+          "status": "passed",
+          "detail": "The stale constraint is visible in the response."
+        },
+        {
+          "check": "assertion:no_current_actionability",
+          "status": "passed",
+          "detail": "Stale evidence cannot produce current actionability."
+        },
+        {
+          "check": "assertion:saved_not_owned",
+          "status": "passed",
+          "detail": "Saved membership is not represented as ownership."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

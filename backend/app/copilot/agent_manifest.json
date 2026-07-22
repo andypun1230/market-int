@@ -1,0 +1,695 @@
+{
+  "schema_version": "stage7-agent-manifest-v1",
+  "inventory_version": "2026-07-22",
+  "runtime": {
+    "registry": "app.copilot.agents.CopilotAgentRegistry",
+    "registry_path": "backend/app/copilot/agents.py",
+    "source_facade": "app.copilot.sources.TrustedCopilotSources",
+    "source_facade_path": "backend/app/copilot/sources.py",
+    "input_contract": "app.copilot.agents.AgentExecutionContext",
+    "input_fields": [
+      "request_id",
+      "question",
+      "intent: CopilotIntentV1",
+      "plan: CopilotPlanV1",
+      "client_context"
+    ],
+    "output_contract": "app.copilot.contracts.AgentResultV1",
+    "output_schema_version": "copilot-agent-result-v1",
+    "contract_path": "backend/app/copilot/contracts.py",
+    "execution": {
+      "mode": "deterministic_read_only_adapters",
+      "parallel_collector": "app.copilot.collector.CopilotEvidenceCollector",
+      "model_client": null,
+      "prompt_template": null,
+      "prompt_version": null
+    },
+    "shared_consumers": [
+      "app.copilot.collector.CopilotEvidenceCollector",
+      "app.copilot.reasoning.CopilotReasoningEngine",
+      "app.copilot.validation.CopilotResponseValidator",
+      "app.copilot.orchestrator.InstitutionalCopilotOrchestrator",
+      "frontend/src/features/copilot/components/CopilotStructuredResponse.tsx"
+    ],
+    "shared_fallbacks": [
+      "Registry exceptions become typed failed AgentResultV1 values with unavailable freshness and a failure category.",
+      "Missing durable data becomes typed unavailable AgentResultV1 output; client market values are never substituted.",
+      "Collector timeouts preserve completed agent results and mark only the timed-out adapter failed.",
+      "Stale, partial, mixed, test, and unavailable freshness constrain synthesis and confidence downstream."
+    ]
+  },
+  "agents": [
+    {
+      "id": "market",
+      "display_name": "Market Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._market",
+      "purpose": "Expose the durable market snapshot's health classification, health score, summary, and improving or weakening factors.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["market"],
+      "allowedDestinations": ["market_overview", "health"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": [
+        "plan.freshness_requirements.maximum_age_seconds",
+        "intent and question are carried for the common contract but do not select market fields"
+      ],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["market"],
+        "deep_link_targets": ["market_overview", "health"]
+      },
+      "dependencies": [
+        "TrustedCopilotSources.market_snapshot",
+        "app.snapshots.service.get_market_snapshot_service",
+        "MarketSnapshot.section_payload('health')"
+      ],
+      "evidence_sources": [
+        {
+          "dataset": "market_snapshot",
+          "provider": "market_snapshot",
+          "provenance": "durable latest MarketSnapshot",
+          "fields": ["health.status", "health.overall_score", "health.summary", "health.improving_factors", "health.weakening_factors"]
+        }
+      ],
+      "consumers": ["MARKET_STATE", "MARKET_EXPLANATION", "STOCK_DECISION_SUPPORT", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic snapshot adapter",
+      "fallbacks": ["Unavailable when no immutable MarketSnapshot exists.", "Snapshot warnings and missing dependencies remain visible.", "Exceptions fail closed through CopilotAgentRegistry.execute."],
+      "existing_tests": [
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_client_market_values_do_not_cross_the_trust_boundary",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_all_thirty_public_pipeline_fixtures_execute"
+      ],
+      "missing_tests": ["No focused frozen real-MarketSnapshot adapter test covers every emitted health field and no-snapshot fallback."]
+    },
+    {
+      "id": "index",
+      "display_name": "Index Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._index",
+      "purpose": "Select requested registered indexes from the market snapshot and expose price, session change, and trend evidence.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["index"],
+      "allowedDestinations": ["indexes"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["intent.ticker_symbols", "plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["index"],
+        "deep_link_targets": ["indexes"]
+      },
+      "dependencies": ["TrustedCopilotSources.market_snapshot", "app.snapshots.service.get_market_snapshot_service", "MarketSnapshot.section_payload('indexes')"],
+      "evidence_sources": [
+        {
+          "dataset": "market_snapshot:indexes",
+          "provider": "market_snapshot",
+          "provenance": "durable latest MarketSnapshot index section",
+          "fields": ["display_symbol", "display_name", "price", "change_percent", "trend"]
+        }
+      ],
+      "consumers": ["INDEX_ANALYSIS", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic snapshot filter",
+      "fallbacks": ["Unavailable when no immutable MarketSnapshot exists.", "Unknown or absent requested rows produce no fabricated index evidence."],
+      "existing_tests": [
+        "backend/tests/test_institutional_copilot.py::Stage7IntentPlannerAndSessionTests.test_classifier_covers_all_fixture_intents_and_required_agent_inclusion",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_all_thirty_public_pipeline_fixtures_execute"
+      ],
+      "missing_tests": ["No focused real-adapter test covers requested-index filtering, absent rows, and mixed index structure."]
+    },
+    {
+      "id": "breadth",
+      "display_name": "Breadth Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._breadth",
+      "purpose": "Expose participation breadth, moving-average breadth, advance-decline ratio, classification, trend, and recorded divergences.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["breadth"],
+      "allowedDestinations": ["breadth"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["breadth"],
+        "deep_link_targets": ["breadth"]
+      },
+      "dependencies": ["TrustedCopilotSources.breadth_snapshot", "app.breadth.service.get_breadth_snapshot_service"],
+      "evidence_sources": [
+        {
+          "dataset": "breadth_snapshot",
+          "provider": "BreadthSnapshot.providers",
+          "provenance": "durable latest BreadthSnapshot",
+          "fields": ["score", "classification", "trend", "moving_average_breadth", "advance_decline", "divergences", "coverage"]
+        }
+      ],
+      "consumers": ["BREADTH_QUERY", "MARKET_EXPLANATION", "STOCK_DECISION_SUPPORT", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic snapshot adapter",
+      "fallbacks": ["Unavailable when no immutable BreadthSnapshot exists.", "Divergences are preserved as contradictions.", "Coverage and freshness warnings constrain downstream confidence."],
+      "existing_tests": [
+        "backend/tests/test_institutional_copilot.py::Stage7FreshnessAndSafetyTests.test_stale_test_partial_and_mixed_states_are_conservative",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_challenge_mode_has_cited_support_opposition_and_conditions"
+      ],
+      "missing_tests": ["No focused real-adapter test covers every breadth metric, divergence preservation, and no-snapshot fallback."]
+    },
+    {
+      "id": "leadership",
+      "display_name": "Leadership Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._leadership",
+      "purpose": "Expose the reviewed sector snapshot's top-five leadership ordering, classifications, and composite scores without creating a new ranking.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["leadership"],
+      "allowedDestinations": ["leadership"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["leadership"],
+        "deep_link_targets": ["leadership"]
+      },
+      "dependencies": ["TrustedCopilotSources.sector_snapshot", "app.sector_snapshots.service.get_sector_snapshot_service"],
+      "evidence_sources": [
+        {
+          "dataset": "sector_snapshot:leadership",
+          "provider": "sector_snapshot",
+          "provenance": "durable SectorSnapshot rankings",
+          "fields": ["rankings", "sectors[].sector_id", "sectors[].display_name", "sectors[].classification", "sectors[].composite_score", "rotation_summary"]
+        }
+      ],
+      "consumers": ["taxonomy-level SECTOR_ANALYSIS", "optional context for market, theme, and stock intents", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic reviewed-ranking adapter",
+      "fallbacks": ["Unavailable when no immutable SectorSnapshot exists.", "Never substitutes an ad hoc or newly computed ranking."],
+      "existing_tests": [
+        "backend/tests/test_institutional_copilot.py::Stage7IntentPlannerAndSessionTests.test_classifier_covers_all_fixture_intents_and_required_agent_inclusion",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_all_thirty_public_pipeline_fixtures_execute"
+      ],
+      "missing_tests": ["No focused real-adapter test verifies ranking order, five-row cap, and incomplete sector rows."]
+    },
+    {
+      "id": "sector",
+      "display_name": "Sector Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._sector",
+      "purpose": "Return rank, classification, and composite-score evidence for requested sectors or the reviewed top sector set.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["sector"],
+      "allowedDestinations": ["sector_detail"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["intent.sectors", "plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["sector"],
+        "deep_link_targets": ["sector_detail"]
+      },
+      "dependencies": ["TrustedCopilotSources.sector_snapshot", "app.sector_snapshots.service.get_sector_snapshot_service", "CopilotAgentRegistry._ranked_snapshot_result"],
+      "evidence_sources": [
+        {
+          "dataset": "sector_snapshot",
+          "provider": "sector_snapshot",
+          "provenance": "durable latest SectorSnapshot",
+          "fields": ["sectors[].sector_id", "sectors[].rank", "sectors[].classification", "sectors[].composite_score", "rankings", "rotation_summary"]
+        }
+      ],
+      "consumers": ["SECTOR_ANALYSIS", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic snapshot selection",
+      "fallbacks": ["Unavailable when no immutable SectorSnapshot exists.", "A requested sector absent from the snapshot yields no invented row.", "Without a requested sector, at most five reviewed ranked rows are returned."],
+      "existing_tests": [
+        "backend/tests/test_institutional_copilot.py::Stage7IntentPlannerAndSessionTests.test_classifier_covers_all_fixture_intents_and_required_agent_inclusion",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_exact_action_destinations_are_emitted"
+      ],
+      "missing_tests": ["No focused real-adapter test covers requested-sector filtering, taxonomy aliases, and absent-sector behavior."]
+    },
+    {
+      "id": "theme",
+      "display_name": "Theme Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._theme",
+      "purpose": "Return rank, classification, and composite-score evidence for requested themes or the reviewed top theme set.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["theme"],
+      "allowedDestinations": ["theme_detail"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["intent.themes", "plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["theme"],
+        "deep_link_targets": ["theme_detail"]
+      },
+      "dependencies": ["TrustedCopilotSources.theme_snapshot", "app.theme_snapshots.service.get_theme_snapshot_service", "CopilotAgentRegistry._ranked_snapshot_result"],
+      "evidence_sources": [
+        {
+          "dataset": "theme_snapshot",
+          "provider": "theme_snapshot",
+          "provenance": "durable latest ThemeSnapshot",
+          "fields": ["rows[].theme_id", "rows[].rank", "rows[].classification", "rows[].composite_score", "rankings", "rotation_summary", "member_coverage"]
+        }
+      ],
+      "consumers": ["THEME_ANALYSIS", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic snapshot selection",
+      "fallbacks": ["Unavailable when no immutable ThemeSnapshot exists.", "A requested theme absent from the snapshot yields no invented row.", "Without a requested theme, at most five reviewed ranked rows are returned."],
+      "existing_tests": [
+        "backend/tests/test_institutional_copilot.py::Stage7IntentPlannerAndSessionTests.test_classifier_covers_all_fixture_intents_and_required_agent_inclusion",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_exact_action_destinations_are_emitted"
+      ],
+      "missing_tests": ["No focused real-adapter test covers requested-theme filtering, missing provenance fields, and absent-theme behavior."]
+    },
+    {
+      "id": "macro",
+      "display_name": "Macro Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._macro",
+      "purpose": "Select registered macro and cross-asset evidence and claims from the latest immutable ReportDocument.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["macro"],
+      "allowedDestinations": ["macro"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["question terms", "plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["macro"],
+        "deep_link_targets": ["macro"]
+      },
+      "dependencies": ["TrustedCopilotSources.latest_report_document", "app.services.report.get_latest_daily_report", "ReportDocument evidence and claim registries", "CopilotAgentRegistry._report_evidence"],
+      "evidence_sources": [
+        {
+          "dataset": "registered ReportDocument source dataset",
+          "provider": "provider recorded in ReportDocument.sources",
+          "provenance": "ReportDocument evidence whose metric matches macro keywords",
+          "fields": ["rate", "yield", "treasury", "oil", "dollar", "gold", "credit", "macro", "inflation"]
+        }
+      ],
+      "consumers": ["MACRO_QUERY", "optional MARKET_EXPLANATION context", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic report-evidence filter",
+      "fallbacks": ["Unavailable when no validated ReportDocument exists.", "Returns explicit missing data when no registered macro metric matches.", "Does not invent direct macro series or event causality."],
+      "existing_tests": [
+        "backend/tests/test_institutional_copilot.py::Stage7IntentPlannerAndSessionTests.test_classifier_covers_all_fixture_intents_and_required_agent_inclusion",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_all_thirty_public_pipeline_fixtures_execute"
+      ],
+      "missing_tests": ["No focused real-ReportDocument adapter test verifies macro keyword selection, proxy disclosure, and unmatched-query fallback."]
+    },
+    {
+      "id": "risk",
+      "display_name": "Risk Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._risk",
+      "purpose": "Expose registered risk evidence plus stored report-thesis invalidation conditions, preserving those conditions as contradictions and levels.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["risk"],
+      "allowedDestinations": ["health", "report_scenarios"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["question terms", "plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["risk"],
+        "deep_link_targets": ["health", "report_scenarios"]
+      },
+      "dependencies": ["TrustedCopilotSources.latest_report_document", "app.services.report.get_latest_daily_report", "ReportDocument.thesis", "ReportDocument.monitoring_conditions", "CopilotAgentRegistry._report_evidence"],
+      "evidence_sources": [
+        {
+          "dataset": "ReportDocument and registered source datasets",
+          "provider": "ReportDocument plus registered evidence providers",
+          "provenance": "stored risk evidence and immutable thesis conditions",
+          "fields": ["risk", "volatility", "invalidate", "breadth", "drawdown", "support", "thesis.invalidation_conditions", "monitoring_conditions"]
+        }
+      ],
+      "consumers": ["RISK_QUERY", "STOCK_DECISION_SUPPORT", "FOLLOW_UP for stock decision support", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic report adapter",
+      "fallbacks": ["Unavailable when no validated ReportDocument exists.", "Stored invalidation conditions remain contradiction evidence.", "Never fills missing risk series with hard-coded events or client data."],
+      "existing_tests": [
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_report_challenge_conditions_are_cited",
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_sequential_stock_follow_ups_preserve_entity_and_base_intent",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_agent_timeout_is_bounded_and_preserves_completed_evidence"
+      ],
+      "missing_tests": ["No focused real-adapter test isolates missing ReportDocument, empty invalidation conditions, and partial source registration."]
+    },
+    {
+      "id": "stock",
+      "display_name": "Stock Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._stock",
+      "purpose": "Aggregate durable stock analysis snapshots for requested or saved symbols and expose setup, risk, technical, trend, volume, relative-strength, and support/resistance evidence.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["technical", "signal", "leadership"],
+      "allowedDestinations": ["stock_detail", "stock_technical", "stock_risk"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "merge_per_symbol_and_preserve_source_state", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["intent.ticker_symbols", "intent.intent", "client_context saved-symbol membership for WATCHLIST_REVIEW only", "plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["technical", "signal", "leadership"],
+        "deep_link_targets": ["stock_detail", "stock_technical", "stock_risk"]
+      },
+      "dependencies": ["TrustedCopilotSources.stock_snapshot", "app.stock_snapshots.service.get_stock_snapshot_service", "StockAnalysisSnapshot.section_payload", "watchlist membership identity when routed for WATCHLIST_REVIEW"],
+      "evidence_sources": [
+        {
+          "dataset": "stock_snapshot",
+          "provider": "stock_snapshot",
+          "provenance": "durable latest StockAnalysisSnapshot; no request-time provider work",
+          "fields": ["rating", "overall_assessment", "executive_summary", "technical", "trend", "volume", "relative_strength", "support_resistance"]
+        }
+      ],
+      "consumers": ["STOCK_ANALYSIS", "STOCK_DECISION_SUPPORT", "STOCK_COMPARISON", "WATCHLIST_REVIEW", "stock FOLLOW_UP", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic per-symbol durable-snapshot adapter",
+      "fallbacks": ["Unavailable when no validated symbol is supplied.", "Missing snapshots are unavailable per symbol and are merged without inventing values.", "At most ten symbols are read.", "Test or mock snapshots are explicitly freshness=test."],
+      "existing_tests": [
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_sequential_stock_follow_ups_preserve_entity_and_base_intent",
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_hydrated_saved_membership_drives_watchlist_without_inventing_snapshots",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_response_grounding_and_factor_evidence_integrity"
+      ],
+      "missing_tests": ["No focused real-adapter test covers a multi-symbol mix of available, stale, test, partial, and missing StockAnalysisSnapshots."]
+    },
+    {
+      "id": "watchlist",
+      "display_name": "Watchlist Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._watchlist",
+      "purpose": "Represent saved-symbol membership only, preserving the distinction between unavailable membership and a confirmed empty list; it does not infer holdings or market facts.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["watchlist"],
+      "allowedDestinations": ["watchlist"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["cached", "unavailable"], "maximumAgeSource": "not_applicable_identity_only", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable_not_empty", "partialInput": "not_applicable", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["client_context.savedSymbols or accepted saved-symbol aliases", "request_id for device-local source identity"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["watchlist"],
+        "deep_link_targets": ["watchlist"]
+      },
+      "dependencies": ["CopilotAgentRegistry._watchlist_membership", "app.copilot.sources.extract_saved_symbols", "TrustedCopilotSources.watchlist_membership"],
+      "evidence_sources": [
+        {
+          "dataset": "saved_membership",
+          "provider": "client_local_membership or unavailable",
+          "provenance": "identity-only device-local hint; not authenticated ownership",
+          "fields": ["symbol identifiers only", "membership scope", "membership state"]
+        }
+      ],
+      "consumers": ["WATCHLIST_REVIEW", "CopilotEvidenceCollector", "Stock Agent is independently co-routed for durable stock evidence when membership is non-empty"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic identity-boundary adapter",
+      "fallbacks": ["Missing membership is unavailable, never treated as empty.", "An explicit empty list is a complete typed empty result.", "Device-local membership carries an account-scoping limitation.", "No ownership or holdings inference is permitted."],
+      "existing_tests": [
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_hydrated_saved_membership_drives_watchlist_without_inventing_snapshots",
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_watchlist_direct_answer_names_only_cited_attention_candidates",
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_explicit_empty_saved_membership_beats_rich_rows",
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_missing_saved_membership_is_unavailable_not_empty"
+      ],
+      "missing_tests": ["No authenticated/account-scoped membership provider exists, so cross-device and multi-user isolation cannot yet be tested."]
+    },
+    {
+      "id": "report",
+      "display_name": "Report Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._report",
+      "purpose": "Retrieve the latest immutable ReportDocument thesis, claims, evidence, scenario conditions, confirmation/invalidation conditions, and validated report-change state.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["report"],
+      "allowedDestinations": ["report"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state_and_limitations", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["question terms", "intent.intent", "intent.sub_intent", "plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["report"],
+        "deep_link_targets": ["report"]
+      },
+      "dependencies": ["TrustedCopilotSources.latest_report_document", "app.services.report.get_latest_daily_report", "app.reports.document.ReportDocument", "CopilotAgentRegistry._report_evidence"],
+      "evidence_sources": [
+        {
+          "dataset": "ReportDocument and registered source datasets",
+          "provider": "ReportDocument plus providers recorded in ReportDocument.sources",
+          "provenance": "immutable latest report",
+          "fields": ["thesis", "claims", "evidence", "sources", "scenarios", "previous_report_available"]
+        }
+      ],
+      "consumers": ["REPORT_QUERY", "RISK_QUERY", "SCENARIO_QUERY", "RESEARCH_QUERY", "fallback FOLLOW_UP routing", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic immutable-report adapter",
+      "fallbacks": ["Unavailable when no validated ReportDocument exists.", "Report-change queries explicitly disclose missing prior immutable reports.", "Scenario and thesis conditions retain support or contradiction provenance."],
+      "existing_tests": [
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_report_challenge_conditions_are_cited",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_challenge_mode_has_cited_support_opposition_and_conditions",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_exact_action_destinations_are_emitted"
+      ],
+      "missing_tests": ["No focused adapter-level frozen ReportDocument test covers all three branches: latest report, report change with history, and first report without history."]
+    },
+    {
+      "id": "research",
+      "display_name": "Research Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._research",
+      "purpose": "Expose the qualified Report V7 Research Focus, including selection reasons, linked evidence, counter-thesis, and stored confirmation/invalidation conditions.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": ["research"],
+      "allowedDestinations": ["report_research_focus"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "typed_unavailable", "partialInput": "preserve_source_state_and_limitations", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["question terms", "plan.freshness_requirements.maximum_age_seconds"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": ["research"],
+        "deep_link_targets": ["report_research_focus"]
+      },
+      "dependencies": ["TrustedCopilotSources.latest_report_document", "ReportDocument.research_focus", "ReportDocument evidence registry", "CopilotAgentRegistry._report_evidence"],
+      "evidence_sources": [
+        {
+          "dataset": "ReportDocument Research Focus and registered source datasets",
+          "provider": "ReportDocument plus registered evidence providers",
+          "provenance": "qualified immutable Research Focus",
+          "fields": ["why_selected", "evidence_ids", "counter_thesis", "confirmation_conditions", "invalidation_conditions", "execution_implications"]
+        }
+      ],
+      "consumers": ["RESEARCH_QUERY", "optional THEME_ANALYSIS and STOCK_DECISION_SUPPORT context", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic immutable-report adapter",
+      "fallbacks": ["Unavailable when the latest validated report or qualified Research Focus is absent.", "Counter-thesis and invalidation conditions are always emitted as contradiction evidence.", "No continuity with a prior focus is inferred here."],
+      "existing_tests": [
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_report_challenge_conditions_are_cited",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_challenge_mode_has_cited_support_opposition_and_conditions",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_exact_action_destinations_are_emitted"
+      ],
+      "missing_tests": ["No focused adapter-level frozen report test covers missing Research Focus, evidence-ID mismatch, and unsafe retrieved Research Focus text."]
+    },
+    {
+      "id": "navigation",
+      "display_name": "Navigation Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._navigation",
+      "purpose": "Map a classified navigation sub-intent to a registered application destination without reading market data.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": [],
+      "allowedDestinations": ["home", "market_overview", "indexes", "breadth", "health", "fear_greed", "institutions", "macro", "sector_rotation", "sector_detail", "theme_detail", "leadership", "stock_detail", "stock_technical", "stock_signals", "stock_risk", "watchlist", "report", "report_research_focus", "report_scenarios", "report_watchlist", "settings"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["live", "unavailable"], "maximumAgeSource": "not_applicable_local_registry", "staleActionability": "not_applicable"},
+      "availabilityBehavior": {"missingInput": "market_overview_default", "partialInput": "not_applicable", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["intent.sub_intent"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": [],
+        "deep_link_targets": ["destination selected by navigation_destination"]
+      },
+      "dependencies": ["app.copilot.planner.navigation_destination", "app.copilot.actions.ACTION_REGISTRY downstream"],
+      "evidence_sources": [
+        {
+          "dataset": "route_registry",
+          "provider": "route_registry",
+          "provenance": "static registered destination taxonomy",
+          "fields": ["destination id"]
+        }
+      ],
+      "consumers": ["APP_NAVIGATION", "InstitutionalCopilotOrchestrator._build_actions", "frontend Copilot destination resolver"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic registry lookup",
+      "fallbacks": ["Unknown destination sub-intents map to market_overview.", "No market evidence is generated.", "Only registered actions survive downstream validation."],
+      "existing_tests": [
+        "backend/tests/test_stage7_copilot_runtime.py::Stage7CopilotRuntimeTests.test_operational_fields_and_structured_log_are_safe",
+        "backend/tests/test_institutional_copilot.py::Stage7IntentPlannerAndSessionTests.test_navigation_plan_is_local_and_bounded",
+        "backend/tests/test_institutional_copilot.py::Stage7ActionDestinationTests.test_every_fixture_action_is_registered_and_exact"
+      ],
+      "missing_tests": ["No exhaustive table-driven test directly invokes the agent for every CopilotDestination value and unknown sub-intent."]
+    },
+    {
+      "id": "educational",
+      "display_name": "Educational Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._educational",
+      "purpose": "Return bounded definitions for breadth, relative strength, rotation, support, resistance, and volume without making current-market claims.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": [],
+      "allowedDestinations": [],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["unavailable"], "maximumAgeSource": "not_applicable_static_glossary", "staleActionability": "not_applicable"},
+      "availabilityBehavior": {"missingInput": "bounded_supported_concepts_fallback", "partialInput": "not_applicable", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["question text"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": [],
+        "deep_link_targets": []
+      },
+      "dependencies": ["inline deterministic glossary in CopilotAgentRegistry._educational"],
+      "evidence_sources": [
+        {
+          "dataset": "copilot_glossary",
+          "provider": "copilot_glossary",
+          "provenance": "version-controlled inline definitions",
+          "fields": ["breadth", "relative strength", "rotation", "support", "resistance", "volume"]
+        }
+      ],
+      "consumers": ["EDUCATIONAL_QUERY", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic glossary lookup",
+      "fallbacks": ["Unknown glossary term returns the bounded list of supported concepts.", "Freshness is unavailable by design because definitions are not live market claims."],
+      "existing_tests": [
+        "backend/tests/test_institutional_copilot.py::Stage7FixtureMatrixTests.test_plans_are_minimal_for_navigation_education_and_simple_stock",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_all_thirty_public_pipeline_fixtures_execute"
+      ],
+      "missing_tests": ["No focused table-driven real-agent test covers all six definitions and the unknown-term fallback."]
+    },
+    {
+      "id": "portfolio",
+      "display_name": "Portfolio Agent",
+      "source_path": "backend/app/copilot/agents.py",
+      "handler": "CopilotAgentRegistry._portfolio",
+      "purpose": "Expose an explicit unavailable boundary until an authenticated holdings provider exists; it must never reinterpret watchlist membership as holdings.",
+      "contractVersion": "copilot-agent-result-v1",
+      "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
+      "outputSchema": "app.copilot.contracts.AgentResultV1",
+      "allowedEvidenceCategories": [],
+      "allowedDestinations": ["watchlist"],
+      "deterministic": true,
+      "modelDependent": false,
+      "requiredFreshness": {"allowedStates": ["unavailable"], "maximumAgeSource": "not_applicable_no_provider", "staleActionability": "prohibited"},
+      "availabilityBehavior": {"missingInput": "always_typed_unavailable", "partialInput": "not_applicable", "exception": "typed_failed"},
+      "promptVersion": null,
+      "modelVersion": null,
+      "accepted_inputs": ["common AgentExecutionContext only; no portfolio field is consumed because no provider is connected"],
+      "output_schema": {
+        "model": "AgentResultV1",
+        "schema_version": "copilot-agent-result-v1",
+        "evidence_categories": [],
+        "deep_link_targets": ["watchlist"]
+      },
+      "dependencies": [],
+      "evidence_sources": [],
+      "consumers": ["PORTFOLIO_QUERY", "CopilotEvidenceCollector"],
+      "prompt_version": null,
+      "model_dependence": "none; deterministic unavailable stub",
+      "fallbacks": ["Always returns unavailable with the exact connected-data limitation.", "Offers watchlist and saved themes as analysis alternatives without inferring ownership."],
+      "existing_tests": [
+        "backend/tests/test_institutional_copilot.py::Stage7FixtureMatrixTests.test_honest_portfolio_fallback_is_exact_and_watchlist_safe",
+        "backend/tests/test_institutional_copilot.py::Stage7ExecutableIntegrationTests.test_portfolio_fallback_is_exact_and_does_not_infer_holdings"
+      ],
+      "missing_tests": ["No provider contract or authenticated user-isolation test exists because portfolio integration is intentionally not implemented."]
+    }
+  ]
+}

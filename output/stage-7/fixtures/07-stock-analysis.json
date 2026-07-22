@@ -1,0 +1,947 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 7,
+    "caseId": "stock-analysis",
+    "title": "Stock analysis",
+    "request": {
+      "message": "Analyse NVDA.",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "durable-cached",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "STOCK_ANALYSIS",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "stock"
+      ],
+      "optionalAgents": [],
+      "entities": [
+        {
+          "type": "stock",
+          "id": "NVDA"
+        }
+      ],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "complete"
+      ],
+      "allowedFreshnessStates": [
+        "cached",
+        "delayed",
+        "live"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "stock_detail",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": "NVDA",
+          "highlightTarget": null
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "ticker_registry_validated",
+        "stock_snapshot_only",
+        "no_request_time_provider_work"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-07-stock-analysis",
+    "planId": "plan-stage7-stock-analysis",
+    "threadId": "stage7-thread-stock-analysis",
+    "startedAt": "2026-07-22T05:09:08.466064+00:00",
+    "completedAt": "2026-07-22T05:09:08.467353+00:00",
+    "elapsedMs": 1.146,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-stock-analysis",
+      "intent": "STOCK_ANALYSIS",
+      "subIntent": "setup",
+      "entities": [
+        {
+          "entityId": "NVDA",
+          "entityType": "stock",
+          "displayName": "NVIDIA",
+          "symbol": "NVDA",
+          "confidence": 1.0,
+          "resolutionSource": "fixture-registry"
+        }
+      ],
+      "tickerSymbols": [
+        "NVDA"
+      ],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.94,
+      "requiredAgents": [
+        "stock"
+      ],
+      "optionalAgents": [
+        "market",
+        "leadership"
+      ],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-stock-analysis",
+      "intentId": "intent-stage7-stock-analysis",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-stock",
+          "order": 1,
+          "agent": "stock",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 2800,
+          "purpose": "Collect validated technical evidence."
+        }
+      ],
+      "requiredAgents": [
+        "stock"
+      ],
+      "optionalAgents": [
+        "market",
+        "leadership"
+      ],
+      "dependencies": {
+        "step-1-stock": []
+      },
+      "requiredEntities": [
+        "NVDA"
+      ],
+      "evidenceRequirements": [
+        {
+          "category": "technical",
+          "required": true,
+          "entities": [
+            "NVDA"
+          ],
+          "minimumItems": 1
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "stock_detail"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 3000,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "stock",
+        "status": "complete",
+        "observations": [
+          "The stock fixture adapter returned a reviewed durable observation."
+        ],
+        "conclusions": [
+          "The stock evidence remains conditional on its cited source."
+        ],
+        "contradictions": [
+          "A reviewed opposing condition remains unresolved."
+        ],
+        "metrics": {},
+        "levels": [
+          {
+            "label": "confirmation condition",
+            "value": "reviewed confirmation threshold",
+            "unit": null,
+            "evidenceId": "stage7:stock-analysis:stock:1"
+          },
+          {
+            "label": "risk invalidation condition",
+            "value": "reviewed invalidation threshold",
+            "unit": null,
+            "evidenceId": "stage7:stock-analysis:stock:2"
+          }
+        ],
+        "sourceReferences": [
+          {
+            "sourceId": "stage7:stock-analysis:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:durable-cached"
+          }
+        ],
+        "evidence": [
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:stock-analysis:stock:1",
+            "category": "technical",
+            "entity": "NVDA",
+            "metric": "technical setup",
+            "value": "constructive reviewed signal",
+            "unit": null,
+            "currentState": "constructive reviewed signal",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "engine_conclusion",
+            "source": {
+              "sourceId": "stage7:stock-analysis:stock",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_stock_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:durable-cached"
+            },
+            "freshness": {
+              "state": "cached",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [
+              "claim:stock-analysis:support"
+            ],
+            "contradictsClaimIds": []
+          },
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:stock-analysis:stock:2",
+            "category": "technical",
+            "entity": "NVDA",
+            "metric": "setup confirmation",
+            "value": "unconfirmed risk condition",
+            "unit": null,
+            "currentState": "unconfirmed risk condition",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "contradiction",
+            "source": {
+              "sourceId": "stage7:stock-analysis:stock",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_stock_snapshot",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:durable-cached"
+            },
+            "freshness": {
+              "state": "cached",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": null,
+            "supportsClaimIds": [],
+            "contradictsClaimIds": [
+              "claim:stock-analysis:support"
+            ]
+          }
+        ],
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "stock_detail"
+        ],
+        "warnings": [],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:stock-analysis:stock:1",
+        "category": "technical",
+        "entity": "NVDA",
+        "metric": "technical setup",
+        "value": "constructive reviewed signal",
+        "unit": null,
+        "currentState": "constructive reviewed signal",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "engine_conclusion",
+        "source": {
+          "sourceId": "stage7:stock-analysis:stock",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_stock_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:durable-cached"
+        },
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [
+          "claim:stock-analysis:support"
+        ],
+        "contradictsClaimIds": []
+      },
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:stock-analysis:stock:2",
+        "category": "technical",
+        "entity": "NVDA",
+        "metric": "setup confirmation",
+        "value": "unconfirmed risk condition",
+        "unit": null,
+        "currentState": "unconfirmed risk condition",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "contradiction",
+        "source": {
+          "sourceId": "stage7:stock-analysis:stock",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_stock_snapshot",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:durable-cached"
+        },
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": null,
+        "supportsClaimIds": [],
+        "contradictsClaimIds": [
+          "claim:stock-analysis:support"
+        ]
+      }
+    ],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.",
+      "stance": "monitor",
+      "confidenceLabel": "limited",
+      "thesis": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.",
+      "supportingFactors": [
+        {
+          "statement": "NVDA: technical setup is constructive reviewed signal.",
+          "evidenceIds": [
+            "stage7:stock-analysis:stock:1"
+          ]
+        }
+      ],
+      "contradictoryFactors": [
+        {
+          "statement": "NVDA: setup confirmation is unconfirmed risk condition.",
+          "evidenceIds": [
+            "stage7:stock-analysis:stock:2"
+          ]
+        }
+      ],
+      "keyRisks": [
+        {
+          "statement": "NVDA: setup confirmation is unconfirmed risk condition.",
+          "evidenceIds": [
+            "stage7:stock-analysis:stock:2"
+          ]
+        }
+      ],
+      "confirmationConditions": [
+        {
+          "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+          "evidenceIds": [
+            "stage7:stock-analysis:stock:1"
+          ]
+        }
+      ],
+      "invalidationConditions": [
+        {
+          "statement": "The validated risk invalidation condition is reviewed invalidation threshold.",
+          "evidenceIds": [
+            "stage7:stock-analysis:stock:2"
+          ]
+        }
+      ],
+      "missingEvidence": [],
+      "personalizationNote": null,
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "stock_detail"
+      ],
+      "disclaimerClass": "educational_market_decision_support"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-07-stock-analysis",
+      "planId": "plan-stage7-stock-analysis",
+      "threadId": "stage7-thread-stock-analysis",
+      "status": "complete",
+      "answer": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.\n\nWhy: NVDA: technical setup is constructive reviewed signal.\n\nCounter-evidence: NVDA: setup confirmation is unconfirmed risk condition.",
+      "answerSections": {
+        "directAnswer": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.",
+        "why": [
+          "NVDA: technical setup is constructive reviewed signal."
+        ],
+        "evidenceFor": [
+          "NVDA: technical setup is constructive reviewed signal."
+        ],
+        "evidenceAgainst": [
+          "NVDA: setup confirmation is unconfirmed risk condition."
+        ],
+        "mainCaution": "NVDA: setup confirmation is unconfirmed risk condition.",
+        "whatWouldConfirm": [
+          "The validated confirmation condition is reviewed confirmation threshold."
+        ],
+        "whatWouldInvalidate": [
+          "The validated risk invalidation condition is reviewed invalidation threshold."
+        ],
+        "whatWouldChange": [
+          "The validated confirmation condition is reviewed confirmation threshold.",
+          "The validated risk invalidation condition is reviewed invalidation threshold."
+        ]
+      },
+      "grounding": {
+        "contextUsed": [
+          "fixture_stock_snapshot"
+        ],
+        "sourceState": "cached",
+        "generatedAt": "2026-07-22T05:09:08.466976+00:00",
+        "evidenceIds": [
+          "stage7:stock-analysis:stock:1",
+          "stage7:stock-analysis:stock:2"
+        ]
+      },
+      "suggestedFollowUps": [
+        "What confirms it?",
+        "What would invalidate it?",
+        "Show me."
+      ],
+      "confidence": 42,
+      "answerConfidence": {
+        "level": "limited",
+        "reasons": [
+          "Intent confidence: 94%.",
+          "Evidence freshness: cached."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-stock-analysis",
+        "intent": "STOCK_ANALYSIS",
+        "subIntent": "setup",
+        "entities": [
+          {
+            "entityId": "NVDA",
+            "entityType": "stock",
+            "displayName": "NVIDIA",
+            "symbol": "NVDA",
+            "confidence": 1.0,
+            "resolutionSource": "fixture-registry"
+          }
+        ],
+        "tickerSymbols": [
+          "NVDA"
+        ],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.94,
+        "requiredAgents": [
+          "stock"
+        ],
+        "optionalAgents": [
+          "market",
+          "leadership"
+        ],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-stock-analysis",
+        "intentId": "intent-stage7-stock-analysis",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-stock",
+            "order": 1,
+            "agent": "stock",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 2800,
+            "purpose": "Collect validated technical evidence."
+          }
+        ],
+        "requiredAgents": [
+          "stock"
+        ],
+        "optionalAgents": [
+          "market",
+          "leadership"
+        ],
+        "dependencies": {
+          "step-1-stock": []
+        },
+        "requiredEntities": [
+          "NVDA"
+        ],
+        "evidenceRequirements": [
+          {
+            "category": "technical",
+            "required": true,
+            "entities": [
+              "NVDA"
+            ],
+            "minimumItems": 1
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "stock_detail"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 3000,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.",
+        "stance": "monitor",
+        "confidenceLabel": "limited",
+        "thesis": "The stock snapshot supports a monitoring assessment; use the cited engine conditions and risks.",
+        "supportingFactors": [
+          {
+            "statement": "NVDA: technical setup is constructive reviewed signal.",
+            "evidenceIds": [
+              "stage7:stock-analysis:stock:1"
+            ]
+          }
+        ],
+        "contradictoryFactors": [
+          {
+            "statement": "NVDA: setup confirmation is unconfirmed risk condition.",
+            "evidenceIds": [
+              "stage7:stock-analysis:stock:2"
+            ]
+          }
+        ],
+        "keyRisks": [
+          {
+            "statement": "NVDA: setup confirmation is unconfirmed risk condition.",
+            "evidenceIds": [
+              "stage7:stock-analysis:stock:2"
+            ]
+          }
+        ],
+        "confirmationConditions": [
+          {
+            "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+            "evidenceIds": [
+              "stage7:stock-analysis:stock:1"
+            ]
+          }
+        ],
+        "invalidationConditions": [
+          {
+            "statement": "The validated risk invalidation condition is reviewed invalidation threshold.",
+            "evidenceIds": [
+              "stage7:stock-analysis:stock:2"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "personalizationNote": null,
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "stock_detail"
+        ],
+        "disclaimerClass": "educational_market_decision_support"
+      },
+      "evidence": [
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:stock-analysis:stock:1",
+          "category": "technical",
+          "entity": "NVDA",
+          "metric": "technical setup",
+          "value": "constructive reviewed signal",
+          "unit": null,
+          "currentState": "constructive reviewed signal",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "engine_conclusion",
+          "source": {
+            "sourceId": "stage7:stock-analysis:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:durable-cached"
+          },
+          "freshness": {
+            "state": "cached",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [
+            "claim:stock-analysis:support"
+          ],
+          "contradictsClaimIds": []
+        },
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:stock-analysis:stock:2",
+          "category": "technical",
+          "entity": "NVDA",
+          "metric": "setup confirmation",
+          "value": "unconfirmed risk condition",
+          "unit": null,
+          "currentState": "unconfirmed risk condition",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "contradiction",
+          "source": {
+            "sourceId": "stage7:stock-analysis:stock",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_stock_snapshot",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:durable-cached"
+          },
+          "freshness": {
+            "state": "cached",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": null,
+          "supportsClaimIds": [],
+          "contradictsClaimIds": [
+            "claim:stock-analysis:support"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "action-stock_detail-nvda",
+          "label": "Open Stock Detail",
+          "actionType": "open_entity",
+          "destinationId": "stock_detail",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": "stocks",
+          "entity": "NVDA",
+          "highlightTarget": "stocks",
+          "parameters": {
+            "entity": "NVDA",
+            "symbol": "NVDA",
+            "sectionId": "stocks"
+          }
+        }
+      ],
+      "warnings": [],
+      "freshnessSummary": {
+        "overallState": "cached",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 1,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "stock": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-stock_detail-nvda",
+        "label": "Open Stock Detail",
+        "actionType": "open_entity",
+        "destinationId": "stock_detail",
+        "route": "/watchlist",
+        "tab": null,
+        "subTab": null,
+        "sectionId": "stocks",
+        "entity": "NVDA",
+        "highlightTarget": "stocks",
+        "parameters": {
+          "entity": "NVDA",
+          "symbol": "NVDA",
+          "sectionId": "stocks"
+        }
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed STOCK_ANALYSIS; expected STOCK_ANALYSIS."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['stock']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status complete."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness cached."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:ticker_registry_validated",
+          "status": "passed",
+          "detail": "Every stock symbol was resolved through the deterministic registry."
+        },
+        {
+          "check": "assertion:stock_snapshot_only",
+          "status": "passed",
+          "detail": "Stock analysis uses only the durable stock snapshot adapter."
+        },
+        {
+          "check": "assertion:no_request_time_provider_work",
+          "status": "passed",
+          "detail": "No live/request-time provider source was invoked."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

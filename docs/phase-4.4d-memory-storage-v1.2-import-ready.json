@@ -1,0 +1,21 @@
+{
+  "applied": false,
+  "canonical_theme_id": "memory_storage",
+  "definition_status": "active",
+  "dry_run": true,
+  "errors": [],
+  "member_count": 7,
+  "missing_security_master_records": [],
+  "missing_security_records": [],
+  "provider_mapping_warnings": [],
+  "reason_code": null,
+  "requested_theme_id": "memory_storage",
+  "review_gate": "human reviewed metadata is required before apply",
+  "reviewed": true,
+  "reviewed_at": "2026-07-20T00:00:00Z",
+  "reviewer": "AndyPun123123",
+  "security_id_mismatches": [],
+  "status": "READY",
+  "theme_id": "memory_storage",
+  "version": "v1.2"
+}

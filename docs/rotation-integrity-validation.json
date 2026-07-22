@@ -126,7 +126,7 @@
       "quadrant": "leading",
       "raw_momentum": 2.12,
       "raw_rs": 6.2649,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLE:polygon;SPY:polygon",
       "source_state": "live"
@@ -246,7 +246,7 @@
       "quadrant": "leading",
       "raw_momentum": 11.5827,
       "raw_rs": 5.129,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLE:polygon;SPY:polygon",
       "source_state": "live"
@@ -366,7 +366,7 @@
       "quadrant": "improving",
       "raw_momentum": 13.2524,
       "raw_rs": -3.9889,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLE:polygon;SPY:polygon",
       "source_state": "live"
@@ -486,7 +486,7 @@
       "quadrant": "leading",
       "raw_momentum": 1.7964,
       "raw_rs": 1.6999,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLV:polygon;SPY:polygon",
       "source_state": "live"
@@ -606,7 +606,7 @@
       "quadrant": "leading",
       "raw_momentum": 4.6393,
       "raw_rs": 6.2671,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLV:polygon;SPY:polygon",
       "source_state": "live"
@@ -726,7 +726,7 @@
       "quadrant": "leading",
       "raw_momentum": 13.5958,
       "raw_rs": 3.9435,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLV:polygon;SPY:polygon",
       "source_state": "live"
@@ -846,7 +846,7 @@
       "quadrant": "leading",
       "raw_momentum": 0.8141,
       "raw_rs": 3.7267,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLRE:polygon;SPY:polygon",
       "source_state": "live"
@@ -966,7 +966,7 @@
       "quadrant": "leading",
       "raw_momentum": 5.2327,
       "raw_rs": 1.6478,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLRE:polygon;SPY:polygon",
       "source_state": "live"
@@ -1086,7 +1086,7 @@
       "quadrant": "improving",
       "raw_momentum": 4.0284,
       "raw_rs": -2.2581,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLRE:polygon;SPY:polygon",
       "source_state": "live"
@@ -1206,7 +1206,7 @@
       "quadrant": "leading",
       "raw_momentum": 0.2214,
       "raw_rs": 2.5317,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLF:polygon;SPY:polygon",
       "source_state": "live"
@@ -1326,7 +1326,7 @@
       "quadrant": "leading",
       "raw_momentum": 0.6859,
       "raw_rs": 4.4525,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLF:polygon;SPY:polygon",
       "source_state": "live"
@@ -1446,7 +1446,7 @@
       "quadrant": "leading",
       "raw_momentum": 4.3895,
       "raw_rs": 2.1969,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLF:polygon;SPY:polygon",
       "source_state": "live"
@@ -1566,7 +1566,7 @@
       "quadrant": "leading",
       "raw_momentum": 0.5631,
       "raw_rs": 0.1647,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLI:polygon;SPY:polygon",
       "source_state": "live"
@@ -1686,7 +1686,7 @@
       "quadrant": "weakening",
       "raw_momentum": -0.4769,
       "raw_rs": 0.6936,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLI:polygon;SPY:polygon",
       "source_state": "live"
@@ -1806,7 +1806,7 @@
       "quadrant": "improving",
       "raw_momentum": 3.2374,
       "raw_rs": -0.6022,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLI:polygon;SPY:polygon",
       "source_state": "live"
@@ -1926,7 +1926,7 @@
       "quadrant": "weakening",
       "raw_momentum": -0.4523,
       "raw_rs": 2.8165,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLP:polygon;SPY:polygon",
       "source_state": "live"
@@ -2046,7 +2046,7 @@
       "quadrant": "leading",
       "raw_momentum": 2.8757,
       "raw_rs": 0.4709,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLP:polygon;SPY:polygon",
       "source_state": "live"
@@ -2166,7 +2166,7 @@
       "quadrant": "improving",
       "raw_momentum": 9.4913,
       "raw_rs": -1.3156,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLP:polygon;SPY:polygon",
       "source_state": "live"
@@ -2286,7 +2286,7 @@
       "quadrant": "improving",
       "raw_momentum": 0.1522,
       "raw_rs": -3.9405,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLK:polygon;SPY:polygon",
       "source_state": "live"
@@ -2406,7 +2406,7 @@
       "quadrant": "lagging",
       "raw_momentum": -5.2242,
       "raw_rs": -4.8813,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLK:polygon;SPY:polygon",
       "source_state": "live"
@@ -2526,7 +2526,7 @@
       "quadrant": "weakening",
       "raw_momentum": -12.1813,
       "raw_rs": 9.5715,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLK:polygon;SPY:polygon",
       "source_state": "live"
@@ -2646,7 +2646,7 @@
       "quadrant": "leading",
       "raw_momentum": 0.1309,
       "raw_rs": 1.016,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLU:polygon;SPY:polygon",
       "source_state": "live"
@@ -2766,7 +2766,7 @@
       "quadrant": "leading",
       "raw_momentum": 0.3595,
       "raw_rs": 1.1824,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLU:polygon;SPY:polygon",
       "source_state": "live"
@@ -2886,7 +2886,7 @@
       "quadrant": "improving",
       "raw_momentum": 7.7708,
       "raw_rs": -8.4789,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLU:polygon;SPY:polygon",
       "source_state": "live"
@@ -3006,7 +3006,7 @@
       "quadrant": "weakening",
       "raw_momentum": -0.5419,
       "raw_rs": 0.0092,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLY:polygon;SPY:polygon",
       "source_state": "live"
@@ -3126,7 +3126,7 @@
       "quadrant": "lagging",
       "raw_momentum": -0.3649,
       "raw_rs": -1.6111,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLY:polygon;SPY:polygon",
       "source_state": "live"
@@ -3246,7 +3246,7 @@
       "quadrant": "lagging",
       "raw_momentum": -0.6023,
       "raw_rs": -7.7948,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLY:polygon;SPY:polygon",
       "source_state": "live"
@@ -3366,7 +3366,7 @@
       "quadrant": "weakening",
       "raw_momentum": -1.4105,
       "raw_rs": 0.6577,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLC:polygon;SPY:polygon",
       "source_state": "live"
@@ -3486,7 +3486,7 @@
       "quadrant": "improving",
       "raw_momentum": 1.7365,
       "raw_rs": -0.5486,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLC:polygon;SPY:polygon",
       "source_state": "live"
@@ -3606,7 +3606,7 @@
       "quadrant": "improving",
       "raw_momentum": 1.6845,
       "raw_rs": -12.8169,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLC:polygon;SPY:polygon",
       "source_state": "live"
@@ -3726,7 +3726,7 @@
       "quadrant": "weakening",
       "raw_momentum": -0.5481,
       "raw_rs": 0.8371,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLB:polygon;SPY:polygon",
       "source_state": "live"
@@ -3846,7 +3846,7 @@
       "quadrant": "lagging",
       "raw_momentum": -1.0235,
       "raw_rs": -3.2158,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLB:polygon;SPY:polygon",
       "source_state": "live"
@@ -3966,7 +3966,7 @@
       "quadrant": "lagging",
       "raw_momentum": -2.8949,
       "raw_rs": -8.2906,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_provider": "polygon",
       "source_series_ids": "XLB:polygon;SPY:polygon",
       "source_state": "live"
@@ -4043,7 +4043,7 @@
       "normalization_version": "midpoint-100-relative-return-v1",
       "points": 165,
       "series": 33,
-      "snapshot_id": "sector-sp100-v20260718-2026-07-17-a11c4982e5",
+      "snapshot_id": "sector-sp100-v20260718-2026-07-17-5397be31d6",
       "source_state": "live",
       "trail_source": "durable_polygon_adjusted_daily_history"
     },

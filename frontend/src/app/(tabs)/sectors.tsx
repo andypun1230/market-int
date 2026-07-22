@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -11,6 +12,8 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { MetricTile } from '@/components/ui/MetricTile';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
+import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
+import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { SECTOR_TAB_TEST_SEED, TEST_HEATMAP_INTERVALS, TEST_ROTATION_INTERVALS, buildRotationAlerts, type SectorThemeTestItem, type TestThemeItem } from '@/data/sectorTabTestData';
 import { SectorDetailContent } from '@/features/sectors/components/SectorDetailContent';
 import { SectorThemeComparisonView } from '@/features/sectors/components/SectorThemeComparisonView';
@@ -20,16 +23,22 @@ import { DEFAULT_SECTOR_THEME_FILTERS, countActiveFilters, filterSectorThemeItem
 import { createTestSectorThemeRepository } from '@/features/sectors/repository/sectorThemeRepository';
 import { formatClassification, formatCoverage, formatNullablePercent, normalizeSectorId, sourceLabel, type SectorId, type SectorRow } from '@/features/sectors/sectorSnapshot';
 import { buildRotationChartSectors } from '@/features/sectors/rotationAvailability';
+import { formatThemeRole, formatThemeTaxonomyLabel } from '@/features/themes/presentation';
+import { themeTabProvenance } from '@/features/themes/themeProvenance';
+import { type LiveThemeItem, type ThemeOverlap } from '@/features/themes/themeSnapshot';
+import { themeGovernancePresentation } from '@/features/themes/themeStatus';
 import { useSectorUiPreferences } from '@/features/sectors/state/sectorUiPreferences';
 import { WatchlistBookmarkButton } from '@/features/watchlist/WatchlistBookmarkButton';
 import { rotationTrailHistoryDisclosure } from '@/features/sectors/rotationCopy';
 import { buildWatchlistKey, useWatchlist } from '@/features/watchlist/store';
 import { useSectorRotationTrails, useSectorSnapshot } from '@/hooks/useSectorSnapshot';
+import { useThemeSnapshot } from '@/hooks/useThemeSnapshot';
+import { useThemeStatus } from '@/hooks/useThemeStatus';
 import { areTestScenariosEnabled } from '@/services/runtimeConfig';
 
 type ActiveCategory = 'sectors' | 'themes' | 'signals';
 type ActiveSection = 'sectorHeatmap' | 'sectorRotation' | 'sectorAlerts' | 'themesHeatmap' | 'themesRotation' | 'themeAlerts' | 'emergingLeadership' | 'leadershipRisk';
-type SelectedDetail = { kind: 'sector'; sectorId: SectorId } | { item: TestThemeItem; kind: 'theme' } | null;
+type SelectedDetail = { kind: 'sector'; sectorId: SectorId } | { item: TestThemeItem | LiveThemeItem; kind: 'theme' } | null;
 
 const CATEGORY_OPTIONS: { key: ActiveCategory; label: string }[] = [
   { key: 'sectors', label: 'Sectors' },
@@ -43,21 +52,39 @@ const CONTENT_OPTIONS: Record<ActiveCategory, { key: ActiveSection; label: strin
 };
 
 export default function SectorsScreen() {
+  const router = useRouter();
+  const {
+    actionNonce: actionNonceParam,
+    entityId: entityIdParam,
+    entityKind: entityKindParam,
+    entityName: entityNameParam,
+    section: sectionParam,
+  } = useLocalSearchParams<{
+    actionNonce?: string | string[];
+    entityId?: string | string[];
+    entityKind?: string | string[];
+    entityName?: string | string[];
+    section?: string | string[];
+  }>();
   const { snapshot, loading, error, refetch } = useSectorSnapshot();
   const { rotation } = useSectorRotationTrails();
+  const testScenariosEnabled = areTestScenariosEnabled();
+  const { status: themeStatus } = useThemeStatus(!testScenariosEnabled);
+  const { snapshot: themeSnapshot } = useThemeSnapshot(!testScenariosEnabled && themeStatus?.status === 'live');
   const [preferences, updatePreferences] = useSectorUiPreferences();
-  const [selected, setSelected] = useState<SelectedDetail>(null);
+  const [selectedOverride, setSelected] = useState<SelectedDetail>(null);
+  const [dismissedDeepLinkKey, setDismissedDeepLinkKey] = useState<string | null>(null);
   const [comparisonVisible, setComparisonVisible] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
   const [filtersBySection, setFiltersBySection] = useState<Partial<Record<ActiveSection, SectorThemeFilters>>>({});
   const [searchVisible, setSearchVisible] = useState(false);
   const [comparisonItems, setComparisonItems] = useState<SectorThemeTestItem[]>([]);
   const watchlist = useWatchlist();
-  const testScenariosEnabled = areTestScenariosEnabled();
   const themeRepository = useMemo(() => testScenariosEnabled ? createTestSectorThemeRepository(SECTOR_TAB_TEST_SEED) : null, [testScenariosEnabled]);
   const themes = useMemo(() => themeRepository?.getThemes() ?? [], [themeRepository]);
   const modelItems = useMemo(() => themeRepository?.getAllItems() ?? [], [themeRepository]);
-  const activeSection = preferences.activeSection as ActiveSection;
+  const requestedSection = firstActiveSection(sectionParam);
+  const activeSection = requestedSection ?? preferences.activeSection as ActiveSection;
   const activeCategory = categoryForSection(activeSection);
   const activeFilters = filtersBySection[activeSection] ?? DEFAULT_SECTOR_THEME_FILTERS;
   const watchlistKeys = useMemo(() => new Set(watchlist.groupItems.map((item) => buildWatchlistKey(item.type, item.id))), [watchlist.groupItems]);
@@ -74,20 +101,73 @@ export default function SectorsScreen() {
   const emerging = rows.filter((row) => row.classification === 'Improving');
   const risk = rows.filter((row) => row.classification === 'Leading' && (row.scores.momentum ?? 100) < 50);
   const themeAlerts = useMemo(() => buildRotationAlerts(themes, preferences.themeRotationInterval), [preferences.themeRotationInterval, themes]);
+  const liveThemes = useMemo(
+    () => themeSnapshot?.sourceState === 'live' ? themeSnapshot.items : [],
+    [themeSnapshot],
+  );
+  const themeProvenance = themeTabProvenance(themeSnapshot);
+  const title = activeCategory === 'themes' ? 'Themes' : activeCategory === 'signals' ? 'Signals' : 'Sectors';
+  const subtitle = activeCategory === 'themes'
+    ? themeProvenance.subtitle
+    : snapshot ? `S&P 100 sector snapshot · ${snapshot.marketDate}` : loading ? 'Loading durable sector snapshot.' : 'Sector snapshot unavailable.';
+
+  const deepLinkKey = `${firstParam(entityKindParam)}:${firstParam(entityIdParam)}:${firstParam(entityNameParam)}:${firstParam(actionNonceParam)}`;
+  const deepLinkedSelection = useMemo<SelectedDetail>(() => {
+    if (dismissedDeepLinkKey === deepLinkKey) return null;
+    const entityKind = firstParam(entityKindParam);
+    const entityId = firstParam(entityIdParam);
+    const entityName = firstParam(entityNameParam);
+    if (entityKind === 'sector') {
+      const sectorId = normalizeSectorId(entityId) ?? normalizeSectorId(entityName);
+      return sectorId ? { kind: 'sector', sectorId } : null;
+    }
+    if (entityKind === 'theme') {
+      const candidates: (TestThemeItem | LiveThemeItem)[] = testScenariosEnabled ? themes : liveThemes;
+      const item = candidates.find((candidate) => (
+        candidate.id.toLowerCase() === entityId.toLowerCase()
+        || candidate.name.toLowerCase() === entityName.toLowerCase()
+      ));
+      return item ? { item, kind: 'theme' } : null;
+    }
+    return null;
+  }, [deepLinkKey, dismissedDeepLinkKey, entityIdParam, entityKindParam, entityNameParam, liveThemes, testScenariosEnabled, themes]);
+  const selected = selectedOverride ?? deepLinkedSelection;
+  const copilotContext = useMemo(() => createCopilotContext({
+    payload: {
+      activeSection,
+      sectorCount: rows.length,
+      snapshotId: snapshot?.snapshotId,
+      themeCount: liveThemes.length,
+    },
+    routeName: '/sectors',
+    screenTitle: `${title} · ${activeSection}`,
+    screenType: activeCategory === 'themes' ? 'theme' : 'sector',
+    sourceState: activeCategory === 'themes' ? themeSnapshot?.sourceState : snapshot?.sourceState,
+  }), [activeCategory, activeSection, liveThemes.length, rows.length, snapshot, themeSnapshot, title]);
 
   return (
-    <AppScreen title="Sectors" subtitle={snapshot ? `S&P 100 sector snapshot · ${snapshot.marketDate}` : loading ? 'Loading durable sector snapshot.' : 'Sector snapshot unavailable.'}>
+    <AppScreen
+      copilotContext={copilotContext}
+      copilotPrompt={`Explain the ${title.toLowerCase()} ${activeSection} view and the clearest signal.`}
+      title={title}
+      subtitle={subtitle}>
       <View style={styles.stack}>
-        {snapshot ? <View style={styles.badges}><StatusBadge label="S&P 100" tone="info" /><StatusBadge label={`${formatCoverage(snapshot.coverage.constituentCoverage)} coverage`} tone="success" /><StatusBadge label={sourceLabel(snapshot)} tone="muted" /></View> : null}
+        {activeCategory === 'themes' ? themeProvenance.badges.length ? <View style={styles.badges}>{themeProvenance.badges.map((label, index) => <StatusBadge key={label} label={label} tone={index === 0 ? "info" : index === 1 ? "success" : "muted"} />)}</View> : null : snapshot ? <View style={styles.badges}><StatusBadge label="S&P 100" tone="info" /><StatusBadge label={`${formatCoverage(snapshot.coverage.constituentCoverage)} coverage`} tone="success" /><StatusBadge label={sourceLabel(snapshot)} tone="muted" /></View> : null}
         <SectorNavigation
           activeCategory={activeCategory}
           activeSection={activeSection}
           activeFilterCount={countActiveFilters(activeFilters)}
-          onCategoryChange={(category) => updatePreferences({ activeSection: defaultSectionForCategory(category, activeSection) })}
+          onCategoryChange={(category) => {
+            router.setParams({ commandTarget: undefined, section: undefined });
+            updatePreferences({ activeSection: defaultSectionForCategory(category, activeSection) });
+          }}
           onCompare={() => setComparisonVisible(true)}
           onFilter={() => setFilterVisible((visible) => !visible)}
           onSearch={() => setSearchVisible(true)}
-          onSectionChange={(section) => updatePreferences({ activeSection: section })}
+          onSectionChange={(section) => {
+            router.setParams({ commandTarget: undefined, section: undefined });
+            updatePreferences({ activeSection: section });
+          }}
         />
 
         {filterVisible ? <SectorThemeFilterPanel filters={activeFilters} onChange={(filters) => setFiltersBySection((current) => ({ ...current, [activeSection]: filters }))} /> : null}
@@ -100,19 +180,19 @@ export default function SectorsScreen() {
 
         {activeSection === 'sectorAlerts' && snapshot ? <DashboardCard title="Rotation Alerts" accentColor={Theme.colors.warning}>{snapshot.alerts.length ? snapshot.alerts.map((alert, index) => <Text key={index} style={styles.body}>{JSON.stringify(alert)}</Text>) : <Text style={styles.note}>No transition alerts yet.</Text>}</DashboardCard> : null}
 
-        {activeSection === 'themesHeatmap' ? testScenariosEnabled ? <DashboardCard title="Theme Heatmap" subtitle="Test scenario data only; not live market intelligence." accentColor={Theme.colors.purple}><View style={styles.themeSource}><StatusBadge label="Test Data" tone="warning" /><Text style={styles.note}>Theme inputs are not reviewed live data.</Text></View><IntervalTabs value={preferences.themeHeatmapInterval} onChange={(themeHeatmapInterval) => updatePreferences({ themeHeatmapInterval })} /><PerformanceHeatmap emptyLabel="No themes match the current configuration." getName={(item) => item.name} getSubtitle={(item) => item.parentSector} getValue={(item) => item.returns[preferences.themeHeatmapInterval]} items={filteredThemes} onPressItem={(item) => setSelected({ item, kind: 'theme' })} /></DashboardCard> : <ThemeUnavailable title="Theme Heatmap" /> : null}
+        {activeSection === 'themesHeatmap' ? testScenariosEnabled ? <DashboardCard title="Theme Heatmap" subtitle="Test scenario data only; not live market intelligence." accentColor={Theme.colors.purple}><View style={styles.themeSource}><StatusBadge label="Test Data" tone="warning" /><Text style={styles.note}>Theme inputs are not reviewed live data.</Text></View><IntervalTabs value={preferences.themeHeatmapInterval} onChange={(themeHeatmapInterval) => updatePreferences({ themeHeatmapInterval })} /><PerformanceHeatmap emptyLabel="No themes match the current configuration." getName={(item) => item.name} getSubtitle={(item) => item.parentSector} getValue={(item) => item.returns[preferences.themeHeatmapInterval]} items={filteredThemes} onPressItem={(item) => setSelected({ item, kind: 'theme' })} /></DashboardCard> : liveThemes.length ? <DashboardCard title="Theme Heatmap" subtitle={`Reviewed live ThemeSnapshot · ${themeSnapshot?.marketDate}`} accentColor={Theme.colors.purple}><IntervalTabs value={preferences.themeHeatmapInterval} onChange={(themeHeatmapInterval) => updatePreferences({ themeHeatmapInterval })} /><PerformanceHeatmap emptyLabel="No reviewed themes have data for this interval." getName={(item) => item.name} getSubtitle={(item) => `${item.parentSector} · #${item.rank ?? 'N/A'}`} getValue={(item) => item.returns[preferences.themeHeatmapInterval]} items={liveThemes} onPressItem={(item) => setSelected({ item, kind: 'theme' })} /><Text style={styles.note}>{themeSnapshot?.pilotScope ?? 'Rank reflects the active reviewed pilot themes.'} Daily-rebalanced equal-weight current baskets use durable adjusted history.</Text></DashboardCard> : <ThemeReviewGate status={themeStatus} /> : null}
 
-        {activeSection === 'themesRotation' ? testScenariosEnabled ? <DashboardCard title="Theme Rotation" subtitle="Test scenario trails - not live market intelligence." accentColor={Theme.colors.purple}><View style={styles.themeSource}><StatusBadge label="Test Data" tone="warning" /><Text style={styles.note}>Generated fixture trails are available only in explicit developer mode.</Text></View><RotationIntervalTabs value={preferences.themeRotationInterval} onChange={(themeRotationInterval) => updatePreferences({ themeRotationInterval })} /><RotationQuadrantChart benchmark="SPY" getHistory={(item) => item.rotation[preferences.themeRotationInterval].history} getItemKey={(item) => item.id} getItemType={() => 'theme'} getName={(item) => item.name} getRelativeMomentum={(item) => item.rotation[preferences.themeRotationInterval].relativeMomentum} getRelativeStrength={(item) => item.rotation[preferences.themeRotationInterval].relativeStrength} interval={preferences.themeRotationInterval} items={themes} labelMode={preferences.themeRotationLabelMode} onLabelModeChange={(themeRotationLabelMode) => updatePreferences({ themeRotationLabelMode })} onPressItem={(item) => setSelected({ item, kind: 'theme' })} onQuadrantFilterChange={(themeRotationQuadrant) => updatePreferences({ themeRotationQuadrant })} quadrantFilter={preferences.themeRotationQuadrant} showTestDataBadge trailLength={10} /></DashboardCard> : <ThemeUnavailable /> : null}
+        {activeSection === 'themesRotation' ? testScenariosEnabled ? <DashboardCard title="Theme Rotation" subtitle="Test scenario trails - not live market intelligence." accentColor={Theme.colors.purple}><View style={styles.themeSource}><StatusBadge label="Test Data" tone="warning" /><Text style={styles.note}>Generated fixture trails are available only in explicit developer mode.</Text></View><RotationIntervalTabs value={preferences.themeRotationInterval} onChange={(themeRotationInterval) => updatePreferences({ themeRotationInterval })} /><RotationQuadrantChart benchmark="SPY" getHistory={(item) => item.rotation[preferences.themeRotationInterval].history} getItemKey={(item) => item.id} getItemType={() => 'theme'} getName={(item) => item.name} getRelativeMomentum={(item) => item.rotation[preferences.themeRotationInterval].relativeMomentum} getRelativeStrength={(item) => item.rotation[preferences.themeRotationInterval].relativeStrength} interval={preferences.themeRotationInterval} items={themes} labelMode={preferences.themeRotationLabelMode} onLabelModeChange={(themeRotationLabelMode) => updatePreferences({ themeRotationLabelMode })} onPressItem={(item) => setSelected({ item, kind: 'theme' })} onQuadrantFilterChange={(themeRotationQuadrant) => updatePreferences({ themeRotationQuadrant })} quadrantFilter={preferences.themeRotationQuadrant} showTestDataBadge trailLength={10} /></DashboardCard> : liveThemes.length ? <DashboardCard title="Theme Rotation" subtitle="Reviewed equal-weight basket versus SPY. Tails are durable basket history, never synthetic." accentColor={Theme.colors.purple}><RotationIntervalTabs value={preferences.themeRotationInterval} onChange={(themeRotationInterval) => updatePreferences({ themeRotationInterval })} /><RotationQuadrantChart benchmark="SPY" getHistory={(item) => item.rotation[preferences.themeRotationInterval].history} getItemKey={(item) => item.id} getItemType={() => 'theme'} getName={(item) => item.name} getRelativeMomentum={(item) => item.rotation[preferences.themeRotationInterval].relativeMomentum} getRelativeStrength={(item) => item.rotation[preferences.themeRotationInterval].relativeStrength} interval={preferences.themeRotationInterval} items={liveThemes} labelMode={preferences.themeRotationLabelMode} onLabelModeChange={(themeRotationLabelMode) => updatePreferences({ themeRotationLabelMode })} onPressItem={(item) => setSelected({ item, kind: 'theme' })} onQuadrantFilterChange={(themeRotationQuadrant) => updatePreferences({ themeRotationQuadrant })} quadrantFilter={preferences.themeRotationQuadrant} trailLength={5} /></DashboardCard> : <ThemeReviewGate status={themeStatus} /> : null}
 
-        {activeSection === 'themeAlerts' ? testScenariosEnabled ? <DashboardCard title="Theme Rotation Alerts" subtitle="Test scenario alerts - not live market intelligence." accentColor={Theme.colors.warning}>{themeAlerts.length ? themeAlerts.map((alert) => <View key={alert.id} style={styles.alert}><Text style={styles.name}>{alert.name}</Text><Text style={styles.note}>{alert.message}</Text></View>) : <Text style={styles.note}>No theme rotation alerts.</Text>}</DashboardCard> : <ThemeUnavailable /> : null}
+        {activeSection === 'themeAlerts' ? testScenariosEnabled ? <DashboardCard title="Theme Rotation Alerts" subtitle="Test scenario alerts - not live market intelligence." accentColor={Theme.colors.warning}>{themeAlerts.length ? themeAlerts.map((alert) => <View key={alert.id} style={styles.alert}><Text style={styles.name}>{alert.name}</Text><Text style={styles.note}>{alert.message}</Text></View>) : <Text style={styles.note}>No theme rotation alerts.</Text>}</DashboardCard> : liveThemes.length ? <DashboardCard title="Theme Rotation Alerts" subtitle="Changes between immutable ThemeSnapshots." accentColor={Theme.colors.warning}>{themeSnapshot?.alerts.length ? themeSnapshot.alerts.map((alert, index) => <View key={String(alert.id ?? index)} style={styles.alert}><Text style={styles.name}>{String(alert.theme_id ?? 'Theme')}</Text><Text style={styles.note}>{String(alert.message ?? alert.type ?? 'Theme snapshot update')}</Text></View>) : <Text style={styles.note}>No theme transition alerts yet. Further immutable snapshots are needed for change detection.</Text>}</DashboardCard> : <ThemeReviewGate status={themeStatus} /> : null}
 
         {activeSection === 'emergingLeadership' && snapshot ? <Scanner title="Emerging Sectors" subtitle="Improving is the canonical classification; this list is not an overall ranking." rows={emerging} onOpen={(sectorId) => setSelected({ kind: 'sector', sectorId })} /> : null}
         {activeSection === 'leadershipRisk' && snapshot ? <Scanner title="At-Risk Sectors" subtitle="Leading sectors with deteriorating momentum or breadth qualify here." rows={risk} empty="No sectors currently meet the at-risk criteria." onOpen={(sectorId) => setSelected({ kind: 'sector', sectorId })} /> : null}
       </View>
 
-      <DetailModal visible={Boolean(selected)} title={selected?.kind === 'theme' ? selected.item.name : selected ? snapshot?.sectors.find((row) => row.sectorId === selected.sectorId)?.displayName ?? 'Sector detail' : 'Sector detail'} subtitle={selected?.kind === 'theme' ? `Theme · ${selected.item.parentSector}` : snapshot ? `${snapshot.marketDate} · ${sourceLabel(snapshot)}` : undefined} onClose={() => setSelected(null)}>
+      <DetailModal visible={Boolean(selected)} title={selected?.kind === 'theme' ? selected.item.name : selected ? snapshot?.sectors.find((row) => row.sectorId === selected.sectorId)?.displayName ?? 'Sector detail' : 'Sector detail'} subtitle={selected?.kind === 'theme' ? `Theme · ${selected.item.parentSector}` : snapshot ? `${snapshot.marketDate} · ${sourceLabel(snapshot)}` : undefined} onClose={() => { setSelected(null); setDismissedDeepLinkKey(deepLinkKey); }}>
         {selected?.kind === 'sector' ? <SectorDetailContent sectorId={selected.sectorId} /> : null}
-        {selected?.kind === 'theme' ? <ThemeDetailContent theme={selected.item} /> : null}
+        {selected?.kind === 'theme' ? <ThemeDetailContent theme={selected.item} overlap={themeSnapshot?.overlap ?? []} /> : null}
       </DetailModal>
       <SectorThemeSearchModal interval={activeCategory === 'themes' ? preferences.themeHeatmapInterval : preferences.sectorHeatmapInterval} isVisible={searchVisible} items={modelItems} onClose={() => setSearchVisible(false)} onOpenItem={(item) => { setSearchVisible(false); if (item.type === 'theme') setSelected({ item, kind: 'theme' }); else { const sectorId = normalizeSectorId(item.name); if (sectorId) setSelected({ kind: 'sector', sectorId }); } }} onToggleWatchlist={(item) => watchlist.toggleWatchlistItem({ id: item.id, name: item.name, type: item.type })} watchlistKeys={watchlistKeys} />
       <DetailModal visible={comparisonVisible} title="Compare Sectors & Themes" subtitle="Restored comparison configuration" onClose={() => setComparisonVisible(false)}><SectorThemeComparisonView favourites={watchlistKeys} items={modelItems} onToggleFavourite={(item) => watchlist.toggleWatchlistItem({ id: item.id, name: item.name, type: item.type })} selectedItems={comparisonItems} setSelectedItems={setComparisonItems} /></DetailModal>
@@ -131,14 +211,28 @@ function RotationIntervalTabs({ value, onChange }: { value: typeof TEST_ROTATION
 
 function RotationFlowSummary({ rotation }: { rotation: ReturnType<typeof useSectorRotationTrails>['rotation'] }) { if (!rotation?.movementAvailable) return <Text style={styles.note}>{rotationTrailHistoryDisclosure}</Text>; const groups = [['Gaining leadership', rotation.flowGroups.gaining], ['Losing leadership', rotation.flowGroups.losing], ['Stable', rotation.flowGroups.stable]] as const; return <View style={styles.flow}><Text style={styles.flowTitle}>Leadership flow</Text>{groups.filter(([, items]) => items.length).map(([label, items]) => <Text key={label} style={styles.note}>{label}: {items.map((item) => item.etfSymbol).join(', ')}</Text>)}</View>; }
 
-function ThemeUnavailable({ title = 'Theme Rotation' }: { title?: string }) { return <DashboardCard title={title} subtitle="Live theme inputs have not been reviewed or published." accentColor={Theme.colors.purple}><Text style={styles.note}>Live theme rotation is not yet available.</Text></DashboardCard>; }
+function ThemeReviewGate({ status }: { status: ReturnType<typeof useThemeStatus>['status'] }) { const presentation = themeGovernancePresentation(status); return <DashboardCard title={presentation.title} subtitle="Live Theme Heatmap, Rotation, and Alerts are intentionally gated." accentColor={Theme.colors.purple}><View style={styles.detailStack}><Text style={styles.note}>{presentation.body}</Text>{presentation.pilotThemes.map((theme) => <Text key={theme.displayName} style={styles.body}>{theme.displayName} - {theme.reviewStatus === 'awaiting_review' ? 'Awaiting review' : theme.reviewStatus}</Text>)}<Text style={styles.note}>{presentation.footer}</Text></View></DashboardCard>; }
 
-function ThemeDetailContent({ theme }: { theme: TestThemeItem }) { return <View style={styles.detailStack}><View style={styles.badges}><StatusBadge label="Test Data" tone="warning" /><WatchlistBookmarkButton id={theme.id} name={theme.name} type="theme" /></View><DashboardCard title="Theme Performance" accentColor={Theme.colors.purple}><View style={styles.metricGrid}>{TEST_HEATMAP_INTERVALS.map((interval) => <MetricTile key={interval} label={interval} value={formatNullablePercent(theme.returns[interval])} />)}</View></DashboardCard><DashboardCard title="Theme Rotation" subtitle="Test scenario trail - not live market intelligence." accentColor={Theme.colors.accent}><View style={styles.metricGrid}><MetricTile label="Parent Sector" value={theme.parentSector} /><MetricTile label="Relative Strength" value={theme.relativeStrength.toFixed(1)} /><MetricTile label="Relative Momentum" value={theme.relativeMomentum.toFixed(1)} /><MetricTile label="Quadrant" value={theme.quadrant} /></View></DashboardCard></View>; }
+function ThemeDetailContent({ theme, overlap }: { theme: TestThemeItem | LiveThemeItem; overlap: ThemeOverlap[] }) {
+  if ('sourceState' in theme) return <View style={styles.detailStack}>
+    <View style={styles.badges}><StatusBadge label="Live ThemeSnapshot" tone="success" /><WatchlistBookmarkButton id={theme.id} name={theme.name} type="theme" /></View>
+    <AskCopilotButton context={createCopilotContext({ payload: { theme_id: theme.id, display_name: theme.name, rank: theme.rank, composite_score: theme.compositeScore, performance: theme.returns, participation: theme.participation, concentration: theme.concentration, members: theme.members }, routeName: '/sectors', screenTitle: `${theme.name} Theme`, screenType: 'theme', sourceState: theme.sourceState })} prompt={`Why is ${theme.name} ${theme.classification.toLowerCase()}?`} />
+    <DashboardCard title="Theme Performance" accentColor={Theme.colors.purple}><View style={styles.metricGrid}>{TEST_HEATMAP_INTERVALS.map((interval) => <MetricTile key={interval} label={interval} value={formatNullablePercent(theme.returns[interval])} />)}</View></DashboardCard>
+    <DashboardCard title="Theme Intelligence" subtitle="Reviewed definition and durable Polygon adjusted history." accentColor={Theme.colors.accent}><View style={styles.metricGrid}><MetricTile label="Rank" value={theme.rank ? `#${theme.rank}` : 'N/A'} /><MetricTile label={theme.scoreSemantics.label ?? 'Absolute composite score'} value={theme.compositeScore === null ? 'N/A' : `${theme.compositeScore.toFixed(1)} / 100`} /><MetricTile label="Breadth Coverage" value={theme.coverageRatio === null ? 'N/A' : `${Math.round(theme.coverageRatio * 100)}%`} /><MetricTile label="Participation score" value={theme.participation.score === null ? 'N/A' : `${theme.participation.score.toFixed(1)} / 100`} /><MetricTile label="Positive-return participation" value={theme.participation.positiveReturnParticipationPct === null ? 'N/A' : `${theme.participation.positiveReturnParticipationPct.toFixed(1)}%`} /><MetricTile label="Classification" value={theme.classification} /></View><Text style={styles.note}>{theme.pilotScope ?? theme.scoreSemantics.relativeRankScope ?? 'Rank is scoped to the active reviewed pilot themes.'}</Text></DashboardCard>
+    <DashboardCard title="Concentration" subtitle="Absolute contribution shares over the participation horizon." accentColor={Theme.colors.warning}><View style={styles.metricGrid}><MetricTile label="Top contributor" value={theme.concentration.topContributors[0]?.ticker ?? 'N/A'} /><MetricTile label="Top-one share" value={theme.concentration.topOneSharePct === null ? 'N/A' : `${theme.concentration.topOneSharePct.toFixed(1)}%`} /><MetricTile label="Top-three share" value={theme.concentration.topThreeSharePct === null ? 'N/A' : `${theme.concentration.topThreeSharePct.toFixed(1)}%`} /><MetricTile label="Concentration HHI" value={theme.concentration.hhi?.toFixed(2) ?? 'N/A'} /><MetricTile label="Concentration" value={theme.concentration.classification ?? 'N/A'} /><MetricTile label="Quality score" value={theme.concentration.qualityScore === null ? 'N/A' : `${theme.concentration.qualityScore.toFixed(0)} / 100`} /></View></DashboardCard>
+    <DashboardCard title="Overlap" subtitle="Common approved members with the other active pilot theme." accentColor={Theme.colors.purple}>{overlap.filter((item) => item.leftThemeId === theme.id || item.rightThemeId === theme.id).map((item) => <View key={`${item.leftThemeId}:${item.rightThemeId}`} style={styles.alert}><Text style={styles.name}>{formatThemeTaxonomyLabel(item.leftThemeId === theme.id ? item.rightThemeId : item.leftThemeId)}</Text><Text style={styles.note}>Common members: {item.commonMembers.join(', ') || 'None'} · Jaccard {item.jaccardOverlap?.toFixed(2) ?? 'N/A'} · Weighted {item.weightedOverlap?.toFixed(2) ?? 'N/A'}</Text></View>)}</DashboardCard>
+    <DashboardCard title="Constituents" subtitle={`${theme.memberCount ?? theme.members.length} current members · equal weight`} accentColor={Theme.colors.success}>{theme.members.map((member) => <View key={member.ticker} style={styles.alert}><Text style={styles.name}>{member.ticker} · {member.companyName}</Text><Text style={styles.note}>{formatThemeRole(member.role)} · Purity {member.purity ?? 'N/A'} · Importance {member.importance === null ? 'Not reviewed' : member.importance} · {member.weight === null ? 'N/A' : `${(member.weight * 100).toFixed(2)}%`}</Text><Text style={styles.note}>{member.inclusionReason}</Text>{member.previousTicker ? <Text style={styles.note}>Former identity: {member.previousTicker} / {member.previousCompanyName ?? 'Unavailable'} · {member.continuityStatus ?? 'historical alias'}</Text> : null}</View>)}</DashboardCard>
+    <Text style={styles.note}>{theme.basketMethodology === 'daily_rebalanced_equal_weight' ? 'Daily-rebalanced equal-weight current reviewed basket.' : 'Reviewed current basket.'} {theme.historicalDisclosure ?? ''}</Text>
+  </View>;
+  return <View style={styles.detailStack}><View style={styles.badges}><StatusBadge label="Test Data" tone="warning" /><WatchlistBookmarkButton id={theme.id} name={theme.name} type="theme" /></View><DashboardCard title="Theme Performance" accentColor={Theme.colors.purple}><View style={styles.metricGrid}>{TEST_HEATMAP_INTERVALS.map((interval) => <MetricTile key={interval} label={interval} value={formatNullablePercent(theme.returns[interval])} />)}</View></DashboardCard><DashboardCard title="Theme Rotation" subtitle="Test scenario trail - not live market intelligence." accentColor={Theme.colors.accent}><View style={styles.metricGrid}><MetricTile label="Parent Sector" value={theme.parentSector} /><MetricTile label="Relative Strength" value={theme.relativeStrength.toFixed(1)} /><MetricTile label="Relative Momentum" value={theme.relativeMomentum.toFixed(1)} /><MetricTile label="Quadrant" value={theme.quadrant} /></View></DashboardCard></View>;
+}
 
 function Scanner({ title, subtitle, rows, empty = 'No sectors match this scanner.', onOpen }: { title: string; subtitle: string; rows: SectorRow[]; empty?: string; onOpen: (id: SectorId) => void }) { return <DashboardCard title={title} subtitle={subtitle} accentColor={Theme.colors.purple}>{rows.length ? rows.map((row) => <Pressable key={row.sectorId} onPress={() => onOpen(row.sectorId)} style={styles.row}><View><Text style={styles.name}>#{row.rank} {row.displayName}</Text><Text style={styles.note}>{row.etfSymbol} · {formatClassification(row.classification)}</Text></View><Text style={styles.value}>{row.compositeScore?.toFixed(2) ?? 'N/A'}</Text></Pressable>) : <Text style={styles.note}>{empty}</Text>}</DashboardCard>; }
 
 function categoryForSection(section: ActiveSection): ActiveCategory { if (section.startsWith('themes') || section === 'themeAlerts') return 'themes'; if (section === 'emergingLeadership' || section === 'leadershipRisk') return 'signals'; return 'sectors'; }
 function defaultSectionForCategory(category: ActiveCategory, current: ActiveSection): ActiveSection { if (categoryForSection(current) === category) return current; return category === 'themes' ? 'themesHeatmap' : category === 'signals' ? 'emergingLeadership' : 'sectorHeatmap'; }
+function firstParam(value: string | string[] | undefined) { return Array.isArray(value) ? value[0] ?? '' : value ?? ''; }
+function firstActiveSection(value: string | string[] | undefined): ActiveSection | null { const section = firstParam(value); return Object.values(CONTENT_OPTIONS).flat().some((item) => item.key === section) ? section as ActiveSection : null; }
 
 const styles = StyleSheet.create({
   alert: { borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: Spacing.half, paddingVertical: Spacing.two },

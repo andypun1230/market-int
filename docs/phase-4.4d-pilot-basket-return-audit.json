@@ -1,0 +1,3539 @@
+{
+  "identity_audit": {
+    "p_pstg": {
+      "boundary": [
+        {
+          "canonical_security_id": "theme-sec-everpure-1474432",
+          "close": 67.8,
+          "session_date": "2026-04-16",
+          "source_ticker": "PSTG"
+        },
+        {
+          "canonical_security_id": "theme-sec-everpure-1474432",
+          "close": 66.97,
+          "session_date": "2026-04-17",
+          "source_ticker": "P"
+        }
+      ],
+      "provider_symbol_history": [
+        {
+          "corporate_action_lineage": "PSTG_to_P_same_issuer_verified",
+          "effective_from": "1900-01-01",
+          "effective_to": "2026-04-16",
+          "provider": "polygon",
+          "provider_symbol": "PSTG",
+          "purpose": "history",
+          "security_id": "theme-sec-everpure-1474432",
+          "source": "https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm",
+          "verified_at": "2026-07-19T18:11:25Z"
+        },
+        {
+          "corporate_action_lineage": "PSTG_to_P_same_issuer_verified",
+          "effective_from": "2026-04-17",
+          "effective_to": null,
+          "provider": "polygon",
+          "provider_symbol": "P",
+          "purpose": "history",
+          "security_id": "theme-sec-everpure-1474432",
+          "source": "https://www.sec.gov/Archives/edgar/data/1474432/000147443226000011/pstg-20260223.htm",
+          "verified_at": "2026-07-19T18:11:25Z"
+        }
+      ],
+      "security_id": "theme-sec-everpure-1474432",
+      "valid": true
+    },
+    "sndk": {
+      "effective_from": "2025-02-24",
+      "first_stored_session": "2025-02-24",
+      "security_id": "theme-sec-sndk",
+      "source_tickers": [
+        "SNDK"
+      ],
+      "valid": true
+    }
+  },
+  "market_date": "2026-07-17",
+  "rebalance_convention": "daily_rebalanced_equal_weight",
+  "return_defect_found": false,
+  "snapshot_id": "theme-2026-07-17-f8ca1be84c",
+  "status": "PASS",
+  "themes": [
+    {
+      "basket_policy": {
+        "eligibility": "A session requires consecutive valid adjusted closes and at least 75% member coverage.",
+        "formula_version": "equal-weight-current-basket-v1",
+        "historical_disclosure": "Historical results use the current reviewed constituent basket unless historical membership versions are available.",
+        "policy": "daily_rebalanced_equal_weight",
+        "weighting": "Each eligible current-basket member receives equal weight at every eligible daily rebalance."
+      },
+      "display_name": "Cybersecurity",
+      "horizons": {
+        "1d": {
+          "arithmetic_mean_constituent_return_pct": 0.731536,
+          "available": true,
+          "chained_persisted_basket_return_pct": 0.731536,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 0.061743,
+              "adjusted_end_close": 137.1,
+              "adjusted_start_close": 136.51,
+              "canonical_security_id": "theme-sec-chkp",
+              "canonical_ticker": "CHKP",
+              "constituent_total_return_pct": 0.432203,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.061743,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CHKP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.047675,
+              "adjusted_end_close": 203.08,
+              "adjusted_start_close": 203.76,
+              "canonical_security_id": "theme-sec-crwd",
+              "canonical_ticker": "CRWD",
+              "constituent_total_return_pct": -0.333726,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -0.047675,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CRWD"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.073748,
+              "adjusted_end_close": 161.61,
+              "adjusted_start_close": 160.78,
+              "canonical_security_id": "theme-sec-ftnt",
+              "canonical_ticker": "FTNT",
+              "constituent_total_return_pct": 0.516233,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.073748,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "FTNT"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.155679,
+              "adjusted_end_close": 149.35,
+              "adjusted_start_close": 147.74,
+              "canonical_security_id": "theme-sec-okta",
+              "canonical_ticker": "OKTA",
+              "constituent_total_return_pct": 1.089752,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.155679,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "OKTA"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.189271,
+              "adjusted_end_close": 358.68,
+              "adjusted_start_close": 353.99,
+              "canonical_security_id": "theme-sec-panw",
+              "canonical_ticker": "PANW",
+              "constituent_total_return_pct": 1.324896,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.189271,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "PANW"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.043665,
+              "adjusted_end_close": 19.57,
+              "adjusted_start_close": 19.63,
+              "canonical_security_id": "theme-sec-s",
+              "canonical_ticker": "S",
+              "constituent_total_return_pct": -0.305655,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -0.043665,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "S"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.342436,
+              "adjusted_end_close": 149.94,
+              "adjusted_start_close": 146.43,
+              "canonical_security_id": "theme-sec-zs",
+              "canonical_ticker": "ZS",
+              "constituent_total_return_pct": 2.39705,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.342436,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "ZS"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": 0.0,
+          "eligibility_changes": false,
+          "horizon": "1d",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-07-16",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": 0.0,
+          "recomputed_daily_rebalanced_return_pct": 0.731536,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 0.342436,
+              "signed_contribution_pct": 0.342436,
+              "ticker": "ZS"
+            },
+            {
+              "absolute_contribution_pct": 0.189271,
+              "signed_contribution_pct": 0.189271,
+              "ticker": "PANW"
+            },
+            {
+              "absolute_contribution_pct": 0.155679,
+              "signed_contribution_pct": 0.155679,
+              "ticker": "OKTA"
+            }
+          ],
+          "valid": true
+        },
+        "1m": {
+          "arithmetic_mean_constituent_return_pct": 20.934116,
+          "available": true,
+          "chained_persisted_basket_return_pct": 21.008496,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 1.773415,
+              "adjusted_end_close": 137.1,
+              "adjusted_start_close": 121.96,
+              "canonical_security_id": "theme-sec-chkp",
+              "canonical_ticker": "CHKP",
+              "constituent_total_return_pct": 12.413906,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.773415,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CHKP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 2.792641,
+              "adjusted_end_close": 203.08,
+              "adjusted_start_close": 169.8725,
+              "canonical_security_id": "theme-sec-crwd",
+              "canonical_ticker": "CRWD",
+              "constituent_total_return_pct": 19.548485,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 2.792641,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CRWD"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.417689,
+              "adjusted_end_close": 161.61,
+              "adjusted_start_close": 147.02,
+              "canonical_security_id": "theme-sec-ftnt",
+              "canonical_ticker": "FTNT",
+              "constituent_total_return_pct": 9.92382,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.417689,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "FTNT"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 4.064431,
+              "adjusted_end_close": 149.35,
+              "adjusted_start_close": 116.27,
+              "canonical_security_id": "theme-sec-okta",
+              "canonical_ticker": "OKTA",
+              "constituent_total_return_pct": 28.451019,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 4.064431,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "OKTA"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 4.020824,
+              "adjusted_end_close": 358.68,
+              "adjusted_start_close": 279.9,
+              "canonical_security_id": "theme-sec-panw",
+              "canonical_ticker": "PANW",
+              "constituent_total_return_pct": 28.145766,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 4.020824,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "PANW"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 4.315179,
+              "adjusted_end_close": 19.57,
+              "adjusted_start_close": 15.03,
+              "canonical_security_id": "theme-sec-s",
+              "canonical_ticker": "S",
+              "constituent_total_return_pct": 30.206254,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 4.315179,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "S"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 2.549938,
+              "adjusted_end_close": 149.94,
+              "adjusted_start_close": 127.23,
+              "canonical_security_id": "theme-sec-zs",
+              "canonical_ticker": "ZS",
+              "constituent_total_return_pct": 17.849564,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 2.549938,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "ZS"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": 0.07438,
+          "eligibility_changes": false,
+          "horizon": "1m",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-06-16",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": 0.07438,
+          "recomputed_daily_rebalanced_return_pct": 21.008496,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 4.315179,
+              "signed_contribution_pct": 4.315179,
+              "ticker": "S"
+            },
+            {
+              "absolute_contribution_pct": 4.064431,
+              "signed_contribution_pct": 4.064431,
+              "ticker": "OKTA"
+            },
+            {
+              "absolute_contribution_pct": 4.020824,
+              "signed_contribution_pct": 4.020824,
+              "ticker": "PANW"
+            }
+          ],
+          "valid": true
+        },
+        "1w": {
+          "arithmetic_mean_constituent_return_pct": 7.156964,
+          "available": true,
+          "chained_persisted_basket_return_pct": 7.208327,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 0.585747,
+              "adjusted_end_close": 137.1,
+              "adjusted_start_close": 131.7,
+              "canonical_security_id": "theme-sec-chkp",
+              "canonical_ticker": "CHKP",
+              "constituent_total_return_pct": 4.100228,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.585747,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CHKP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.2135,
+              "adjusted_end_close": 203.08,
+              "adjusted_start_close": 187.18,
+              "canonical_security_id": "theme-sec-crwd",
+              "canonical_ticker": "CRWD",
+              "constituent_total_return_pct": 8.494497,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.2135,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CRWD"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.371858,
+              "adjusted_end_close": 161.61,
+              "adjusted_start_close": 157.51,
+              "canonical_security_id": "theme-sec-ftnt",
+              "canonical_ticker": "FTNT",
+              "constituent_total_return_pct": 2.603009,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.371858,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "FTNT"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.104688,
+              "adjusted_end_close": 149.35,
+              "adjusted_start_close": 138.63,
+              "canonical_security_id": "theme-sec-okta",
+              "canonical_ticker": "OKTA",
+              "constituent_total_return_pct": 7.732814,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.104688,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "OKTA"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.436418,
+              "adjusted_end_close": 358.68,
+              "adjusted_start_close": 325.91,
+              "canonical_security_id": "theme-sec-panw",
+              "canonical_ticker": "PANW",
+              "constituent_total_return_pct": 10.054923,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.436418,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "PANW"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.350272,
+              "adjusted_end_close": 19.57,
+              "adjusted_start_close": 17.88,
+              "canonical_security_id": "theme-sec-s",
+              "canonical_ticker": "S",
+              "constituent_total_return_pct": 9.451902,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.350272,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "S"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.094482,
+              "adjusted_end_close": 149.94,
+              "adjusted_start_close": 139.27,
+              "canonical_security_id": "theme-sec-zs",
+              "canonical_ticker": "ZS",
+              "constituent_total_return_pct": 7.661377,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.094482,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "ZS"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": 0.051363,
+          "eligibility_changes": false,
+          "horizon": "1w",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-07-10",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": 0.051363,
+          "recomputed_daily_rebalanced_return_pct": 7.208327,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 1.436418,
+              "signed_contribution_pct": 1.436418,
+              "ticker": "PANW"
+            },
+            {
+              "absolute_contribution_pct": 1.350272,
+              "signed_contribution_pct": 1.350272,
+              "ticker": "S"
+            },
+            {
+              "absolute_contribution_pct": 1.2135,
+              "signed_contribution_pct": 1.2135,
+              "ticker": "CRWD"
+            }
+          ],
+          "valid": true
+        },
+        "1y": {
+          "arithmetic_mean_constituent_return_pct": 29.222139,
+          "available": true,
+          "chained_persisted_basket_return_pct": 22.869667,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 5.304326,
+              "adjusted_end_close": 137.1,
+              "adjusted_start_close": 218.07,
+              "canonical_security_id": "theme-sec-chkp",
+              "canonical_ticker": "CHKP",
+              "constituent_total_return_pct": -37.130279,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -5.304326,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CHKP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 10.381246,
+              "adjusted_end_close": 203.08,
+              "adjusted_start_close": 117.6125,
+              "canonical_security_id": "theme-sec-crwd",
+              "canonical_ticker": "CRWD",
+              "constituent_total_return_pct": 72.668721,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 10.381246,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CRWD"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 8.033643,
+              "adjusted_end_close": 161.61,
+              "adjusted_start_close": 103.44,
+              "canonical_security_id": "theme-sec-ftnt",
+              "canonical_ticker": "FTNT",
+              "constituent_total_return_pct": 56.235499,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 8.033643,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "FTNT"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 9.142104,
+              "adjusted_end_close": 149.35,
+              "adjusted_start_close": 91.07,
+              "canonical_security_id": "theme-sec-okta",
+              "canonical_ticker": "OKTA",
+              "constituent_total_return_pct": 63.994729,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 9.142104,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "OKTA"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 12.320028,
+              "adjusted_end_close": 358.68,
+              "adjusted_start_close": 192.59,
+              "canonical_security_id": "theme-sec-panw",
+              "canonical_ticker": "PANW",
+              "constituent_total_return_pct": 86.240199,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 12.320028,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "PANW"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.491454,
+              "adjusted_end_close": 19.57,
+              "adjusted_start_close": 17.72,
+              "canonical_security_id": "theme-sec-s",
+              "canonical_ticker": "S",
+              "constituent_total_return_pct": 10.440181,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.491454,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "S"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 6.842011,
+              "adjusted_end_close": 149.94,
+              "adjusted_start_close": 287.76,
+              "canonical_security_id": "theme-sec-zs",
+              "canonical_ticker": "ZS",
+              "constituent_total_return_pct": -47.894078,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -6.842011,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "ZS"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": -6.352472,
+          "eligibility_changes": false,
+          "horizon": "1y",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2025-07-16",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": -6.352472,
+          "recomputed_daily_rebalanced_return_pct": 22.869667,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 12.320028,
+              "signed_contribution_pct": 12.320028,
+              "ticker": "PANW"
+            },
+            {
+              "absolute_contribution_pct": 10.381246,
+              "signed_contribution_pct": 10.381246,
+              "ticker": "CRWD"
+            },
+            {
+              "absolute_contribution_pct": 9.142104,
+              "signed_contribution_pct": 9.142104,
+              "ticker": "OKTA"
+            }
+          ],
+          "valid": true
+        },
+        "3m": {
+          "arithmetic_mean_constituent_return_pct": 66.332513,
+          "available": true,
+          "chained_persisted_basket_return_pct": 63.359192,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 0.052945,
+              "adjusted_end_close": 137.1,
+              "adjusted_start_close": 137.61,
+              "canonical_security_id": "theme-sec-chkp",
+              "canonical_ticker": "CHKP",
+              "constituent_total_return_pct": -0.370613,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -0.052945,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CHKP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 13.463141,
+              "adjusted_end_close": 203.08,
+              "adjusted_start_close": 104.55,
+              "canonical_security_id": "theme-sec-crwd",
+              "canonical_ticker": "CRWD",
+              "constituent_total_return_pct": 94.241989,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 13.463141,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CRWD"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 13.732663,
+              "adjusted_end_close": 161.61,
+              "adjusted_start_close": 82.4,
+              "canonical_security_id": "theme-sec-ftnt",
+              "canonical_ticker": "FTNT",
+              "constituent_total_return_pct": 96.128641,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 13.732663,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "FTNT"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 15.343107,
+              "adjusted_end_close": 149.35,
+              "adjusted_start_close": 72.01,
+              "canonical_security_id": "theme-sec-okta",
+              "canonical_ticker": "OKTA",
+              "constituent_total_return_pct": 107.40175,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 15.343107,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "OKTA"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 16.402433,
+              "adjusted_end_close": 358.68,
+              "adjusted_start_close": 166.97,
+              "canonical_security_id": "theme-sec-panw",
+              "canonical_ticker": "PANW",
+              "constituent_total_return_pct": 114.817033,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 16.402433,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "PANW"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 5.784022,
+              "adjusted_end_close": 19.57,
+              "adjusted_start_close": 13.93,
+              "canonical_security_id": "theme-sec-s",
+              "canonical_ticker": "S",
+              "constituent_total_return_pct": 40.488155,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 5.784022,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "S"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.660091,
+              "adjusted_end_close": 149.94,
+              "adjusted_start_close": 134.33,
+              "canonical_security_id": "theme-sec-zs",
+              "canonical_ticker": "ZS",
+              "constituent_total_return_pct": 11.620636,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 1.660091,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "ZS"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": -2.973321,
+          "eligibility_changes": false,
+          "horizon": "3m",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-04-16",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": -2.973321,
+          "recomputed_daily_rebalanced_return_pct": 63.359192,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 16.402433,
+              "signed_contribution_pct": 16.402433,
+              "ticker": "PANW"
+            },
+            {
+              "absolute_contribution_pct": 15.343107,
+              "signed_contribution_pct": 15.343107,
+              "ticker": "OKTA"
+            },
+            {
+              "absolute_contribution_pct": 13.732663,
+              "signed_contribution_pct": 13.732663,
+              "ticker": "FTNT"
+            }
+          ],
+          "valid": true
+        },
+        "6m": {
+          "arithmetic_mean_constituent_return_pct": 45.170093,
+          "available": true,
+          "chained_persisted_basket_return_pct": 38.77211,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 3.877193,
+              "adjusted_end_close": 137.1,
+              "adjusted_start_close": 188.17,
+              "canonical_security_id": "theme-sec-chkp",
+              "canonical_ticker": "CHKP",
+              "constituent_total_return_pct": -27.140352,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -3.877193,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CHKP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 10.903284,
+              "adjusted_end_close": 203.08,
+              "adjusted_start_close": 115.175,
+              "canonical_security_id": "theme-sec-crwd",
+              "canonical_ticker": "CRWD",
+              "constituent_total_return_pct": 76.322987,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 10.903284,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "CRWD"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 15.937015,
+              "adjusted_end_close": 161.61,
+              "adjusted_start_close": 76.39,
+              "canonical_security_id": "theme-sec-ftnt",
+              "canonical_ticker": "FTNT",
+              "constituent_total_return_pct": 111.559105,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 15.937015,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "FTNT"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 8.569898,
+              "adjusted_end_close": 149.35,
+              "adjusted_start_close": 93.35,
+              "canonical_security_id": "theme-sec-okta",
+              "canonical_ticker": "OKTA",
+              "constituent_total_return_pct": 59.989288,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 8.569898,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "OKTA"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 12.551346,
+              "adjusted_end_close": 358.68,
+              "adjusted_start_close": 190.93,
+              "canonical_security_id": "theme-sec-panw",
+              "canonical_ticker": "PANW",
+              "constituent_total_return_pct": 87.859425,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 12.551346,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "PANW"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 5.374724,
+              "adjusted_end_close": 19.57,
+              "adjusted_start_close": 14.22,
+              "canonical_security_id": "theme-sec-s",
+              "canonical_ticker": "S",
+              "constituent_total_return_pct": 37.623066,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 5.374724,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "S"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 4.288981,
+              "adjusted_end_close": 149.94,
+              "adjusted_start_close": 214.27,
+              "canonical_security_id": "theme-sec-zs",
+              "canonical_ticker": "ZS",
+              "constituent_total_return_pct": -30.022868,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -4.288981,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "ZS"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": -6.397983,
+          "eligibility_changes": false,
+          "horizon": "6m",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-01-14",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": -6.397983,
+          "recomputed_daily_rebalanced_return_pct": 38.77211,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 15.937015,
+              "signed_contribution_pct": 15.937015,
+              "ticker": "FTNT"
+            },
+            {
+              "absolute_contribution_pct": 12.551346,
+              "signed_contribution_pct": 12.551346,
+              "ticker": "PANW"
+            },
+            {
+              "absolute_contribution_pct": 10.903284,
+              "signed_contribution_pct": 10.903284,
+              "ticker": "CRWD"
+            }
+          ],
+          "valid": true
+        }
+      },
+      "theme_id": "cybersecurity",
+      "valid": true,
+      "version": "v1.2"
+    },
+    {
+      "basket_policy": {
+        "eligibility": "A session requires consecutive valid adjusted closes and at least 75% member coverage.",
+        "formula_version": "equal-weight-current-basket-v1",
+        "historical_disclosure": "Historical results use the current reviewed constituent basket unless historical membership versions are available.",
+        "policy": "daily_rebalanced_equal_weight",
+        "weighting": "Each eligible current-basket member receives equal weight at every eligible daily rebalance."
+      },
+      "display_name": "Memory & Storage",
+      "horizons": {
+        "1d": {
+          "arithmetic_mean_constituent_return_pct": 1.100638,
+          "available": true,
+          "chained_persisted_basket_return_pct": 1.100638,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 0.028829,
+              "adjusted_end_close": 188.68,
+              "adjusted_start_close": 188.3,
+              "canonical_security_id": "theme-sec-mrvl",
+              "canonical_ticker": "MRVL",
+              "constituent_total_return_pct": 0.201806,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.028829,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MRVL"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.071161,
+              "adjusted_end_close": 848.95,
+              "adjusted_start_close": 853.2,
+              "canonical_security_id": "sec-a24c631b902b547e",
+              "canonical_ticker": "MU",
+              "constituent_total_return_pct": -0.498125,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -0.071161,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MU"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.374833,
+              "adjusted_end_close": 163.88,
+              "adjusted_start_close": 159.69,
+              "canonical_security_id": "theme-sec-ntap",
+              "canonical_ticker": "NTAP",
+              "constituent_total_return_pct": 2.623834,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.374833,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "NTAP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.211037,
+              "adjusted_end_close": 69.38,
+              "adjusted_start_close": 68.37,
+              "canonical_security_id": "theme-sec-everpure-1474432",
+              "canonical_ticker": "P",
+              "constituent_total_return_pct": 1.477256,
+              "corporate_action_flags": {
+                "continuity_status": "verified",
+                "corporate_action_effective_date": "2026-04-17",
+                "corporate_action_type": "ticker_and_name_change",
+                "previous_ticker": "PSTG"
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-07-01",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-07-01",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.211037,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "P"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.569574,
+              "adjusted_end_close": 1354.82,
+              "adjusted_start_close": 1411.08,
+              "canonical_security_id": "theme-sec-sndk",
+              "canonical_ticker": "SNDK",
+              "constituent_total_return_pct": -3.987017,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2025-02-24",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2025-02-24",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -0.569574,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "SNDK"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.808097,
+              "adjusted_end_close": 787.66,
+              "adjusted_start_close": 745.49,
+              "canonical_security_id": "theme-sec-stx",
+              "canonical_ticker": "STX",
+              "constituent_total_return_pct": 5.656682,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.808097,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "STX"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.318576,
+              "adjusted_end_close": 477.22,
+              "adjusted_start_close": 466.81,
+              "canonical_security_id": "theme-sec-wdc",
+              "canonical_ticker": "WDC",
+              "constituent_total_return_pct": 2.230029,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 2,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.318576,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "WDC"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": 0.0,
+          "eligibility_changes": false,
+          "horizon": "1d",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-07-16",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": 0.0,
+          "recomputed_daily_rebalanced_return_pct": 1.100638,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 0.808097,
+              "signed_contribution_pct": 0.808097,
+              "ticker": "STX"
+            },
+            {
+              "absolute_contribution_pct": 0.569574,
+              "signed_contribution_pct": -0.569574,
+              "ticker": "SNDK"
+            },
+            {
+              "absolute_contribution_pct": 0.374833,
+              "signed_contribution_pct": 0.374833,
+              "ticker": "NTAP"
+            }
+          ],
+          "valid": true
+        },
+        "1m": {
+          "arithmetic_mean_constituent_return_pct": -19.76096,
+          "available": true,
+          "chained_persisted_basket_return_pct": -19.595371,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 4.613239,
+              "adjusted_end_close": 188.68,
+              "adjusted_start_close": 278.67,
+              "canonical_security_id": "theme-sec-mrvl",
+              "canonical_ticker": "MRVL",
+              "constituent_total_return_pct": -32.292676,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -4.613239,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MRVL"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 2.404511,
+              "adjusted_end_close": 848.95,
+              "adjusted_start_close": 1020.76,
+              "canonical_security_id": "sec-a24c631b902b547e",
+              "canonical_ticker": "MU",
+              "constituent_total_return_pct": -16.831576,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -2.404511,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MU"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.232101,
+              "adjusted_end_close": 163.88,
+              "adjusted_start_close": 161.26,
+              "canonical_security_id": "theme-sec-ntap",
+              "canonical_ticker": "NTAP",
+              "constituent_total_return_pct": 1.624705,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.232101,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "NTAP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.756601,
+              "adjusted_end_close": 69.38,
+              "adjusted_start_close": 73.26,
+              "canonical_security_id": "theme-sec-everpure-1474432",
+              "canonical_ticker": "P",
+              "constituent_total_return_pct": -5.296205,
+              "corporate_action_flags": {
+                "continuity_status": "verified",
+                "corporate_action_effective_date": "2026-04-17",
+                "corporate_action_type": "ticker_and_name_change",
+                "previous_ticker": "PSTG"
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-07-01",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-07-01",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -0.756601,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "P"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 4.567369,
+              "adjusted_end_close": 1354.82,
+              "adjusted_start_close": 1991.55,
+              "canonical_security_id": "theme-sec-sndk",
+              "canonical_ticker": "SNDK",
+              "constituent_total_return_pct": -31.97158,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2025-02-24",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2025-02-24",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -4.567369,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "SNDK"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 3.375359,
+              "adjusted_end_close": 787.66,
+              "adjusted_start_close": 1031.34,
+              "canonical_security_id": "theme-sec-stx",
+              "canonical_ticker": "STX",
+              "constituent_total_return_pct": -23.627514,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -3.375359,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "STX"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 4.275982,
+              "adjusted_end_close": 477.22,
+              "adjusted_start_close": 681.08,
+              "canonical_security_id": "theme-sec-wdc",
+              "canonical_ticker": "WDC",
+              "constituent_total_return_pct": -29.931873,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 22,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-06-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -4.275982,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-06-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "WDC"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": 0.165589,
+          "eligibility_changes": false,
+          "horizon": "1m",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-06-16",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": 0.165589,
+          "recomputed_daily_rebalanced_return_pct": -19.595371,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 4.613239,
+              "signed_contribution_pct": -4.613239,
+              "ticker": "MRVL"
+            },
+            {
+              "absolute_contribution_pct": 4.567369,
+              "signed_contribution_pct": -4.567369,
+              "ticker": "SNDK"
+            },
+            {
+              "absolute_contribution_pct": 4.275982,
+              "signed_contribution_pct": -4.275982,
+              "ticker": "WDC"
+            }
+          ],
+          "valid": true
+        },
+        "1w": {
+          "arithmetic_mean_constituent_return_pct": -15.663241,
+          "available": true,
+          "chained_persisted_basket_return_pct": -15.844321,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 2.855204,
+              "adjusted_end_close": 188.68,
+              "adjusted_start_close": 235.81,
+              "canonical_security_id": "theme-sec-mrvl",
+              "canonical_ticker": "MRVL",
+              "constituent_total_return_pct": -19.98643,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -2.855204,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MRVL"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.901504,
+              "adjusted_end_close": 848.95,
+              "adjusted_start_close": 979.3,
+              "canonical_security_id": "sec-a24c631b902b547e",
+              "canonical_ticker": "MU",
+              "constituent_total_return_pct": -13.310528,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -1.901504,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MU"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.422134,
+              "adjusted_end_close": 163.88,
+              "adjusted_start_close": 168.87,
+              "canonical_security_id": "theme-sec-ntap",
+              "canonical_ticker": "NTAP",
+              "constituent_total_return_pct": -2.954936,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -0.422134,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "NTAP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.791792,
+              "adjusted_end_close": 69.38,
+              "adjusted_start_close": 79.33,
+              "canonical_security_id": "theme-sec-everpure-1474432",
+              "canonical_ticker": "P",
+              "constituent_total_return_pct": -12.542544,
+              "corporate_action_flags": {
+                "continuity_status": "verified",
+                "corporate_action_effective_date": "2026-04-17",
+                "corporate_action_type": "ticker_and_name_change",
+                "previous_ticker": "PSTG"
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-07-01",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-07-01",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -1.791792,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "P"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 4.183742,
+              "adjusted_end_close": 1354.82,
+              "adjusted_start_close": 1915.92,
+              "canonical_security_id": "theme-sec-sndk",
+              "canonical_ticker": "SNDK",
+              "constituent_total_return_pct": -29.286191,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2025-02-24",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2025-02-24",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -4.183742,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "SNDK"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 1.925183,
+              "adjusted_end_close": 787.66,
+              "adjusted_start_close": 910.34,
+              "canonical_security_id": "theme-sec-stx",
+              "canonical_ticker": "STX",
+              "constituent_total_return_pct": -13.476284,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -1.925183,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "STX"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 2.583682,
+              "adjusted_end_close": 477.22,
+              "adjusted_start_close": 582.585,
+              "canonical_security_id": "theme-sec-wdc",
+              "canonical_ticker": "WDC",
+              "constituent_total_return_pct": -18.085773,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 6,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-07-10",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -2.583682,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-07-10",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "WDC"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": -0.18108,
+          "eligibility_changes": false,
+          "horizon": "1w",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-07-10",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": -0.18108,
+          "recomputed_daily_rebalanced_return_pct": -15.844321,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 4.183742,
+              "signed_contribution_pct": -4.183742,
+              "ticker": "SNDK"
+            },
+            {
+              "absolute_contribution_pct": 2.855204,
+              "signed_contribution_pct": -2.855204,
+              "ticker": "MRVL"
+            },
+            {
+              "absolute_contribution_pct": 2.583682,
+              "signed_contribution_pct": -2.583682,
+              "ticker": "WDC"
+            }
+          ],
+          "valid": true
+        },
+        "1y": {
+          "arithmetic_mean_constituent_return_pct": 729.667365,
+          "available": true,
+          "chained_persisted_basket_return_pct": 434.450824,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 23.758443,
+              "adjusted_end_close": 188.68,
+              "adjusted_start_close": 70.85,
+              "canonical_security_id": "theme-sec-mrvl",
+              "canonical_ticker": "MRVL",
+              "constituent_total_return_pct": 166.309104,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 23.758443,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MRVL"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 89.878652,
+              "adjusted_end_close": 848.95,
+              "adjusted_start_close": 116.43,
+              "canonical_security_id": "sec-a24c631b902b547e",
+              "canonical_ticker": "MU",
+              "constituent_total_return_pct": 629.150563,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 89.878652,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MU"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 8.190696,
+              "adjusted_end_close": 163.88,
+              "adjusted_start_close": 104.16,
+              "canonical_security_id": "theme-sec-ntap",
+              "canonical_ticker": "NTAP",
+              "constituent_total_return_pct": 57.334869,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 8.190696,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "NTAP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 3.787642,
+              "adjusted_end_close": 69.38,
+              "adjusted_start_close": 54.84,
+              "canonical_security_id": "theme-sec-everpure-1474432",
+              "canonical_ticker": "P",
+              "constituent_total_return_pct": 26.513494,
+              "corporate_action_flags": {
+                "continuity_status": "verified",
+                "corporate_action_effective_date": "2026-04-17",
+                "corporate_action_type": "ticker_and_name_change",
+                "previous_ticker": "PSTG"
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-07-01",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-07-01",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 3.787642,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-04-16",
+                  "source_ticker": "PSTG"
+                },
+                {
+                  "effective_from": "2026-04-17",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "P"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 453.66814,
+              "adjusted_end_close": 1354.82,
+              "adjusted_start_close": 41.36,
+              "canonical_security_id": "theme-sec-sndk",
+              "canonical_ticker": "SNDK",
+              "constituent_total_return_pct": 3175.676983,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2025-02-24",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2025-02-24",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 453.66814,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "SNDK"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 62.198011,
+              "adjusted_end_close": 787.66,
+              "adjusted_start_close": 147.12,
+              "canonical_security_id": "theme-sec-stx",
+              "canonical_ticker": "STX",
+              "constituent_total_return_pct": 435.386079,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 62.198011,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "STX"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 88.185781,
+              "adjusted_end_close": 477.22,
+              "adjusted_start_close": 66.53,
+              "canonical_security_id": "theme-sec-wdc",
+              "canonical_ticker": "WDC",
+              "constituent_total_return_pct": 617.300466,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 253,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2025-07-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 88.185781,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2025-07-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "WDC"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": -295.216541,
+          "eligibility_changes": false,
+          "horizon": "1y",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2025-07-16",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": -295.216541,
+          "recomputed_daily_rebalanced_return_pct": 434.450824,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 453.66814,
+              "signed_contribution_pct": 453.66814,
+              "ticker": "SNDK"
+            },
+            {
+              "absolute_contribution_pct": 89.878652,
+              "signed_contribution_pct": 89.878652,
+              "ticker": "MU"
+            },
+            {
+              "absolute_contribution_pct": 88.185781,
+              "signed_contribution_pct": 88.185781,
+              "ticker": "WDC"
+            }
+          ],
+          "valid": true
+        },
+        "3m": {
+          "arithmetic_mean_constituent_return_pct": 44.990872,
+          "available": true,
+          "chained_persisted_basket_return_pct": 49.345246,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 5.924442,
+              "adjusted_end_close": 188.68,
+              "adjusted_start_close": 133.37,
+              "canonical_security_id": "theme-sec-mrvl",
+              "canonical_ticker": "MRVL",
+              "constituent_total_return_pct": 41.471095,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 5.924442,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MRVL"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 12.238917,
+              "adjusted_end_close": 848.95,
+              "adjusted_start_close": 457.23,
+              "canonical_security_id": "sec-a24c631b902b547e",
+              "canonical_ticker": "MU",
+              "constituent_total_return_pct": 85.672419,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 12.238917,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MU"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 8.294753,
+              "adjusted_end_close": 163.88,
+              "adjusted_start_close": 103.68,
+              "canonical_security_id": "theme-sec-ntap",
+              "canonical_ticker": "NTAP",
+              "constituent_total_return_pct": 58.063272,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 8.294753,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "NTAP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.332912,
+              "adjusted_end_close": 69.38,
+              "adjusted_start_close": 67.8,
+              "canonical_security_id": "theme-sec-everpure-1474432",
+              "canonical_ticker": "P",
+              "constituent_total_return_pct": 2.330383,
+              "corporate_action_flags": {
+                "continuity_status": "verified",
+                "corporate_action_effective_date": "2026-04-17",
+                "corporate_action_type": "ticker_and_name_change",
+                "previous_ticker": "PSTG"
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-07-01",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-07-01",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 0.332912,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-04-16",
+                  "source_ticker": "PSTG"
+                },
+                {
+                  "effective_from": "2026-04-17",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "P"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 6.76399,
+              "adjusted_end_close": 1354.82,
+              "adjusted_start_close": 919.47,
+              "canonical_security_id": "theme-sec-sndk",
+              "canonical_ticker": "SNDK",
+              "constituent_total_return_pct": 47.347929,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2025-02-24",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2025-02-24",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 6.76399,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "SNDK"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 6.872755,
+              "adjusted_end_close": 787.66,
+              "adjusted_start_close": 531.81,
+              "canonical_security_id": "theme-sec-stx",
+              "canonical_ticker": "STX",
+              "constituent_total_return_pct": 48.109287,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 6.872755,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "STX"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 4.563103,
+              "adjusted_end_close": 477.22,
+              "adjusted_start_close": 361.69,
+              "canonical_security_id": "theme-sec-wdc",
+              "canonical_ticker": "WDC",
+              "constituent_total_return_pct": 31.941718,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 64,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-04-16",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 4.563103,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-04-16",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "WDC"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": 4.354374,
+          "eligibility_changes": false,
+          "horizon": "3m",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-04-16",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": 4.354374,
+          "recomputed_daily_rebalanced_return_pct": 49.345246,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 12.238917,
+              "signed_contribution_pct": 12.238917,
+              "ticker": "MU"
+            },
+            {
+              "absolute_contribution_pct": 8.294753,
+              "signed_contribution_pct": 8.294753,
+              "ticker": "NTAP"
+            },
+            {
+              "absolute_contribution_pct": 6.872755,
+              "signed_contribution_pct": 6.872755,
+              "ticker": "STX"
+            }
+          ],
+          "valid": true
+        },
+        "6m": {
+          "arithmetic_mean_constituent_return_pct": 123.010111,
+          "available": true,
+          "chained_persisted_basket_return_pct": 125.255674,
+          "constituents": [
+            {
+              "absolute_contribution_pct": 18.905131,
+              "adjusted_end_close": 188.68,
+              "adjusted_start_close": 81.21,
+              "canonical_security_id": "theme-sec-mrvl",
+              "canonical_ticker": "MRVL",
+              "constituent_total_return_pct": 132.335919,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 18.905131,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MRVL"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 22.096038,
+              "adjusted_end_close": 848.95,
+              "adjusted_start_close": 333.35,
+              "canonical_security_id": "sec-a24c631b902b547e",
+              "canonical_ticker": "MU",
+              "constituent_total_return_pct": 154.672266,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 22.096038,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "MU"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 7.457973,
+              "adjusted_end_close": 163.88,
+              "adjusted_start_close": 107.67,
+              "canonical_security_id": "theme-sec-ntap",
+              "canonical_ticker": "NTAP",
+              "constituent_total_return_pct": 52.205814,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 7.457973,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "NTAP"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 0.240896,
+              "adjusted_end_close": 69.38,
+              "adjusted_start_close": 70.57,
+              "canonical_security_id": "theme-sec-everpure-1474432",
+              "canonical_ticker": "P",
+              "constituent_total_return_pct": -1.686269,
+              "corporate_action_flags": {
+                "continuity_status": "verified",
+                "corporate_action_effective_date": "2026-04-17",
+                "corporate_action_type": "ticker_and_name_change",
+                "previous_ticker": "PSTG"
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-07-01",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-07-01",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": -0.240896,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-04-16",
+                  "source_ticker": "PSTG"
+                },
+                {
+                  "effective_from": "2026-04-17",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "P"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 35.621641,
+              "adjusted_end_close": 1354.82,
+              "adjusted_start_close": 387.81,
+              "canonical_security_id": "theme-sec-sndk",
+              "canonical_ticker": "SNDK",
+              "constituent_total_return_pct": 249.351487,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2025-02-24",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2025-02-24",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 35.621641,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "SNDK"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 21.746967,
+              "adjusted_end_close": 787.66,
+              "adjusted_start_close": 312.28,
+              "canonical_security_id": "theme-sec-stx",
+              "canonical_ticker": "STX",
+              "constituent_total_return_pct": 152.228769,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 21.746967,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "STX"
+                }
+              ]
+            },
+            {
+              "absolute_contribution_pct": 17.423256,
+              "adjusted_end_close": 477.22,
+              "adjusted_start_close": 215.0,
+              "canonical_security_id": "theme-sec-wdc",
+              "canonical_ticker": "WDC",
+              "constituent_total_return_pct": 121.962791,
+              "corporate_action_flags": {
+                "continuity_status": null,
+                "corporate_action_effective_date": null,
+                "corporate_action_type": null,
+                "previous_ticker": null
+              },
+              "daily_basket_weight": 0.142857142857,
+              "eligible_session_count": 127,
+              "first_eligible_session": "2024-09-30",
+              "horizon_start_session": "2026-01-14",
+              "identity_effective_dates": {
+                "security_effective_from": "2024-09-30",
+                "security_effective_to": null
+              },
+              "identity_mismatch_sessions": [],
+              "identity_valid": true,
+              "last_session": "2026-07-17",
+              "missing_sessions": [],
+              "signed_contribution_pct": 17.423256,
+              "source_mismatch_sessions": [],
+              "source_ticker_by_date": [
+                {
+                  "effective_from": "2026-01-14",
+                  "effective_to": "2026-07-17",
+                  "source_ticker": "WDC"
+                }
+              ]
+            }
+          ],
+          "coverage": {
+            "end": 1.0,
+            "minimum": 1.0,
+            "start": 1.0
+          },
+          "difference_chained_minus_arithmetic_pct": 2.245563,
+          "eligibility_changes": false,
+          "horizon": "6m",
+          "horizon_end_session": "2026-07-17",
+          "horizon_start_session": "2026-01-14",
+          "identity_valid": true,
+          "no_double_percentage_conversion": true,
+          "percentage_unit": "percent; raw daily returns are multiplied by 100 once for display",
+          "rebalance_effect_pct": 2.245563,
+          "recomputed_daily_rebalanced_return_pct": 125.255674,
+          "reconciliation_difference_pct": 0.0,
+          "top_contributors": [
+            {
+              "absolute_contribution_pct": 35.621641,
+              "signed_contribution_pct": 35.621641,
+              "ticker": "SNDK"
+            },
+            {
+              "absolute_contribution_pct": 22.096038,
+              "signed_contribution_pct": 22.096038,
+              "ticker": "MU"
+            },
+            {
+              "absolute_contribution_pct": 21.746967,
+              "signed_contribution_pct": 21.746967,
+              "ticker": "STX"
+            }
+          ],
+          "valid": true
+        }
+      },
+      "theme_id": "memory_storage",
+      "valid": true,
+      "version": "v1.2"
+    }
+  ]
+}

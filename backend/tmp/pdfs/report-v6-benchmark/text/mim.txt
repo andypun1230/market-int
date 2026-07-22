@@ -1,0 +1,386 @@
+
+===== PAGE 1 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+美股感恩節短週丨 Market Summary 丨市場分析教學丨 2025-11-27 
+動能投資會員專區 MIM (Momentum Investing Membership)  
+ 
+MIM 動能投資 三大戒律  
+1/ 嚴守止損 Cut Your Losses  
+2/ 全心追隨領導股 Follow the leaders only  
+3/ 放手讓贏家股票奔跑 Let your winners run  
+ 
+MIM 動能投資 DRIVE 選股系統  
+D = Direction 方向/ 趨勢  
+R = Relative Strength 相對強度  
+I = Industry Group 行業板塊  
+V = Volume 成交量  
+E = Earnings 盈餘&營收 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGE 2 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+美國週四是感恩節假期休市，週五只開半日市，午盤後收市。 
+由於週五的半日市在感恩節假期間一般成交量會明顯下降，市場較少有大波
+動，通常至下週一才慢慢回復正常。 
+ 
+以下為最新市場現況的整合: 
+ 
+大盤走勢 
+- SPX 標普，買盤湧入仍持續，連續四天上漲。本週一、二、三是 3 white 
+soldier 升穿上週四 day high，扭轉上週四的倒跌走勢，是頗強的 reversal 型
+態 
+- SPX 現升至下降軌阻力 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGE 3 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- QQQ 納指，突破下行通道阻力，positive。突破結構完整的 downward 
+channel 是利好信號，如之後有向上 follow through，may run up higher  
+- 現升至 0.618 阻力 
+ 
+- DJI 道指，只是急跌後反彈，V shape，未如納指那讓從建設性的 setup 突
+破。 
+ 
+
+===== PAGE 4 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- IWM，週二突破 50 天線 & 下降軌後，週三再 follow through to the 
+upside，positive.  
+ 
+- IWM 週線圖正突破杯柄型態 setup  
+ 
+ 
+
+===== PAGE 5 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+現時 SPX/ QQQ 連升 4 日至阻力，有機會是潛在 short edge 空頭嘗試反擊的位
+置，大盤有機會 pullback，情況差的話可能亦會有出貨日，因此這位置要保
+守。 
+ 
+理想的再介入時機，是等待大盤有 2-3 日低量拉回整理，隨後再向上突破
+follow through  
+正面的是，VIX 大幅回落，大市很大機會已見調整低點。亦預期波動會收細，
+期望大盤在阻力會發展有建設性的 digestion/ pivot point  
+ 
+
+===== PAGE 6 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+SOXX 半導體 ETF 出現類似 Follow Through Day 的轉勢走勢，在見低點後的 day 
+4 出現。 
+ 
+小時圖見到 Higher low 然後向上確認轉勢 (good example of pivotal point) 
+但由於感恩節關係，週三的成交量未有放大 
+ 
+
+===== PAGE 7 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+Fear & Greed Index，仍然是 Extreme Fear 報 18 
+上週四的反彈行情吸引不少空頭進場，而沽空倉位往往是幫助反彈行情發展的
+推動力，因為當價格繼續上升時，沽空倉位就要回補空頭，變相增加購買力在
+市場。 
+ 
+ 
+ 
+
+===== PAGE 8 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+目前市場大主題:  
+1/ GOOGL 供應鏈，ASIC，受惠股 
+2/ Gemini3 成功像徵 AI 應用場景落地，實質回報可期，想像空間更大 
+ 
+以下是 Google 鏈/ ASIC 的受惠板塊:  
+ASIC 設計 
+ASIC 因 TPU 的成功，或引起更多市場需求轉向客製化高效率芯片，2025 年
+全球 ASIC 支出預計 375-500 億美元（CAGR 32%） 。設計公司直接吃到 
+hyperscalers（Google、Meta、Amazon、Microsoft）內製訂單，IP 授權與
+封裝技術成關鍵。邊緣 AI 與雲端推理雙輪驅動。  
+相關股票: AVGO, MRVL, INTC, QCOM 
+ 
+晶圓代工與製造設備 
+所有 ASIC 都需 3nm/2nm 製程與先進封積，TSMC 產能滿載，AMAT/ASML 
+設備訂單爆發。2025 年 AI 相關 WFE 支出預計 250-300 億美元，EUV/混合
+鍵合成瓶頸技術，中國出口限制反而加速美國/歐洲本土化投資，設備商享有 
+12-24 個月訂單可見度。 
+相關股票: TSM, INTC, MU, ASML, AMAT 
+ 
+資料中心基礎設施 
+ASIC 高密度叢集讓機櫃從 8kW 升至 500-1000kW，需完整機架 rack-scale 
+整合與模組化交付，ODM 廠商直接承接 hyperscalers 白箱訂單，後備訂單
+提供 12-18 個月能見度 
+相關股票: CLS, TTMI, JBL, FN  
+ 
+===== PAGE 9 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+光通訊與互聯互通 
+ASIC 會放大資料傳輸需求，因為高密度叢集需從 400G 升至 1.6T/3.2T 速
+率，支援海量 AI 訓練/推理數據互聯（如 Llama 4） ，導致光學模組出貨量 
+2025 年達 31.9 百萬單位（YoY +56.5%），CPO 技術整合光引擎與 ASIC 提
+升頻寬 3 倍（10 Tbps/mm vs. 銅 3 Tbps/mm） ，市場規模 150 億美元
+（CAGR 50%） 。上游光纖到下游模組全鏈條受益，  
+相關股票: LITE, CIEN, COHR, GLW, APH, CRDO, ALAB 
+ 
+冷卻與能源效率 
+ASIC 轉向會導致熱能大幅增加，因為單片功耗 >1kW、叢集熱密度從 
+8kW/rack 升至 500-1000kW，AI 工作負荷產生高熱負荷（GB200 140 kW/機
+櫃） 
+相關股票: VRT, FIX, EME 
+ 
+再生能源/ 電力/ 儲能 
+ASIC 雖比較節能，但總電耗仍暴增 160%（2030 年達 945 TWh） ，太陽能+
+儲能成為 AI 資料中心綠電首選，美國新增 8.7 GW 太陽能專案 40% 給資料
+中心，儲能需求同步爆發。 
+相關股票: FSLR, DQ / NRG, NEE / TSLA, BE, FLNC,EOSE 
+ 
+總體來說，在 AI 懷疑論萌生的情況下，除了 NVDA 財報逐一擊破疑點之外，
+GOOGL 的 Gemini3 亦向市場證明 AI 的強大，足以改變人的工作/ 生活方式，
+為人類生產力帶來巨大效益、使用場景闊，以重新鞏固整個 AI 基建的投資邏
+輯。(原本擔心巨企 FOMO 式投資 AI 難以有合理回報，但現在見到 AI 真的很
+強，將驅使巨企們繼續追求更強的算力、研發出更強的 AI 模型，繼續 AI 軍備
+競賽) 
+原先強勢的一眾半導體股、數據中心硬件股等，預期將繼續受惠 
+===== PAGE 10 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+Swing Trade 焦點股票 Watch list  
+- INTC  
+前一日 Discord 已分享。現剛突破下降軌阻力，成交量暫時未跟上。希望見到
+有成交放大的陽燭出現。INTC 走勢對比其他半導體廠商: TSM, MU，INTC 暫時
+較領先。(已明顯高於所有均線 & 上週四 day high)  
+ 
+- CLS / 機架姐裝 
+可觀察右側整理/ pivot point  
+
+===== PAGE 11 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+ 
+- FIX / 散熱系統 
+可觀察右側整理/ pivot point  
+ 
+ 
+ 
+
+===== PAGE 12 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- CAT / 電力設備 
+可觀察右側整理/ pivot point  
+ 
+- NRG / 電力股 
+可觀察下降軌阻力以下發展 pivot point 
+ 
+
+===== PAGE 13 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- NEE/ 電力股  
+留意阻力線/ pivot point  
+公用股 ETF XLU 有 setup   
+ 
+ 
+ 
+
+===== PAGE 14 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- RDDT  / AI 數據、廣告 
+留意會否在 50 天線之上發展 pivot point / low cheat  
+ 
+週線圖 Big Base   
+ 
+ 
+
+===== PAGE 15 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- 000660, SK 海力士 / 內存芯片韓國廠商 
+正發展 High Tight Flag setup，內存板塊相關可能整固一輪之後，繼續有動能向
+上 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGE 16 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- STX/ WDC  / 存儲板塊 
+似乎正發展 Ascending base 
+ 
+ 
+ 
+ 
+
+===== PAGE 17 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+MIM Swing Trade Acc 
+- AMAT 
+Stop loss $232.4  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGE 18 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+MIM Position Trade Acc 
+TSLA, AVGO, FIX, FSLR, GLW, UGL / HK700 long call, Dec 30 
+ 
+- AVGO 
+正處於上升趨勢線/ $400 心理阻力 
+如回頭跌穿$394.8 我會少量沽出 1/4 止賺降低買入成本  
+(Dec 11 業績) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGE 19 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- GLW 
+I will try to have more patience on this name.  
+ 
+GLW 除了是光纖大廠，光通訊模組的供應商之外 
+亦是供應蘋果 Iphone/ Ipad/ Iwatch 螢幕的玻璃供應商 
+https://www.corning.com/worldwide/en.html 
+ 
+潛在催化劑: 
+有傳 AAPL 即將研發到無摺痕的手機，這將會是摺疊手機技術的重大突破 
+這需倚賴到 GLW 的高階玻璃技術才能成事，GLW 潛在受惠 
+https://www.youtube.com/watch?v=Kk9DoILLKH0 
+ 
+ 
+ 
+ 
+
+===== PAGE 20 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+- ETH? 
+有會員問何時會再考慮 ETH? 
+我會等它之後拉回 retest 確認是 higher low，再出現向上突破走勢 (Follow 
+Through Day)時，再作考慮 
+(未有出現巨頭 Capitulation/ Extreme oversold….)對於是否短期內很快就見底回
+升, 我唔太樂觀。或需要多一段時間慢慢震盪築底，直至無咩人留意) 
+ 
+商品方面補充, 
+昨天金銀銅礦股有集體突破。潛在受惠減息利好。 
+
+===== PAGE 21 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+ 
+ 
+
+===== PAGE 22 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+ 
+ 
+關於落盤教學 
+Buy stop = 到價觸發買入  
+富途用 “止損市價單，買入” / IB 用 “止損單，買入”，縮寫是 STP Order  
+生效時間選 GTC (Good till cancel)，取消前有效 
+建議不要用限價單/ 止損限價單，因為當價格升太快，就會跳過你的價格成交
+不到  
+建議開盤前 1 小時內查看有否明顯 Gap Up，如 Gap Up 顯著升過過買入價 
+(例如 3%以上…就取消訂單再觀察)  
+(如有其他操作，Discord channel 會跟進)  
+ 
+Sell stop / Stop loss = 到價止損沽出  
+富途用” 止損市價單，賣出” / IB 用”止損單，賣出”，STP Order  
+同樣不要同限價單  
+
+===== PAGE 23 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+富途要選”不允許沽空”，確保你買入後有貨在手條件賣單才會生效  
+ 
+關於觸發 stop loss，幾時應該盤前 sell，幾時應該等開盤先 sell，我呢到整
+理一下:  
+9 成以上情況都會係等交易時段先沽出離場。因為盤前流動性相對低，D 價有 
+時會”好假”，特別係太早的盤前 like HKT 5-6pm，個 D 時間低開 2-3%可以係
+假像，可能去到 HKT 8-9pm 走勢就會正常返。 
+呢種係一般市況正常情況  
+ 
+有少部分極端情況會係盤前觸發 stop loss，都會係盤前時段沽出保本。 
+極端情 況通常有以下特徵:  
+- 美股期貨跌超 1.5% (納指/ 標普/ 道指 任一指數)  
+- 普遍焦點股票跌幅異常 (>1 ATR)  
+- 股市呢日 gap down 之前，大盤短期內已出現過出貨日，而 gap down 後大
+盤 會出現 cautious signal / sell signal (大盤或會跌穿 20 天線)  
+- VIX 明顯抽高，代表有特別事件發生令市場進入特別狀態  
+希望呢份參考可以幫大家判斷到咩係極端情況，從而作出倉位管理  
+ 
+【免責聲明】 
+1. 本頻道純屬技術分析及基本面分析教學，僅使用圖表或數據作案例。 
+2. 所有圖表、例子均為過往已發生的走勢，不代表未來走勢。 
+3. 本頻道純屬分享個人的交易日誌，並分享給有興趣的讀者作純粹的教學用途 
+4.  ** 不構成任何買賣建議、目標價、投資意見**。 
+5. 學員須自行判斷，盈虧自負。 
+===== PAGE 24 =====
+Momentum Investor HK © 2025. All rights reserved  
+本報告純粹分享個人分析，不構成投資建議 
+ 
+ 
+ 
+ 
+ 
+如果當你看完這篇市況分析教學發現有不少概念不理解，那請由 Patreon 的新
+手教 學文章/ 影片開始學習，看完後有助你理想整套交易系統如何運作、動能
+投資 背後的邏輯是如何。https://www.patreon.com/posts/1-2yue-te-bie-zi-
+119821037  
+ 
+MIM 會員專區的主要服務是:  
+- 助你發掘強勢股機會 & 正確買賣時機  
+- 市況分析 & 選股服務，讓你節省大量時間就能清楚知道部署方向  
+- 教學導向，讓你逐步學到獨立判斷力 
+ 
+如想正正式式地由零開始學起上手，更清楚整套方法的底層邏輯，鍛鍊出更佳 
+的獨立判斷力，如何選股/ 買入位置/ 沽出時機/ 判市指標/ 倉位管理…等等， 
+我推薦這個網上課程:  
+動能投資入門課程: 美股致富班，捕捉優質倍升股 (共 13 課) 現已上線。 適
+合新手由零開始學習動能投資系統 https://momentum-investor.mykajabi.com/  
+ 
+MIM 會員專享的課程優惠碼: MIMDT2025 
+[THE END OF THIS REPORT] 

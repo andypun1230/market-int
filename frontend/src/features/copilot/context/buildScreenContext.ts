@@ -42,7 +42,7 @@ export function createCopilotContext({
 }
 
 export function normalizeSourceState(value?: string | null): CopilotSourceState {
-  if (value === 'live' || value === 'delayed' || value === 'cached' || value === 'stale' || value === 'mock' || value === 'mixed') {
+  if (value === 'live' || value === 'delayed' || value === 'cached' || value === 'stale' || value === 'test' || value === 'mock' || value === 'partial' || value === 'mixed') {
     return value;
   }
   return 'unavailable';
@@ -60,6 +60,10 @@ export function sourceStateLabel(value: CopilotSourceState) {
       return 'Stale data';
     case 'mock':
       return 'Mock data';
+    case 'test':
+      return 'Test data';
+    case 'partial':
+      return 'Partial data';
     case 'mixed':
       return 'Mixed sources';
     default:

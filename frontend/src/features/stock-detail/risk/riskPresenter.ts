@@ -620,10 +620,10 @@ function buildSummary({
   }
   const bestReward = getBestReward(rewards);
   const confirmationText = confirmationLevel != null && decisionContext.setupConfirmation === 'awaiting_confirmation'
-    ? ` if price clears confirmation at ${formatCurrency(confirmationLevel)}`
+    ? ` after a close above ${formatCurrency(confirmationLevel)}`
     : '';
   const rewardSentence = bestReward
-    ? `${targetPhrase(bestReward.label)} offers the stronger ${bestReward.quality} reward profile${confirmationText}.`
+    ? `${targetPhrase(bestReward.label)} has ${bestReward.quality} reward${confirmationText}.`
     : confirmationLevel != null && decisionContext.setupConfirmation === 'awaiting_confirmation'
       ? `Confirmation is still needed above ${formatCurrency(confirmationLevel)}.`
       : '';

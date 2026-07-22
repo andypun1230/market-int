@@ -1,0 +1,1052 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 24,
+    "caseId": "report-history",
+    "title": "Existing report history",
+    "request": {
+      "message": "What changed since the previous report?",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "immutable-current-and-prior-report",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "REPORT_QUERY",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "report"
+      ],
+      "optionalAgents": [
+        "research"
+      ],
+      "entities": [
+        {
+          "type": "report",
+          "id": "latest"
+        }
+      ],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "complete"
+      ],
+      "allowedFreshnessStates": [
+        "cached",
+        "delayed",
+        "live"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "report",
+          "route": "/report",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": "latest",
+          "highlightTarget": null
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "both_report_ids_retained",
+        "cross_date_evidence_labeled",
+        "change_matches_stored_history"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-24-report-history",
+    "planId": "plan-stage7-report-history",
+    "threadId": "stage7-thread-report-history",
+    "startedAt": "2026-07-22T05:09:08.494064+00:00",
+    "completedAt": "2026-07-22T05:09:08.495290+00:00",
+    "elapsedMs": 1.112,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-report-history",
+      "intent": "REPORT_QUERY",
+      "subIntent": "report_change",
+      "entities": [
+        {
+          "entityId": "latest",
+          "entityType": "report",
+          "displayName": "Latest Report",
+          "symbol": null,
+          "confidence": 1.0,
+          "resolutionSource": "fixture-report-registry"
+        }
+      ],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "report_date",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.94,
+      "requiredAgents": [
+        "report"
+      ],
+      "optionalAgents": [],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-report-history",
+      "intentId": "intent-stage7-report-history",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-report",
+          "order": 1,
+          "agent": "report",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 1000,
+          "purpose": "Collect validated report evidence."
+        }
+      ],
+      "requiredAgents": [
+        "report"
+      ],
+      "optionalAgents": [],
+      "dependencies": {
+        "step-1-report": []
+      },
+      "requiredEntities": [
+        "latest"
+      ],
+      "evidenceRequirements": [
+        {
+          "category": "report",
+          "required": true,
+          "entities": [
+            "latest"
+          ],
+          "minimumItems": 1
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "report"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 1200,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "report",
+        "status": "complete",
+        "observations": [
+          "The report fixture adapter returned a reviewed durable observation."
+        ],
+        "conclusions": [
+          "The validated report scenario requires its reviewed confirmation conditions."
+        ],
+        "contradictions": [
+          "A reviewed opposing condition remains unresolved."
+        ],
+        "metrics": {},
+        "levels": [
+          {
+            "label": "confirmation condition",
+            "value": "reviewed confirmation threshold",
+            "unit": null,
+            "evidenceId": "stage7:report-history:report:current"
+          }
+        ],
+        "sourceReferences": [
+          {
+            "sourceId": "stage7:report-history:report-current",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_immutable_report",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:immutable-current-report"
+          },
+          {
+            "sourceId": "stage7:report-history:report-prior",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_immutable_report",
+            "generatedAt": "2026-07-19T00:00:00+00:00",
+            "marketDate": "2026-07-18",
+            "rawEngineReference": "fixture:immutable-prior-report"
+          }
+        ],
+        "evidence": [
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:report-history:report:current",
+            "category": "report",
+            "entity": "current report",
+            "metric": "report posture",
+            "value": "constructive reviewed signal",
+            "unit": null,
+            "currentState": "constructive reviewed signal",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "engine_conclusion",
+            "source": {
+              "sourceId": "stage7:report-history:report-current",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_immutable_report",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:immutable-current-report"
+            },
+            "freshness": {
+              "state": "cached",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": "report-stage7-current",
+            "supportsClaimIds": [
+              "claim:report-history:support"
+            ],
+            "contradictsClaimIds": []
+          },
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:report-history:report:prior",
+            "category": "report",
+            "entity": "prior report",
+            "metric": "report posture",
+            "value": "cautious reviewed signal",
+            "unit": null,
+            "currentState": "cautious reviewed signal",
+            "priorValue": null,
+            "change": null,
+            "timeframe": "current",
+            "interpretationClass": "observed_fact",
+            "source": {
+              "sourceId": "stage7:report-history:report-prior",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_immutable_report",
+              "generatedAt": "2026-07-19T00:00:00+00:00",
+              "marketDate": "2026-07-18",
+              "rawEngineReference": "fixture:immutable-prior-report"
+            },
+            "freshness": {
+              "state": "cached",
+              "marketDate": "2026-07-18",
+              "generatedAt": "2026-07-19T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": "report-stage7-prior",
+            "supportsClaimIds": [
+              "claim:report-history:history"
+            ],
+            "contradictsClaimIds": []
+          },
+          {
+            "schemaVersion": "copilot-evidence-v1",
+            "evidenceId": "stage7:report-history:report:change",
+            "category": "report",
+            "entity": "report history",
+            "metric": "report change",
+            "value": "stored posture changed from cautious to constructive",
+            "unit": null,
+            "currentState": "constructive reviewed signal",
+            "priorValue": "cautious reviewed signal",
+            "change": "cautious to constructive",
+            "timeframe": "current",
+            "interpretationClass": "engine_conclusion",
+            "source": {
+              "sourceId": "stage7:report-history:report-current",
+              "provider": "stage7_fixture_adapter",
+              "dataset": "fixture_immutable_report",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "marketDate": "2026-07-21",
+              "rawEngineReference": "fixture:immutable-current-report"
+            },
+            "freshness": {
+              "state": "cached",
+              "marketDate": "2026-07-21",
+              "generatedAt": "2026-07-22T00:00:00+00:00",
+              "observedAt": null,
+              "expiresAt": null,
+              "ageSeconds": null,
+              "completeness": 1.0,
+              "provider": "stage7_fixture_adapter",
+              "warnings": []
+            },
+            "confidence": "moderate",
+            "deepLink": null,
+            "reportReference": "report-stage7-current",
+            "supportsClaimIds": [
+              "claim:report-history:change"
+            ],
+            "contradictsClaimIds": []
+          }
+        ],
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "report"
+        ],
+        "warnings": [],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:report-history:report:current",
+        "category": "report",
+        "entity": "current report",
+        "metric": "report posture",
+        "value": "constructive reviewed signal",
+        "unit": null,
+        "currentState": "constructive reviewed signal",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "engine_conclusion",
+        "source": {
+          "sourceId": "stage7:report-history:report-current",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_immutable_report",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:immutable-current-report"
+        },
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": "report-stage7-current",
+        "supportsClaimIds": [
+          "claim:report-history:support"
+        ],
+        "contradictsClaimIds": []
+      },
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:report-history:report:prior",
+        "category": "report",
+        "entity": "prior report",
+        "metric": "report posture",
+        "value": "cautious reviewed signal",
+        "unit": null,
+        "currentState": "cautious reviewed signal",
+        "priorValue": null,
+        "change": null,
+        "timeframe": "current",
+        "interpretationClass": "observed_fact",
+        "source": {
+          "sourceId": "stage7:report-history:report-prior",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_immutable_report",
+          "generatedAt": "2026-07-19T00:00:00+00:00",
+          "marketDate": "2026-07-18",
+          "rawEngineReference": "fixture:immutable-prior-report"
+        },
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-18",
+          "generatedAt": "2026-07-19T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": "report-stage7-prior",
+        "supportsClaimIds": [
+          "claim:report-history:history"
+        ],
+        "contradictsClaimIds": []
+      },
+      {
+        "schemaVersion": "copilot-evidence-v1",
+        "evidenceId": "stage7:report-history:report:change",
+        "category": "report",
+        "entity": "report history",
+        "metric": "report change",
+        "value": "stored posture changed from cautious to constructive",
+        "unit": null,
+        "currentState": "constructive reviewed signal",
+        "priorValue": "cautious reviewed signal",
+        "change": "cautious to constructive",
+        "timeframe": "current",
+        "interpretationClass": "engine_conclusion",
+        "source": {
+          "sourceId": "stage7:report-history:report-current",
+          "provider": "stage7_fixture_adapter",
+          "dataset": "fixture_immutable_report",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "marketDate": "2026-07-21",
+          "rawEngineReference": "fixture:immutable-current-report"
+        },
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "confidence": "moderate",
+        "deepLink": null,
+        "reportReference": "report-stage7-current",
+        "supportsClaimIds": [
+          "claim:report-history:change"
+        ],
+        "contradictsClaimIds": []
+      }
+    ],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "The change since the prior report is limited to the stored, cited report-change evidence below.",
+      "stance": "neutral",
+      "confidenceLabel": "moderate",
+      "thesis": "The change since the prior report is limited to the stored, cited report-change evidence below.",
+      "supportingFactors": [
+        {
+          "statement": "current report: report posture is constructive reviewed signal.",
+          "evidenceIds": [
+            "stage7:report-history:report:current"
+          ]
+        },
+        {
+          "statement": "report history: report change is constructive reviewed signal.",
+          "evidenceIds": [
+            "stage7:report-history:report:change"
+          ]
+        }
+      ],
+      "contradictoryFactors": [
+        {
+          "statement": "prior report: report posture is cautious reviewed signal.",
+          "evidenceIds": [
+            "stage7:report-history:report:prior"
+          ]
+        }
+      ],
+      "keyRisks": [
+        {
+          "statement": "prior report: report posture is cautious reviewed signal.",
+          "evidenceIds": [
+            "stage7:report-history:report:prior"
+          ]
+        }
+      ],
+      "confirmationConditions": [
+        {
+          "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+          "evidenceIds": [
+            "stage7:report-history:report:current"
+          ]
+        }
+      ],
+      "invalidationConditions": [],
+      "missingEvidence": [],
+      "personalizationNote": null,
+      "relatedResearch": [
+        "Latest Report"
+      ],
+      "recommendedAppDestinations": [
+        "report"
+      ],
+      "disclaimerClass": "educational_market_decision_support"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-24-report-history",
+      "planId": "plan-stage7-report-history",
+      "threadId": "stage7-thread-report-history",
+      "status": "complete",
+      "answer": "The change since the prior report is limited to the stored, cited report-change evidence below.\n\nWhy: current report: report posture is constructive reviewed signal. report history: report change is constructive reviewed signal.\n\nCounter-evidence: prior report: report posture is cautious reviewed signal.",
+      "answerSections": {
+        "directAnswer": "The change since the prior report is limited to the stored, cited report-change evidence below.",
+        "why": [
+          "current report: report posture is constructive reviewed signal.",
+          "report history: report change is constructive reviewed signal."
+        ],
+        "evidenceFor": [
+          "current report: report posture is constructive reviewed signal.",
+          "report history: report change is constructive reviewed signal."
+        ],
+        "evidenceAgainst": [
+          "prior report: report posture is cautious reviewed signal."
+        ],
+        "mainCaution": "prior report: report posture is cautious reviewed signal.",
+        "whatWouldConfirm": [
+          "The validated confirmation condition is reviewed confirmation threshold."
+        ],
+        "whatWouldInvalidate": [],
+        "whatWouldChange": [
+          "The validated confirmation condition is reviewed confirmation threshold."
+        ]
+      },
+      "grounding": {
+        "contextUsed": [
+          "fixture_immutable_report"
+        ],
+        "sourceState": "cached",
+        "generatedAt": "2026-07-22T05:09:08.495080+00:00",
+        "evidenceIds": [
+          "stage7:report-history:report:current",
+          "stage7:report-history:report:prior",
+          "stage7:report-history:report:change"
+        ]
+      },
+      "suggestedFollowUps": [
+        "What would invalidate the report thesis?",
+        "Open Research Focus."
+      ],
+      "confidence": 68,
+      "answerConfidence": {
+        "level": "moderate",
+        "reasons": [
+          "Intent confidence: 94%.",
+          "Evidence freshness: cached."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-report-history",
+        "intent": "REPORT_QUERY",
+        "subIntent": "report_change",
+        "entities": [
+          {
+            "entityId": "latest",
+            "entityType": "report",
+            "displayName": "Latest Report",
+            "symbol": null,
+            "confidence": 1.0,
+            "resolutionSource": "fixture-report-registry"
+          }
+        ],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "report_date",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.94,
+        "requiredAgents": [
+          "report"
+        ],
+        "optionalAgents": [],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-report-history",
+        "intentId": "intent-stage7-report-history",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-report",
+            "order": 1,
+            "agent": "report",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 1000,
+            "purpose": "Collect validated report evidence."
+          }
+        ],
+        "requiredAgents": [
+          "report"
+        ],
+        "optionalAgents": [],
+        "dependencies": {
+          "step-1-report": []
+        },
+        "requiredEntities": [
+          "latest"
+        ],
+        "evidenceRequirements": [
+          {
+            "category": "report",
+            "required": true,
+            "entities": [
+              "latest"
+            ],
+            "minimumItems": 1
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "report"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 1200,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "The change since the prior report is limited to the stored, cited report-change evidence below.",
+        "stance": "neutral",
+        "confidenceLabel": "moderate",
+        "thesis": "The change since the prior report is limited to the stored, cited report-change evidence below.",
+        "supportingFactors": [
+          {
+            "statement": "current report: report posture is constructive reviewed signal.",
+            "evidenceIds": [
+              "stage7:report-history:report:current"
+            ]
+          },
+          {
+            "statement": "report history: report change is constructive reviewed signal.",
+            "evidenceIds": [
+              "stage7:report-history:report:change"
+            ]
+          }
+        ],
+        "contradictoryFactors": [
+          {
+            "statement": "prior report: report posture is cautious reviewed signal.",
+            "evidenceIds": [
+              "stage7:report-history:report:prior"
+            ]
+          }
+        ],
+        "keyRisks": [
+          {
+            "statement": "prior report: report posture is cautious reviewed signal.",
+            "evidenceIds": [
+              "stage7:report-history:report:prior"
+            ]
+          }
+        ],
+        "confirmationConditions": [
+          {
+            "statement": "The validated confirmation condition is reviewed confirmation threshold.",
+            "evidenceIds": [
+              "stage7:report-history:report:current"
+            ]
+          }
+        ],
+        "invalidationConditions": [],
+        "missingEvidence": [],
+        "personalizationNote": null,
+        "relatedResearch": [
+          "Latest Report"
+        ],
+        "recommendedAppDestinations": [
+          "report"
+        ],
+        "disclaimerClass": "educational_market_decision_support"
+      },
+      "evidence": [
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:report-history:report:current",
+          "category": "report",
+          "entity": "current report",
+          "metric": "report posture",
+          "value": "constructive reviewed signal",
+          "unit": null,
+          "currentState": "constructive reviewed signal",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "engine_conclusion",
+          "source": {
+            "sourceId": "stage7:report-history:report-current",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_immutable_report",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:immutable-current-report"
+          },
+          "freshness": {
+            "state": "cached",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": "report-stage7-current",
+          "supportsClaimIds": [
+            "claim:report-history:support"
+          ],
+          "contradictsClaimIds": []
+        },
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:report-history:report:prior",
+          "category": "report",
+          "entity": "prior report",
+          "metric": "report posture",
+          "value": "cautious reviewed signal",
+          "unit": null,
+          "currentState": "cautious reviewed signal",
+          "priorValue": null,
+          "change": null,
+          "timeframe": "current",
+          "interpretationClass": "observed_fact",
+          "source": {
+            "sourceId": "stage7:report-history:report-prior",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_immutable_report",
+            "generatedAt": "2026-07-19T00:00:00+00:00",
+            "marketDate": "2026-07-18",
+            "rawEngineReference": "fixture:immutable-prior-report"
+          },
+          "freshness": {
+            "state": "cached",
+            "marketDate": "2026-07-18",
+            "generatedAt": "2026-07-19T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": "report-stage7-prior",
+          "supportsClaimIds": [
+            "claim:report-history:history"
+          ],
+          "contradictsClaimIds": []
+        },
+        {
+          "schemaVersion": "copilot-evidence-v1",
+          "evidenceId": "stage7:report-history:report:change",
+          "category": "report",
+          "entity": "report history",
+          "metric": "report change",
+          "value": "stored posture changed from cautious to constructive",
+          "unit": null,
+          "currentState": "constructive reviewed signal",
+          "priorValue": "cautious reviewed signal",
+          "change": "cautious to constructive",
+          "timeframe": "current",
+          "interpretationClass": "engine_conclusion",
+          "source": {
+            "sourceId": "stage7:report-history:report-current",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_immutable_report",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": "2026-07-21",
+            "rawEngineReference": "fixture:immutable-current-report"
+          },
+          "freshness": {
+            "state": "cached",
+            "marketDate": "2026-07-21",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "observedAt": null,
+            "expiresAt": null,
+            "ageSeconds": null,
+            "completeness": 1.0,
+            "provider": "stage7_fixture_adapter",
+            "warnings": []
+          },
+          "confidence": "moderate",
+          "deepLink": null,
+          "reportReference": "report-stage7-current",
+          "supportsClaimIds": [
+            "claim:report-history:change"
+          ],
+          "contradictsClaimIds": []
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "action-report-latest",
+          "label": "Open Daily Report",
+          "actionType": "navigate",
+          "destinationId": "report",
+          "route": "/report",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": "latest",
+          "highlightTarget": null,
+          "parameters": {
+            "entity": "latest"
+          }
+        }
+      ],
+      "warnings": [],
+      "freshnessSummary": {
+        "overallState": "cached",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 1,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "report": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-report-latest",
+        "label": "Open Daily Report",
+        "actionType": "navigate",
+        "destinationId": "report",
+        "route": "/report",
+        "tab": null,
+        "subTab": null,
+        "sectionId": null,
+        "entity": "latest",
+        "highlightTarget": null,
+        "parameters": {
+          "entity": "latest"
+        }
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed REPORT_QUERY; expected REPORT_QUERY."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['report']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status complete."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness cached."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:both_report_ids_retained",
+          "status": "passed",
+          "detail": "Current and prior immutable report IDs are retained."
+        },
+        {
+          "check": "assertion:cross_date_evidence_labeled",
+          "status": "passed",
+          "detail": "Cross-date report evidence carries explicit dates and report references."
+        },
+        {
+          "check": "assertion:change_matches_stored_history",
+          "status": "passed",
+          "detail": "The change statement is the cited stored report delta."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

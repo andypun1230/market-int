@@ -1,0 +1,77 @@
+{
+  "checks": {
+    "durable_polygon_adjusted_bars": {
+      "inserted": 2790,
+      "passed": true,
+      "total": 2790,
+      "updated": 0
+    },
+    "equal_weight_baskets": {
+      "basket_counts": {
+        "cybersecurity": 309,
+        "memory_storage": 309
+      },
+      "passed": true
+    },
+    "overlap_disclosure": {
+      "overlap": [
+        {
+          "classification": "low",
+          "common_members": [],
+          "jaccard_overlap": 0.0,
+          "left_theme_id": "cybersecurity",
+          "right_theme_id": "memory_storage",
+          "shared_count": 0,
+          "union_count": 8,
+          "weighted_overlap": 0
+        }
+      ],
+      "passed": true
+    },
+    "participation_is_not_breadth_alias": {
+      "formulas": [
+        "positive-return-and-contribution-v1",
+        "positive-return-and-contribution-v1"
+      ],
+      "passed": true
+    },
+    "restart_persistence": {
+      "after": "theme-2025-11-07-54fac67193",
+      "before": "theme-2025-11-07-54fac67193",
+      "passed": true
+    },
+    "reviewed_definition_gate": {
+      "passed": true,
+      "snapshot_id": "theme-2025-11-07-54fac67193",
+      "themes": [
+        "cybersecurity",
+        "memory_storage"
+      ]
+    },
+    "rotation_real_basket_trails": {
+      "intervals": {
+        "1M": {
+          "points": 2,
+          "trail_points": 10
+        },
+        "1W": {
+          "points": 2,
+          "trail_points": 10
+        },
+        "3M": {
+          "points": 2,
+          "trail_points": 10
+        }
+      },
+      "passed": true
+    },
+    "temporary_database_cleanup": {
+      "db_path": "/var/folders/pn/xvktlkjx4wx3dqs7wlx7zfhh0000gn/T/phase-4-4d-v1os82hz/theme-validator.sqlite3",
+      "passed": true
+    }
+  },
+  "conditions": [],
+  "passed": true,
+  "phase": "4.4d",
+  "status": "ARCHITECTURE PASS"
+}

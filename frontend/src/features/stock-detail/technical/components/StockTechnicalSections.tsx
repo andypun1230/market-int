@@ -55,13 +55,9 @@ export function StockTechnicalSections({
   const patternSection = <PatternAnalysis model={model} pattern={pattern} />;
   return (
     <View style={styles.sections}>
-      <TechnicalSummary model={model} />
+      <TechnicalSetup model={model} />
       {model.patternTrust.shouldLeadTechnicalTab ? patternSection : null}
-      <SetupStatus model={model} />
-      <ConfirmationChecklist model={model} />
-      <PriceLevelLadder levels={model.priceLevels} />
-      <VolumeConfirmation model={model} />
-      <TrendStructure model={model} />
+      <PriceAndVolume model={model} />
       {!model.patternTrust.shouldLeadTechnicalTab ? patternSection : null}
       <SupportingTechnicalDetails
         model={model}
@@ -74,11 +70,11 @@ export function StockTechnicalSections({
   );
 }
 
-export function MultiTimeframeTrend({ signals }: { signals?: MultiTimeframeTechnicalSignals | null }) {
+export function MultiTimeframeTrend({ embedded = false, signals }: { embedded?: boolean; signals?: MultiTimeframeTechnicalSignals | null }) {
   const [infoVisible, setInfoVisible] = useState(false);
   if (!hasAnyTimeframeSignal(signals)) {
     return (
-      <SectionSurface>
+      <TimeframeContainer embedded={embedded}>
         <TimeframeSectionHeader
           infoVisible={infoVisible}
           onToggleInfo={() => setInfoVisible((current) => !current)}
@@ -86,7 +82,7 @@ export function MultiTimeframeTrend({ signals }: { signals?: MultiTimeframeTechn
         />
         {infoVisible ? <TimeframeInfo /> : null}
         <Text style={styles.emptyText}>Timeframe signal data is unavailable.</Text>
-      </SectionSurface>
+      </TimeframeContainer>
     );
   }
 
@@ -94,7 +90,7 @@ export function MultiTimeframeTrend({ signals }: { signals?: MultiTimeframeTechn
   const overallDataStatus = signals?.overallDataStatus;
   const sharedStatus = getSharedRowStatus(rows);
   return (
-    <SectionSurface>
+    <TimeframeContainer embedded={embedded}>
       <TimeframeSectionHeader
         infoVisible={infoVisible}
         onToggleInfo={() => setInfoVisible((current) => !current)}
@@ -111,8 +107,12 @@ export function MultiTimeframeTrend({ signals }: { signals?: MultiTimeframeTechn
           />
         ))}
       </View>
-    </SectionSurface>
+    </TimeframeContainer>
   );
+}
+
+function TimeframeContainer({ children, embedded }: { children: ReactNode; embedded: boolean }) {
+  return embedded ? <View style={styles.embeddedSection}>{children}</View> : <SectionSurface>{children}</SectionSurface>;
 }
 
 function TimeframeSectionHeader({
@@ -276,10 +276,22 @@ function EvidenceGroup({ items, title }: { items: TimeframeSignalEvidence[]; tit
   );
 }
 
-function TechnicalSummary({ model }: { model: StockTechnicalViewModel }) {
+function TechnicalSetup({ model }: { model: StockTechnicalViewModel }) {
+  const rows = [
+    ...(model.patternTrust.isCurrent ? [
+      ['Pattern', model.pattern.name],
+      ['Stage', model.pattern.stage],
+      ['Direction', model.pattern.direction],
+    ] : [['Current pattern', model.pattern.name ? 'Not reliably confirmed' : null]]),
+    ['Confirmation', model.setup.confirmationLevel == null ? null : `Above ${formatCurrency(model.setup.confirmationLevel)}`],
+    ['Invalidation', model.setup.invalidationLevel == null ? null : `Below ${formatCurrency(model.setup.invalidationLevel)}`],
+    ['Volume', model.setup.volumeState],
+    ['Trend', model.setup.trendState],
+  ].filter((row): row is [string, string] => Boolean(row[1]));
+  const hasTrend = model.trend.risingSupportDetected != null || model.trend.supportStatus || model.trend.touchCount != null || model.trend.distancePercent != null || model.trend.explanation;
   return (
     <SectionSurface accentColor={stockToneColor(stanceTone(model.summary.stance))}>
-      <Text style={styles.sectionTitle}>Technical View</Text>
+      <Text style={styles.sectionTitle}>Technical Setup</Text>
       <Text style={styles.summaryHeadline}>{model.summary.headline}</Text>
       <Text style={styles.summarySubtitle}>{model.summary.subtitle}</Text>
       <Text style={styles.bodyText}>{model.summary.body}</Text>
@@ -288,8 +300,40 @@ function TechnicalSummary({ model }: { model: StockTechnicalViewModel }) {
           <Text style={styles.warningText}>{model.provenance.mismatchReason}</Text>
         </View>
       ) : null}
+      {rows.length ? (
+        <>
+          <SubsectionDivider />
+          <Text style={styles.subsectionTitle}>Current Setup</Text>
+          <View style={styles.rowStack}>{rows.map(([label, value]) => <CompactRow key={label} label={label} value={value} />)}</View>
+        </>
+      ) : null}
+      {model.confirmations.length || model.invalidations.length ? (
+        <>
+          <SubsectionDivider />
+          <Text style={styles.subsectionTitle}>Confirmation</Text>
+          {model.confirmations.length ? <ChecklistGroup items={model.confirmations} title="Confirms" /> : null}
+          {model.invalidations.length ? <InvalidationGroup items={model.invalidations} title="Weakens" /> : null}
+        </>
+      ) : null}
+      {hasTrend ? (
+        <>
+          <SubsectionDivider />
+          <Text style={styles.subsectionTitle}>Trend Structure</Text>
+          <View style={styles.rowStack}>
+            {model.trend.risingSupportDetected != null ? <CompactRow label="Rising support" value={model.trend.risingSupportDetected ? 'Detected' : 'Not detected'} /> : null}
+            {model.trend.supportStatus ? <CompactRow label="Support status" value={model.trend.supportStatus} /> : null}
+            {model.trend.touchCount != null ? <CompactRow label="Confirmed touches" value={String(model.trend.touchCount)} /> : null}
+            {model.trend.distancePercent != null ? <CompactRow label="Distance from line" value={formatPercent(Math.abs(model.trend.distancePercent))} /> : null}
+          </View>
+          {model.trend.explanation ? <Text style={styles.bodyText}>{model.trend.explanation}</Text> : null}
+        </>
+      ) : null}
     </SectionSurface>
   );
+}
+
+function SubsectionDivider() {
+  return <View style={styles.subsectionDivider} />;
 }
 
 function PatternAnalysis({ model, pattern }: { model: StockTechnicalViewModel; pattern?: DetectedPattern | null }) {
@@ -359,68 +403,25 @@ function PatternAnalysis({ model, pattern }: { model: StockTechnicalViewModel; p
   );
 }
 
-function SetupStatus({ model }: { model: StockTechnicalViewModel }) {
-  const rows = [
-    ...(model.patternTrust.isCurrent ? [
-      ['Pattern', model.pattern.name],
-      ['Stage', model.pattern.stage],
-      ['Direction', model.pattern.direction],
-    ] : [
-      ['Current pattern', model.pattern.name ? 'Not reliably confirmed' : null],
-    ]),
-    ['Confirmation', model.setup.confirmationLevel == null ? null : `Above ${formatCurrency(model.setup.confirmationLevel)}`],
-    ['Invalidation', model.setup.invalidationLevel == null ? null : `Below ${formatCurrency(model.setup.invalidationLevel)}`],
-    ['Volume', model.setup.volumeState],
-    ['Trend', model.setup.trendState],
-  ].filter((row): row is [string, string] => Boolean(row[1]));
-
-  if (!rows.length) {
-    return null;
-  }
-
-  return (
-    <SectionSurface>
-      <Text style={styles.sectionTitle}>Current Setup</Text>
-      <View style={styles.rowStack}>
-        {rows.map(([label, value]) => (
-          <CompactRow key={label} label={label} value={value} />
-        ))}
-      </View>
-    </SectionSurface>
-  );
-}
-
-function ConfirmationChecklist({ model }: { model: StockTechnicalViewModel }) {
-  return (
-    <SectionSurface>
-      <Text style={styles.sectionTitle}>Confirmation Checklist</Text>
-      {model.confirmations.length ? (
-        <ChecklistGroup items={model.confirmations} title="What Confirms the Setup?" />
-      ) : null}
-      {model.invalidations.length ? (
-        <InvalidationGroup items={model.invalidations} title="What Weakens the Setup?" />
-      ) : null}
-      {!model.confirmations.length && !model.invalidations.length ? (
-        <Text style={styles.emptyText}>No current confirmation or invalidation checklist is available.</Text>
-      ) : null}
-    </SectionSurface>
-  );
-}
-
-function PriceLevelLadder({ levels }: { levels: TechnicalPriceLevel[] }) {
-  if (!levels.length) {
+function PriceAndVolume({ model }: { model: StockTechnicalViewModel }) {
+  const levels = model.priceLevels;
+  const hasVolume = Boolean(model.volume.quality || model.volume.relativeVolume != null);
+  if (!levels.length && !hasVolume) {
     return null;
   }
   const commonStatus = getCommonSourceStatus(levels);
+  const relative = model.volume.relativeVolume;
+  const meter = Math.max(0, Math.min(((relative ?? 0) / 2) * 100, 100));
+  const tone = volumeTone(model.volume.quality, relative);
   return (
     <SectionSurface>
       <View style={styles.sectionHeaderRow}>
-        <Text style={styles.sectionTitle}>Key Price Levels</Text>
+        <Text style={styles.sectionTitle}>Price & Volume</Text>
         {commonStatus ? (
           <StatusBadge label={sourceLabel(commonStatus, '')} tone={stockToneToBadgeTone(sourceTone(commonStatus))} />
         ) : null}
       </View>
-      <View accessibilityLabel={levels.map((level) => `${level.label} ${formatCurrency(level.value)}`).join(', ')} style={styles.ladder}>
+      {levels.length ? <View accessibilityLabel={levels.map((level) => `${level.label} ${formatCurrency(level.value)}`).join(', ')} style={styles.ladder}>
         {levels.map((level) => (
           <View key={level.key} style={styles.levelRow}>
             <View style={[styles.levelLine, { backgroundColor: stockToneColor(levelTone(level.kind)) }]} />
@@ -436,22 +437,11 @@ function PriceLevelLadder({ levels }: { levels: TechnicalPriceLevel[] }) {
             </View>
           </View>
         ))}
-      </View>
-    </SectionSurface>
-  );
-}
-
-function VolumeConfirmation({ model }: { model: StockTechnicalViewModel }) {
-  if (!model.volume.quality && model.volume.relativeVolume == null) {
-    return null;
-  }
-  const relative = model.volume.relativeVolume;
-  const meter = Math.max(0, Math.min(((relative ?? 0) / 2) * 100, 100));
-  const tone = volumeTone(model.volume.quality, relative);
-  return (
-    <SectionSurface>
-      <Text style={styles.sectionTitle}>Volume Participation</Text>
-      <View style={styles.volumeHeader}>
+      </View> : null}
+      {levels.length && hasVolume ? <SubsectionDivider /> : null}
+      {hasVolume ? <View style={styles.embeddedSection}>
+        <Text style={styles.subsectionTitle}>Volume Assessment</Text>
+        <View style={styles.volumeHeader}>
         <Text style={[styles.volumeQuality, { color: stockToneColor(tone) }]}>{model.volume.quality ?? 'Volume unavailable'}</Text>
         <Text style={styles.volumeRelative}>{formatRelativeVolume(relative)} normal</Text>
       </View>
@@ -459,27 +449,8 @@ function VolumeConfirmation({ model }: { model: StockTechnicalViewModel }) {
         <View style={[styles.volumeMeterFill, { backgroundColor: stockToneColor(tone), width: `${meter}%` }]} />
       </View>
       {model.volume.signal ? <StatusBadge label={model.volume.signal} tone={stockToneToBadgeTone(tone)} /> : null}
-      {model.volume.explanation ? <Text style={styles.bodyText}>{model.volume.explanation}</Text> : null}
-    </SectionSurface>
-  );
-}
-
-function TrendStructure({ model }: { model: StockTechnicalViewModel }) {
-  if (!model.trend.risingSupportDetected && !model.trend.fallingResistanceDetected && !model.trend.explanation) {
-    return null;
-  }
-  return (
-    <SectionSurface>
-      <Text style={styles.sectionTitle}>Trend Structure</Text>
-      <View style={styles.rowStack}>
-        {model.trend.risingSupportDetected != null ? (
-          <CompactRow label="Rising support" value={model.trend.risingSupportDetected ? 'Detected' : 'Not detected'} />
-        ) : null}
-        {model.trend.supportStatus ? <CompactRow label="Support status" value={model.trend.supportStatus} /> : null}
-        {model.trend.touchCount != null ? <CompactRow label="Confirmed touches" value={String(model.trend.touchCount)} /> : null}
-        {model.trend.distancePercent != null ? <CompactRow label="Distance from line" value={formatPercent(Math.abs(model.trend.distancePercent))} /> : null}
-      </View>
-      {model.trend.explanation ? <Text style={styles.bodyText}>{model.trend.explanation}</Text> : null}
+        {model.volume.explanation ? <Text style={styles.bodyText}>{model.volume.explanation}</Text> : null}
+      </View> : null}
     </SectionSurface>
   );
 }
@@ -496,7 +467,7 @@ function SupportingTechnicalDetails({
   const showIllustrativeLevels = model.provenance.sourcesCompatible && model.pattern.sourceStatus !== 'mock' && model.pattern.sourceStatus !== 'fallback';
 
   return (
-    <SectionSurface>
+    <View style={styles.disclosurePanel}>
       <Text style={styles.sectionTitle}>Supporting Technical Details</Text>
       <AccordionRow expanded={Boolean(open.pattern)} label="Pattern Details" onPress={() => toggle('pattern')} />
       {open.pattern ? (
@@ -573,7 +544,7 @@ function SupportingTechnicalDetails({
           Current levels come from the support/resistance and trend engines. Pattern levels remain separate when they are mock, fallback, historical, stale, or materially different from current calculated zones. Educational analysis only, not financial advice.
         </Text>
       ) : null}
-    </SectionSurface>
+    </View>
   );
 }
 
@@ -993,7 +964,14 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.border,
     height: 1,
   },
+  disclosurePanel: {
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.one,
+  },
   educationalBox: {
+    gap: Spacing.two,
+  },
+  embeddedSection: {
     gap: Spacing.two,
   },
   emptyText: {
@@ -1301,6 +1279,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '900',
     textTransform: 'uppercase',
+  },
+  subsectionDivider: {
+    backgroundColor: Theme.colors.border,
+    height: 1,
+    marginVertical: Spacing.half,
   },
   summaryHeadline: {
     color: Theme.colors.text,

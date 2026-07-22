@@ -1,0 +1,568 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 14,
+    "caseId": "navigation",
+    "title": "Navigation request",
+    "request": {
+      "message": "Where is Fear & Greed?",
+      "context": {
+        "screenType": "general",
+        "routeName": "/ai"
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "local-navigation-registry",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "APP_NAVIGATION",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "navigation"
+      ],
+      "optionalAgents": [],
+      "entities": [
+        {
+          "type": "app_feature",
+          "id": "fear-greed"
+        }
+      ],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "complete"
+      ],
+      "allowedFreshnessStates": [
+        "cached",
+        "delayed",
+        "live"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "fear_greed",
+          "route": "/market",
+          "tab": "decision",
+          "subTab": "fear-greed",
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": "fear-greed"
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "navigation_only_plan",
+        "exact_destination",
+        "no_market_agents"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-14-navigation",
+    "planId": "plan-stage7-navigation",
+    "threadId": "stage7-thread-navigation",
+    "startedAt": "2026-07-22T05:09:08.480479+00:00",
+    "completedAt": "2026-07-22T05:09:08.480967+00:00",
+    "elapsedMs": 0.412,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-navigation",
+      "intent": "APP_NAVIGATION",
+      "subIntent": "fear_greed",
+      "entities": [
+        {
+          "entityId": "fear-greed",
+          "entityType": "app_feature",
+          "displayName": "Fear & Greed",
+          "symbol": null,
+          "confidence": 1.0,
+          "resolutionSource": "fixture-route-registry"
+        }
+      ],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "navigation",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": false,
+      "navigationRequested": true,
+      "ambiguityLevel": "none",
+      "confidence": 0.96,
+      "requiredAgents": [
+        "navigation"
+      ],
+      "optionalAgents": [],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-navigation",
+      "intentId": "intent-stage7-navigation",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-navigation",
+          "order": 1,
+          "agent": "navigation",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 300,
+          "purpose": "Collect validated navigation evidence."
+        }
+      ],
+      "requiredAgents": [
+        "navigation"
+      ],
+      "optionalAgents": [],
+      "dependencies": {
+        "step-1-navigation": []
+      },
+      "requiredEntities": [
+        "fear-greed"
+      ],
+      "evidenceRequirements": [
+        {
+          "category": "navigation",
+          "required": false,
+          "entities": [
+            "fear-greed"
+          ],
+          "minimumItems": 0
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "navigation",
+      "deepLinkRequirements": [
+        "fear_greed"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 500,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "navigation",
+        "status": "complete",
+        "observations": [],
+        "conclusions": [
+          "The requested destination is registered in the application route registry."
+        ],
+        "contradictions": [],
+        "metrics": {},
+        "levels": [],
+        "sourceReferences": [],
+        "evidence": [],
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "fear_greed"
+        ],
+        "warnings": [],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "Open Fear Greed.",
+      "stance": "neutral",
+      "confidenceLabel": "high",
+      "thesis": "Open Fear Greed.",
+      "supportingFactors": [],
+      "contradictoryFactors": [],
+      "keyRisks": [],
+      "confirmationConditions": [],
+      "invalidationConditions": [],
+      "missingEvidence": [],
+      "personalizationNote": null,
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "fear_greed"
+      ],
+      "disclaimerClass": "app_navigation"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-14-navigation",
+      "planId": "plan-stage7-navigation",
+      "threadId": "stage7-thread-navigation",
+      "status": "complete",
+      "answer": "Open Fear Greed.",
+      "answerSections": {
+        "directAnswer": "Open Fear Greed.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [],
+        "mainCaution": null,
+        "whatWouldConfirm": [],
+        "whatWouldInvalidate": [],
+        "whatWouldChange": []
+      },
+      "grounding": {
+        "contextUsed": [],
+        "sourceState": "cached",
+        "generatedAt": "2026-07-22T05:09:08.480762+00:00",
+        "evidenceIds": []
+      },
+      "suggestedFollowUps": [],
+      "confidence": 84,
+      "answerConfidence": {
+        "level": "high",
+        "reasons": [
+          "Intent confidence: 96%.",
+          "Evidence freshness: cached."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-navigation",
+        "intent": "APP_NAVIGATION",
+        "subIntent": "fear_greed",
+        "entities": [
+          {
+            "entityId": "fear-greed",
+            "entityType": "app_feature",
+            "displayName": "Fear & Greed",
+            "symbol": null,
+            "confidence": 1.0,
+            "resolutionSource": "fixture-route-registry"
+          }
+        ],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "navigation",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": false,
+        "navigationRequested": true,
+        "ambiguityLevel": "none",
+        "confidence": 0.96,
+        "requiredAgents": [
+          "navigation"
+        ],
+        "optionalAgents": [],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-navigation",
+        "intentId": "intent-stage7-navigation",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-navigation",
+            "order": 1,
+            "agent": "navigation",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 300,
+            "purpose": "Collect validated navigation evidence."
+          }
+        ],
+        "requiredAgents": [
+          "navigation"
+        ],
+        "optionalAgents": [],
+        "dependencies": {
+          "step-1-navigation": []
+        },
+        "requiredEntities": [
+          "fear-greed"
+        ],
+        "evidenceRequirements": [
+          {
+            "category": "navigation",
+            "required": false,
+            "entities": [
+              "fear-greed"
+            ],
+            "minimumItems": 0
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "navigation",
+        "deepLinkRequirements": [
+          "fear_greed"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 500,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "Open Fear Greed.",
+        "stance": "neutral",
+        "confidenceLabel": "high",
+        "thesis": "Open Fear Greed.",
+        "supportingFactors": [],
+        "contradictoryFactors": [],
+        "keyRisks": [],
+        "confirmationConditions": [],
+        "invalidationConditions": [],
+        "missingEvidence": [],
+        "personalizationNote": null,
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "fear_greed"
+        ],
+        "disclaimerClass": "app_navigation"
+      },
+      "evidence": [],
+      "actions": [
+        {
+          "actionId": "action-fear_greed-default",
+          "label": "Open Fear & Greed",
+          "actionType": "navigate",
+          "destinationId": "fear_greed",
+          "route": "/market",
+          "tab": "decision",
+          "subTab": "fear-greed",
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": "fear-greed",
+          "parameters": {
+            "tab": "decision",
+            "subTab": "fear-greed"
+          }
+        }
+      ],
+      "warnings": [],
+      "freshnessSummary": {
+        "overallState": "cached",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 1,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "navigation": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-fear_greed-default",
+        "label": "Open Fear & Greed",
+        "actionType": "navigate",
+        "destinationId": "fear_greed",
+        "route": "/market",
+        "tab": "decision",
+        "subTab": "fear-greed",
+        "sectionId": null,
+        "entity": null,
+        "highlightTarget": "fear-greed",
+        "parameters": {
+          "tab": "decision",
+          "subTab": "fear-greed"
+        }
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed APP_NAVIGATION; expected APP_NAVIGATION."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['navigation']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status complete."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness cached."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:navigation_only_plan",
+          "status": "passed",
+          "detail": "Navigation uses only the navigation agent and no market evidence."
+        },
+        {
+          "check": "assertion:exact_destination",
+          "status": "passed",
+          "detail": "The emitted action matches the exact registered destination."
+        },
+        {
+          "check": "assertion:no_market_agents",
+          "status": "passed",
+          "detail": "No market-data agent is selected for pure navigation."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

@@ -56,11 +56,18 @@ export function StockSignalsSections({
 
   return (
     <View style={styles.sections}>
-      <SignalSummary headline={summary.headline} body={summary.body} />
-      <LeadershipSignalPanel leadershipSignal={leadershipSignal} />
-      <MultiTimeframeTrend signals={multiTimeframeSignals} />
-      <RelativeStrengthPanel relativeStrength={relativeStrength} />
-      <VolumeParticipationPanel volumeAnalysis={volumeAnalysis} />
+      <SignalSurface>
+        <Text style={styles.sectionTitle}>Market Signals</Text>
+        <SignalSummary headline={summary.headline} body={summary.body} />
+        <SignalDivider />
+        <LeadershipSignalPanel leadershipSignal={leadershipSignal} />
+        <SignalDivider />
+        <MultiTimeframeTrend embedded signals={multiTimeframeSignals} />
+        <SignalDivider />
+        <RelativeStrengthPanel relativeStrength={relativeStrength} />
+        <SignalDivider />
+        <VolumeParticipationPanel volumeAnalysis={volumeAnalysis} />
+      </SignalSurface>
       <SupportingSignalDetails
         leadershipSignal={leadershipSignal}
         multiTimeframeSignals={multiTimeframeSignals}
@@ -73,11 +80,10 @@ export function StockSignalsSections({
 
 function SignalSummary({ body, headline }: { body: string; headline: string }) {
   return (
-    <SignalSurface>
-      <Text style={styles.sectionTitle}>Signal Summary</Text>
+    <View style={styles.embeddedSection}>
       <Text style={styles.summaryHeadline}>{headline}</Text>
       <Text style={styles.bodyText}>{body}</Text>
-    </SignalSurface>
+    </View>
   );
 }
 
@@ -89,7 +95,7 @@ function RelativeStrengthPanel({ relativeStrength }: { relativeStrength?: Relati
     { label: 'Sector', value: relativeStrength?.rs_vs_sector },
   ];
   return (
-    <SignalSurface>
+    <View style={styles.embeddedSection}>
       <SectionHeader
         title="Relative Strength"
         badgeLabel={formatSourceLabel(relativeStrength)}
@@ -109,7 +115,7 @@ function RelativeStrengthPanel({ relativeStrength }: { relativeStrength?: Relati
           <ComparisonBar key={comparison.label} label={comparison.label} value={comparison.value} />
         ))}
       </View>
-    </SignalSurface>
+    </View>
   );
 }
 
@@ -141,7 +147,7 @@ function VolumeParticipationPanel({ volumeAnalysis }: { volumeAnalysis?: VolumeA
   const state = getVolumeParticipationState(volumeAnalysis);
   const activeSignals = getActiveVolumeSignals(volumeAnalysis);
   return (
-    <SignalSurface>
+    <View style={styles.embeddedSection}>
       <SectionHeader
         title="Volume Participation"
         badgeLabel={formatSourceLabel(volumeAnalysis)}
@@ -167,7 +173,7 @@ function VolumeParticipationPanel({ volumeAnalysis }: { volumeAnalysis?: VolumeA
         <Text style={styles.emptyText}>No active volume condition is confirmed.</Text>
       )}
       <Text style={styles.bodyText}>{volumeInterpretation(volumeAnalysis)}</Text>
-    </SignalSurface>
+    </View>
   );
 }
 
@@ -199,7 +205,7 @@ function ParticipationMeter({ state }: { state: ReturnType<typeof getVolumeParti
 
 function LeadershipSignalPanel({ leadershipSignal }: { leadershipSignal?: StockLeadershipSignal }) {
   return (
-    <SignalSurface>
+    <View style={styles.embeddedSection}>
       <SectionHeader
         title="Leadership Signal"
         badgeLabel={leadershipSignal?.dataStatus ? formatDataStatus(leadershipSignal.dataStatus) : 'Unavailable'}
@@ -218,7 +224,7 @@ function LeadershipSignalPanel({ leadershipSignal }: { leadershipSignal?: StockL
         positive={leadershipSignal?.positiveEvidence ?? []}
         limiting={leadershipSignal?.limitingEvidence ?? []}
       />
-    </SignalSurface>
+    </View>
   );
 }
 
@@ -226,7 +232,7 @@ function SupportingSignalDetails(props: StockSignalsSectionsProps) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const toggle = (key: string) => setOpen((current) => ({ ...current, [key]: !current[key] }));
   return (
-    <SignalSurface>
+    <View style={styles.disclosurePanel}>
       <Text style={styles.sectionTitle}>Supporting Signal Details</Text>
       <Text style={styles.bodyText}>Advanced diagnostics</Text>
       <DiagnosticsRow
@@ -319,8 +325,12 @@ function SupportingSignalDetails(props: StockSignalsSectionsProps) {
           <InfoTile label="Generated" value={props.multiTimeframeSignals?.generatedAt ?? 'N/A'} />
         </DetailGrid>
       ) : null}
-    </SignalSurface>
+    </View>
   );
+}
+
+function SignalDivider() {
+  return <View style={styles.signalDivider} />;
 }
 
 function EvidenceList({ limiting, positive }: { limiting: string[]; positive: string[] }) {
@@ -574,6 +584,13 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
+  disclosurePanel: {
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.one,
+  },
+  embeddedSection: {
+    gap: Spacing.two,
+  },
   emptyText: {
     color: Theme.colors.textMuted,
     fontSize: 12,
@@ -642,6 +659,10 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 17,
     fontWeight: '900',
+  },
+  signalDivider: {
+    backgroundColor: Theme.colors.border,
+    height: 1,
   },
   segment: {
     backgroundColor: Theme.colors.backgroundMuted,

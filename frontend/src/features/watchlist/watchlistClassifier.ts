@@ -212,6 +212,7 @@ export function shouldShowWatchlistStatusDot(
   return !(
     status === 'live' ||
     status === 'unavailable' ||
+    (status === 'stale' && primarySignal === 'stale_data') ||
     (status === 'pending' && primarySignal === 'pending') ||
     (status === 'partial' && primarySignal === 'partial')
   );

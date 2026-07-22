@@ -64,6 +64,14 @@ export type StockDetailOverviewModel = {
   risks: string[];
   factors: StockDetailFactor[];
   watchItems: StockDetailWatchItem[];
+  tradePlan: {
+    currentPrice: string;
+    entry: string;
+    stop: string;
+    targets: string[];
+    trend: string;
+    volume: string;
+  };
   supportingMetrics: StockDetailMetric[];
   sourceLabel: string;
   sourceTone: StockDetailTone;
@@ -138,6 +146,16 @@ export function buildStockDetailOverview({
     risks: risks.length ? risks : ['No major rule-based risks are available from the current analysis.'],
     factors,
     watchItems,
+    tradePlan: {
+      currentPrice: formatCurrency(currentPrice?.price ?? stock.price),
+      entry: formatCurrency(riskPlan?.entry ?? supportResistance?.breakout_level),
+      stop: formatCurrency(supportResistance?.stop_reference ?? riskPlan?.stop_loss),
+      targets: [riskPlan?.target_1, riskPlan?.target_2]
+        .filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
+        .map((value) => formatCurrency(value)),
+      trend: stock.trend ?? stockRating?.status ?? 'Unavailable',
+      volume: volumeAnalysis?.volume_quality ?? 'Unavailable',
+    },
     supportingMetrics: buildSupportingMetrics(stockRating, relativeStrength, riskPlan, supportResistance, volumeAnalysis),
     sourceLabel: quoteSource.label,
     sourceTone: quoteSource.tone,
@@ -439,7 +457,9 @@ function sanitizeSummaryText(value?: string | null): string | null {
     .replace(/\bN\/A\b/g, '')
     .replace(/\s+/g, ' ')
     .trim();
-  return isPlaceholderText(stripped) ? null : stripped;
+  return isPlaceholderText(stripped)
+    ? null
+    : `${stripped.charAt(0).toUpperCase()}${stripped.slice(1)}`;
 }
 
 function isSpecificSummary(value: string): boolean {

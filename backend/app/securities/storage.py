@@ -7,7 +7,7 @@ import threading
 from pathlib import Path
 
 from app.cache.persistent_cache import DB_PATH as DEFAULT_DB_PATH
-from app.securities.models import BreadthUniverse, BreadthUniverseMember, SecurityRecord
+from app.securities.models import BreadthUniverse, BreadthUniverseMember, SecurityAlias, SecurityProviderSymbol, SecurityRecord
 from app.securities.registry import canonical_sector_id
 
 _lock = threading.RLock()
@@ -46,6 +46,25 @@ class SecurityMasterStorage:
                 FOREIGN KEY(universe_id) REFERENCES breadth_universes(universe_id),
                 FOREIGN KEY(security_id) REFERENCES securities(security_id))"""
             )
+            connection.execute(
+                """CREATE TABLE IF NOT EXISTS security_aliases (
+                alias_ticker TEXT PRIMARY KEY, security_id TEXT NOT NULL,
+                former_company_name TEXT, effective_to TEXT NOT NULL,
+                corporate_action_type TEXT NOT NULL, continuity_status TEXT NOT NULL,
+                source TEXT NOT NULL, verified_at TEXT NOT NULL,
+                FOREIGN KEY(security_id) REFERENCES securities(security_id))"""
+            )
+            connection.execute("CREATE INDEX IF NOT EXISTS security_aliases_by_security ON security_aliases(security_id, effective_to DESC)")
+            connection.execute(
+                """CREATE TABLE IF NOT EXISTS security_provider_symbols (
+                security_id TEXT NOT NULL, provider TEXT NOT NULL, purpose TEXT NOT NULL,
+                provider_symbol TEXT NOT NULL, effective_from TEXT NOT NULL, effective_to TEXT,
+                source TEXT NOT NULL, verified_at TEXT NOT NULL, corporate_action_lineage TEXT,
+                PRIMARY KEY(security_id, provider, purpose, effective_from),
+                UNIQUE(provider, purpose, provider_symbol, effective_from),
+                FOREIGN KEY(security_id) REFERENCES securities(security_id))"""
+            )
+            connection.execute("CREATE INDEX IF NOT EXISTS security_provider_symbols_by_date ON security_provider_symbols(security_id, provider, purpose, effective_from, effective_to)")
             # Existing rollout databases predate canonical sector identifiers.
             for table, column in (("securities", "sector_id"), ("breadth_universe_members", "sector_id")):
                 columns = {row[1] for row in connection.execute(f"PRAGMA table_info({table})")}
@@ -56,7 +75,7 @@ class SecurityMasterStorage:
                     sector_id = canonical_sector_id(sector)
                     if sector_id:
                         connection.execute(f"UPDATE {table} SET sector_id=? WHERE sector=? AND (sector_id IS NULL OR sector_id = '')", (sector_id, sector))
-            connection.execute("INSERT OR REPLACE INTO breadth_schema_versions(name, version) VALUES ('security_master', 2)")
+            connection.execute("INSERT OR REPLACE INTO breadth_schema_versions(name, version) VALUES ('security_master', 3)")
             connection.commit()
 
     def upsert_security(self, record: SecurityRecord) -> None:
@@ -80,6 +99,101 @@ class SecurityMasterStorage:
                 ),
             )
             connection.commit()
+
+    def upsert_alias(self, alias: SecurityAlias) -> None:
+        """Persist one historical alias while preventing canonical/alias collisions."""
+        self.initialize()
+        alias_ticker = alias.alias_ticker.upper()
+        with _lock, self._connect() as connection:
+            owner = connection.execute("SELECT security_id FROM securities WHERE ticker=? AND active=1", (alias_ticker,)).fetchone()
+            if owner and owner[0] != alias.security_id:
+                raise ValueError(f"historical_alias_collides_with_active_canonical:{alias_ticker}")
+            existing = connection.execute("SELECT security_id FROM security_aliases WHERE alias_ticker=?", (alias_ticker,)).fetchone()
+            if existing and existing[0] != alias.security_id:
+                raise ValueError(f"historical_alias_collision:{alias_ticker}")
+            connection.execute(
+                """INSERT INTO security_aliases (alias_ticker, security_id, former_company_name, effective_to, corporate_action_type, continuity_status, source, verified_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(alias_ticker) DO UPDATE SET security_id=excluded.security_id, former_company_name=excluded.former_company_name,
+                effective_to=excluded.effective_to, corporate_action_type=excluded.corporate_action_type,
+                continuity_status=excluded.continuity_status, source=excluded.source, verified_at=excluded.verified_at""",
+                (alias_ticker, alias.security_id, alias.former_company_name, alias.effective_to, alias.corporate_action_type, alias.continuity_status, alias.source, alias.verified_at),
+            )
+            connection.commit()
+
+    def aliases(self, ticker: str) -> list[SecurityAlias]:
+        security = self.security(ticker)
+        if security is None:
+            return []
+        self.initialize()
+        with _lock, self._connect() as connection:
+            rows = connection.execute(
+                "SELECT alias_ticker, security_id, former_company_name, effective_to, corporate_action_type, continuity_status, source, verified_at FROM security_aliases WHERE security_id=? ORDER BY effective_to",
+                (security.security_id,),
+            ).fetchall()
+        return [SecurityAlias(*row) for row in rows]
+
+    def upsert_provider_symbol(self, symbol: SecurityProviderSymbol) -> None:
+        """Store a non-overlapping, date-aware provider symbol mapping."""
+        self.initialize()
+        provider, purpose, provider_symbol = symbol.provider.lower(), symbol.purpose.lower(), symbol.provider_symbol.upper()
+        with _lock, self._connect() as connection:
+            owner = connection.execute("SELECT security_id FROM securities WHERE security_id=?", (symbol.security_id,)).fetchone()
+            if not owner:
+                raise ValueError(f"provider_symbol_security_not_found:{symbol.security_id}")
+            conflicting_symbol = connection.execute(
+                "SELECT security_id FROM security_provider_symbols WHERE provider=? AND purpose=? AND provider_symbol=? AND effective_from=?",
+                (provider, purpose, provider_symbol, symbol.effective_from),
+            ).fetchone()
+            if conflicting_symbol and conflicting_symbol[0] != symbol.security_id:
+                raise ValueError(f"provider_symbol_collision:{provider}:{purpose}:{provider_symbol}:{symbol.effective_from}")
+            rows = connection.execute(
+                "SELECT effective_from, effective_to FROM security_provider_symbols WHERE security_id=? AND provider=? AND purpose=? AND effective_from<>?",
+                (symbol.security_id, provider, purpose, symbol.effective_from),
+            ).fetchall()
+            for existing_from, existing_to in rows:
+                if _date_ranges_overlap(symbol.effective_from, symbol.effective_to, existing_from, existing_to):
+                    raise ValueError(f"provider_symbol_date_overlap:{symbol.security_id}:{provider}:{purpose}")
+            connection.execute(
+                """INSERT INTO security_provider_symbols (security_id, provider, purpose, provider_symbol, effective_from, effective_to, source, verified_at, corporate_action_lineage)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(security_id, provider, purpose, effective_from) DO UPDATE SET provider_symbol=excluded.provider_symbol,
+                effective_to=excluded.effective_to, source=excluded.source, verified_at=excluded.verified_at,
+                corporate_action_lineage=excluded.corporate_action_lineage""",
+                (symbol.security_id, provider, purpose, provider_symbol, symbol.effective_from, symbol.effective_to, symbol.source, symbol.verified_at, symbol.corporate_action_lineage),
+            )
+            connection.commit()
+
+    def provider_symbols(self, ticker: str, *, provider: str = "polygon", purpose: str = "history") -> list[SecurityProviderSymbol]:
+        security = self.security(ticker)
+        if security is None:
+            return []
+        self.initialize()
+        with _lock, self._connect() as connection:
+            rows = connection.execute(
+                "SELECT security_id, provider, purpose, provider_symbol, effective_from, effective_to, source, verified_at, corporate_action_lineage FROM security_provider_symbols WHERE security_id=? AND provider=? AND purpose=? ORDER BY effective_from",
+                (security.security_id, provider.lower(), purpose.lower()),
+            ).fetchall()
+        return [SecurityProviderSymbol(*row) for row in rows]
+
+    def provider_symbol_for(self, ticker: str, *, provider: str = "polygon", purpose: str = "history", on_date: str | None = None) -> SecurityProviderSymbol | None:
+        security = self.security(ticker)
+        if security is None:
+            return None
+        target = on_date or "9999-12-31"
+        self.initialize()
+        with _lock, self._connect() as connection:
+            row = connection.execute(
+                """SELECT security_id, provider, purpose, provider_symbol, effective_from, effective_to, source, verified_at, corporate_action_lineage
+                FROM security_provider_symbols
+                WHERE security_id=? AND provider=? AND purpose=? AND effective_from<=? AND (effective_to IS NULL OR effective_to>=?)
+                ORDER BY effective_from DESC LIMIT 1""",
+                (security.security_id, provider.lower(), purpose.lower(), target, target),
+            ).fetchone()
+        if row:
+            return SecurityProviderSymbol(*row)
+        fallback = security.history_provider_symbol if purpose.lower() == "history" else security.quote_provider_symbol
+        return SecurityProviderSymbol(security.security_id, provider.lower(), purpose.lower(), fallback or security.ticker, security.effective_from or "1900-01-01", None, security.source, security.verified_at or security.source_timestamp or "", None)
 
     def publish_universe(self, universe: BreadthUniverse, members: list[BreadthUniverseMember]) -> None:
         self.initialize()
@@ -124,6 +238,15 @@ class SecurityMasterStorage:
         self.initialize()
         with _lock, self._connect() as connection:
             row = connection.execute("SELECT security_id, ticker, company_name, exchange, asset_type, active, sector, sector_id, industry, quote_provider_symbol, history_provider_symbol, currency, country, index_memberships_json, effective_from, effective_to, source, source_timestamp, verified_at, metadata_version FROM securities WHERE ticker = ? AND active = 1", (ticker.upper(),)).fetchone()
+            if row is None:
+                row = connection.execute(
+                    """SELECT s.security_id, s.ticker, s.company_name, s.exchange, s.asset_type, s.active, s.sector, s.sector_id, s.industry,
+                    s.quote_provider_symbol, s.history_provider_symbol, s.currency, s.country, s.index_memberships_json, s.effective_from,
+                    s.effective_to, s.source, s.source_timestamp, s.verified_at, s.metadata_version
+                    FROM security_aliases a JOIN securities s ON s.security_id=a.security_id
+                    WHERE a.alias_ticker=? AND s.active=1""",
+                    (ticker.upper(),),
+                ).fetchone()
         if not row:
             return None
         values = list(row)
@@ -133,3 +256,7 @@ class SecurityMasterStorage:
     def _connect(self) -> sqlite3.Connection:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         return sqlite3.connect(self.db_path, timeout=10, check_same_thread=False)
+
+
+def _date_ranges_overlap(left_from: str, left_to: str | None, right_from: str, right_to: str | None) -> bool:
+    return left_from <= (right_to or "9999-12-31") and right_from <= (left_to or "9999-12-31")

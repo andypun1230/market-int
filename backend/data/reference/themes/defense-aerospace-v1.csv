@@ -1,0 +1,6 @@
+ticker,company_name,role,weight,effective_from,active,membership_source,inclusion_reason,reviewed_at,reviewed_by,source_url,source_retrieved_at,notes
+LMT,Lockheed Martin,core,0.20,2026-07-19,true,proposed-official-source,Proposed aerospace and defense prime contractor.,,,https://www.lockheedmartin.com/en-us/who-we-are.html,2026-07-19,Human review required
+NOC,Northrop Grumman,core,0.20,2026-07-19,true,proposed-official-source,Proposed aerospace and defense systems supplier.,,,https://www.northropgrumman.com/who-we-are,2026-07-19,Human review required
+RTX,RTX,core,0.20,2026-07-19,true,proposed-official-source,Proposed aerospace and defense technology supplier.,,,https://www.rtx.com/our-company,2026-07-19,Human review required
+GD,General Dynamics,core,0.20,2026-07-19,true,proposed-official-source,Proposed defense systems and aerospace supplier.,,,https://www.gd.com/about-gd,2026-07-19,Human review required
+LHX,L3Harris Technologies,enabler,0.20,2026-07-19,true,proposed-official-source,Proposed defense communications and mission systems supplier.,,,https://www.l3harris.com/company,2026-07-19,Human review required

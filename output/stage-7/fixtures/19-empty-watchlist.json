@@ -1,0 +1,554 @@
+{
+  "schemaVersion": "stage7-copilot-validation-artifact-v1",
+  "fixture": {
+    "schemaVersion": "stage7-copilot-fixture-v1",
+    "ordinal": 19,
+    "caseId": "empty-watchlist",
+    "title": "Empty watchlist",
+    "request": {
+      "message": "Which saved stock needs attention?",
+      "context": {
+        "screenType": "watchlist",
+        "routeName": "/watchlist",
+        "savedSymbols": []
+      },
+      "sessionContext": null
+    },
+    "dataScenario": "empty-watchlist",
+    "traceScenario": "normal",
+    "expected": {
+      "intent": "WATCHLIST_REVIEW",
+      "inheritedIntent": null,
+      "requiredAgents": [
+        "watchlist"
+      ],
+      "optionalAgents": [],
+      "entities": [],
+      "ambiguity": "none",
+      "allowedResponseStatuses": [
+        "complete"
+      ],
+      "allowedFreshnessStates": [
+        "cached"
+      ],
+      "challengeMode": false,
+      "actions": [
+        {
+          "destination": "watchlist",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": null
+        }
+      ],
+      "requiredResponseText": [],
+      "forbiddenResponseText": [],
+      "assertions": [
+        "empty_state_explicit",
+        "no_symbols_invented",
+        "no_ownership_inference"
+      ]
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "requestId": "stage7-19-empty-watchlist",
+    "planId": "plan-stage7-empty-watchlist",
+    "threadId": "stage7-thread-empty-watchlist",
+    "startedAt": "2026-07-22T05:09:08.486793+00:00",
+    "completedAt": "2026-07-22T05:09:08.487361+00:00",
+    "elapsedMs": 0.49,
+    "intent": {
+      "schemaVersion": "copilot-intent-v1",
+      "intentId": "intent-stage7-empty-watchlist",
+      "intent": "WATCHLIST_REVIEW",
+      "subIntent": "attention_review",
+      "entities": [],
+      "tickerSymbols": [],
+      "sectors": [],
+      "themes": [],
+      "timeHorizon": "unspecified",
+      "requestedOutputType": "answer",
+      "decisionSupportRequested": false,
+      "personalizationRelevant": true,
+      "navigationRequested": false,
+      "ambiguityLevel": "none",
+      "confidence": 0.94,
+      "requiredAgents": [
+        "watchlist"
+      ],
+      "optionalAgents": [
+        "stock"
+      ],
+      "prohibitedAssumptions": [
+        "Do not infer missing market data.",
+        "Do not infer ownership from saved membership.",
+        "Do not assert causality without validated attribution.",
+        "Do not calculate new engine scores or levels."
+      ],
+      "unresolvedEntities": [],
+      "clarificationQuestion": null
+    },
+    "plan": {
+      "schemaVersion": "copilot-plan-v1",
+      "planId": "plan-stage7-empty-watchlist",
+      "intentId": "intent-stage7-empty-watchlist",
+      "orderedSteps": [
+        {
+          "stepId": "step-1-watchlist",
+          "order": 1,
+          "agent": "watchlist",
+          "dependsOn": [],
+          "required": true,
+          "parallelGroup": 1,
+          "timeoutMs": 2800,
+          "purpose": "Collect validated watchlist evidence."
+        }
+      ],
+      "requiredAgents": [
+        "watchlist"
+      ],
+      "optionalAgents": [
+        "stock"
+      ],
+      "dependencies": {
+        "step-1-watchlist": []
+      },
+      "requiredEntities": [],
+      "evidenceRequirements": [
+        {
+          "category": "watchlist",
+          "required": true,
+          "entities": [],
+          "minimumItems": 1
+        }
+      ],
+      "freshnessRequirements": {
+        "allowedStates": [
+          "live",
+          "delayed",
+          "cached",
+          "partial",
+          "mixed",
+          "stale",
+          "test"
+        ],
+        "maximumAgeSeconds": null,
+        "actionabilityRequiresCurrent": false
+      },
+      "responseTemplate": "grounded_answer",
+      "deepLinkRequirements": [
+        "watchlist"
+      ],
+      "fallbackRules": [
+        "Return partial evidence when optional agents fail.",
+        "Return insufficient evidence when required evidence is unavailable.",
+        "Never promote stale, test, or partial evidence to actionable."
+      ],
+      "maximumLatencyMs": 3000,
+      "parallelExecutionAllowed": false
+    },
+    "agentResults": [
+      {
+        "schemaVersion": "copilot-agent-result-v1",
+        "agent": "watchlist",
+        "status": "complete",
+        "observations": [
+          "The saved-symbol list is confirmed empty."
+        ],
+        "conclusions": [
+          "There are no saved stocks to review."
+        ],
+        "contradictions": [],
+        "metrics": {
+          "membership_state": "empty",
+          "membership_scope": "device_local"
+        },
+        "levels": [],
+        "sourceReferences": [
+          {
+            "sourceId": "stage7:empty-watchlist:saved-membership",
+            "provider": "stage7_fixture_adapter",
+            "dataset": "fixture_saved_membership",
+            "generatedAt": "2026-07-22T00:00:00+00:00",
+            "marketDate": null,
+            "rawEngineReference": "fixture:empty-watchlist"
+          }
+        ],
+        "evidence": [],
+        "freshness": {
+          "state": "cached",
+          "marketDate": "2026-07-21",
+          "generatedAt": "2026-07-22T00:00:00+00:00",
+          "observedAt": null,
+          "expiresAt": null,
+          "ageSeconds": null,
+          "completeness": 1.0,
+          "provider": "stage7_fixture_adapter",
+          "warnings": []
+        },
+        "deepLinkTargets": [
+          "watchlist"
+        ],
+        "warnings": [],
+        "missingData": [],
+        "durationMs": 0.0,
+        "failureCategory": null
+      }
+    ],
+    "evidence": [],
+    "reasoning": {
+      "schemaVersion": "copilot-reasoning-v1",
+      "directAnswer": "There are no saved stocks to review.",
+      "stance": "neutral",
+      "confidenceLabel": "high",
+      "thesis": "There are no saved stocks to review.",
+      "supportingFactors": [],
+      "contradictoryFactors": [],
+      "keyRisks": [],
+      "confirmationConditions": [],
+      "invalidationConditions": [],
+      "missingEvidence": [],
+      "personalizationNote": "Saved-list membership is used only as monitoring context; holdings data was not inferred.",
+      "relatedResearch": [],
+      "recommendedAppDestinations": [
+        "watchlist"
+      ],
+      "disclaimerClass": "saved_list_empty"
+    },
+    "response": {
+      "schemaVersion": "institutional-copilot-response-v1",
+      "requestId": "stage7-19-empty-watchlist",
+      "planId": "plan-stage7-empty-watchlist",
+      "threadId": "stage7-thread-empty-watchlist",
+      "status": "complete",
+      "answer": "There are no saved stocks to review.",
+      "answerSections": {
+        "directAnswer": "There are no saved stocks to review.",
+        "why": [],
+        "evidenceFor": [],
+        "evidenceAgainst": [],
+        "mainCaution": null,
+        "whatWouldConfirm": [],
+        "whatWouldInvalidate": [],
+        "whatWouldChange": []
+      },
+      "grounding": {
+        "contextUsed": [
+          "fixture_saved_membership"
+        ],
+        "sourceState": "cached",
+        "generatedAt": "2026-07-22T05:09:08.487202+00:00",
+        "evidenceIds": []
+      },
+      "suggestedFollowUps": [],
+      "confidence": 84,
+      "answerConfidence": {
+        "level": "high",
+        "reasons": [
+          "Intent confidence: 94%.",
+          "Evidence freshness: cached."
+        ]
+      },
+      "generatedBy": "institutional-copilot-v1-deterministic",
+      "disclaimer": "Educational market decision support only; verify current data and apply your own risk constraints.",
+      "intent": {
+        "schemaVersion": "copilot-intent-v1",
+        "intentId": "intent-stage7-empty-watchlist",
+        "intent": "WATCHLIST_REVIEW",
+        "subIntent": "attention_review",
+        "entities": [],
+        "tickerSymbols": [],
+        "sectors": [],
+        "themes": [],
+        "timeHorizon": "unspecified",
+        "requestedOutputType": "answer",
+        "decisionSupportRequested": false,
+        "personalizationRelevant": true,
+        "navigationRequested": false,
+        "ambiguityLevel": "none",
+        "confidence": 0.94,
+        "requiredAgents": [
+          "watchlist"
+        ],
+        "optionalAgents": [
+          "stock"
+        ],
+        "prohibitedAssumptions": [
+          "Do not infer missing market data.",
+          "Do not infer ownership from saved membership.",
+          "Do not assert causality without validated attribution.",
+          "Do not calculate new engine scores or levels."
+        ],
+        "unresolvedEntities": [],
+        "clarificationQuestion": null
+      },
+      "plan": {
+        "schemaVersion": "copilot-plan-v1",
+        "planId": "plan-stage7-empty-watchlist",
+        "intentId": "intent-stage7-empty-watchlist",
+        "orderedSteps": [
+          {
+            "stepId": "step-1-watchlist",
+            "order": 1,
+            "agent": "watchlist",
+            "dependsOn": [],
+            "required": true,
+            "parallelGroup": 1,
+            "timeoutMs": 2800,
+            "purpose": "Collect validated watchlist evidence."
+          }
+        ],
+        "requiredAgents": [
+          "watchlist"
+        ],
+        "optionalAgents": [
+          "stock"
+        ],
+        "dependencies": {
+          "step-1-watchlist": []
+        },
+        "requiredEntities": [],
+        "evidenceRequirements": [
+          {
+            "category": "watchlist",
+            "required": true,
+            "entities": [],
+            "minimumItems": 1
+          }
+        ],
+        "freshnessRequirements": {
+          "allowedStates": [
+            "live",
+            "delayed",
+            "cached",
+            "partial",
+            "mixed",
+            "stale",
+            "test"
+          ],
+          "maximumAgeSeconds": null,
+          "actionabilityRequiresCurrent": false
+        },
+        "responseTemplate": "grounded_answer",
+        "deepLinkRequirements": [
+          "watchlist"
+        ],
+        "fallbackRules": [
+          "Return partial evidence when optional agents fail.",
+          "Return insufficient evidence when required evidence is unavailable.",
+          "Never promote stale, test, or partial evidence to actionable."
+        ],
+        "maximumLatencyMs": 3000,
+        "parallelExecutionAllowed": false
+      },
+      "reasoning": {
+        "schemaVersion": "copilot-reasoning-v1",
+        "directAnswer": "There are no saved stocks to review.",
+        "stance": "neutral",
+        "confidenceLabel": "high",
+        "thesis": "There are no saved stocks to review.",
+        "supportingFactors": [],
+        "contradictoryFactors": [],
+        "keyRisks": [],
+        "confirmationConditions": [],
+        "invalidationConditions": [],
+        "missingEvidence": [],
+        "personalizationNote": "Saved-list membership is used only as monitoring context; holdings data was not inferred.",
+        "relatedResearch": [],
+        "recommendedAppDestinations": [
+          "watchlist"
+        ],
+        "disclaimerClass": "saved_list_empty"
+      },
+      "evidence": [],
+      "actions": [
+        {
+          "actionId": "action-watchlist-default",
+          "label": "Open Watchlist",
+          "actionType": "navigate",
+          "destinationId": "watchlist",
+          "route": "/watchlist",
+          "tab": null,
+          "subTab": null,
+          "sectionId": null,
+          "entity": null,
+          "highlightTarget": null,
+          "parameters": {}
+        }
+      ],
+      "warnings": [],
+      "freshnessSummary": {
+        "overallState": "cached",
+        "marketDates": [
+          "2026-07-21"
+        ],
+        "generatedTimestamps": [
+          "2026-07-22T00:00:00+00:00"
+        ],
+        "currentCount": 1,
+        "staleCount": 0,
+        "partialCount": 0,
+        "unavailableCount": 0,
+        "testCount": 0,
+        "warnings": []
+      },
+      "validation": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "agentTimingsMs": {
+        "watchlist": 0.0
+      },
+      "retryCount": 0,
+      "failureCategories": []
+    },
+    "actions": [
+      {
+        "actionId": "action-watchlist-default",
+        "label": "Open Watchlist",
+        "actionType": "navigate",
+        "destinationId": "watchlist",
+        "route": "/watchlist",
+        "tab": null,
+        "subTab": null,
+        "sectionId": null,
+        "entity": null,
+        "highlightTarget": null,
+        "parameters": {}
+      }
+    ],
+    "events": [],
+    "validation": {
+      "status": "passed",
+      "checksRun": [
+        {
+          "check": "runtime_completed",
+          "status": "passed",
+          "detail": "No runtime exception was raised."
+        },
+        {
+          "check": "intent",
+          "status": "passed",
+          "detail": "Observed WATCHLIST_REVIEW; expected WATCHLIST_REVIEW."
+        },
+        {
+          "check": "agent_selection",
+          "status": "passed",
+          "detail": "Observed agents exactly match required agents: ['watchlist']."
+        },
+        {
+          "check": "entities",
+          "status": "passed",
+          "detail": "All expected entities resolved through the fixture registry."
+        },
+        {
+          "check": "response_status",
+          "status": "passed",
+          "detail": "Observed response status complete."
+        },
+        {
+          "check": "freshness",
+          "status": "passed",
+          "detail": "Observed aggregate freshness cached."
+        },
+        {
+          "check": "evidence_link_integrity",
+          "status": "passed",
+          "detail": "Every cited factor and grounding ID resolves to response evidence."
+        },
+        {
+          "check": "grounding_validator",
+          "status": "passed",
+          "detail": "Response validator status: passed."
+        },
+        {
+          "check": "exact_actions",
+          "status": "passed",
+          "detail": "Every expected action matches its registered destination contract."
+        },
+        {
+          "check": "required_response_text",
+          "status": "not_applicable",
+          "detail": "Required response text is present."
+        },
+        {
+          "check": "forbidden_response_text",
+          "status": "not_applicable",
+          "detail": "No forbidden response text was observed."
+        },
+        {
+          "check": "assertion:empty_state_explicit",
+          "status": "passed",
+          "detail": "Confirmed empty membership returns an explicit complete empty state."
+        },
+        {
+          "check": "assertion:no_symbols_invented",
+          "status": "passed",
+          "detail": "No symbol is invented for an explicitly empty saved list."
+        },
+        {
+          "check": "assertion:no_ownership_inference",
+          "status": "passed",
+          "detail": "No ownership is inferred from saved-list context."
+        }
+      ],
+      "responseValidator": {
+        "status": "passed",
+        "checksRun": [
+          "agent_contract",
+          "evidence_references",
+          "numerical_claims",
+          "tickers",
+          "sources",
+          "report_lineage",
+          "causality",
+          "proxy_labeling",
+          "confirmed_claims",
+          "condition_coherence",
+          "contradiction_preservation",
+          "confidence_freshness",
+          "freshness_language",
+          "high_risk_language",
+          "ownership",
+          "stale_actionability",
+          "recommendation",
+          "prompt_injection",
+          "actions"
+        ],
+        "issues": [],
+        "fallbackUsed": false
+      },
+      "issues": [],
+      "fallbackUsed": false
+    },
+    "failureCategory": null,
+    "notes": [
+      "Deterministic validation-adapter evidence; this is not production market evidence."
+    ]
+  }
+}

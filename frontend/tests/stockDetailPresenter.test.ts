@@ -147,6 +147,15 @@ function run() {
   assert(model.sourceLabel === 'Mixed data', 'mixed rating data is labelled honestly');
   assert(!model.executiveSummary.body.includes('undefined'), 'summary avoids undefined values');
   assert(model.executiveSummary.source === 'backend', 'specific rating explanation is preserved as backend summary');
+  assert(model.tradePlan.currentPrice === '$62.50', 'trade plan preserves the current price');
+  assert(model.tradePlan.entry === '$63.00', 'trade plan uses the existing risk-plan entry');
+  assert(model.tradePlan.stop === '$58.80', 'trade plan preserves the canonical stop-reference precedence');
+  assert(
+    model.tradePlan.targets.join(', ') === '$67.50, $71.50',
+    'trade plan preserves both existing risk targets',
+  );
+  assert(model.tradePlan.trend === 'Constructive', 'trade plan preserves the watchlist trend');
+  assert(model.tradePlan.volume === 'Strong', 'trade plan preserves the volume-quality assessment');
 
   const mockModel = buildStockDetailOverview({
     stock: makeStock({ data_source: 'mock', is_live: false }),
@@ -176,6 +185,15 @@ function run() {
   assert(!placeholderModel.executiveSummary.body.toLowerCase().includes('screens as'), 'generic screens-as wording is removed');
   assert(placeholderModel.executiveSummary.body.includes('$64.20'), 'real confirmation level is included');
   assert(placeholderModel.assessmentEvidence.length <= 3, 'assessment renders no more than three evidence rows');
+
+  const tickerSummaryModel = buildStockDetailOverview({
+    stock: makeStock(),
+    stockRating: makeRating({ explanation: 'MU rates as constructive with improving participation.' }),
+  });
+  assert(
+    tickerSummaryModel.executiveSummary.body.startsWith('Rates as'),
+    'removing a repeated ticker preserves sentence capitalization',
+  );
 }
 
 run();

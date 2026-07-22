@@ -1,0 +1,541 @@
+{
+  "output_directory": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6",
+  "render_directory": "/Users/andypun/Downloads/market-intelligence-app/tmp/pdfs/stage-6",
+  "render_dpi": 190,
+  "required_samples": [
+    "leading-theme",
+    "lagging-theme",
+    "no-focus",
+    "weekend",
+    "mixed",
+    "personalized"
+  ],
+  "sample_count": 6,
+  "samples": {
+    "lagging-theme": {
+      "artifacts": {
+        "contact_sheet": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-lagging-theme-contact-sheet.png",
+        "document_json": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-lagging-theme.json",
+        "pdf": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-lagging-theme.pdf",
+        "render_directory": "/Users/andypun/Downloads/market-intelligence-app/tmp/pdfs/stage-6/lagging-theme"
+      },
+      "evidence_stats": {
+        "focus_evidence_count": 45,
+        "matrix_row_count": 6,
+        "quality": {
+          "breadth": "High",
+          "completeness": "High",
+          "consistency": "High",
+          "evidence_ids": [
+            "research-theme-memory_storage-contribution-freshness",
+            "research-theme-memory_storage-breadth",
+            "research-theme-memory_storage-participation",
+            "research-theme-memory_storage-coverage",
+            "research-theme-memory_storage-directional-consistency"
+          ],
+          "freshness": "High",
+          "label": "High",
+          "participation": "High",
+          "rationale": [
+            "Freshness is high from the frozen 2026-07-21 subject input.",
+            "Breadth is high relative to the selected lagging direction.",
+            "Participation is high from a distinct constituent measure.",
+            "Completeness is high at 100% of required candidate inputs.",
+            "Directional consistency is high across returns, relative strength, breadth, and available participation."
+          ]
+        },
+        "registry_count": 189
+      },
+      "figure_stats": {
+        "annotated_count": 1,
+        "annotation_count": 3,
+        "focus_count": 5,
+        "total_count": 13
+      },
+      "fixture": "market-lagging-theme",
+      "focus_stats": {
+        "category": "theme",
+        "classification_label": "Lagging",
+        "direction": "lagging",
+        "executive_answer": "Memory & Storage qualifies as lagging: priority 73.0 exceeds the 60.0 gate, one-month benchmark-relative strength is -10.0, and directional persistence is high. Breadth confirms broad weakness; the conclusion remains conditional because group-level volume confirmation is unavailable; missing evidence does not count as confirmation.",
+        "priority_score": 73.0,
+        "question": "Is Memory & Storage weakness temporary or structural?",
+        "status": "qualified",
+        "subject": "Memory & Storage"
+      },
+      "page_stats": {
+        "actual_count": 15,
+        "estimate": 15,
+        "render_dpi": 190,
+        "rendered_count": 15
+      },
+      "relationship_stats": {
+        "edge_count": 7,
+        "node_count": 8,
+        "relationship_types": [
+          "benchmark_relationship",
+          "theme_hierarchy",
+          "validated_taxonomy"
+        ]
+      },
+      "report": {
+        "document_version": "report-document-v2",
+        "market_date": "2026-07-21",
+        "pdf_format_version": "daily-report-pdf-v7",
+        "report_id": "daily-2026-07-21-v7-fixture",
+        "report_type": "After Close",
+        "source_status": "live"
+      },
+      "security_stats": {
+        "lagging_signal_count": 2,
+        "leading_signal_count": 2,
+        "selected_count": 0,
+        "selected_symbols": [],
+        "selected_with_figure_count": 0,
+        "total_count": 0
+      },
+      "timeline_stats": {
+        "entry_count": 10,
+        "first_market_date": "2026-07-08",
+        "focus_entry_count": 10,
+        "last_market_date": "2026-07-21"
+      }
+    },
+    "leading-theme": {
+      "artifacts": {
+        "contact_sheet": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-leading-theme-contact-sheet.png",
+        "document_json": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-leading-theme.json",
+        "pdf": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-leading-theme.pdf",
+        "render_directory": "/Users/andypun/Downloads/market-intelligence-app/tmp/pdfs/stage-6/leading-theme"
+      },
+      "evidence_stats": {
+        "focus_evidence_count": 45,
+        "matrix_row_count": 6,
+        "quality": {
+          "breadth": "High",
+          "completeness": "High",
+          "consistency": "High",
+          "evidence_ids": [
+            "research-theme-cybersecurity-contribution-freshness",
+            "research-theme-cybersecurity-breadth",
+            "research-theme-cybersecurity-participation",
+            "research-theme-cybersecurity-coverage",
+            "research-theme-cybersecurity-directional-consistency"
+          ],
+          "freshness": "High",
+          "label": "High",
+          "participation": "High",
+          "rationale": [
+            "Freshness is high from the frozen 2026-07-21 subject input.",
+            "Breadth is high relative to the selected leading direction.",
+            "Participation is high from a distinct constituent measure.",
+            "Completeness is high at 100% of required candidate inputs.",
+            "Directional consistency is high across returns, relative strength, breadth, and available participation."
+          ]
+        },
+        "registry_count": 189
+      },
+      "figure_stats": {
+        "annotated_count": 1,
+        "annotation_count": 3,
+        "focus_count": 5,
+        "total_count": 13
+      },
+      "fixture": "market-leading-theme-no-overlap",
+      "focus_stats": {
+        "category": "theme",
+        "classification_label": "Leading",
+        "direction": "leading",
+        "executive_answer": "Cybersecurity qualifies as leading: priority 63.5 exceeds the 60.0 gate, one-month benchmark-relative strength is +11.0, and directional persistence is high. Breadth confirms broad participation; the conclusion remains conditional because group-level volume confirmation is unavailable; missing evidence does not count as confirmation.",
+        "priority_score": 63.46,
+        "question": "Why is Cybersecurity leading, and is participation broad enough to persist?",
+        "status": "qualified",
+        "subject": "Cybersecurity"
+      },
+      "page_stats": {
+        "actual_count": 15,
+        "estimate": 15,
+        "render_dpi": 190,
+        "rendered_count": 15
+      },
+      "relationship_stats": {
+        "edge_count": 7,
+        "node_count": 8,
+        "relationship_types": [
+          "benchmark_relationship",
+          "theme_hierarchy",
+          "validated_taxonomy"
+        ]
+      },
+      "report": {
+        "document_version": "report-document-v2",
+        "market_date": "2026-07-21",
+        "pdf_format_version": "daily-report-pdf-v7",
+        "report_id": "daily-2026-07-21-v7-fixture",
+        "report_type": "After Close",
+        "source_status": "live"
+      },
+      "security_stats": {
+        "lagging_signal_count": 2,
+        "leading_signal_count": 2,
+        "selected_count": 0,
+        "selected_symbols": [],
+        "selected_with_figure_count": 0,
+        "total_count": 0
+      },
+      "timeline_stats": {
+        "entry_count": 10,
+        "first_market_date": "2026-07-08",
+        "focus_entry_count": 10,
+        "last_market_date": "2026-07-21"
+      }
+    },
+    "mixed": {
+      "artifacts": {
+        "contact_sheet": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-mixed-contact-sheet.png",
+        "document_json": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-mixed.json",
+        "pdf": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-mixed.pdf",
+        "render_directory": "/Users/andypun/Downloads/market-intelligence-app/tmp/pdfs/stage-6/mixed"
+      },
+      "evidence_stats": {
+        "focus_evidence_count": 48,
+        "matrix_row_count": 6,
+        "quality": {
+          "breadth": "High",
+          "completeness": "High",
+          "consistency": "High",
+          "evidence_ids": [
+            "research-theme-cybersecurity-contribution-freshness",
+            "research-theme-cybersecurity-breadth",
+            "research-theme-cybersecurity-participation",
+            "research-theme-cybersecurity-coverage",
+            "research-theme-cybersecurity-directional-consistency"
+          ],
+          "freshness": "High",
+          "label": "High",
+          "participation": "High",
+          "rationale": [
+            "Freshness is high from the frozen 2026-07-21 subject input.",
+            "Breadth is high relative to the selected leading direction.",
+            "Participation is high from a distinct constituent measure.",
+            "Completeness is high at 100% of required candidate inputs.",
+            "Directional consistency is high across returns, relative strength, breadth, and available participation."
+          ]
+        },
+        "registry_count": 303
+      },
+      "figure_stats": {
+        "annotated_count": 4,
+        "annotation_count": 27,
+        "focus_count": 5,
+        "total_count": 16
+      },
+      "fixture": "mixed-source-report",
+      "focus_stats": {
+        "category": "theme",
+        "classification_label": "Leading",
+        "direction": "leading",
+        "executive_answer": "Cybersecurity qualifies as leading: priority 74.4 exceeds the 60.0 gate, one-month benchmark-relative strength is +7.5, and directional persistence is high. Breadth confirms broad participation; the conclusion remains conditional because group-level volume confirmation is unavailable; missing evidence does not count as confirmation.",
+        "priority_score": 74.42,
+        "question": "Why is Cybersecurity leading, and is participation broad enough to persist?",
+        "status": "qualified",
+        "subject": "Cybersecurity"
+      },
+      "page_stats": {
+        "actual_count": 19,
+        "estimate": 19,
+        "render_dpi": 190,
+        "rendered_count": 19
+      },
+      "relationship_stats": {
+        "edge_count": 10,
+        "node_count": 9,
+        "relationship_types": [
+          "benchmark_relationship",
+          "theme_hierarchy",
+          "user_watchlist_overlap",
+          "validated_taxonomy"
+        ]
+      },
+      "report": {
+        "document_version": "report-document-v2",
+        "market_date": "2026-07-21",
+        "pdf_format_version": "daily-report-pdf-v7",
+        "report_id": "daily-2026-07-21-v7-fixture",
+        "report_type": "After Close",
+        "source_status": "mixed"
+      },
+      "security_stats": {
+        "lagging_signal_count": 2,
+        "leading_signal_count": 2,
+        "selected_count": 3,
+        "selected_symbols": [
+          "CRWD",
+          "PANW",
+          "FTNT"
+        ],
+        "selected_with_figure_count": 3,
+        "total_count": 3
+      },
+      "timeline_stats": {
+        "entry_count": 10,
+        "first_market_date": "2026-07-08",
+        "focus_entry_count": 10,
+        "last_market_date": "2026-07-21"
+      }
+    },
+    "no-focus": {
+      "artifacts": {
+        "contact_sheet": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-no-focus-contact-sheet.png",
+        "document_json": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-no-focus.json",
+        "pdf": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-no-focus.pdf",
+        "render_directory": "/Users/andypun/Downloads/market-intelligence-app/tmp/pdfs/stage-6/no-focus"
+      },
+      "evidence_stats": {
+        "focus_evidence_count": 8,
+        "matrix_row_count": 0,
+        "quality": null,
+        "registry_count": 77
+      },
+      "figure_stats": {
+        "annotated_count": 1,
+        "annotation_count": 3,
+        "focus_count": 0,
+        "total_count": 9
+      },
+      "fixture": "no-qualifying-focus",
+      "focus_stats": {
+        "category": null,
+        "classification_label": null,
+        "direction": null,
+        "executive_answer": "No candidate cleared every materiality, freshness, completeness, constituent, and figure gate. The highest-ranked candidate was Industrials at 12.6, below or outside the qualifying policy; the principal failed gates were priority score below the materiality threshold, no material directional divergence.",
+        "priority_score": null,
+        "question": "Why did no reviewed subject meet the research evidence threshold?",
+        "status": "no_focus",
+        "subject": null
+      },
+      "page_stats": {
+        "actual_count": 12,
+        "estimate": 12,
+        "render_dpi": 190,
+        "rendered_count": 12
+      },
+      "relationship_stats": {
+        "edge_count": 0,
+        "node_count": 0,
+        "relationship_types": []
+      },
+      "report": {
+        "document_version": "report-document-v2",
+        "market_date": "2026-07-21",
+        "pdf_format_version": "daily-report-pdf-v7",
+        "report_id": "daily-2026-07-21-v7-fixture",
+        "report_type": "After Close",
+        "source_status": "live"
+      },
+      "security_stats": {
+        "lagging_signal_count": 0,
+        "leading_signal_count": 0,
+        "selected_count": 0,
+        "selected_symbols": [],
+        "selected_with_figure_count": 0,
+        "total_count": 0
+      },
+      "timeline_stats": {
+        "entry_count": 10,
+        "first_market_date": "2026-07-08",
+        "focus_entry_count": 10,
+        "last_market_date": "2026-07-21"
+      }
+    },
+    "personalized": {
+      "artifacts": {
+        "contact_sheet": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-personalized-contact-sheet.png",
+        "document_json": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-personalized.json",
+        "pdf": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-personalized.pdf",
+        "render_directory": "/Users/andypun/Downloads/market-intelligence-app/tmp/pdfs/stage-6/personalized"
+      },
+      "evidence_stats": {
+        "focus_evidence_count": 48,
+        "matrix_row_count": 6,
+        "quality": {
+          "breadth": "High",
+          "completeness": "High",
+          "consistency": "High",
+          "evidence_ids": [
+            "research-theme-cybersecurity-contribution-freshness",
+            "research-theme-cybersecurity-breadth",
+            "research-theme-cybersecurity-participation",
+            "research-theme-cybersecurity-coverage",
+            "research-theme-cybersecurity-directional-consistency"
+          ],
+          "freshness": "High",
+          "label": "High",
+          "participation": "High",
+          "rationale": [
+            "Freshness is high from the frozen 2026-07-21 subject input.",
+            "Breadth is high relative to the selected leading direction.",
+            "Participation is high from a distinct constituent measure.",
+            "Completeness is high at 100% of required candidate inputs.",
+            "Directional consistency is high across returns, relative strength, breadth, and available participation."
+          ]
+        },
+        "registry_count": 303
+      },
+      "figure_stats": {
+        "annotated_count": 4,
+        "annotation_count": 27,
+        "focus_count": 5,
+        "total_count": 16
+      },
+      "fixture": "user-saved-leading-theme",
+      "focus_stats": {
+        "category": "theme",
+        "classification_label": "Leading",
+        "direction": "leading",
+        "executive_answer": "Cybersecurity qualifies as leading: priority 74.4 exceeds the 60.0 gate, one-month benchmark-relative strength is +7.5, and directional persistence is high. Breadth confirms broad participation; the conclusion remains conditional because group-level volume confirmation is unavailable; missing evidence does not count as confirmation.",
+        "priority_score": 74.42,
+        "question": "Why is Cybersecurity leading, and is participation broad enough to persist?",
+        "status": "qualified",
+        "subject": "Cybersecurity"
+      },
+      "page_stats": {
+        "actual_count": 19,
+        "estimate": 19,
+        "render_dpi": 190,
+        "rendered_count": 19
+      },
+      "relationship_stats": {
+        "edge_count": 10,
+        "node_count": 9,
+        "relationship_types": [
+          "benchmark_relationship",
+          "theme_hierarchy",
+          "user_watchlist_overlap",
+          "validated_taxonomy"
+        ]
+      },
+      "report": {
+        "document_version": "report-document-v2",
+        "market_date": "2026-07-21",
+        "pdf_format_version": "daily-report-pdf-v7",
+        "report_id": "daily-2026-07-21-v7-fixture",
+        "report_type": "After Close",
+        "source_status": "live"
+      },
+      "security_stats": {
+        "lagging_signal_count": 2,
+        "leading_signal_count": 2,
+        "selected_count": 3,
+        "selected_symbols": [
+          "CRWD",
+          "PANW",
+          "FTNT"
+        ],
+        "selected_with_figure_count": 3,
+        "total_count": 3
+      },
+      "timeline_stats": {
+        "entry_count": 10,
+        "first_market_date": "2026-07-08",
+        "focus_entry_count": 10,
+        "last_market_date": "2026-07-21"
+      }
+    },
+    "weekend": {
+      "artifacts": {
+        "contact_sheet": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-weekend-contact-sheet.png",
+        "document_json": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-weekend.json",
+        "pdf": "/Users/andypun/Downloads/market-intelligence-app/output/pdf/stage-6/stage-6-weekend.pdf",
+        "render_directory": "/Users/andypun/Downloads/market-intelligence-app/tmp/pdfs/stage-6/weekend"
+      },
+      "evidence_stats": {
+        "focus_evidence_count": 48,
+        "matrix_row_count": 6,
+        "quality": {
+          "breadth": "High",
+          "completeness": "High",
+          "consistency": "High",
+          "evidence_ids": [
+            "research-theme-cybersecurity-contribution-freshness",
+            "research-theme-cybersecurity-breadth",
+            "research-theme-cybersecurity-participation",
+            "research-theme-cybersecurity-coverage",
+            "research-theme-cybersecurity-directional-consistency"
+          ],
+          "freshness": "High",
+          "label": "High",
+          "participation": "High",
+          "rationale": [
+            "Freshness is high from the frozen 2026-07-21 subject input.",
+            "Breadth is high relative to the selected leading direction.",
+            "Participation is high from a distinct constituent measure.",
+            "Completeness is high at 100% of required candidate inputs.",
+            "Directional consistency is high across returns, relative strength, breadth, and available participation."
+          ]
+        },
+        "registry_count": 303
+      },
+      "figure_stats": {
+        "annotated_count": 4,
+        "annotation_count": 27,
+        "focus_count": 5,
+        "total_count": 16
+      },
+      "fixture": "weekend-report",
+      "focus_stats": {
+        "category": "theme",
+        "classification_label": "Leading",
+        "direction": "leading",
+        "executive_answer": "Cybersecurity qualifies as leading: priority 74.4 exceeds the 60.0 gate, one-month benchmark-relative strength is +7.5, and directional persistence is high. Breadth confirms broad participation; the conclusion remains conditional because group-level volume confirmation is unavailable; missing evidence does not count as confirmation.",
+        "priority_score": 74.42,
+        "question": "Why is Cybersecurity leading, and is participation broad enough to persist?",
+        "status": "qualified",
+        "subject": "Cybersecurity"
+      },
+      "page_stats": {
+        "actual_count": 19,
+        "estimate": 19,
+        "render_dpi": 190,
+        "rendered_count": 19
+      },
+      "relationship_stats": {
+        "edge_count": 10,
+        "node_count": 9,
+        "relationship_types": [
+          "benchmark_relationship",
+          "theme_hierarchy",
+          "user_watchlist_overlap",
+          "validated_taxonomy"
+        ]
+      },
+      "report": {
+        "document_version": "report-document-v2",
+        "market_date": "2026-07-21",
+        "pdf_format_version": "daily-report-pdf-v7",
+        "report_id": "daily-2026-07-21-v7-fixture",
+        "report_type": "Weekend / Holiday",
+        "source_status": "live"
+      },
+      "security_stats": {
+        "lagging_signal_count": 2,
+        "leading_signal_count": 2,
+        "selected_count": 3,
+        "selected_symbols": [
+          "CRWD",
+          "PANW",
+          "FTNT"
+        ],
+        "selected_with_figure_count": 3,
+        "total_count": 3
+      },
+      "timeline_stats": {
+        "entry_count": 10,
+        "first_market_date": "2026-07-08",
+        "focus_entry_count": 10,
+        "last_market_date": "2026-07-21"
+      }
+    }
+  },
+  "stage": "6"
+}

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
@@ -12,47 +12,79 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { StockCard } from '@/components/watchlist/StockCard';
 import { Spacing, Theme } from '@/constants/theme';
-import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { SectorDetailContent } from '@/features/sectors/components/SectorDetailContent';
 import { normalizeSectorId, type SectorId } from '@/features/sectors/sectorSnapshot';
 import { WatchlistSection } from '@/features/watchlist/components/WatchlistSection';
-import { WatchlistSummary } from '@/features/watchlist/components/WatchlistSummary';
+import { WatchlistBrief } from '@/features/watchlist/components/WatchlistSummary';
+import { WatchlistListControls } from '@/features/watchlist/components/WatchlistListControls';
 import { buildWatchlistKey, useWatchlist, type GroupWatchlistItem } from '@/features/watchlist/store';
 import { classifyWatchlistItem } from '@/features/watchlist/watchlistClassifier';
 import {
-  getSortLabel,
-  groupSortedWatchlistItems,
-  sortWatchlistItems,
-  WATCHLIST_SORT_OPTIONS,
-} from '@/features/watchlist/watchlistSort';
+  groupWatchlistDecisionItems,
+  WATCHLIST_DECISION_ORDER,
+  type WatchlistDecisionGroup,
+} from '@/features/watchlist/watchlistDecision';
+import {
+  DEFAULT_LIST_CONTROL_PREFERENCES,
+  filterAndSortSectors,
+  filterAndSortStocks,
+  filterAndSortThemes,
+  getFlatStockSortDescription,
+  getStockSortOptions,
+  isGroupedStockSort,
+  SECTOR_FILTER_OPTIONS,
+  SECTOR_SORT_OPTIONS,
+  STOCK_FILTER_OPTIONS,
+  THEME_FILTER_OPTIONS,
+  THEME_SORT_OPTIONS,
+  type ListControlPreferences,
+  type WatchlistListFilter,
+  type WatchlistViewMode,
+} from '@/features/watchlist/watchlistListControls';
 import { useWatchlistUiPreferences } from '@/features/watchlist/watchlistUiPreferences';
 import type { ClassifiedWatchlistItem, WatchlistGroup } from '@/features/watchlist/types';
 import { useWatchlistDashboard } from '@/hooks/useWatchlistDashboard';
 import { useSectorSnapshot } from '@/hooks/useSectorSnapshot';
+import { useThemeSnapshot } from '@/hooks/useThemeSnapshot';
+import type { LiveThemeItem } from '@/features/themes/themeSnapshot';
 import type { WatchlistSummaryItem } from '@/types/market';
 
-type WatchlistTab = 'stocks' | 'groups';
+type WatchlistTab = 'stocks' | 'sectors' | 'themes';
 
 const WATCHLIST_TABS = [
   { key: 'stocks', label: 'Stocks' },
-  { key: 'groups', label: 'Sectors' },
+  { key: 'sectors', label: 'Sectors' },
+  { key: 'themes', label: 'Themes' },
 ];
-const WATCHLIST_GROUP_ORDER: WatchlistGroup[] = [
-  'needs_attention',
-  'high_priority',
-  'momentum',
-  'watching',
-  'data_unavailable',
-];
+const DECISION_COLLAPSE_KEYS: Record<WatchlistDecisionGroup, WatchlistGroup> = {
+  action_required: 'needs_attention',
+  watching_closely: 'momentum',
+  stable_waiting: 'watching',
+};
 
 export default function WatchlistScreen() {
+  const router = useRouter();
+  const {
+    actionNonce: actionNonceParam,
+    detailTab: detailTabParam,
+    section: sectionParam,
+    symbol: requestedSymbolParam,
+  } = useLocalSearchParams<{
+    actionNonce?: string | string[];
+    detailTab?: string | string[];
+    section?: string | string[];
+    symbol?: string | string[];
+  }>();
+  const requestedSymbol = normalizeSymbol(Array.isArray(requestedSymbolParam) ? requestedSymbolParam[0] ?? '' : requestedSymbolParam ?? '');
+  const requestedDetailTab = Array.isArray(detailTabParam) ? detailTabParam[0] : detailTabParam;
+  const actionNonce = Array.isArray(actionNonceParam) ? actionNonceParam[0] : actionNonceParam;
+  const requestedTab = firstWatchlistTab(sectionParam);
   const [isFocused, setIsFocused] = useState(false);
-  const [activeTab, setActiveTab] = useState<WatchlistTab>('stocks');
+  const [localTab, setLocalTab] = useState<WatchlistTab>('stocks');
+  const activeTab = requestedSymbol ? 'stocks' : requestedTab ?? localTab;
   const [searchText, setSearchText] = useState('');
-  const [stockToolbarOpen, setStockToolbarOpen] = useState(false);
-  const [sectorThemeSearchText, setSectorThemeSearchText] = useState('');
-  const [sectorThemeToolbarOpen, setSectorThemeToolbarOpen] = useState(false);
+  const [addPanelOpen, setAddPanelOpen] = useState(false);
   const [removedSymbols, setRemovedSymbols] = useState<string[]>([]);
   const [inputError, setInputError] = useState<string | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<SectorId | null>(null);
@@ -60,9 +92,19 @@ export default function WatchlistScreen() {
   const [watchlistPreferences, updateWatchlistPreferences] = useWatchlistUiPreferences();
   const {
     collapsedGroups,
-    sortMode,
   } = watchlistPreferences;
-  const { snapshot: sectorSnapshot } = useSectorSnapshot(activeTab === 'groups');
+  const {
+    snapshot: sectorSnapshot,
+    loading: sectorsLoading,
+    error: sectorsError,
+    refetch: refetchSectors,
+  } = useSectorSnapshot(activeTab === 'sectors');
+  const {
+    snapshot: themeSnapshot,
+    loading: themesLoading,
+    error: themesError,
+    refetch: refetchThemes,
+  } = useThemeSnapshot(activeTab === 'themes');
 
   useFocusEffect(
     useCallback(() => {
@@ -72,8 +114,11 @@ export default function WatchlistScreen() {
   );
 
   const requestedStockSymbols = useMemo(
-    () => watchlistStore.stockItems.map((item) => item.ticker).sort(),
-    [watchlistStore.stockItems],
+    () => Array.from(new Set([
+      ...watchlistStore.stockItems.map((item) => item.ticker),
+      ...(requestedSymbol ? [requestedSymbol] : []),
+    ])).sort(),
+    [requestedSymbol, watchlistStore.stockItems],
   );
   const { error, loading, refetch, watchlist } = useWatchlistDashboard(requestedStockSymbols, isFocused && activeTab === 'stocks');
   const savedItems = useMemo(
@@ -89,38 +134,65 @@ export default function WatchlistScreen() {
     })),
     [savedItems],
   );
-  const visibleClassifiedItems = useMemo(
-    () => classifiedStockItems.filter(({ item }) => !query || item.ticker.includes(query)),
-    [classifiedStockItems, query],
-  );
-  const sortedClassifiedItems = useMemo(
-    () => sortWatchlistItems(visibleClassifiedItems, sortMode),
-    [sortMode, visibleClassifiedItems],
-  );
-  const groupedClassifiedItems = useMemo(
-    () => groupSortedWatchlistItems(sortedClassifiedItems),
-    [sortedClassifiedItems],
-  );
   const canAdd = query.length > 0 && !savedItems.some((item) => item.ticker === query);
 
-  const sectorThemeQuery = sectorThemeSearchText.trim().toLowerCase();
   const savedSectors = useMemo(() => watchlistStore.groupItems
     .filter((item) => item.type === 'sector')
     .map((stored) => ({ stored, sectorId: normalizeSectorId(stored.id) ?? normalizeSectorId(stored.name) }))
     .filter((item): item is { stored: GroupWatchlistItem; sectorId: SectorId } => item.sectorId !== null)
-    .map((item) => ({ ...item, row: sectorSnapshot?.sectors.find((row) => row.sectorId === item.sectorId) ?? null }))
-    .filter(({ stored, row }) => !sectorThemeQuery || [stored.id, stored.name, row?.displayName, row?.sectorId].filter(Boolean).join(' ').toLowerCase().includes(sectorThemeQuery))
-    .sort((a, b) => (a.row?.rank ?? 999) - (b.row?.rank ?? 999)), [sectorSnapshot, sectorThemeQuery, watchlistStore.groupItems]);
+    .map((item) => ({ ...item, row: sectorSnapshot?.sectors.find((row) => row.sectorId === item.sectorId) ?? null })), [sectorSnapshot, watchlistStore.groupItems]);
+  const savedThemes = useMemo(() => watchlistStore.groupItems
+    .filter((item) => item.type === 'theme')
+    .map((stored) => ({
+      stored,
+      row: themeSnapshot?.items.find((item) => item.id === stored.id || item.name.toLowerCase() === stored.name.toLowerCase()) ?? null,
+    })), [themeSnapshot, watchlistStore.groupItems]);
+  const stockSortOptions = useMemo(() => getStockSortOptions(classifiedStockItems), [classifiedStockItems]);
+  const stockPreferences = useMemo(() => normalizeAvailableSort(
+    watchlistPreferences.listControls.stocks,
+    stockSortOptions,
+    DEFAULT_LIST_CONTROL_PREFERENCES.stocks,
+  ), [stockSortOptions, watchlistPreferences.listControls.stocks]);
+  const sectorPreferences = watchlistPreferences.listControls.sectors;
+  const themePreferences = watchlistPreferences.listControls.themes;
+  const sortedClassifiedItems = useMemo(
+    () => filterAndSortStocks(classifiedStockItems, stockPreferences),
+    [classifiedStockItems, stockPreferences],
+  );
+  const sortedSectors = useMemo(
+    () => filterAndSortSectors(savedSectors, sectorPreferences),
+    [savedSectors, sectorPreferences],
+  );
+  const sortedThemes = useMemo(
+    () => filterAndSortThemes(savedThemes, themePreferences),
+    [savedThemes, themePreferences],
+  );
+  const decisionGroups = useMemo(
+    () => groupWatchlistDecisionItems(sortedClassifiedItems),
+    [sortedClassifiedItems],
+  );
+  const activePreferences = activeTab === 'stocks' ? stockPreferences : activeTab === 'sectors' ? sectorPreferences : themePreferences;
+  const activeSortOptions = activeTab === 'stocks' ? stockSortOptions : activeTab === 'sectors' ? SECTOR_SORT_OPTIONS : THEME_SORT_OPTIONS;
+  const activeFilterOptions = activeTab === 'stocks' ? STOCK_FILTER_OPTIONS : activeTab === 'sectors' ? SECTOR_FILTER_OPTIONS : THEME_FILTER_OPTIONS;
+  const activeTotalCount = activeTab === 'stocks' ? classifiedStockItems.length : activeTab === 'sectors' ? savedSectors.length : savedThemes.length;
+  const activeResultCount = activeTab === 'stocks' ? sortedClassifiedItems.length : activeTab === 'sectors' ? sortedSectors.length : sortedThemes.length;
+  const getFilteredResultCount = useCallback((filters: WatchlistListFilter[]) => {
+    if (activeTab === 'stocks') return filterAndSortStocks(classifiedStockItems, { ...stockPreferences, filters }).length;
+    if (activeTab === 'sectors') return filterAndSortSectors(savedSectors, { ...sectorPreferences, filters }).length;
+    return filterAndSortThemes(savedThemes, { ...themePreferences, filters }).length;
+  }, [activeTab, classifiedStockItems, savedSectors, savedThemes, sectorPreferences, stockPreferences, themePreferences]);
   const copilotContext = useMemo(
     () => createCopilotContext({
       payload: {
         activeTab,
         groupCounts: activeTab === 'stocks'
-          ? WATCHLIST_GROUP_ORDER.reduce<Record<string, number>>((acc, group) => {
-            acc[group] = groupedClassifiedItems[group].length;
+          ? WATCHLIST_DECISION_ORDER.reduce<Record<string, number>>((acc, group) => {
+            acc[group] = decisionGroups[group].length;
             return acc;
           }, {})
-          : { saved_sectors: savedSectors.length },
+          : activeTab === 'sectors'
+            ? { saved_sectors: savedSectors.length }
+            : { saved_themes: savedThemes.length },
         items: activeTab === 'stocks'
           ? sortedClassifiedItems.map(({ classification, item }) => ({
             changePercent: item.change_percent,
@@ -130,15 +202,21 @@ export default function WatchlistScreen() {
             ticker: item.ticker,
             group: classification.group,
           }))
-          : savedSectors.map(({ row, stored }) => ({ id: row?.sectorId ?? stored.id, name: row?.displayName ?? stored.name, score: row?.compositeScore, signal: row?.classification, type: 'sector' })),
-        sortMode: activeTab === 'stocks' ? sortMode : 'snapshot_rank',
+          : activeTab === 'sectors'
+            ? savedSectors.map(({ row, stored }) => ({ id: row?.sectorId ?? stored.id, name: row?.displayName ?? stored.name, score: row?.compositeScore, signal: row?.classification, type: 'sector' }))
+            : savedThemes.map(({ row, stored }) => ({ id: row?.id ?? stored.id, name: row?.name ?? stored.name, score: row?.compositeScore, signal: row?.classification, type: 'theme' })),
+        sortMode: activePreferences.sort,
       },
       routeName: '/watchlist',
-      screenTitle: activeTab === 'stocks' ? 'Watchlist Stocks' : 'Watchlist Sectors & Themes',
+      screenTitle: activeTab === 'stocks' ? 'Watchlist Stocks' : activeTab === 'sectors' ? 'Watchlist Sectors' : 'Watchlist Themes',
       screenType: 'watchlist',
-      sourceState: activeTab === 'stocks' ? 'mixed' : sectorSnapshot?.sourceState ?? 'unavailable',
+      sourceState: activeTab === 'stocks'
+        ? 'mixed'
+        : activeTab === 'sectors'
+          ? sectorSnapshot?.sourceState ?? 'unavailable'
+          : themeSnapshot?.sourceState ?? 'unavailable',
     }),
-    [activeTab, groupedClassifiedItems, savedSectors, sectorSnapshot?.sourceState, sortMode, sortedClassifiedItems],
+    [activePreferences.sort, activeTab, decisionGroups, savedSectors, savedThemes, sectorSnapshot?.sourceState, sortedClassifiedItems, themeSnapshot?.sourceState],
   );
 
   const addSymbol = () => {
@@ -173,48 +251,70 @@ export default function WatchlistScreen() {
     }
   };
 
-  const toggleGroupCollapsed = (group: WatchlistGroup) => {
+  const toggleGroupCollapsed = (group: WatchlistDecisionGroup) => {
+    const preferenceKey = DECISION_COLLAPSE_KEYS[group];
     updateWatchlistPreferences({
       collapsedGroups: {
-        [group]: !collapsedGroups[group],
+        [preferenceKey]: !collapsedGroups[preferenceKey],
       },
     });
   };
 
   return (
-    <AppScreen title="Watchlist" subtitle="Saved stocks, sectors, and themes.">
+    <AppScreen
+      copilotContext={copilotContext}
+      copilotPrompt={activeTab === 'stocks'
+        ? 'Rank my watchlist and explain which name needs attention.'
+        : activeTab === 'sectors'
+          ? 'Explain my saved sectors using the current market snapshot.'
+          : 'Explain my saved themes using the current theme snapshot.'}
+      title="Watchlist"
+      subtitle="Saved stocks, sectors, and themes.">
       <View style={styles.stack}>
         <View style={styles.topControlRow}>
           <View style={styles.tabSwitchWrap}>
             <SegmentedControl
               fullWidth
-              onChange={(key) => setActiveTab(key as WatchlistTab)}
+              onChange={(key) => {
+                router.setParams({ commandTarget: undefined, section: undefined, symbol: undefined });
+                setLocalTab(key as WatchlistTab);
+                setAddPanelOpen(false);
+              }}
               options={WATCHLIST_TABS}
               selectedKey={activeTab}
               variant="switch"
             />
           </View>
-          {activeTab === 'stocks' ? (
-            <StockHeaderActions
-              open={stockToolbarOpen}
-              onToggle={() => setStockToolbarOpen((current) => !current)}
-            />
-          ) : (
-            <SectorThemeHeaderActions
-              open={sectorThemeToolbarOpen}
-              onToggle={() => setSectorThemeToolbarOpen((current) => !current)}
-            />
-          )}
+          <AddHeaderAction
+            activeCategory={activeTab}
+            open={addPanelOpen}
+            onToggle={() => setAddPanelOpen((current) => !current)}
+          />
         </View>
 
-        <AskCopilotButton
-          context={copilotContext}
-          prompt={activeTab === 'stocks' ? 'Rank my watchlist and explain which name needs attention.' : 'Explain my saved sectors using the current market snapshot.'}
+        <WatchlistListControls
+          activeCategory={activeTab}
+          activeFilters={activePreferences.filters}
+          availableFilterOptions={activeFilterOptions}
+          availableSortOptions={activeSortOptions}
+          currentSort={activePreferences.sort}
+          getResultCount={getFilteredResultCount}
+          onApply={(nextPreferences) => updateWatchlistPreferences({
+            listControls: { [activeTab]: nextPreferences },
+          })}
+          onReset={() => updateWatchlistPreferences({
+            listControls: {
+              [activeTab]: { ...DEFAULT_LIST_CONTROL_PREFERENCES[activeTab], filters: [] },
+            },
+          })}
+          resultCount={activeResultCount}
+          totalCount={activeTotalCount}
+          viewMode={activePreferences.viewMode}
         />
 
         {activeTab === 'stocks' ? (
           <>
-            {classifiedStockItems.length ? <WatchlistSummary items={classifiedStockItems} /> : null}
+            {classifiedStockItems.length ? <WatchlistBrief items={classifiedStockItems} /> : null}
 
             {loading ? (
               <WatchlistSkeleton />
@@ -228,9 +328,9 @@ export default function WatchlistScreen() {
                   />
                 ) : null}
 
-                {stockToolbarOpen ? (
+                {addPanelOpen ? (
                   <DashboardCard style={styles.compactControlCard}>
-                    <StockSearchPanel
+                    <StockAddPanel
                       canAdd={canAdd}
                       inputError={inputError}
                       onAdd={addSymbol}
@@ -240,90 +340,154 @@ export default function WatchlistScreen() {
                       }}
                       query={searchText}
                     />
-                    <StockSortPanel
-                      onSortChange={(nextSortMode) => updateWatchlistPreferences({ sortMode: nextSortMode })}
-                      sortMode={sortMode}
-                    />
-                    {sortMode === 'manualOrder' ? (
-                      <Text style={styles.helperText}>Manual Order follows your saved ticker order.</Text>
-                    ) : null}
                   </DashboardCard>
                 ) : null}
 
-                <View style={styles.stack}>
-                  {WATCHLIST_GROUP_ORDER.map((group) => (
-                    <WatchlistSection
-                      collapsed={Boolean(collapsedGroups[group])}
-                      group={group}
-                      items={groupedClassifiedItems[group]}
-                      key={group}
-                      onToggleCollapsed={() => toggleGroupCollapsed(group)}>
-                      {groupedClassifiedItems[group].map(({ classification, item }) => (
-                        <StockCard
-                          classification={classification}
-                          key={item.ticker}
-                          onRemove={removeSymbol}
-                          stock={item}
-                        />
-                      ))}
-                    </WatchlistSection>
-                  ))}
-                </View>
+                {isGroupedStockSort(stockPreferences.sort) ? (
+                  <View style={styles.stack}>
+                    {WATCHLIST_DECISION_ORDER.map((group) => {
+                      const collapseKey = DECISION_COLLAPSE_KEYS[group];
+                      return (
+                      <WatchlistSection
+                        collapsed={Boolean(collapsedGroups[collapseKey])}
+                        group={group}
+                        items={decisionGroups[group]}
+                        key={group}
+                        onToggleCollapsed={() => toggleGroupCollapsed(group)}>
+                        {decisionGroups[group].map(({ classification, item }) => (
+                          <StockCard
+                            classification={classification}
+                            key={item.ticker}
+                            onRemove={removeSymbol}
+                            openDetailTab={requestedDetailTab}
+                            openDetails={requestedSymbol === item.ticker}
+                            deepLinkNonce={actionNonce}
+                            stock={item}
+                            viewMode={stockPreferences.viewMode}
+                          />
+                        ))}
+                      </WatchlistSection>
+                      );
+                    })}
+                  </View>
+                ) : (
+                  <View style={styles.flatResults}>
+                    <Text style={styles.flatDescriptor}>{getFlatStockSortDescription(stockPreferences.sort)}</Text>
+                    {sortedClassifiedItems.map(({ classification, item }) => (
+                      <StockCard
+                        classification={classification}
+                        key={item.ticker}
+                        onRemove={removeSymbol}
+                        openDetailTab={requestedDetailTab}
+                        openDetails={requestedSymbol === item.ticker}
+                        deepLinkNonce={actionNonce}
+                        stock={item}
+                        viewMode={stockPreferences.viewMode}
+                      />
+                    ))}
+                  </View>
+                )}
 
                 {!error && savedItems.length === 0 ? (
                   <EmptyState
                     title="No stock watchlist items"
-                    message="Add a ticker above, or add relevant stocks from sector and theme detail views."
+                    message="Use the add and sort control, or save a stock from sector and theme detail views."
                   />
                 ) : null}
 
-                {!error && savedItems.length > 0 && visibleClassifiedItems.length === 0 ? (
+                {!error && savedItems.length > 0 && sortedClassifiedItems.length === 0 ? (
                   <EmptyState
-                    title="No stock matches"
-                    message="Try another ticker search."
+                    actionLabel="Clear filters"
+                    title="No saved items match these filters."
+                    message="Clear all active filters above or adjust the current filter selection."
+                    onAction={() => updateWatchlistPreferences({
+                      listControls: { stocks: { ...stockPreferences, filters: [] } },
+                    })}
                   />
                 ) : null}
+
               </>
             )}
           </>
-        ) : (
+        ) : activeTab === 'sectors' ? (
           <View style={styles.stack}>
-            {sectorThemeToolbarOpen ? (
-              <DashboardCard style={styles.compactControlCard}>
-                <SectorThemeSearchPanel
-                  query={sectorThemeSearchText}
-                  onQueryChange={setSectorThemeSearchText}
-                />
-              </DashboardCard>
-            ) : null}
-
-            {!watchlistStore.hydrated ? (
+            {!watchlistStore.hydrated || sectorsLoading ? (
               <SkeletonCard compact rows={2} title />
             ) : (
               <View style={styles.stack}>
-                {savedSectors.map(({ stored, sectorId, row }) => (
-                  <DashboardCard key={buildWatchlistKey('sector', sectorId)}>
-                    <Pressable accessibilityRole="button" onPress={() => setSelectedGroup(sectorId)} style={styles.summaryHeaderRow}>
-                      <View><Text style={styles.summaryTitle}>{row?.displayName ?? stored.name}</Text><Text style={styles.summarySubtitle}>{row ? `#${row.rank} · ${row.etfSymbol} · ${row.classification}` : 'Sector snapshot unavailable'}</Text></View>
-                      <Text style={styles.summaryCount}>{row?.compositeScore?.toFixed(2) ?? 'N/A'}</Text>
-                    </Pressable>
-                    <Pressable accessibilityRole="button" onPress={() => removeGroup(stored)} style={styles.removeGroupButton}><Text style={styles.removeGroupText}>Remove</Text></Pressable>
-                  </DashboardCard>
+                {sortedSectors.map(({ stored, sectorId, row }) => (
+                  <SavedGroupCard
+                    key={buildWatchlistKey('sector', sectorId)}
+                    onOpen={() => setSelectedGroup(sectorId)}
+                    onRemove={() => removeGroup(stored)}
+                    subtitle={row ? `#${row.rank} · ${row.etfSymbol} · ${row.classification}` : 'Sector snapshot unavailable'}
+                    title={row?.displayName ?? stored.name}
+                    value={row?.compositeScore?.toFixed(1) ?? 'N/A'}
+                    viewMode={sectorPreferences.viewMode}
+                  />
                 ))}
-                {watchlistStore.groupItems.some((item) => item.type === 'theme') ? <Text style={styles.helperText}>Live theme intelligence is not yet available.</Text> : null}
               </View>
             )}
 
-            {watchlistStore.hydrated && watchlistStore.groupItems.length === 0 ? (
+            {watchlistStore.hydrated && !watchlistStore.groupItems.some((item) => item.type === 'sector') ? (
               <EmptyState
                 title="No saved sectors"
                 message="Open the Sectors tab and save a sector to track it here."
               />
             ) : null}
-            {watchlistStore.hydrated && watchlistStore.groupItems.length > 0 && savedSectors.length === 0 ? (
+            {watchlistStore.hydrated && savedSectors.length > 0 && sortedSectors.length === 0 ? (
               <EmptyState
-                title="No saved groups match"
-                message="Change the search to show saved sectors."
+                actionLabel="Clear filters"
+                title="No saved items match these filters."
+                message="Clear all active filters above or adjust the current filter selection."
+                onAction={() => updateWatchlistPreferences({
+                  listControls: { sectors: { ...sectorPreferences, filters: [] } },
+                })}
+              />
+            ) : null}
+          </View>
+        ) : (
+          <View style={styles.stack}>
+            {themesError ? <ErrorState title="Themes unavailable" message={themesError} /> : null}
+            {!watchlistStore.hydrated || themesLoading ? (
+              <SkeletonCard compact rows={2} title />
+            ) : (
+              <View style={styles.stack}>
+                {sortedThemes.map(({ stored, row }) => (
+                  <SavedGroupCard
+                    key={buildWatchlistKey('theme', stored.id)}
+                    onOpen={() => router.push({
+                      pathname: '/sectors',
+                      params: {
+                        entityId: row?.id ?? stored.id,
+                        entityKind: 'theme',
+                        entityName: row?.name ?? stored.name,
+                        section: 'themesHeatmap',
+                      },
+                    })}
+                    onRemove={() => removeGroup(stored)}
+                    subtitle={row ? `${row.parentSector} · ${row.classification} · ${formatThemeReturn(row)}` : 'Theme snapshot unavailable'}
+                    title={row?.name ?? stored.name}
+                    value={row?.rank ? `#${row.rank}` : 'N/A'}
+                    viewMode={themePreferences.viewMode}
+                  />
+                ))}
+              </View>
+            )}
+            {watchlistStore.hydrated && !watchlistStore.groupItems.some((item) => item.type === 'theme') ? (
+              <EmptyState
+                title="No saved themes"
+                message="Open the Themes view and save a reviewed theme to track it here."
+              />
+            ) : null}
+            {watchlistStore.hydrated && savedThemes.length > 0 && sortedThemes.length === 0 ? (
+              <EmptyState
+                actionLabel="Clear filters"
+                title="No saved items match these filters."
+                message="Clear all active filters above or adjust the current filter selection."
+                onAction={() => updateWatchlistPreferences({
+                  listControls: { themes: { ...themePreferences, filters: [] } },
+                })}
               />
             ) : null}
           </View>
@@ -337,32 +501,107 @@ export default function WatchlistScreen() {
         visible={Boolean(selectedGroup)}>
         {selectedGroup ? <SectorDetailContent sectorId={selectedGroup} /> : null}
       </DetailModal>
+
+      <DetailModal
+        onClose={() => setAddPanelOpen(false)}
+        subtitle={activeTab === 'sectors'
+          ? 'Choose from the current sector snapshot.'
+          : 'Choose from the reviewed theme snapshot.'}
+        title={activeTab === 'sectors' ? 'Add sector' : 'Add theme'}
+        visible={addPanelOpen && activeTab !== 'stocks'}>
+        {activeTab === 'sectors' ? (
+          sectorsError ? (
+            <ErrorState title="Sectors unavailable" message={sectorsError} onRetry={refetchSectors} />
+          ) : sectorsLoading || !sectorSnapshot ? (
+            <SkeletonCard compact rows={3} title />
+          ) : (
+            <GroupAddPicker
+              emptyMessage="All available sectors are already saved."
+              items={sectorSnapshot.sectors
+                .filter((row) => !watchlistStore.isInWatchlist('sector', row.sectorId))
+                .map((row) => ({
+                  id: row.sectorId,
+                  meta: `${row.etfSymbol} · #${row.rank} · ${row.classification}`,
+                  name: row.displayName,
+                }))}
+              onAdd={(id, name) => watchlistStore.addSector(id, name)}
+            />
+          )
+        ) : themesError ? (
+          <ErrorState title="Themes unavailable" message={themesError} onRetry={refetchThemes} />
+        ) : themesLoading || !themeSnapshot ? (
+          <SkeletonCard compact rows={3} title />
+        ) : (
+          <GroupAddPicker
+            emptyMessage="All available themes are already saved."
+            items={themeSnapshot.items
+              .filter((item) => !watchlistStore.isInWatchlist('theme', item.id))
+              .map((item) => ({
+                id: item.id,
+                meta: `${item.parentSector} · ${item.rank ? `#${item.rank} · ` : ''}${item.classification}`,
+                name: item.name,
+              }))}
+            onAdd={(id, name) => watchlistStore.addTheme(id, name)}
+          />
+        )}
+      </DetailModal>
     </AppScreen>
   );
 }
 
-function StockHeaderActions({ onToggle, open }: { onToggle: () => void; open: boolean }) {
+function AddHeaderAction({
+  activeCategory,
+  onToggle,
+  open,
+}: {
+  activeCategory: WatchlistTab;
+  onToggle: () => void;
+  open: boolean;
+}) {
   return (
     <View style={styles.stockActionRow}>
       <IconButton
         active={open}
-        accessibilityLabel="Open stock search and sort toolbar"
-        icon={{ android: 'tune', ios: 'slider.horizontal.3', web: 'slider.horizontal.3' }}
+        accessibilityLabel={activeCategory === 'stocks'
+          ? 'Open add ticker panel'
+          : `Open add ${activeCategory === 'sectors' ? 'sector' : 'theme'} panel`}
+        icon={{ android: 'add', ios: 'plus', web: 'plus' }}
         onPress={onToggle}
       />
     </View>
   );
 }
 
-function SectorThemeHeaderActions({ onToggle, open }: { onToggle: () => void; open: boolean }) {
+function GroupAddPicker({
+  emptyMessage,
+  items,
+  onAdd,
+}: {
+  emptyMessage: string;
+  items: { id: string; meta: string; name: string }[];
+  onAdd: (id: string, name: string) => void;
+}) {
+  if (!items.length) {
+    return <EmptyState title="Everything is saved" message={emptyMessage} />;
+  }
   return (
-    <View style={styles.stockActionRow}>
-      <IconButton
-        active={open}
-        accessibilityLabel="Open sector and theme search and sort toolbar"
-        icon={{ android: 'tune', ios: 'slider.horizontal.3', web: 'slider.horizontal.3' }}
-        onPress={onToggle}
-      />
+    <View style={styles.addPickerList}>
+      {items.map((item) => (
+        <Pressable
+          accessibilityLabel={`Add ${item.name} to watchlist`}
+          accessibilityRole="button"
+          key={item.id}
+          onPress={() => onAdd(item.id, item.name)}
+          style={({ pressed }) => [styles.addPickerRow, pressed && styles.pressedButton]}>
+          <View style={styles.addPickerText}>
+            <Text numberOfLines={1} style={styles.addPickerName}>{item.name}</Text>
+            <Text numberOfLines={1} style={styles.addPickerMeta}>{item.meta}</Text>
+          </View>
+          <View style={styles.addPickerButton}>
+            <Text style={styles.addPickerIcon}>+</Text>
+          </View>
+        </Pressable>
+      ))}
     </View>
   );
 }
@@ -385,17 +624,21 @@ function IconButton({
       accessibilityState={{ selected: active }}
       onPress={onPress}
       style={({ pressed }) => [styles.iconButton, active && styles.iconButtonActive, pressed && styles.pressedButton]}>
-      <SymbolView
-        name={icon as never}
-        size={17}
-        tintColor={active ? Theme.colors.accent : Theme.colors.textMuted}
-        weight="bold"
-      />
+      {Platform.OS === 'web' ? (
+        <Text style={[styles.webToolbarIcon, active && styles.webToolbarIconActive]}>+</Text>
+      ) : (
+        <SymbolView
+          name={icon as never}
+          size={17}
+          tintColor={active ? Theme.colors.accent : Theme.colors.textMuted}
+          weight="bold"
+        />
+      )}
     </Pressable>
   );
 }
 
-function StockSearchPanel({
+function StockAddPanel({
   canAdd,
   inputError,
   onAdd,
@@ -412,12 +655,12 @@ function StockSearchPanel({
     <View style={styles.searchPanel}>
       <View style={styles.searchRow}>
         <TextInput
-          accessibilityLabel="Search or add ticker"
+          accessibilityLabel="Add ticker"
           autoCapitalize="characters"
           autoCorrect={false}
           onChangeText={(value) => onQueryChange(value.toUpperCase())}
           onSubmitEditing={onAdd}
-          placeholder="Search or add ticker"
+          placeholder="Add ticker"
           placeholderTextColor={Theme.colors.textMuted}
           returnKeyType="done"
           style={styles.searchInput}
@@ -437,59 +680,52 @@ function StockSearchPanel({
   );
 }
 
-function StockSortPanel({
-  onSortChange,
-  sortMode,
+function SavedGroupCard({
+  onOpen,
+  onRemove,
+  subtitle,
+  title,
+  value,
+  viewMode,
 }: {
-  onSortChange: (sortMode: typeof WATCHLIST_SORT_OPTIONS[number]['key']) => void;
-  sortMode: typeof WATCHLIST_SORT_OPTIONS[number]['key'];
+  onOpen: () => void;
+  onRemove: () => void;
+  subtitle: string;
+  title: string;
+  value: string;
+  viewMode: WatchlistViewMode;
 }) {
+  const compact = viewMode === 'compact';
   return (
-    <View style={styles.sortPanel}>
-      <Text style={styles.sortPanelTitle}>Sort: {getSortLabel(sortMode)}</Text>
-      <View style={styles.sortOptionGrid}>
-        {WATCHLIST_SORT_OPTIONS.map((option) => {
-          const selected = option.key === sortMode;
-          return (
-            <Pressable
-              accessibilityLabel={`Sort by ${option.label}`}
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-              key={option.key}
-              onPress={() => onSortChange(option.key)}
-              style={({ pressed }) => [styles.sortOption, selected && styles.sortOptionSelected, pressed && styles.pressedButton]}>
-              <Text numberOfLines={1} style={[styles.sortOptionText, selected && styles.sortOptionTextSelected]}>{option.label}</Text>
-            </Pressable>
-          );
-        })}
+    <DashboardCard style={compact ? { ...styles.savedGroupCard, ...styles.savedGroupCardCompact } : styles.savedGroupCard}>
+      <View style={styles.savedGroupRow}>
+      <Pressable accessibilityLabel={`Open ${title}`} accessibilityRole="button" onPress={onOpen} style={[styles.summaryHeaderRow, compact && styles.summaryHeaderRowCompact]}>
+        <View style={styles.savedGroupText}>
+          <Text numberOfLines={1} style={styles.summaryTitle}>{title}</Text>
+          <Text numberOfLines={compact ? 1 : 2} style={styles.summarySubtitle}>{compact ? compactGroupSubtitle(subtitle) : subtitle}</Text>
+        </View>
+        <Text style={styles.summaryCount}>{value}</Text>
+        <Text style={styles.groupChevron}>›</Text>
+      </Pressable>
+      <Pressable accessibilityLabel={`Remove ${title} from watchlist`} accessibilityRole="button" hitSlop={8} onPress={onRemove} style={styles.savedStateButton}>
+        <Text style={styles.savedStateIcon}>★</Text>
+      </Pressable>
       </View>
-    </View>
+    </DashboardCard>
   );
 }
 
-function SectorThemeSearchPanel({
-  onQueryChange,
-  query,
-}: {
-  onQueryChange: (query: string) => void;
-  query: string;
-}) {
-  return (
-    <View style={styles.searchPanel}>
-      <Text style={styles.sortPanelTitle}>Search saved sectors and themes</Text>
-      <TextInput
-        accessibilityLabel="Search saved sectors and themes"
-        autoCapitalize="words"
-        autoCorrect={false}
-        onChangeText={onQueryChange}
-        placeholder="Search sectors or themes"
-        placeholderTextColor={Theme.colors.textMuted}
-        returnKeyType="search"
-        style={styles.searchInput}
-        value={query}
-      />
-    </View>
-  );
+function compactGroupSubtitle(subtitle: string) {
+  const parts = subtitle.split(' · ');
+  return parts.find((part) => ['Leading', 'Improving', 'Neutral', 'Weakening', 'Lagging'].includes(part))
+    ?? parts.at(-1)
+    ?? subtitle;
+}
+
+function formatThemeReturn(theme: LiveThemeItem) {
+  const value = theme.returns['1M'];
+  if (value === null) return '1M N/A';
+  return `1M ${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
 }
 
 function mergeWatchlistItems(
@@ -539,8 +775,24 @@ function normalizeSymbol(value: string) {
   return value.trim().toUpperCase();
 }
 
+function firstWatchlistTab(value: string | string[] | undefined): WatchlistTab | null {
+  const tab = Array.isArray(value) ? value[0] : value;
+  if (tab === 'groups') return 'sectors';
+  return tab === 'stocks' || tab === 'sectors' || tab === 'themes' ? tab : null;
+}
+
 function isValidSymbol(value: string) {
   return /^[A-Z0-9.]{1,10}$/.test(value);
+}
+
+function normalizeAvailableSort(
+  preferences: ListControlPreferences,
+  options: { key: string }[],
+  defaults: ListControlPreferences,
+) {
+  return options.some((option) => option.key === preferences.sort)
+    ? preferences
+    : { ...preferences, sort: defaults.sort };
 }
 
 function WatchlistSkeleton() {
@@ -554,6 +806,52 @@ function WatchlistSkeleton() {
 }
 
 const styles = StyleSheet.create({
+  addPickerButton: {
+    alignItems: 'center',
+    backgroundColor: Theme.colors.accentSoft,
+    borderColor: Theme.colors.accent,
+    borderRadius: Theme.radii.small,
+    borderWidth: 1,
+    height: 38,
+    justifyContent: 'center',
+    width: 38,
+  },
+  addPickerIcon: {
+    color: Theme.colors.accent,
+    fontSize: 21,
+    fontWeight: '900',
+    lineHeight: 22,
+  },
+  addPickerList: {
+    gap: Spacing.one,
+  },
+  addPickerMeta: {
+    color: Theme.colors.textMuted,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  addPickerName: {
+    color: Theme.colors.text,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  addPickerRow: {
+    alignItems: 'center',
+    backgroundColor: Theme.colors.backgroundMuted,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.small,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: Spacing.two,
+    minHeight: 58,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
+  },
+  addPickerText: {
+    flex: 1,
+    gap: Spacing.half,
+    minWidth: 0,
+  },
   addTickerButton: {
     alignItems: 'center',
     backgroundColor: Theme.colors.accent,
@@ -568,12 +866,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     lineHeight: 24,
   },
-  badgeRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-  },
   compactControlCard: {
     padding: Spacing.twoAndHalf,
   },
@@ -586,12 +878,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '800',
   },
-  helperText: {
+  flatDescriptor: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '800',
-    lineHeight: 17,
-    marginTop: Spacing.two,
+    lineHeight: 16,
+    marginBottom: Spacing.half,
+  },
+  flatResults: {
+    gap: Spacing.one,
+  },
+  groupChevron: {
+    color: Theme.colors.textMuted,
+    fontSize: 24,
+    fontWeight: '800',
   },
   iconButton: {
     alignItems: 'center',
@@ -608,11 +908,6 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.accent,
   },
   list: {
-    gap: Spacing.two,
-  },
-  metricGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: Spacing.two,
   },
   pressedButton: {
@@ -638,43 +933,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.two,
   },
-  sortOption: {
-    alignItems: 'center',
-    backgroundColor: Theme.colors.backgroundMuted,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.small,
-    borderWidth: 1,
-    flexGrow: 1,
-    minHeight: 36,
-    minWidth: '47%',
-    paddingHorizontal: Spacing.two,
-    justifyContent: 'center',
+  savedGroupCard: {
+    padding: Spacing.twoAndHalf,
   },
-  sortOptionGrid: {
+  savedGroupCardCompact: {
+    paddingVertical: Spacing.one,
+  },
+  savedGroupRow: {
+    alignItems: 'center',
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: Spacing.one,
   },
-  sortOptionSelected: {
-    backgroundColor: Theme.colors.accentSoft,
-    borderColor: Theme.colors.accent,
-  },
-  sortOptionText: {
-    color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  sortOptionTextSelected: {
-    color: Theme.colors.text,
-  },
-  sortPanel: {
-    gap: Spacing.two,
-  },
-  sortPanelTitle: {
-    color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
-    textTransform: 'uppercase',
+  savedGroupText: {
+    flex: 1,
+    gap: Spacing.half,
+    minWidth: 0,
   },
   stack: {
     gap: Spacing.three,
@@ -689,22 +962,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.two,
     justifyContent: 'space-between',
-    marginBottom: Spacing.two,
+    flex: 1,
+    minHeight: 44,
+    minWidth: 0,
   },
-  removeGroupButton: {
+  summaryHeaderRowCompact: {
     alignItems: 'center',
-    alignSelf: 'flex-start',
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.small,
-    borderWidth: 1,
-    justifyContent: 'center',
-    minHeight: 32,
-    paddingHorizontal: Spacing.two,
   },
-  removeGroupText: {
-    color: Theme.colors.danger,
-    fontSize: 12,
-    fontWeight: '800',
+  savedStateButton: {
+    alignItems: 'center',
+    borderRadius: Theme.radii.pill,
+    height: 44,
+    justifyContent: 'center',
+    width: 34,
+  },
+  savedStateIcon: {
+    color: Theme.colors.warning,
+    fontSize: 17,
+    fontWeight: '900',
   },
   summaryMetric: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -755,5 +1030,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: Spacing.two,
+  },
+  webToolbarIcon: {
+    color: Theme.colors.textMuted,
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  webToolbarIconActive: {
+    color: Theme.colors.accent,
   },
 });

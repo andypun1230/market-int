@@ -27,6 +27,7 @@ from app.cache.market_data_cache import (
     build_quote_cache_key,
 )
 from app.services.history_request_coordinator import get_history_request_coordinator
+from app.services.report_read_context import ReportReadCacheMiss, is_report_snapshot_read
 
 
 @dataclass
@@ -252,10 +253,13 @@ class MarketDataRepository(MarketDataProvider):
             stale = self._get_stale_cache_value(key)
             if stale.value is not None and stale.stale:
                 result = mark_stale_cached_value(stale.value, stale.age_seconds or 0, refresh_started=False)
-                if self.stale_while_revalidate:
+                if self.stale_while_revalidate and not is_report_snapshot_read():
                     started = self._start_background_refresh(key, ttl, compute, domain=domain)
                     result = mark_background_refresh(result, started)
                 return result
+
+        if self._report_read_blocks_provider_fetch():
+            raise ReportReadCacheMiss(f"Report read has no captured cache value for {key}.")
 
         inflight, owner = self._get_or_create_inflight(key)
         if not owner:
@@ -286,6 +290,15 @@ class MarketDataRepository(MarketDataProvider):
             created = InFlight(event=threading.Event())
             self._inflight[key] = created
             return created, True
+
+    def _report_read_blocks_provider_fetch(self) -> bool:
+        # Deterministic test providers are local fixtures, not external
+        # provider work. Live report reads must use durable values only.
+        return is_report_snapshot_read() and self.data_provider not in {
+            "mock",
+            "test",
+            "generated_test_data",
+        }
 
     def _fetch_quote(self, symbol: str) -> QuoteData:
         provider = self.get_provider_for("quotes")
