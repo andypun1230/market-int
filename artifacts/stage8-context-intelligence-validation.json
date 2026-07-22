@@ -1,0 +1,418 @@
+{
+  "baseline_commit": "30dc780de6c004e239fe5d768bcc4cc098464573",
+  "baseline_tag": "stage7.5-validated",
+  "conditions": [
+    "No licensed production news provider is configured; production news is typed unavailable unless metadata was explicitly cached.",
+    "No eligible production 5-minute or 15-minute OHLCV source is configured; production session results are daily_only or unavailable.",
+    "No intraday breadth history is configured, so the service does not produce a breadth timeline.",
+    "The 150-case permanent catalog is hermetic and non-live; synthetic evidence always remains test-labeled.",
+    "The 150-case artifact is a permanent scenario catalog backed by targeted executable suites, not 150 end-to-end executions.",
+    "Frontend integration is partial: compact cards are present, but interactive event links and several structured evidence/session fields are not yet rendered.",
+    "Observability is exposed through structured DTO fields and benchmark metrics; no centralized production trace/span recorder is integrated.",
+    "Failure paths are covered by grouped executable methods, but breadth-unavailable and generic service-timeout breadth are not distinct release cases.",
+    "Native-device visual behavior remains a manual check beyond automated TypeScript, lint, data-UI, focused consumer, and static-export gates."
+  ],
+  "consumer_integration": {
+    "copilot": "existing Stage 7 agents through typed news/session evidence",
+    "home": "maximum-three compact What Moved the Market rows",
+    "market": "compact session-state, headline, claim, and caveat context",
+    "presentation_status": "partial",
+    "report_pdf": "typed Report Agent retrieval seam; Report/PDF rendering unchanged",
+    "sector_theme": "selected-detail compact catalyst rows",
+    "stock": "details-open compact material-event rows",
+    "unrendered_contract_fields": [
+      "interactive event links and evidence detail",
+      "reaction windows and classification",
+      "session phase aggregates and turning points",
+      "sector/theme breadth, thesis, and horizon context",
+      "stock volume, technical, and thesis implications",
+      "named watchlist intelligence states"
+    ],
+    "watchlist": "single bounded batch request with compact catalyst rows"
+  },
+  "failed_gates": [],
+  "final_commit": null,
+  "gates": {
+    "all_15_agents_preserved": true,
+    "article_body_persistence_forbidden": true,
+    "benchmark_blocks_external_calls": true,
+    "daily_bars_not_used_as_intraday": true,
+    "focused_evidence_lineage_tests": true,
+    "focused_safety_and_failure_tests": true,
+    "frontend_contract_and_consumer_files_present": true,
+    "golden_fixtures_hermetic": true,
+    "human_report_present": true,
+    "no_live_news_misrepresentation": true,
+    "no_new_registered_agents": true,
+    "performance_thresholds": true,
+    "permanent_fixture_catalog_minimum": true,
+    "stage75_artifact_postdates_stage8_implementation": true,
+    "stage75_semantic_equivalence": true,
+    "stage7_reference_regression": true,
+    "stage7_runtime_regression": true,
+    "stage8_tests_pass": true
+  },
+  "generated_at": "2026-07-22T10:46:14.552338+00:00",
+  "human_report": "docs/validation/stage8-context-intelligence-validation-report.md",
+  "performance": {
+    "copilot_full_pipeline": {
+      "evidence_count": 190,
+      "latency": {
+        "iterations": 250,
+        "max_ms": 61.272125,
+        "mean_ms": 39.115949,
+        "p50_ms": 38.08775,
+        "p95_ms": 39.749542,
+        "p99_ms": 60.652542
+      },
+      "model_calls": 0,
+      "response_status": "complete",
+      "validation_status": "passed"
+    },
+    "copilot_routing": {
+      "evidence_categories": [
+        "news"
+      ],
+      "intent": "NEWS_QUERY",
+      "latency": {
+        "iterations": 250,
+        "max_ms": 0.051166,
+        "mean_ms": 0.045796,
+        "p50_ms": 0.045583,
+        "p95_ms": 0.047542,
+        "p99_ms": 0.048458
+      },
+      "required_agents": [
+        "stock"
+      ],
+      "sub_intent": "security_news"
+    },
+    "endpoints": {
+      "news_security": {
+        "latency": {
+          "iterations": 250,
+          "max_ms": 1.444583,
+          "mean_ms": 1.238734,
+          "p50_ms": 1.22725,
+          "p95_ms": 1.33025,
+          "p99_ms": 1.403667
+        },
+        "path": "/intelligence/news/security/NVDA",
+        "service_status": "unavailable",
+        "status_code": 200
+      },
+      "session_security": {
+        "latency": {
+          "iterations": 250,
+          "max_ms": 18.532458,
+          "mean_ms": 16.194676,
+          "p50_ms": 16.091583,
+          "p95_ms": 16.721083,
+          "p99_ms": 17.401708
+        },
+        "path": "/intelligence/session/NVDA",
+        "service_status": "daily_only",
+        "status_code": 200
+      }
+    },
+    "external_call_audit": {
+      "model_gateway_calls_intercepted": 0,
+      "network_connect_intercepted": 0,
+      "policy": "all attempted external calls fail the benchmark"
+    },
+    "generated_at": "2026-07-22T10:44:52.021612+00:00",
+    "hermetic": true,
+    "limitations": [
+      "Measurements exercise deterministic in-process services with synthetic metadata and recorded bars.",
+      "No live news, intraday market-data, network, or model provider is invoked.",
+      "Host load can affect wall-clock percentiles; thresholds are release guards, not service-level objectives."
+    ],
+    "model_calls": 0,
+    "network_calls": 0,
+    "news_pipeline": {
+      "cluster_count": 10,
+      "component_latency_ms": {
+        "clustering": 1.981,
+        "full_service": 11.995,
+        "mapping": 2.416,
+        "materiality": 0.33500000000000013,
+        "materiality_and_reaction_total": 3.605,
+        "normalization": 3.231,
+        "provider_fetch": 0.039,
+        "reaction_analysis": 0.42600000000000016
+      },
+      "duplicate_reduction_ratio": 0.5,
+      "freshness": "test",
+      "latency": {
+        "iterations": 250,
+        "max_ms": 38.24075,
+        "mean_ms": 11.11934,
+        "p50_ms": 10.492709,
+        "p95_ms": 12.231792,
+        "p99_ms": 20.490167
+      },
+      "mapped_canonical_event_ratio": 1.0,
+      "mapping_evidence_lineage_ratio": 1.0,
+      "materiality_contribution_count": 80,
+      "normalized_event_count": 20,
+      "provider_event_count": 20,
+      "provider_mode": "test",
+      "reaction_evidence_count": 10,
+      "returned_event_count": 10
+    },
+    "schema_version": "stage8-context-intelligence-performance-v1",
+    "session_pipeline": {
+      "evidence_count": 7,
+      "freshness": "test",
+      "input_bar_count": 78,
+      "latency": {
+        "iterations": 250,
+        "max_ms": 2.927209,
+        "mean_ms": 2.83909,
+        "p50_ms": 2.835708,
+        "p95_ms": 2.867833,
+        "p99_ms": 2.890458
+      },
+      "regular_session_coverage": 1.0,
+      "status": "partial"
+    },
+    "status": "PASS",
+    "threshold_results": {
+      "canonical_events_nonzero": true,
+      "copilot_full_pipeline_p95_under_500ms": true,
+      "copilot_routing_p95_under_50ms": true,
+      "duplicate_reduction_at_least_40_percent": true,
+      "endpoints_return_structured_200": true,
+      "mapped_canonical_events_complete": true,
+      "mapping_evidence_lineage_complete": true,
+      "materiality_contributions_complete": true,
+      "news_endpoint_p95_under_500ms": true,
+      "news_pipeline_p95_under_250ms": true,
+      "reaction_evidence_lineage_complete": true,
+      "session_endpoint_p95_under_500ms": true,
+      "session_pipeline_p95_under_250ms": true,
+      "session_regular_coverage_complete": true
+    },
+    "thresholds": {
+      "copilot_full_pipeline_p95_ms": 500.0,
+      "copilot_routing_p95_ms": 50.0,
+      "endpoint_p95_ms": 500.0,
+      "news_pipeline_p95_ms": 250.0,
+      "session_pipeline_p95_ms": 250.0
+    }
+  },
+  "providers": {
+    "audited": [
+      "Finnhub quote and news capabilities",
+      "Polygon daily OHLCV and intraday entitlements",
+      "economic calendar, filings, earnings, and announcements",
+      "local daily history and immutable snapshots",
+      "OpenAI/model infrastructure"
+    ],
+    "implemented": [
+      "UnavailableNewsProvider (production default)",
+      "HermeticNewsProvider (explicit test only)",
+      "CachedNewsProvider (metadata cache only)",
+      "ProductionSessionDataAdapter (daily_only or unavailable)"
+    ],
+    "live_intraday_provider_configured": false,
+    "live_news_provider_configured": false,
+    "source_registry_records": 9
+  },
+  "quality_metrics": {
+    "deduplication": {
+      "canonical_clusters": 10,
+      "duplicate_reduction_ratio": 0.5,
+      "input_events": 20
+    },
+    "entity_mapping": {
+      "evidence_backed": true,
+      "mapped_canonical_event_ratio": 1.0,
+      "mapping_evidence_lineage_ratio": 1.0
+    },
+    "materiality": {
+      "contribution_count": 80,
+      "future_return_claim": false,
+      "market_entity_user_scores_separate": true,
+      "transparent_contributions": true
+    },
+    "reaction": {
+      "causal_attribution_supported": false,
+      "evidence_count": 10,
+      "evidence_lineage_complete": true,
+      "intraday_supported": false,
+      "supported_windows": [
+        "close_to_close",
+        "next_session",
+        "multi_day"
+      ]
+    },
+    "session": {
+      "fixture_input_bars": 78,
+      "fixture_status": "partial",
+      "production_modes": [
+        "daily_only",
+        "unavailable"
+      ],
+      "regular_session_coverage": 1.0
+    }
+  },
+  "reproduction_commands": [
+    "make validate-stage8 PYTHON=venv/bin/python",
+    "make test-stage8-news PYTHON=venv/bin/python",
+    "make test-stage8-session PYTHON=venv/bin/python",
+    "make test-stage8-routing PYTHON=venv/bin/python",
+    "make test-stage8-safety PYTHON=venv/bin/python",
+    "make test-stage8-performance PYTHON=venv/bin/python"
+  ],
+  "result": "PASS WITH CONDITIONS",
+  "safety": {
+    "article_body_contract_and_repository_guards": true,
+    "evidence_lineage_test_result": {
+      "command": "cd backend && python -m unittest tests.stage8.test_news_repository_service tests.stage8.test_stage8_copilot_integration tests.stage8.test_session_narrative",
+      "deprecation_warning_only": false,
+      "exit_code": 0,
+      "passed": true,
+      "tests_run": 23
+    },
+    "focused_test_result": {
+      "command": "cd backend && python -m unittest tests.stage8.test_news_normalization_security tests.stage8.test_stage8_safety tests.stage8.test_stage8_failure_injection",
+      "deprecation_warning_only": true,
+      "exit_code": 0,
+      "passed": true,
+      "tests_run": 25
+    },
+    "mock_as_live": false,
+    "model_calls_in_benchmark": 0,
+    "network_calls_in_benchmark": 0,
+    "prompt_html_markdown_script_and_url_cases": true,
+    "secret_redaction_cases": true,
+    "untrusted_text_quarantined": true
+  },
+  "schema_version": "stage8-context-intelligence-validation-v1",
+  "scope_exclusions": {
+    "automatic_trading": false,
+    "decision_intelligence": false,
+    "portfolio_intelligence": false,
+    "report_or_pdf_redesign": false,
+    "scenario_probability": false
+  },
+  "services": {
+    "event_type_count": 25,
+    "event_types": [
+      "monetary_policy",
+      "inflation",
+      "employment",
+      "economic_growth",
+      "government_policy",
+      "regulation",
+      "geopolitics",
+      "earnings",
+      "guidance",
+      "merger_acquisition",
+      "capital_raise",
+      "buyback",
+      "dividend",
+      "product_launch",
+      "supply_chain",
+      "customer_contract",
+      "legal",
+      "management_change",
+      "analyst_action",
+      "credit_rating",
+      "cybersecurity_incident",
+      "exchange_notice",
+      "market_structure",
+      "positioning_commentary",
+      "other"
+    ],
+    "new_registered_agents": 0,
+    "news": "news-intelligence-v1",
+    "registered_agent_count": 15,
+    "session": "session-narrative-v1"
+  },
+  "stage": "8",
+  "tests": {
+    "declared_test_count": 122,
+    "fixtures": {
+      "catalog_case_count": 150,
+      "catalog_cases_executed_end_to_end": 0,
+      "category_counts": {
+        "causality": 2,
+        "classification": 15,
+        "clustering": 16,
+        "contradiction": 4,
+        "corrections": 4,
+        "entity_mapping": 15,
+        "failure": 20,
+        "freshness": 3,
+        "intraday_narrative": 22,
+        "market_reaction": 20,
+        "materiality": 18,
+        "provider_normalization": 16,
+        "routing_synthesis": 20,
+        "safety": 17,
+        "session_segmentation": 15,
+        "source_credibility": 13
+      },
+      "execution_mode": "scenario_catalog_with_targeted_executable_tests",
+      "hermetic_case_count": 150,
+      "required_release_cases": 30,
+      "unique_fixture_ids": 150
+    },
+    "focused_evidence_lineage": {
+      "command": "cd backend && python -m unittest tests.stage8.test_news_repository_service tests.stage8.test_stage8_copilot_integration tests.stage8.test_session_narrative",
+      "deprecation_warning_only": false,
+      "exit_code": 0,
+      "passed": true,
+      "tests_run": 23
+    },
+    "focused_safety_and_failure": {
+      "command": "cd backend && python -m unittest tests.stage8.test_news_normalization_security tests.stage8.test_stage8_safety tests.stage8.test_stage8_failure_injection",
+      "deprecation_warning_only": true,
+      "exit_code": 0,
+      "passed": true,
+      "tests_run": 25
+    },
+    "stage75_equivalence": {
+      "equivalent": 30,
+      "failed": 0,
+      "result": "PASS"
+    },
+    "stage7_reference": {
+      "failed": 0,
+      "passed": 165,
+      "release_bearing": false,
+      "result": "NON-RELEASE"
+    },
+    "stage7_runtime": {
+      "failed": 0,
+      "passed": 30,
+      "release_blockers": 0,
+      "result": "PASS WITH CONDITIONS"
+    },
+    "stage8": {
+      "command": "cd backend && python -m unittest discover -s tests/stage8 -p 'test_*.py'",
+      "deprecation_warning_only": true,
+      "exit_code": 0,
+      "passed": true,
+      "tests_run": 122
+    },
+    "test_files": {
+      "test_golden_fixtures.py": 5,
+      "test_news_clustering_mapping.py": 9,
+      "test_news_contracts_and_providers.py": 8,
+      "test_news_materiality_reaction.py": 9,
+      "test_news_normalization_security.py": 11,
+      "test_news_repository_service.py": 7,
+      "test_session_analysis.py": 20,
+      "test_session_narrative.py": 8,
+      "test_stage8_api.py": 10,
+      "test_stage8_copilot_integration.py": 8,
+      "test_stage8_failure_injection.py": 7,
+      "test_stage8_performance.py": 3,
+      "test_stage8_routing.py": 10,
+      "test_stage8_safety.py": 7
+    }
+  }
+}

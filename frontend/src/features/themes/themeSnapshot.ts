@@ -26,6 +26,7 @@ export type LiveThemeItem = {
   pilotScope: string | null;
   basketMethodology: string | null;
   sourceState: string;
+  status: 'available' | 'partial' | 'unavailable' | string;
   warnings: string[];
   members: LiveThemeMember[];
   weightingPolicy: string | null;
@@ -66,7 +67,8 @@ function adaptThemeItem(value: unknown): LiveThemeItem[] {
     participation: participation(value.participation), concentration: concentration(value.concentration),
     scoreSemantics: scoreSemantics(value.score_semantics), pilotScope: text(isRecord(value.pilot_scope) ? value.pilot_scope.rank_scope : undefined),
     basketMethodology: text(isRecord(value.basket_methodology) ? value.basket_methodology.policy : undefined),
-    sourceState: text(isRecord(value.provenance) ? value.provenance.source_state : undefined) ?? 'unavailable',
+    sourceState: text(isRecord(value.provenance) ? value.provenance.source_state : undefined) ?? text(value.source_state) ?? 'unavailable',
+    status: text(value.status) ?? (text(value.coverage_status) === 'complete' ? 'available' : text(value.coverage_status) === 'partial' ? 'partial' : 'unavailable'),
     warnings: list(value.warnings).filter((item): item is string => typeof item === 'string'),
     members: list(value.members).map(member).filter((item): item is LiveThemeMember => item !== null),
     weightingPolicy: text(isRecord(value.definition) ? value.definition.weighting_policy : undefined),

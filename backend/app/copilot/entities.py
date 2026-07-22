@@ -8,6 +8,7 @@ from app.securities.registry import SECTOR_TAXONOMY, canonical_sector_id
 from app.securities.service import get_security_master_service
 from app.services.report import get_latest_daily_report
 from app.theme_snapshots.service import get_theme_snapshot_service
+from app.themes.identifiers import normalize_theme_id
 
 
 INDEX_SYMBOLS = {
@@ -15,6 +16,10 @@ INDEX_SYMBOLS = {
     "QQQ": "Nasdaq 100",
     "IWM": "Russell 2000",
     "DIA": "Dow Jones Industrial Average",
+}
+STAGE8_NEWS_TOPIC_ALIASES = {
+    "semiconductor": ("semiconductors", "Semiconductors"),
+    "semiconductors": ("semiconductors", "Semiconductors"),
 }
 FOLLOW_UP_REFERENCES = {"it", "this", "that", "this stock", "that stock", "this theme", "that theme"}
 NON_SECURITY_TOKENS = {
@@ -76,6 +81,8 @@ class CopilotEntityResolver:
         self._resolve_company_names(lowered, records, resolution)
         self._resolve_sectors(lowered, resolution)
         self._resolve_themes(lowered, resolution)
+        self._resolve_stage8_news_topics(lowered, resolution)
+        self._resolve_news_event_ids(message, resolution)
         self._resolve_report_sections(lowered, resolution)
 
         # Uppercase ticker-like strings that are not registered are explicit
@@ -210,6 +217,48 @@ class CopilotEntityResolver:
                     resolution,
                     ResolvedEntity("theme", theme_id, display, confidence=0.98, source="theme_snapshot"),
                 )
+
+    @staticmethod
+    def _resolve_stage8_news_topics(lowered: str, resolution: EntityResolution) -> None:
+        """Resolve bounded Stage 8 topics without inventing a security mapping.
+
+        The identifier registry establishes that ``semiconductors`` is a known
+        theme ID.  Resolving the query scope does not claim that its proposed
+        constituent basket is reviewed or that any news event maps to it.
+        """
+
+        for phrase, (theme_id, display_name) in STAGE8_NEWS_TOPIC_ALIASES.items():
+            if re.search(rf"\b{re.escape(phrase)}\b", lowered):
+                canonical_theme_id = normalize_theme_id(theme_id)
+                CopilotEntityResolver._append(
+                    resolution,
+                    ResolvedEntity(
+                        "theme",
+                        canonical_theme_id,
+                        display_name,
+                        confidence=0.9,
+                        source="theme_identifier_registry",
+                    ),
+                )
+
+    @staticmethod
+    def _resolve_news_event_ids(message: str, resolution: EntityResolution) -> None:
+        for event_id in re.findall(
+            r"\bnews-event-[A-Za-z0-9][A-Za-z0-9._:-]{0,188}\b",
+            message,
+            flags=re.IGNORECASE,
+        ):
+            normalized = event_id.casefold()
+            CopilotEntityResolver._append(
+                resolution,
+                ResolvedEntity(
+                    "news_event",
+                    normalized,
+                    normalized,
+                    confidence=1.0,
+                    source="news_event_id",
+                ),
+            )
 
     @staticmethod
     def _resolve_report_sections(lowered: str, resolution: EntityResolution) -> None:

@@ -9,6 +9,7 @@ from app.theme_snapshots.models import ThemeSnapshot
 from app.theme_snapshots.storage import ThemeSnapshotStorage
 from app.securities.service import get_security_master_service
 from app.themes.catalog import reference_definitions, reference_members
+from app.themes.launch import get_launch_theme_registry
 
 
 class ThemeSnapshotService:
@@ -23,6 +24,8 @@ class ThemeSnapshotService:
         finally: self._lock.release()
 
     def status(self) -> dict[str, Any]:
+        launch_registry = get_launch_theme_registry()
+        launch_stats = launch_registry.statistics()
         snapshot = self.latest()
         persisted_rows = self.builder.theme_storage.definitions()
         persisted = {(definition.theme_id, definition.version): definition for definition in persisted_rows}
@@ -84,6 +87,10 @@ class ThemeSnapshotService:
             "test_fixtures_enabled": os.getenv("ENABLE_TEST_SCENARIOS", "false").strip().lower() in {"1", "true", "yes"},
             "definition_count": len(values),
             "active_reviewed_definition_count": len(active),
+            "taxonomy_version": launch_stats["taxonomy_version"],
+            "launch_theme_count": launch_stats["active"],
+            "launch_ready_theme_count": launch_stats["launch_ready"],
+            "mapping_count": launch_stats["total_mappings"],
             "live_theme_intelligence": published,
             "reason": None if published else self.storage.state(theme_namespace(), "last_error") or "no_reviewed_theme_snapshot",
         }

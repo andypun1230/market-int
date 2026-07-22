@@ -57,13 +57,13 @@ class CopilotPlanner:
                 required=agent in intent.required_agents,
                 parallel_group=1,
                 timeout_ms=min(3000, max(250, latency - 200)),
-                purpose=f"Collect validated {AGENT_CATEGORY[agent].value} evidence.",
+                purpose=f"Collect validated {evidence_category_for(agent, intent.intent).value} evidence.",
             )
             for index, agent in enumerate(agents, start=1)
         ]
         evidence_requirements = [
             CopilotEvidenceRequirementV1(
-                category=AGENT_CATEGORY[agent],
+                category=evidence_category_for(agent, intent.intent),
                 required=agent in intent.required_agents and agent not in {CopilotAgentName.NAVIGATION, CopilotAgentName.EDUCATIONAL, CopilotAgentName.PORTFOLIO},
                 entities=[item.entity_id for item in intent.entities],
                 minimum_items=0 if agent in {CopilotAgentName.NAVIGATION, CopilotAgentName.EDUCATIONAL, CopilotAgentName.PORTFOLIO} else 1,
@@ -107,6 +107,10 @@ class CopilotPlanner:
 
 
 def response_template(intent: CopilotIntentType) -> str:
+    if intent == CopilotIntentType.NEWS_QUERY:
+        return "news_intelligence"
+    if intent == CopilotIntentType.SESSION_NARRATIVE:
+        return "session_narrative"
     if intent == CopilotIntentType.APP_NAVIGATION:
         return "navigation"
     if intent == CopilotIntentType.STOCK_DECISION_SUPPORT:
@@ -121,6 +125,8 @@ def response_template(intent: CopilotIntentType) -> str:
 def destinations_for_intent(intent: CopilotIntentV1) -> list[CopilotDestination]:
     value = CopilotIntentType(intent.intent)
     mapping = {
+        CopilotIntentType.NEWS_QUERY: _stage8_destinations(intent),
+        CopilotIntentType.SESSION_NARRATIVE: _stage8_destinations(intent),
         CopilotIntentType.MARKET_STATE: [CopilotDestination.MARKET_OVERVIEW],
         CopilotIntentType.MARKET_EXPLANATION: [CopilotDestination.MARKET_OVERVIEW],
         CopilotIntentType.INDEX_ANALYSIS: [CopilotDestination.INDEXES],
@@ -141,6 +147,44 @@ def destinations_for_intent(intent: CopilotIntentV1) -> list[CopilotDestination]
         CopilotIntentType.EDUCATIONAL_QUERY: [CopilotDestination.BREADTH] if any(item.entity_id == "breadth" for item in intent.entities) else [],
     }
     return mapping.get(value, [])
+
+
+def evidence_category_for(
+    agent: CopilotAgentName,
+    intent: CopilotIntentType,
+) -> CopilotEvidenceCategory:
+    if intent == CopilotIntentType.NEWS_QUERY:
+        return CopilotEvidenceCategory.NEWS
+    if intent == CopilotIntentType.SESSION_NARRATIVE:
+        return CopilotEvidenceCategory.SESSION
+    return AGENT_CATEGORY[agent]
+
+
+def _stage8_destinations(intent: CopilotIntentV1) -> list[CopilotDestination]:
+    if intent.sub_intent == "reaction_breadth":
+        return [CopilotDestination.LEADERSHIP]
+    if intent.sub_intent == "event_risk":
+        return [
+            CopilotDestination.STOCK_RISK
+            if intent.ticker_symbols
+            else CopilotDestination.HEALTH
+        ]
+    if intent.sub_intent == "research_event_context":
+        return [CopilotDestination.REPORT_RESEARCH_FOCUS]
+    entity_types = {item.entity_type.value for item in intent.entities}
+    if "stock" in entity_types or "etf" in entity_types:
+        return [CopilotDestination.STOCK_DETAIL]
+    if "sector" in entity_types:
+        return [CopilotDestination.SECTOR_DETAIL]
+    if "theme" in entity_types:
+        return [CopilotDestination.THEME_DETAIL]
+    if "index" in entity_types:
+        return [CopilotDestination.INDEXES]
+    if intent.personalization_relevant:
+        return [CopilotDestination.WATCHLIST]
+    if intent.sub_intent == "macro_event_reaction":
+        return [CopilotDestination.MACRO]
+    return [CopilotDestination.MARKET_OVERVIEW]
 
 
 def navigation_destination(target: str) -> CopilotDestination:

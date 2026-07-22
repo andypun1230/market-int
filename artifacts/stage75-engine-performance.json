@@ -2,64 +2,64 @@
   "engine_metrics": {
     "confidence_adjustment": {
       "iterations": 5000,
-      "max_us": 821.125,
-      "mean_us": 13.521558,
-      "p50_us": 12.916,
-      "p95_us": 13.625,
-      "p99_us": 24.334
+      "max_us": 156.5,
+      "mean_us": 13.352148,
+      "p50_us": 13.042,
+      "p95_us": 13.708,
+      "p99_us": 21.0
     },
     "contradiction_preservation": {
       "iterations": 5000,
-      "max_us": 351.208,
-      "mean_us": 32.119891,
-      "p50_us": 31.292,
-      "p95_us": 33.667,
-      "p99_us": 39.042
+      "max_us": 111.333,
+      "mean_us": 32.854289,
+      "p50_us": 32.25,
+      "p95_us": 34.667,
+      "p99_us": 45.084
     },
     "evidence_breakout_validation": {
       "iterations": 5000,
-      "max_us": 3300.083,
-      "mean_us": 55.34268,
-      "p50_us": 43.792,
-      "p95_us": 54.416,
-      "p99_us": 282.875
+      "max_us": 1946.291,
+      "mean_us": 53.821797,
+      "p50_us": 44.458,
+      "p95_us": 59.209,
+      "p99_us": 270.5
     },
     "evidence_claim_binding": {
       "iterations": 5000,
-      "max_us": 3466.125,
-      "mean_us": 81.897691,
-      "p50_us": 62.958,
-      "p95_us": 95.458,
-      "p99_us": 580.375
+      "max_us": 1981.666,
+      "mean_us": 76.569183,
+      "p50_us": 62.916,
+      "p95_us": 99.833,
+      "p99_us": 412.209
     },
     "freshness_availability": {
       "iterations": 5000,
-      "max_us": 3195.0,
-      "mean_us": 27.800859,
-      "p50_us": 20.792,
-      "p95_us": 23.042,
-      "p99_us": 117.166
+      "max_us": 2646.917,
+      "mean_us": 26.252509,
+      "p50_us": 20.875,
+      "p95_us": 24.833,
+      "p99_us": 129.0
     }
   },
-  "generated_at": "2026-07-22T08:39:04.986972+00:00",
+  "generated_at": "2026-07-22T10:44:11.431626+00:00",
   "hermetic": true,
   "import_startup": {
     "baseline": {
       "iterations": 7,
-      "max_ms": 22.959042,
-      "mean_ms": 21.266667,
-      "p50_ms": 21.762,
-      "p95_ms": 22.432,
-      "p99_ms": 22.432
+      "max_ms": 20.994458,
+      "mean_ms": 18.206702,
+      "p50_ms": 17.583375,
+      "p95_ms": 20.021667,
+      "p99_ms": 20.021667
     },
-    "mean_delta_ms": 35.663226,
+    "mean_delta_ms": 35.559524,
     "with_analysis_engines": {
       "iterations": 7,
-      "max_ms": 61.638375,
-      "mean_ms": 56.929893,
-      "p50_ms": 56.44825,
-      "p95_ms": 59.793,
-      "p99_ms": 59.793
+      "max_ms": 57.860875,
+      "mean_ms": 53.766226,
+      "p50_ms": 52.896291,
+      "p95_ms": 55.393417,
+      "p99_ms": 55.393417
     }
   },
   "limitations": [
@@ -68,8 +68,8 @@
     "End-to-end and per-agent latency come from the Stage 7 runtime evaluator."
   ],
   "memory": {
-    "benchmark_peak_bytes": 228432,
-    "benchmark_peak_kib": 223.078
+    "benchmark_peak_bytes": 228112,
+    "benchmark_peak_kib": 222.766
   },
   "model_calls": 0,
   "network_calls": 0,

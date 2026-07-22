@@ -1,0 +1,164 @@
+{
+  "schema_version": "stage8-session-manifest-v2",
+  "domain": "session_narrative",
+  "version": "session-narrative-v1",
+  "analysis_engine": {
+    "version": "session-narrative-analysis-v2",
+    "implementation": "backend/app/analysis_engines/session/engine.py",
+    "contracts": "backend/app/analysis_engines/session/contracts.py",
+    "calendar": "backend/app/analysis_engines/session/calendar.py",
+    "supported_intervals": [
+      "5m",
+      "15m"
+    ],
+    "supported_data_modes": [
+      "intraday_5m",
+      "intraday_15m"
+    ],
+    "fail_closed_data_modes": [
+      "daily_only",
+      "unavailable"
+    ]
+  },
+  "calendar_boundary": {
+    "timezone": "America/New_York",
+    "holiday_policy": "injected_by_caller",
+    "early_close_policy": "injected_by_caller",
+    "silent_remote_calendar_updates": false,
+    "regular_open": "09:30",
+    "regular_close": "16:00",
+    "opening_phase": "regular_open inclusive through regular_open + 60 minutes exclusive",
+    "morning": "opening_phase end through 12:00 America/New_York, bounded by final_hour start",
+    "midday": "12:00 through 14:00 America/New_York, bounded by final_hour start",
+    "afternoon": "14:00 through final_hour start",
+    "final_hour": "regular_close - 60 minutes through regular_close - 30 minutes",
+    "close": "final 30 minutes before the actual normal or early regular_close",
+    "extended_hours": [
+      "04:00-09:30",
+      "actual regular_close-20:00"
+    ]
+  },
+  "session_segments": [
+    "premarket",
+    "opening_phase",
+    "morning",
+    "midday",
+    "afternoon",
+    "final_hour",
+    "close",
+    "after_hours"
+  ],
+  "analytics": [
+    "gap",
+    "phase_ohlcv_return_range_direction_volatility_close_location_completeness",
+    "range",
+    "close_location",
+    "trend_path",
+    "reversal_test",
+    "source_backed_level_tests",
+    "session_vwap_and_deviation",
+    "volume_pace",
+    "volume_profile",
+    "price_volume_confirmation",
+    "turning_points",
+    "catalyst_timeline_hooks"
+  ],
+  "analysis_states": [
+    "regular_session",
+    "premarket_only",
+    "after_hours_only",
+    "extended_hours_only",
+    "closed_holiday",
+    "closed_weekend",
+    "daily_only",
+    "unavailable"
+  ],
+  "turning_point_policy": {
+    "input": "finalized regular-session closes only",
+    "support_window_bars": 5,
+    "minimum_smaller_adjacent_leg_pct": 0.3,
+    "minimum_candidate_separation_bars": 4,
+    "maximum_records": 6,
+    "endpoints_eligible": false,
+    "predictive_claims": false,
+    "required_lineage": [
+      "supporting_bars",
+      "evidence_ids",
+      "confidence",
+      "limitations"
+    ]
+  },
+  "catalyst_timeline_contract": {
+    "fields": [
+      "timestamp",
+      "published_at",
+      "source_id",
+      "affected_entities",
+      "event_status",
+      "materiality",
+      "reaction_window",
+      "attribution_confidence",
+      "attribution_limitations"
+    ],
+    "reaction_bars_must_close_inside_window": true,
+    "future_published_events_excluded": true,
+    "causality_inferred": false
+  },
+  "shared_stage75_engines": [
+    "freshness-availability-v1",
+    "evidence-validation-v1",
+    "contradiction-preservation-v1",
+    "confidence-adjustment-v1"
+  ],
+  "production_adapter": {
+    "implementation": "backend/app/intelligence/session_narrative/adapter.py",
+    "query_contract": "SessionNarrativeQuery",
+    "result_contract": "ProductionSessionNarrativeResult",
+    "result_composition": [
+      "query",
+      "status",
+      "availability",
+      "provider",
+      "data_mode",
+      "as_of",
+      "latest_daily_session",
+      "narrative",
+      "limitations",
+      "provenance"
+    ],
+    "current_intraday_source": "unavailable",
+    "allowed_results": [
+      "daily_only",
+      "unavailable"
+    ],
+    "daily_to_intraday_resampling": false,
+    "mock_as_live": false
+  },
+  "registered_api_routes": [
+    "GET /intelligence/session/market",
+    "GET /intelligence/session/{symbol}"
+  ],
+  "route_parameters": [
+    "interval=5m|15m",
+    "session_date=YYYY-MM-DD optional",
+    "as_of=timezone-aware datetime optional"
+  ],
+  "stage8_relationship": {
+    "service_role": "Session Narrative is a typed intelligence service beneath existing Stage 7 agents; it is not a duplicate agent.",
+    "market_route_benchmark": "SPY",
+    "symbol_route_scope": "explicit requested symbol",
+    "news_relationship": "Only supplied validated catalyst events are associated; the session engine never fetches headlines.",
+    "production_intraday_support": false,
+    "consumer_surfaces": [
+      "Market Overview",
+      "Copilot explicit session intents"
+    ]
+  },
+  "language_policy": {
+    "catalyst_relationship": "temporal_proximity_only",
+    "causality_claims": false,
+    "institutional_flow_claims": false,
+    "vwap_proxy_disclosure_required": true,
+    "volume_baseline_disclosure_required": true
+  }
+}

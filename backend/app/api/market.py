@@ -88,7 +88,7 @@ from app.services.sectors_summary import build_sectors_summary
 from app.sector_snapshots.service import get_sector_snapshot_service
 from app.theme_snapshots.readers import rotation_payload as theme_rotation_payload, snapshot_payload as theme_snapshot_payload
 from app.theme_snapshots.service import get_theme_snapshot_service
-from app.themes.identifiers import normalize_theme_id
+from app.themes.intelligence import get_theme_intelligence_service
 from app.services.stock_rating import build_stock_ratings
 from app.services.support_resistance import calculate_support_resistance
 from app.services.trendline import analyze_trendline, analyze_watchlist_trendlines
@@ -218,21 +218,69 @@ async def refresh_theme_snapshot() -> dict:
 
 
 @router.get("/market/themes")
-async def get_market_themes() -> dict:
-    return theme_snapshot_payload(get_theme_snapshot_service().latest())
+async def get_market_themes(
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
+) -> dict[str, Any]:
+    return get_theme_intelligence_service().list_themes(offset=offset, limit=limit)
+
+
+@router.get("/market/themes/ranking")
+async def get_theme_ranking(
+    status: str | None = Query(default=None),
+    limit: int = Query(default=100, ge=1, le=100),
+) -> dict[str, Any]:
+    return get_theme_intelligence_service().ranked_themes(status=status, limit=limit)
+
+
+@router.get("/market/themes/taxonomy")
+async def get_theme_taxonomy(include_retired: bool = Query(default=True)) -> dict[str, Any]:
+    return get_theme_intelligence_service().taxonomy(include_retired=include_retired)
+
+
+@router.get("/market/themes/mappings/{symbol}")
+async def get_symbol_theme_mappings(symbol: str) -> dict[str, Any]:
+    return get_theme_intelligence_service().mappings_for_symbol(symbol)
+
+
+@router.get("/market/themes/search/results")
+async def search_canonical_themes(
+    q: str = Query(min_length=1),
+    limit: int = Query(default=20, ge=1, le=50),
+) -> dict[str, Any]:
+    return get_theme_intelligence_service().search(q, limit=limit)
 
 
 @router.get("/market/themes/{theme_id}")
-async def get_theme_detail(theme_id: str) -> dict:
-    snapshot = get_theme_snapshot_service().latest()
-    try:
-        canonical_id = normalize_theme_id(theme_id)
-    except ValueError:
-        canonical_id = None
-    row = next((row for row in snapshot.rows if row.get("theme_id") == canonical_id) if snapshot and canonical_id else None, None)
-    if row is None: return {**theme_snapshot_payload(None), "theme": None, "requested_theme_id": theme_id, "canonical_theme_id": canonical_id}
-    matching_overlap = [item for item in snapshot.overlap_matrix if canonical_id in {item.get("left_theme_id"), item.get("right_theme_id")}]
-    return {"snapshot_id": snapshot.snapshot_id, "market_date": snapshot.market_date, "source_state": snapshot.source_state, "status": snapshot.status, "requested_theme_id": theme_id, "canonical_theme_id": canonical_id, "theme": row, "alerts": [item for item in snapshot.alerts if item.get("theme_id") == canonical_id], "overlap": matching_overlap, "historical_disclosure": "Historical results use the current reviewed constituent basket unless historical membership versions are available."}
+async def get_theme_detail(theme_id: str) -> dict[str, Any]:
+    return get_theme_intelligence_service().current(theme_id)
+
+
+@router.get("/market/themes/{theme_id}/constituents")
+async def get_theme_constituents(
+    theme_id: str,
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
+) -> dict[str, Any]:
+    return get_theme_intelligence_service().constituents(theme_id, offset=offset, limit=limit)
+
+
+@router.get("/market/themes/{theme_id}/history")
+async def get_canonical_theme_history(
+    theme_id: str,
+    days: int = Query(default=90, ge=1, le=260),
+) -> dict[str, Any]:
+    return get_theme_intelligence_service().history(theme_id, days=days)
+
+
+@router.get("/market/themes/{theme_id}/changes")
+async def get_canonical_theme_changes(theme_id: str) -> dict[str, Any]:
+    return get_theme_intelligence_service().changes(theme_id)
+
+
+@router.get("/market/themes/{theme_id}/evidence")
+async def get_canonical_theme_evidence(theme_id: str) -> dict[str, Any]:
+    return get_theme_intelligence_service().evidence(theme_id)
 
 
 @router.get("/market/sectors/{sector_id}")

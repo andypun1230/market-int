@@ -9,6 +9,7 @@ from app.api.analysis import router as analysis_router
 from app.api.ai import router as ai_router
 from app.api.copilot import router as copilot_router
 from app.api.home import router as home_router
+from app.api.intelligence import router as intelligence_router
 from app.api.market import router as market_router
 from app.api.report import router as report_router
 from app.api.system import router as system_router
@@ -119,3 +120,4 @@ app.include_router(ai_router)
 app.include_router(copilot_router)
 app.include_router(system_router)
 app.include_router(test_data_router)
+app.include_router(intelligence_router)

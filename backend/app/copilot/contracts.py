@@ -19,6 +19,8 @@ class CopilotContractModel(BaseModel):
 
 
 class CopilotIntentType(str, Enum):
+    NEWS_QUERY = "NEWS_QUERY"
+    SESSION_NARRATIVE = "SESSION_NARRATIVE"
     MARKET_STATE = "MARKET_STATE"
     MARKET_EXPLANATION = "MARKET_EXPLANATION"
     INDEX_ANALYSIS = "INDEX_ANALYSIS"
@@ -71,6 +73,7 @@ class CopilotEntityType(str, Enum):
     INDEX = "index"
     SECTOR = "sector"
     THEME = "theme"
+    NEWS_EVENT = "news_event"
     REPORT = "report"
     REPORT_SECTION = "report_section"
     APP_FEATURE = "app_feature"
@@ -115,6 +118,8 @@ class CopilotFreshnessState(str, Enum):
 
 
 class CopilotEvidenceCategory(str, Enum):
+    NEWS = "news"
+    SESSION = "session"
     MARKET = "market"
     INDEX = "index"
     BREADTH = "breadth"

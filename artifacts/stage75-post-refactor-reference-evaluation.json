@@ -12055,7 +12055,7 @@
   "failed_count": 0,
   "failures": [],
   "fixture_count": 165,
-  "generated_at": "2026-07-22T08:38:44.892538+00:00",
+  "generated_at": "2026-07-22T10:43:44.837155+00:00",
   "limitations": [
     "Reference mode compares checked-in candidates with their own frozen expectations; it is a non-release-bearing corpus and validator contract check.",
     "Reference-only mode does not execute any production Copilot pipeline boundary."

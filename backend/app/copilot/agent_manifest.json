@@ -48,8 +48,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["market"],
-      "allowedDestinations": ["market_overview", "health"],
+      "allowedEvidenceCategories": ["market", "news", "session"],
+      "allowedDestinations": ["market_overview", "health", "stock_detail", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -63,8 +63,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["market"],
-        "deep_link_targets": ["market_overview", "health"]
+        "evidence_categories": ["market", "news", "session"],
+        "deep_link_targets": ["market_overview", "health", "stock_detail", "sector_detail", "theme_detail"]
       },
       "dependencies": [
         "TrustedCopilotSources.market_snapshot",
@@ -98,8 +98,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["index"],
-      "allowedDestinations": ["indexes"],
+      "allowedEvidenceCategories": ["index", "news", "session"],
+      "allowedDestinations": ["indexes", "stock_detail", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -110,8 +110,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["index"],
-        "deep_link_targets": ["indexes"]
+        "evidence_categories": ["index", "news", "session"],
+        "deep_link_targets": ["indexes", "stock_detail", "sector_detail", "theme_detail"]
       },
       "dependencies": ["TrustedCopilotSources.market_snapshot", "app.snapshots.service.get_market_snapshot_service", "MarketSnapshot.section_payload('indexes')"],
       "evidence_sources": [
@@ -184,8 +184,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["leadership"],
-      "allowedDestinations": ["leadership"],
+      "allowedEvidenceCategories": ["leadership", "news"],
+      "allowedDestinations": ["leadership", "stock_detail", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -196,8 +196,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["leadership"],
-        "deep_link_targets": ["leadership"]
+        "evidence_categories": ["leadership", "news"],
+        "deep_link_targets": ["leadership", "stock_detail", "sector_detail", "theme_detail"]
       },
       "dependencies": ["TrustedCopilotSources.sector_snapshot", "app.sector_snapshots.service.get_sector_snapshot_service"],
       "evidence_sources": [
@@ -227,8 +227,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["sector"],
-      "allowedDestinations": ["sector_detail"],
+      "allowedEvidenceCategories": ["sector", "news"],
+      "allowedDestinations": ["sector_detail", "stock_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -239,8 +239,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["sector"],
-        "deep_link_targets": ["sector_detail"]
+        "evidence_categories": ["sector", "news"],
+        "deep_link_targets": ["sector_detail", "stock_detail", "theme_detail"]
       },
       "dependencies": ["TrustedCopilotSources.sector_snapshot", "app.sector_snapshots.service.get_sector_snapshot_service", "CopilotAgentRegistry._ranked_snapshot_result"],
       "evidence_sources": [
@@ -270,8 +270,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["theme"],
-      "allowedDestinations": ["theme_detail"],
+      "allowedEvidenceCategories": ["theme", "news"],
+      "allowedDestinations": ["theme_detail", "stock_detail", "sector_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -282,8 +282,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["theme"],
-        "deep_link_targets": ["theme_detail"]
+        "evidence_categories": ["theme", "news"],
+        "deep_link_targets": ["theme_detail", "stock_detail", "sector_detail"]
       },
       "dependencies": ["TrustedCopilotSources.theme_snapshot", "app.theme_snapshots.service.get_theme_snapshot_service", "CopilotAgentRegistry._ranked_snapshot_result"],
       "evidence_sources": [
@@ -313,8 +313,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["macro"],
-      "allowedDestinations": ["macro"],
+      "allowedEvidenceCategories": ["macro", "news"],
+      "allowedDestinations": ["macro", "stock_detail", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -325,8 +325,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["macro"],
-        "deep_link_targets": ["macro"]
+        "evidence_categories": ["macro", "news"],
+        "deep_link_targets": ["macro", "stock_detail", "sector_detail", "theme_detail"]
       },
       "dependencies": ["TrustedCopilotSources.latest_report_document", "app.services.report.get_latest_daily_report", "ReportDocument evidence and claim registries", "CopilotAgentRegistry._report_evidence"],
       "evidence_sources": [
@@ -356,8 +356,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["risk"],
-      "allowedDestinations": ["health", "report_scenarios"],
+      "allowedEvidenceCategories": ["risk", "news"],
+      "allowedDestinations": ["health", "report_scenarios", "stock_detail", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -368,8 +368,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["risk"],
-        "deep_link_targets": ["health", "report_scenarios"]
+        "evidence_categories": ["risk", "news"],
+        "deep_link_targets": ["health", "report_scenarios", "stock_detail", "sector_detail", "theme_detail"]
       },
       "dependencies": ["TrustedCopilotSources.latest_report_document", "app.services.report.get_latest_daily_report", "ReportDocument.thesis", "ReportDocument.monitoring_conditions", "CopilotAgentRegistry._report_evidence"],
       "evidence_sources": [
@@ -400,8 +400,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["technical", "signal", "leadership"],
-      "allowedDestinations": ["stock_detail", "stock_technical", "stock_risk"],
+      "allowedEvidenceCategories": ["technical", "signal", "leadership", "news", "session"],
+      "allowedDestinations": ["stock_detail", "stock_technical", "stock_risk", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -412,8 +412,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["technical", "signal", "leadership"],
-        "deep_link_targets": ["stock_detail", "stock_technical", "stock_risk"]
+        "evidence_categories": ["technical", "signal", "leadership", "news", "session"],
+        "deep_link_targets": ["stock_detail", "stock_technical", "stock_risk", "sector_detail", "theme_detail"]
       },
       "dependencies": ["TrustedCopilotSources.stock_snapshot", "app.stock_snapshots.service.get_stock_snapshot_service", "StockAnalysisSnapshot.section_payload", "watchlist membership identity when routed for WATCHLIST_REVIEW"],
       "evidence_sources": [
@@ -444,8 +444,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["watchlist"],
-      "allowedDestinations": ["watchlist"],
+      "allowedEvidenceCategories": ["watchlist", "news"],
+      "allowedDestinations": ["watchlist", "stock_detail", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["cached", "unavailable"], "maximumAgeSource": "not_applicable_identity_only", "staleActionability": "prohibited"},
@@ -456,8 +456,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["watchlist"],
-        "deep_link_targets": ["watchlist"]
+        "evidence_categories": ["watchlist", "news"],
+        "deep_link_targets": ["watchlist", "stock_detail", "sector_detail", "theme_detail"]
       },
       "dependencies": ["CopilotAgentRegistry._watchlist_membership", "app.copilot.sources.extract_saved_symbols", "TrustedCopilotSources.watchlist_membership"],
       "evidence_sources": [
@@ -489,8 +489,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["report"],
-      "allowedDestinations": ["report"],
+      "allowedEvidenceCategories": ["report", "news", "session"],
+      "allowedDestinations": ["report", "stock_detail", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -501,8 +501,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["report"],
-        "deep_link_targets": ["report"]
+        "evidence_categories": ["report", "news", "session"],
+        "deep_link_targets": ["report", "stock_detail", "sector_detail", "theme_detail"]
       },
       "dependencies": ["TrustedCopilotSources.latest_report_document", "app.services.report.get_latest_daily_report", "app.reports.document.ReportDocument", "CopilotAgentRegistry._report_evidence"],
       "evidence_sources": [
@@ -533,8 +533,8 @@
       "contractVersion": "copilot-agent-result-v1",
       "acceptedInputSchema": "app.copilot.agents.AgentExecutionContext",
       "outputSchema": "app.copilot.contracts.AgentResultV1",
-      "allowedEvidenceCategories": ["research"],
-      "allowedDestinations": ["report_research_focus"],
+      "allowedEvidenceCategories": ["research", "news"],
+      "allowedDestinations": ["report_research_focus", "stock_detail", "sector_detail", "theme_detail"],
       "deterministic": true,
       "modelDependent": false,
       "requiredFreshness": {"allowedStates": ["live", "delayed", "cached", "stale", "test", "partial", "mixed", "unavailable"], "maximumAgeSource": "plan.freshness_requirements.maximum_age_seconds", "staleActionability": "prohibited"},
@@ -545,8 +545,8 @@
       "output_schema": {
         "model": "AgentResultV1",
         "schema_version": "copilot-agent-result-v1",
-        "evidence_categories": ["research"],
-        "deep_link_targets": ["report_research_focus"]
+        "evidence_categories": ["research", "news"],
+        "deep_link_targets": ["report_research_focus", "stock_detail", "sector_detail", "theme_detail"]
       },
       "dependencies": ["TrustedCopilotSources.latest_report_document", "ReportDocument.research_focus", "ReportDocument evidence registry", "CopilotAgentRegistry._report_evidence"],
       "evidence_sources": [

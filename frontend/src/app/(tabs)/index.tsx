@@ -21,6 +21,7 @@ import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Theme } from '@/constants/theme';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
+import { WhatMovedMarketCard } from '@/features/context-intelligence/components/ContextIntelligenceCards';
 import {
   buildHomeSummary,
   type HomeIndexSnapshot,
@@ -141,6 +142,7 @@ export default function HomeScreen() {
             updatedLabel={updatedLabel}
           />
           <TodaysMarketCard summary={summary} />
+          <WhatMovedMarketCard enabled={isFocused} maxItems={3} />
           <MarketSnapshotCard
             indexColumns={viewportWidth >= 700 ? 4 : 2}
             narrow={viewportWidth < 360}

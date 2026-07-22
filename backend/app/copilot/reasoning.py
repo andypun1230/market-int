@@ -423,6 +423,8 @@ class CopilotReasoningEngine:
             return CopilotStance.INSUFFICIENT_EVIDENCE if constrained else CopilotStance.MIXED
         if intent == CopilotIntentType.STOCK_ANALYSIS:
             return CopilotStance.INSUFFICIENT_EVIDENCE if constrained else CopilotStance.MONITOR
+        if intent in {CopilotIntentType.NEWS_QUERY, CopilotIntentType.SESSION_NARRATIVE}:
+            return CopilotStance.INSUFFICIENT_EVIDENCE if constrained else CopilotStance.NEUTRAL
         if intent in {CopilotIntentType.MARKET_STATE, CopilotIntentType.MARKET_EXPLANATION}:
             if constrained:
                 return CopilotStance.CAUTIOUS
@@ -465,6 +467,16 @@ class CopilotReasoningEngine:
             return (
                 f"The {posture_label} posture reflects the cited engine observations and contradictions; "
                 "the evidence supports association, not an unvalidated causal claim."
+            )
+        if intent == CopilotIntentType.NEWS_QUERY:
+            return (
+                "The cited event facts and observed market reactions are reported separately; "
+                "their timing supports an observed association, not a causal conclusion."
+            )
+        if intent == CopilotIntentType.SESSION_NARRATIVE:
+            return (
+                "The cited session evidence describes the observed price, volume, and catalyst "
+                "timeline without inferring an unsupported cause."
             )
         if intent == CopilotIntentType.BREADTH_QUERY:
             value = _metric_value(bundle.evidence, "breadth classification")
@@ -538,6 +550,8 @@ class CopilotReasoningEngine:
             )
         if intent == CopilotIntentType.SCENARIO_QUERY:
             return "Scenario analysis is conditional and must be evaluated against confirmation and invalidation evidence."
+        if intent in {CopilotIntentType.NEWS_QUERY, CopilotIntentType.SESSION_NARRATIVE}:
+            return direct_answer
         if stance == CopilotStance.INSUFFICIENT_EVIDENCE:
             return "The evidence is insufficient for a reliable market conclusion."
         return direct_answer

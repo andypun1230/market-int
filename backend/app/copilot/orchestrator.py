@@ -651,6 +651,14 @@ def _confidence_number(label: CopilotConfidenceLabel, freshness: CopilotFreshnes
 
 def _suggested_follow_ups(intent: CopilotIntentType) -> list[str]:
     mapping = {
+        CopilotIntentType.NEWS_QUERY: [
+            "Did price confirm that event?",
+            "Open the related market or security screen.",
+        ],
+        CopilotIntentType.SESSION_NARRATIVE: [
+            "Which session evidence was contradictory?",
+            "What session evidence is missing?",
+        ],
         CopilotIntentType.MARKET_STATE: ["Does breadth confirm that?", "Which sectors are leading?"],
         CopilotIntentType.MARKET_EXPLANATION: ["What would invalidate that thesis?", "Which sectors are leading?"],
         CopilotIntentType.STOCK_ANALYSIS: ["What confirms it?", "What would invalidate it?", "Show me."],

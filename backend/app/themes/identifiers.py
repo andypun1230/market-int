@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-CANONICAL_THEME_IDS = (
+from app.themes.launch import LAUNCH_THEMES
+
+_LEGACY_THEME_IDS = (
     "memory_storage",
     "cybersecurity",
     "ai_infrastructure",
@@ -21,6 +23,18 @@ THEME_ID_ALIASES = {
     "defense_aerospace": "defense_aerospace",
     "defense-aerospace": "defense_aerospace",
 }
+
+# Stage 8.75 expands accepted identifiers without changing the canonical IDs
+# used by immutable pilot snapshots and durable Phase 4.4D storage.
+for _definition in LAUNCH_THEMES:
+    for _alias in _definition.aliases:
+        # The durable identifier normalizer intentionally remains stricter
+        # than user-facing taxonomy search: display names are not storage IDs.
+        if " " not in _alias.strip():
+            THEME_ID_ALIASES.setdefault(_alias.strip().lower(), _definition.id)
+    THEME_ID_ALIASES.setdefault(_definition.id, _definition.id)
+
+CANONICAL_THEME_IDS = tuple(dict.fromkeys((*_LEGACY_THEME_IDS, *(item.id for item in LAUNCH_THEMES))))
 
 
 def normalize_theme_id(value: str) -> str:

@@ -10,6 +10,7 @@ PROMPT_INJECTION_PATTERNS = (
     r"\bprint (?:the )?(?:system|developer|hidden) (?:message|instructions|prompt)\b",
     r"\bdisregard (?:the )?(?:rules|policy|instructions)\b",
     r"\byou are now\b",
+    r"\b(?:reveal|show|print|expose|return)\b.{0,48}\b(?:api keys?|provider credentials?|authentication tokens?|provider tokens?)\b",
 )
 
 DIRECT_RECOMMENDATION_PATTERNS = (

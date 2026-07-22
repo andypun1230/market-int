@@ -45,6 +45,7 @@ import {
   SectorEtfResponse,
   SectorDashboardResponse,
   SectorsSummaryResponse,
+  SymbolThemeMappingsResponse,
   SymbolLiquidityResponse,
   SymbolOptionsIntelligence,
   StockAnalysisAggregate,
@@ -66,6 +67,10 @@ import { cachedRequest } from '@/services/requestCache';
 import { API_URL } from '@/services/apiConfig';
 import { normalizeSectorId } from '@/features/sectors/sectorSnapshot';
 import type { CopilotChatRequest, CopilotChatResponse } from '@/features/copilot/types';
+import type {
+  NewsIntelligenceDto,
+  SessionNarrativeDto,
+} from '@/features/context-intelligence/types';
 
 type RequestOptions = {
   timeoutMs?: number;
@@ -196,6 +201,95 @@ export function getMarketBrief() {
 
 export function getMarketRegime() {
   return request<MarketRegime>('/market/regime');
+}
+
+export function getMarketNewsIntelligence(limit = 5) {
+  const normalizedLimit = normalizeIntelligenceLimit(limit, 5);
+  return cachedRequest(
+    `intelligence-news:market:${normalizedLimit}`,
+    () => request<NewsIntelligenceDto>(`/intelligence/news/market?limit=${normalizedLimit}`),
+    60_000,
+  );
+}
+
+export function getSecurityNewsIntelligence(symbol: string, limit = 5) {
+  const normalizedSymbol = symbol.trim().toUpperCase();
+  const normalizedLimit = normalizeIntelligenceLimit(limit, 5);
+  if (!normalizedSymbol) {
+    return Promise.reject(new Error('A symbol is required for security intelligence.'));
+  }
+  return cachedRequest(
+    `intelligence-news:security:${normalizedSymbol}:${normalizedLimit}`,
+    () => request<NewsIntelligenceDto>(`/intelligence/news/security/${encodeURIComponent(normalizedSymbol)}?limit=${normalizedLimit}`),
+    60_000,
+  );
+}
+
+export function getSectorNewsIntelligence(sectorId: string, limit = 5) {
+  const normalizedId = sectorId.trim().toLowerCase();
+  const normalizedLimit = normalizeIntelligenceLimit(limit, 5);
+  if (!normalizedId) {
+    return Promise.reject(new Error('A sector is required for sector intelligence.'));
+  }
+  return cachedRequest(
+    `intelligence-news:sector:${normalizedId}:${normalizedLimit}`,
+    () => request<NewsIntelligenceDto>(`/intelligence/news/sector/${encodeURIComponent(normalizedId)}?limit=${normalizedLimit}`),
+    60_000,
+  );
+}
+
+export function getThemeNewsIntelligence(themeId: string, limit = 5) {
+  const normalizedId = themeId.trim().toLowerCase();
+  const normalizedLimit = normalizeIntelligenceLimit(limit, 5);
+  if (!normalizedId) {
+    return Promise.reject(new Error('A theme is required for theme intelligence.'));
+  }
+  return cachedRequest(
+    `intelligence-news:theme:${normalizedId}:${normalizedLimit}`,
+    () => request<NewsIntelligenceDto>(`/intelligence/news/theme/${encodeURIComponent(normalizedId)}?limit=${normalizedLimit}`),
+    60_000,
+  );
+}
+
+export function getWatchlistNewsIntelligence(symbols: string[], limit = 10) {
+  const normalizedSymbols = normalizeIntelligenceSymbols(symbols);
+  const normalizedLimit = normalizeIntelligenceLimit(limit, 10);
+  if (!normalizedSymbols.length) {
+    return Promise.reject(new Error('At least one saved symbol is required for watchlist intelligence.'));
+  }
+  if (normalizedSymbols.length > 50) {
+    return Promise.reject(new Error('Watchlist intelligence supports at most 50 saved symbols per batched request.'));
+  }
+  const symbolKey = normalizedSymbols.join(',');
+  if (symbolKey.length > 500) {
+    return Promise.reject(new Error('Saved symbols exceed the 500-character batched request limit.'));
+  }
+  return cachedRequest(
+    `intelligence-news:watchlist:${symbolKey}:${normalizedLimit}`,
+    () => request<NewsIntelligenceDto>(`/intelligence/news/watchlist?symbols=${encodeURIComponent(symbolKey)}&limit=${normalizedLimit}`),
+    60_000,
+  );
+}
+
+export function getMarketSessionNarrative(interval: '5m' | '15m' = '5m') {
+  return cachedRequest(
+    `intelligence-session:market:${interval}`,
+    () => request<SessionNarrativeDto>(`/intelligence/session/market?interval=${interval}`),
+    30_000,
+  );
+}
+
+export function normalizeIntelligenceSymbols(symbols: string[]): string[] {
+  return [...new Set(
+    symbols
+      .map((symbol) => symbol.trim().toUpperCase())
+      .filter(Boolean),
+  )].sort();
+}
+
+function normalizeIntelligenceLimit(limit: number, fallback: number): number {
+  if (!Number.isFinite(limit)) return fallback;
+  return Math.max(1, Math.min(100, Math.floor(limit)));
 }
 
 export function getMarketIndexes() {
@@ -477,9 +571,18 @@ export function getDailyReportHistory() {
 
 export function getThemeSnapshot() {
   return cachedRequest(
-    'theme-snapshot:latest:v1',
-    () => request<ThemeSnapshotResponse>('/market/themes/snapshot/latest'),
+    'theme-intelligence:directory:v2',
+    () => request<ThemeSnapshotResponse>('/market/themes'),
     60_000,
+  );
+}
+
+export function getSymbolThemeMappings(symbol: string) {
+  const normalizedSymbol = symbol.trim().toUpperCase();
+  return cachedRequest(
+    `theme-intelligence:mappings:${normalizedSymbol}:v1`,
+    () => request<SymbolThemeMappingsResponse>(`/market/themes/mappings/${encodeURIComponent(normalizedSymbol)}`),
+    300_000,
   );
 }
 

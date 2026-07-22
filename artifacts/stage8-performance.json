@@ -1,0 +1,147 @@
+{
+  "copilot_full_pipeline": {
+    "evidence_count": 190,
+    "latency": {
+      "iterations": 250,
+      "max_ms": 61.272125,
+      "mean_ms": 39.115949,
+      "p50_ms": 38.08775,
+      "p95_ms": 39.749542,
+      "p99_ms": 60.652542
+    },
+    "model_calls": 0,
+    "response_status": "complete",
+    "validation_status": "passed"
+  },
+  "copilot_routing": {
+    "evidence_categories": [
+      "news"
+    ],
+    "intent": "NEWS_QUERY",
+    "latency": {
+      "iterations": 250,
+      "max_ms": 0.051166,
+      "mean_ms": 0.045796,
+      "p50_ms": 0.045583,
+      "p95_ms": 0.047542,
+      "p99_ms": 0.048458
+    },
+    "required_agents": [
+      "stock"
+    ],
+    "sub_intent": "security_news"
+  },
+  "endpoints": {
+    "news_security": {
+      "latency": {
+        "iterations": 250,
+        "max_ms": 1.444583,
+        "mean_ms": 1.238734,
+        "p50_ms": 1.22725,
+        "p95_ms": 1.33025,
+        "p99_ms": 1.403667
+      },
+      "path": "/intelligence/news/security/NVDA",
+      "service_status": "unavailable",
+      "status_code": 200
+    },
+    "session_security": {
+      "latency": {
+        "iterations": 250,
+        "max_ms": 18.532458,
+        "mean_ms": 16.194676,
+        "p50_ms": 16.091583,
+        "p95_ms": 16.721083,
+        "p99_ms": 17.401708
+      },
+      "path": "/intelligence/session/NVDA",
+      "service_status": "daily_only",
+      "status_code": 200
+    }
+  },
+  "external_call_audit": {
+    "model_gateway_calls_intercepted": 0,
+    "network_connect_intercepted": 0,
+    "policy": "all attempted external calls fail the benchmark"
+  },
+  "generated_at": "2026-07-22T10:44:52.021612+00:00",
+  "hermetic": true,
+  "limitations": [
+    "Measurements exercise deterministic in-process services with synthetic metadata and recorded bars.",
+    "No live news, intraday market-data, network, or model provider is invoked.",
+    "Host load can affect wall-clock percentiles; thresholds are release guards, not service-level objectives."
+  ],
+  "model_calls": 0,
+  "network_calls": 0,
+  "news_pipeline": {
+    "cluster_count": 10,
+    "component_latency_ms": {
+      "clustering": 1.981,
+      "full_service": 11.995,
+      "mapping": 2.416,
+      "materiality": 0.33500000000000013,
+      "materiality_and_reaction_total": 3.605,
+      "normalization": 3.231,
+      "provider_fetch": 0.039,
+      "reaction_analysis": 0.42600000000000016
+    },
+    "duplicate_reduction_ratio": 0.5,
+    "freshness": "test",
+    "latency": {
+      "iterations": 250,
+      "max_ms": 38.24075,
+      "mean_ms": 11.11934,
+      "p50_ms": 10.492709,
+      "p95_ms": 12.231792,
+      "p99_ms": 20.490167
+    },
+    "mapped_canonical_event_ratio": 1.0,
+    "mapping_evidence_lineage_ratio": 1.0,
+    "materiality_contribution_count": 80,
+    "normalized_event_count": 20,
+    "provider_event_count": 20,
+    "provider_mode": "test",
+    "reaction_evidence_count": 10,
+    "returned_event_count": 10
+  },
+  "schema_version": "stage8-context-intelligence-performance-v1",
+  "session_pipeline": {
+    "evidence_count": 7,
+    "freshness": "test",
+    "input_bar_count": 78,
+    "latency": {
+      "iterations": 250,
+      "max_ms": 2.927209,
+      "mean_ms": 2.83909,
+      "p50_ms": 2.835708,
+      "p95_ms": 2.867833,
+      "p99_ms": 2.890458
+    },
+    "regular_session_coverage": 1.0,
+    "status": "partial"
+  },
+  "status": "PASS",
+  "threshold_results": {
+    "canonical_events_nonzero": true,
+    "copilot_full_pipeline_p95_under_500ms": true,
+    "copilot_routing_p95_under_50ms": true,
+    "duplicate_reduction_at_least_40_percent": true,
+    "endpoints_return_structured_200": true,
+    "mapped_canonical_events_complete": true,
+    "mapping_evidence_lineage_complete": true,
+    "materiality_contributions_complete": true,
+    "news_endpoint_p95_under_500ms": true,
+    "news_pipeline_p95_under_250ms": true,
+    "reaction_evidence_lineage_complete": true,
+    "session_endpoint_p95_under_500ms": true,
+    "session_pipeline_p95_under_250ms": true,
+    "session_regular_coverage_complete": true
+  },
+  "thresholds": {
+    "copilot_full_pipeline_p95_ms": 500.0,
+    "copilot_routing_p95_ms": 50.0,
+    "endpoint_p95_ms": 500.0,
+    "news_pipeline_p95_ms": 250.0,
+    "session_pipeline_p95_ms": 250.0
+  }
+}

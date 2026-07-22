@@ -1,0 +1,52 @@
+{
+  "service": "news_intelligence",
+  "serviceVersion": "news-intelligence-v1",
+  "defaultProductionMode": "unavailable",
+  "liveProviderConfigured": false,
+  "pipeline": [
+    "provider_metadata_fetch",
+    "normalization_and_security_quarantine",
+    "configured_source_credibility",
+    "deterministic_taxonomy",
+    "canonical_entity_mapping",
+    "event_deduplication_and_clustering",
+    "daily_market_reaction",
+    "transparent_materiality",
+    "evidence_validation",
+    "contradiction_preservation",
+    "confidence_adjustment"
+  ],
+  "sharedStage75Engines": {
+    "freshness": "freshness-availability-v1",
+    "evidenceValidation": "evidence-validation-v1",
+    "contradictionPreservation": "contradiction-preservation-v1",
+    "confidenceAdjustment": "confidence-adjustment-v1"
+  },
+  "providers": {
+    "unavailable": "production default",
+    "hermetic": "explicit test-only",
+    "cached": "explicit metadata-cache-only"
+  },
+  "persistence": {
+    "schema": "news-metadata-v1",
+    "metadataOnly": true,
+    "articleBodiesPersisted": false,
+    "rawArticleContentPersisted": false,
+    "immutableEventIdentity": true
+  },
+    "marketReaction": {
+    "supportedWindows": ["close_to_close", "next_session", "multi_day"],
+    "intradaySupported": false,
+        "causalAttributionSupported": false,
+        "traceableSourceRequired": true,
+        "missingBenchmarkPolicy": "use explicitly labelled absolute return; never substitute zero",
+        "missingPricePolicy": "insufficient_data with no price evidence"
+    },
+  "copilot": {
+    "registeredAgentsAdded": 0,
+    "existingAgentRegistryCountPreserved": 15,
+    "providerFetchFromCopilotPath": false,
+    "cachedReadMethod": "NewsIntelligenceService.query_cached"
+  },
+  "sourceRegistry": "source_registry.json"
+}

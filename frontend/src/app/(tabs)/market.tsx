@@ -13,6 +13,10 @@ import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import {
+  MarketSessionContextCard,
+  WhatMovedMarketCard,
+} from '@/features/context-intelligence/components/ContextIntelligenceCards';
+import {
   buildBreadthDashboard,
   formatBreadthRatio,
   type AdvanceDeclineViewModel,
@@ -241,6 +245,7 @@ export default function MarketScreen() {
               indexes={indexes}
               institutionalActivity={institutionalActivity}
               institutionalIntelligence={institutionalIntelligence ?? decisionDashboard?.institutional_intelligence ?? null}
+              intelligenceEnabled={isFocused}
               loadDetails={loadDetails}
               marketHealth={marketHealth}
               regime={regime}
@@ -329,6 +334,7 @@ function MarketSectionContent({
   indexes,
   institutionalActivity,
   institutionalIntelligence,
+  intelligenceEnabled,
   loadDetails,
   marketHealth,
   regime,
@@ -346,6 +352,7 @@ function MarketSectionContent({
   indexes: IndexSnapshot[];
   institutionalActivity: InstitutionalActivityResponse | null;
   institutionalIntelligence: DecisionDashboardResponse['institutional_intelligence'] | null;
+  intelligenceEnabled: boolean;
   loadDetails: (group: 'structure' | 'decision' | 'institutional') => void;
   marketHealth: MarketHealthResponse | null;
   regime: MarketRegime | null;
@@ -398,6 +405,7 @@ function MarketSectionContent({
           indexes={indexes}
           institutionalActivity={institutionalActivity}
           institutionalIntelligence={institutionalIntelligence ?? decisionDashboard?.institutional_intelligence ?? null}
+          intelligenceEnabled={intelligenceEnabled}
           marketHealth={marketHealth}
           regime={regime}
         />
@@ -415,6 +423,7 @@ function OverviewTab({
   indexes,
   institutionalActivity,
   institutionalIntelligence,
+  intelligenceEnabled,
   marketHealth,
   regime,
 }: {
@@ -427,6 +436,7 @@ function OverviewTab({
   indexes: IndexSnapshot[];
   institutionalActivity: InstitutionalActivityResponse | null;
   institutionalIntelligence: DecisionDashboardResponse['institutional_intelligence'] | null;
+  intelligenceEnabled: boolean;
   marketHealth: MarketHealthResponse | null;
   regime: MarketRegime | null;
 }) {
@@ -512,6 +522,8 @@ function OverviewTab({
   return (
     <View style={styles.sectionStack}>
       <MarketRegimeHero core={core} marketHealth={marketHealth} overview={overview} regime={regime} />
+      <MarketSessionContextCard enabled={intelligenceEnabled} />
+      <WhatMovedMarketCard enabled={intelligenceEnabled} maxItems={3} />
       <MarketSnapshotGrid overview={overview} />
       <SignalAlignmentCard overview={overview} />
       <MarketInsightPanel aiSummary={aiSummary} overview={overview} />

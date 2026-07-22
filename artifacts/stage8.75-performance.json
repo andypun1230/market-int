@@ -1,0 +1,75 @@
+{
+  "benchmark_type": "hermetic_local_fixture_and_repository_benchmark",
+  "benchmarks": {
+    "api_symbol_mapping": {
+      "iterations": 120,
+      "maximum_ms": 1.1105,
+      "minimum_ms": 0.7167,
+      "p50_ms": 0.7605,
+      "p95_ms": 0.8882
+    },
+    "api_theme_detail": {
+      "iterations": 120,
+      "maximum_ms": 26.9843,
+      "minimum_ms": 7.3116,
+      "p50_ms": 7.6261,
+      "p95_ms": 7.9895
+    },
+    "api_theme_directory": {
+      "iterations": 120,
+      "maximum_ms": 37.2728,
+      "minimum_ms": 14.3175,
+      "p50_ms": 14.6011,
+      "p95_ms": 15.0725
+    },
+    "copilot_theme_retrieval": {
+      "iterations": 120,
+      "maximum_ms": 13.715,
+      "minimum_ms": 12.3545,
+      "p50_ms": 12.441,
+      "p95_ms": 12.8265
+    },
+    "full_theme_ranking": {
+      "iterations": 120,
+      "maximum_ms": 31.3455,
+      "minimum_ms": 12.067,
+      "p50_ms": 12.2164,
+      "p95_ms": 12.7298
+    },
+    "report_theme_candidate_retrieval": {
+      "iterations": 120,
+      "maximum_ms": 1.242,
+      "minimum_ms": 0.8405,
+      "p50_ms": 0.8569,
+      "p95_ms": 0.9142
+    },
+    "single_theme_detail": {
+      "iterations": 120,
+      "maximum_ms": 6.6325,
+      "minimum_ms": 6.1967,
+      "p50_ms": 6.298,
+      "p95_ms": 6.4577
+    },
+    "symbol_to_theme_lookup": {
+      "iterations": 120,
+      "maximum_ms": 0.0237,
+      "minimum_ms": 0.0063,
+      "p50_ms": 0.0065,
+      "p95_ms": 0.0067
+    },
+    "taxonomy_retrieval": {
+      "iterations": 120,
+      "maximum_ms": 0.7739,
+      "minimum_ms": 0.2963,
+      "p50_ms": 0.3131,
+      "p95_ms": 0.4014
+    }
+  },
+  "hardware": "Local Codex workspace host; results are not production SLOs.",
+  "model_calls": 0,
+  "network_calls": 0,
+  "network_guard": "AF_INET and AF_INET6 socket creation blocked for the entire measured region; local event-loop socket pairs remain enabled",
+  "production_latency_claim": false,
+  "stage": "8.75",
+  "taxonomy_version": "2026.07.1"
+}

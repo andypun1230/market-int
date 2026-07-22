@@ -20,6 +20,7 @@ from app.copilot.contracts import (
     CopilotFreshnessState,
     CopilotFreshnessV1,
     CopilotIntentV1,
+    CopilotIntentType,
     CopilotInterpretationClass,
     CopilotLevelV1,
     CopilotPlanV1,
@@ -86,7 +87,13 @@ class CopilotAgentRegistry:
         started = perf_counter()
         handler = self._handlers[name]
         try:
-            result = handler(context)
+            intent = CopilotIntentType(context.intent.intent)
+            if intent == CopilotIntentType.NEWS_QUERY:
+                result = self._news_intelligence(name, context)
+            elif intent == CopilotIntentType.SESSION_NARRATIVE:
+                result = self._session_narrative(name, context)
+            else:
+                result = handler(context)
         except Exception as exc:
             result = _unavailable_result(
                 name,
@@ -112,6 +119,551 @@ class CopilotAgentRegistry:
                 failure_category="agent_contract",
             ).model_copy(update={"duration_ms": result.duration_ms})
         return result
+
+    def _news_intelligence(
+        self,
+        agent: CopilotAgentName,
+        context: AgentExecutionContext,
+    ) -> AgentResultV1:
+        from app.intelligence.news import (
+            EvidenceKind,
+            NewsEventStatus,
+            NewsFreshnessState,
+            NewsProviderMode,
+            NewsServiceStatus,
+            ReactionClassification,
+            SourceQuality,
+        )
+
+        watchlist_symbols: tuple[str, ...] = ()
+        if agent == CopilotAgentName.WATCHLIST:
+            membership = self._watchlist_membership(context)
+            watchlist_symbols = tuple(membership.symbols or ())
+        result = self.sources.news_intelligence(
+            context.intent,
+            watchlist_symbols=watchlist_symbols,
+        )
+        if result.status in {NewsServiceStatus.UNAVAILABLE, NewsServiceStatus.FAILED}:
+            reason = next(
+                iter((*result.limitations, *result.errors)),
+                "No validated cached News Intelligence result is available.",
+            )
+            return _unavailable_result(agent, warning=reason)
+
+        freshness = _freshness(
+            source_state=result.freshness.state.value,
+            status=result.status.value,
+            generated_at=(result.freshness.generated_at.isoformat() if result.freshness.generated_at else result.as_of.isoformat()),
+            observed_at=(result.freshness.observed_at.isoformat() if result.freshness.observed_at else None),
+            market_date=(result.freshness.market_date.isoformat() if result.freshness.market_date else None),
+            expires_at=(result.freshness.expires_at.isoformat() if result.freshness.expires_at else None),
+            completeness=result.freshness.completeness,
+            provider=result.provider.provider,
+            warnings=(*result.limitations, *result.errors, *result.freshness.warnings),
+            test=result.provider.mode == NewsProviderMode.HERMETIC,
+            stale_after_seconds=context.stale_after_seconds,
+        )
+        evidence: list[CopilotEvidenceV1] = []
+        sources: list[CopilotSourceReferenceV1] = []
+        observations: list[str] = []
+        conclusions: list[str] = []
+        contradictions = [item.statement for item in result.contradictions if item.preserved]
+        event_ids: list[str] = []
+        cluster_ids: list[str] = []
+        mapping_ids: list[str] = []
+        reaction_windows: list[str] = []
+        missing_data: list[str] = []
+        news_evidence_by_id = {item.evidence_id: item for item in result.evidence}
+        service_confidence = CopilotConfidenceLabel(result.confidence.value)
+        interpretation_map = {
+            "observed_fact": CopilotInterpretationClass.OBSERVED_FACT,
+            "engine_conclusion": CopilotInterpretationClass.ENGINE_CONCLUSION,
+            "missing_evidence": CopilotInterpretationClass.MISSING_EVIDENCE,
+            "contradiction": CopilotInterpretationClass.CONTRADICTION,
+        }
+        cluster_members = {
+            cluster.cluster_id: set(cluster.member_event_ids)
+            for cluster in result.clusters
+        }
+        for event in result.events:
+            event_ids.append(event.event_id)
+            cluster_ids.append(event.cluster_id)
+            mapping_ids.extend(mapping.evidence_id for mapping in event.affected_entities)
+            event_domain_evidence = tuple(
+                item
+                for item in result.evidence
+                if item.event_id
+                in cluster_members.get(event.cluster_id, {event.event_id})
+            )
+            source_evidence = next(
+                (
+                    item
+                    for item in event_domain_evidence
+                    if item.event_id == event.event_id
+                    if item.kind in {EvidenceKind.CONFIRMED_FACT, EvidenceKind.SOURCE_METADATA}
+                ),
+                next(
+                    (
+                        item
+                        for item in event_domain_evidence
+                        if item.kind
+                        in {EvidenceKind.CONFIRMED_FACT, EvidenceKind.SOURCE_METADATA}
+                    ),
+                    None,
+                ),
+            )
+            source = (
+                _domain_source(
+                    "news_event_evidence",
+                    source_evidence.evidence_id,
+                    source_evidence.source_id,
+                    source_evidence.observed_at.isoformat()
+                    if source_evidence.observed_at
+                    else event.provider_metadata.fetched_at.isoformat(),
+                    source_evidence.market_date.isoformat()
+                    if source_evidence.market_date
+                    else event.market_date.isoformat(),
+                )
+                if source_evidence is not None
+                else _source(
+                    "news_intelligence",
+                    event.event_id,
+                    event.source_identifier,
+                    event.provider_metadata.fetched_at.isoformat(),
+                    event.market_date.isoformat(),
+                )
+            )
+            sources.append(source)
+            event_freshness = _freshness(
+                source_state=event.freshness.state.value,
+                status=result.status.value,
+                generated_at=(event.freshness.generated_at.isoformat() if event.freshness.generated_at else event.provider_metadata.fetched_at.isoformat()),
+                observed_at=event.published_at.isoformat(),
+                market_date=event.market_date.isoformat(),
+                completeness=event.freshness.completeness,
+                provider=event.provider_metadata.provider,
+                warnings=event.freshness.warnings,
+                test=event.provider_metadata.provider_mode == NewsProviderMode.HERMETIC,
+                stale_after_seconds=context.stale_after_seconds,
+            )
+            entity = next(
+                (
+                    mapping.symbol or mapping.display_name
+                    for mapping in event.affected_entities
+                    if mapping.symbol or mapping.display_name
+                ),
+                "US market",
+            )
+            confidence = (
+                CopilotConfidenceLabel.LIMITED
+                if event.source_quality in {SourceQuality.UNVERIFIED, SourceQuality.UNAVAILABLE}
+                or event.freshness.state in {
+                    NewsFreshnessState.STALE,
+                    NewsFreshnessState.TEST,
+                    NewsFreshnessState.PARTIAL,
+                    NewsFreshnessState.MIXED,
+                    NewsFreshnessState.UNAVAILABLE,
+                }
+                else service_confidence
+            )
+            evidence.extend(
+                (
+                    _evidence(
+                        CopilotEvidenceCategory.NEWS,
+                        entity,
+                        "sourced material event",
+                        event.canonical_headline,
+                        source,
+                        event_freshness,
+                        current_state=event.event_status.value,
+                        timeframe=event.published_at.isoformat(),
+                        interpretation=CopilotInterpretationClass.OBSERVED_FACT,
+                        confidence=confidence,
+                    ),
+                    _evidence(
+                        CopilotEvidenceCategory.NEWS,
+                        entity,
+                        "source quality",
+                        event.source_quality.value,
+                        source,
+                        event_freshness,
+                        interpretation=CopilotInterpretationClass.OBSERVED_FACT,
+                        confidence=confidence,
+                    ),
+                )
+            )
+            observations.append(
+                f"Sourced event ({event.event_status.value}, {event.source_quality.value}): {event.canonical_headline}"
+            )
+            mapping_by_evidence_id = {
+                mapping.evidence_id: mapping for mapping in event.affected_entities
+            }
+            for item in event_domain_evidence:
+                if item.kind is EvidenceKind.PRICE_REACTION:
+                    continue
+                item_source = _domain_source(
+                    f"news_{item.kind.value}",
+                    item.evidence_id,
+                    item.source_id,
+                    item.observed_at.isoformat()
+                    if item.observed_at
+                    else event.provider_metadata.fetched_at.isoformat(),
+                    item.market_date.isoformat()
+                    if item.market_date
+                    else event.market_date.isoformat(),
+                )
+                sources.append(item_source)
+                mapping = mapping_by_evidence_id.get(item.evidence_id)
+                item_entity = (
+                    mapping.symbol or mapping.display_name
+                    if mapping is not None
+                    else next(iter(item.entity_ids), entity)
+                )
+                item_interpretation = interpretation_map.get(
+                    item.interpretation_class.value,
+                    CopilotInterpretationClass.MISSING_EVIDENCE,
+                )
+                if item_interpretation is CopilotInterpretationClass.MISSING_EVIDENCE:
+                    missing_data.append(item.statement)
+                evidence.append(
+                    _evidence(
+                        CopilotEvidenceCategory.NEWS,
+                        item_entity,
+                        {
+                            EvidenceKind.CONFIRMED_FACT: "confirmed event fact",
+                            EvidenceKind.SOURCE_METADATA: "source metadata",
+                            EvidenceKind.ENTITY_MAPPING: "validated entity mapping",
+                        }.get(item.kind, item.kind.value.replace("_", " ")),
+                        item.statement,
+                        item_source,
+                        event_freshness,
+                        timeframe=(
+                            item.observed_at.isoformat()
+                            if item.observed_at
+                            else event.published_at.isoformat()
+                        ),
+                        interpretation=item_interpretation,
+                        confidence=(
+                            CopilotConfidenceLabel.LIMITED
+                            if item.source_quality
+                            in {SourceQuality.UNVERIFIED, SourceQuality.UNAVAILABLE}
+                            else confidence
+                        ),
+                    )
+                )
+            if event.materiality is not None:
+                materiality_source = _source(
+                    "news_materiality_engine",
+                    f"{event.event_id}:{event.materiality.methodology_version}",
+                    event.materiality.methodology_version,
+                    result.as_of.isoformat(),
+                    event.market_date.isoformat(),
+                )
+                sources.append(materiality_source)
+                evidence.append(
+                    _evidence(
+                        CopilotEvidenceCategory.NEWS,
+                        entity,
+                        "market materiality",
+                        event.materiality.market_materiality,
+                        materiality_source,
+                        event_freshness,
+                        unit="score / 100",
+                        interpretation=CopilotInterpretationClass.ENGINE_CONCLUSION,
+                        confidence=confidence,
+                    )
+                )
+            if event.reaction is not None:
+                reaction_windows.extend(window.value for window in event.reaction.supported_windows)
+                reaction_evidence = tuple(
+                    news_evidence_by_id[evidence_id]
+                    for evidence_id in event.reaction.evidence_ids
+                    if evidence_id in news_evidence_by_id
+                    and news_evidence_by_id[evidence_id].kind is EvidenceKind.PRICE_REACTION
+                )
+                unresolved_reaction_ids = tuple(
+                    evidence_id
+                    for evidence_id in event.reaction.evidence_ids
+                    if evidence_id not in {item.evidence_id for item in reaction_evidence}
+                )
+                if (
+                    event.reaction.classification is ReactionClassification.INSUFFICIENT_DATA
+                    or not event.reaction.supported_windows
+                    or not reaction_evidence
+                    or unresolved_reaction_ids
+                ):
+                    missing_data.extend(
+                        f"{event.event_id}: {limitation}"
+                        for limitation in (
+                            event.reaction.limitations
+                            or ("validated market-reaction evidence is unavailable",)
+                        )
+                    )
+                    missing_data.extend(
+                        f"{event.event_id}: reaction evidence {evidence_id} is unavailable"
+                        for evidence_id in unresolved_reaction_ids
+                    )
+                    continue
+                for item in reaction_evidence:
+                    reaction_source = _domain_source(
+                        "news_market_reaction",
+                        item.evidence_id,
+                        item.source_id,
+                        item.observed_at.isoformat() if item.observed_at else result.as_of.isoformat(),
+                        item.market_date.isoformat() if item.market_date else None,
+                    )
+                    sources.append(reaction_source)
+                    evidence.append(
+                        _evidence(
+                            CopilotEvidenceCategory.NEWS,
+                            entity,
+                            "observed price reaction evidence",
+                            item.statement,
+                            reaction_source,
+                            event_freshness,
+                            timeframe=",".join(
+                                window.value for window in event.reaction.supported_windows
+                            ),
+                            interpretation=CopilotInterpretationClass.OBSERVED_FACT,
+                            confidence=confidence,
+                        )
+                    )
+                interpretation = (
+                    CopilotInterpretationClass.CONTRADICTION
+                    if event.reaction.classification.value.startswith("rejects_")
+                    else CopilotInterpretationClass.ENGINE_CONCLUSION
+                )
+                reaction_engine_source = _source(
+                    "news_reaction_engine",
+                    f"{event.event_id}:{event.reaction.methodology_version}",
+                    event.reaction.methodology_version,
+                    result.as_of.isoformat(),
+                    event.market_date.isoformat(),
+                )
+                sources.append(reaction_engine_source)
+                evidence.append(
+                    _evidence(
+                        CopilotEvidenceCategory.NEWS,
+                        entity,
+                        "market reaction classification",
+                        event.reaction.classification.value,
+                        reaction_engine_source,
+                        event_freshness,
+                        timeframe=",".join(
+                            window.value for window in event.reaction.supported_windows
+                        ),
+                        interpretation=interpretation,
+                        confidence=confidence,
+                        contradicts_claim_ids=(
+                            [f"news-event:{event.event_id}"]
+                            if interpretation == CopilotInterpretationClass.CONTRADICTION
+                            else []
+                        ),
+                    )
+                )
+                conclusions.append(event.reaction.summary)
+            if event.event_status in {
+                NewsEventStatus.DISPUTED,
+                NewsEventStatus.RETRACTED,
+                NewsEventStatus.UNVERIFIED,
+            }:
+                contradictions.append(
+                    f"{event.event_id} remains {event.event_status.value}; it is not confirmed evidence."
+                )
+        if not evidence:
+            return _unavailable_result(
+                agent,
+                warning="No canonical cached event met the News Intelligence query.",
+            )
+        return _result(
+            agent,
+            freshness,
+            evidence=evidence,
+            observations=observations,
+            conclusions=conclusions,
+            contradictions=contradictions,
+            metrics={
+                "news_service_version": result.service_version,
+                "provider_mode": result.provider.mode.value,
+                "event_ids": list(dict.fromkeys(event_ids)),
+                "cluster_ids": list(dict.fromkeys(cluster_ids)),
+                "mapping_evidence_ids": list(dict.fromkeys(mapping_ids)),
+                "news_evidence_ids": [item.evidence_id for item in result.evidence],
+                "reaction_windows": list(dict.fromkeys(reaction_windows)),
+                "cache_hit": result.provider.cache_hit,
+                "duplicate_reduction_ratio": result.metrics.duplicate_reduction_ratio,
+                "news_confidence": result.confidence.value,
+                "confidence_contributions": list(result.confidence_contributions),
+                "news_deep_links": [
+                    item.model_dump(mode="json") for item in result.deep_links
+                ],
+            },
+            sources=_dedupe_sources(sources),
+            destinations=_news_destinations(agent, result.deep_links),
+            warnings=(*result.limitations, *result.errors),
+            missing=missing_data,
+            force_partial=(
+                service_confidence is CopilotConfidenceLabel.LIMITED
+                or bool(missing_data)
+                or result.status is NewsServiceStatus.PARTIAL
+            ),
+        )
+
+    def _session_narrative(
+        self,
+        agent: CopilotAgentName,
+        context: AgentExecutionContext,
+    ) -> AgentResultV1:
+        value = self.sources.session_narrative(context.intent)
+        narrative = getattr(value, "narrative", value)
+        availability = getattr(getattr(narrative, "availability", None), "value", getattr(narrative, "availability", None))
+        claims = tuple(getattr(narrative, "claims", ()) or ())
+        if availability not in {"available", "partial"} or not claims:
+            return _unavailable_result(
+                agent,
+                warning=(
+                    "Eligible intraday market bars are unavailable; daily observations "
+                    "cannot support session-phase narration."
+                ),
+            )
+
+        generated_at = getattr(value, "as_of", None) or datetime.now(timezone.utc)
+        provider = getattr(value, "provider", None) or "session_narrative"
+        session_date = getattr(narrative, "session_date", None)
+        freshness_value = getattr(getattr(narrative, "freshness", None), "value", getattr(narrative, "freshness", "partial"))
+        freshness = _freshness(
+            source_state=freshness_value,
+            status="partial" if availability == "partial" else "complete",
+            generated_at=generated_at.isoformat(),
+            market_date=session_date.isoformat() if session_date else None,
+            completeness=float(getattr(narrative, "coverage", 0) or 0),
+            provider=provider,
+            warnings=getattr(narrative, "caveats", ()),
+            test=freshness_value == "test",
+            stale_after_seconds=context.stale_after_seconds,
+        )
+        confidence_value = getattr(
+            getattr(narrative, "confidence", None),
+            "value",
+            getattr(narrative, "confidence", "limited"),
+        )
+        narrative_confidence = (
+            CopilotConfidenceLabel(confidence_value)
+            if confidence_value in {item.value for item in CopilotConfidenceLabel}
+            else CopilotConfidenceLabel.LIMITED
+        )
+        domain_evidence = {
+            item.evidence_id: item for item in getattr(narrative, "evidence", ())
+        }
+        evidence: list[CopilotEvidenceV1] = []
+        sources: list[CopilotSourceReferenceV1] = []
+        missing_data: list[str] = []
+        interpretation_map = {
+            "observed_fact": CopilotInterpretationClass.OBSERVED_FACT,
+            "engine_conclusion": CopilotInterpretationClass.ENGINE_CONCLUSION,
+            "missing_evidence": CopilotInterpretationClass.MISSING_EVIDENCE,
+            "contradiction": CopilotInterpretationClass.CONTRADICTION,
+        }
+        claim_ids_by_evidence: dict[str, list[str]] = {}
+        for claim in claims:
+            for evidence_id in getattr(claim, "evidence_ids", ()):
+                claim_ids_by_evidence.setdefault(evidence_id, []).append(claim.claim_id)
+                if evidence_id not in domain_evidence:
+                    missing_data.append(
+                        f"Session claim {claim.claim_id} is missing evidence {evidence_id}."
+                    )
+        for evidence_id, item in domain_evidence.items():
+            item_source = _domain_source(
+                "session_narrative_evidence",
+                item.evidence_id,
+                item.source_id,
+                generated_at.isoformat(),
+                session_date.isoformat() if session_date else None,
+            )
+            sources.append(item_source)
+            interpretation_value = getattr(
+                getattr(item, "interpretation", None),
+                "value",
+                getattr(item, "interpretation", "missing_evidence"),
+            )
+            interpretation = interpretation_map.get(
+                interpretation_value,
+                CopilotInterpretationClass.MISSING_EVIDENCE,
+            )
+            if interpretation is CopilotInterpretationClass.MISSING_EVIDENCE:
+                missing_data.append(item.statement)
+            contradicts_claim_ids = list(
+                dict.fromkeys(
+                    claim_id
+                    for contradicted_evidence_id in getattr(
+                        item, "contradicts_evidence_ids", ()
+                    )
+                    for claim_id in claim_ids_by_evidence.get(
+                        contradicted_evidence_id, ()
+                    )
+                )
+            )
+            evidence.append(
+                _evidence(
+                    CopilotEvidenceCategory.SESSION,
+                    item.entity,
+                    item.metric,
+                    item.value,
+                    item_source,
+                    freshness,
+                    unit=item.unit,
+                    timeframe=item.timeframe,
+                    interpretation=interpretation,
+                    confidence=narrative_confidence,
+                    supports_claim_ids=list(
+                        dict.fromkeys(claim_ids_by_evidence.get(evidence_id, ()))
+                    ),
+                    contradicts_claim_ids=contradicts_claim_ids,
+                )
+            )
+        if not evidence:
+            return _unavailable_result(
+                agent,
+                warning=(
+                    missing_data[0]
+                    if missing_data
+                    else "Session claims have no validated evidence lineage."
+                ),
+            )
+        contradictory = [
+            item.statement
+            for item in getattr(narrative, "evidence", ())
+            if getattr(getattr(item, "interpretation", None), "value", None) == "contradiction"
+        ]
+        return _result(
+            agent,
+            freshness,
+            evidence=evidence,
+            observations=[getattr(narrative, "headline", "Session observations are available.")],
+            conclusions=[
+                "The session timeline is observational; temporal proximity does not establish causality."
+            ],
+            contradictions=contradictory,
+            metrics={
+                "session_narrative_version": getattr(narrative, "narrative_version", None),
+                "session_evidence_ids": [
+                    evidence_id
+                    for claim in claims
+                    for evidence_id in getattr(claim, "evidence_ids", ())
+                ],
+                "data_mode": getattr(getattr(narrative, "data_mode", None), "value", getattr(narrative, "data_mode", None)),
+                "coverage": getattr(narrative, "coverage", 0),
+            },
+            sources=_dedupe_sources(sources),
+            destinations=_stage8_destinations(agent),
+            warnings=getattr(narrative, "caveats", ()),
+            missing=missing_data,
+            force_partial=(
+                narrative_confidence is CopilotConfidenceLabel.LIMITED
+                or bool(missing_data)
+                or availability == "partial"
+            ),
+        )
 
     def _market(self, context: AgentExecutionContext) -> AgentResultV1:
         snapshot = self.sources.market_snapshot()
@@ -763,6 +1315,62 @@ def _source(dataset: str, raw_id: str, provider: str, generated_at: str | None, 
     )
 
 
+def _domain_source(
+    dataset: str,
+    evidence_id: str,
+    source_id: str,
+    generated_at: str | None,
+    market_date: str | None,
+) -> CopilotSourceReferenceV1:
+    """Preserve domain source and evidence IDs without aliasing their lineage."""
+
+    safe_source_id = _safe_data_label(source_id, "retrieved_source")
+    safe_dataset = _safe_data_label(dataset, "retrieved_dataset")
+    return CopilotSourceReferenceV1(
+        source_id=f"src-{_digest(safe_dataset, safe_source_id, evidence_id)[:16]}",
+        provider=safe_source_id,
+        dataset=safe_dataset,
+        generated_at=generated_at,
+        market_date=(market_date or "")[:10] or None,
+        raw_engine_reference=evidence_id,
+    )
+
+
+def _stage8_destinations(agent: CopilotAgentName) -> list[CopilotDestination]:
+    mapping = {
+        CopilotAgentName.MARKET: [CopilotDestination.MARKET_OVERVIEW],
+        CopilotAgentName.INDEX: [CopilotDestination.INDEXES],
+        CopilotAgentName.SECTOR: [CopilotDestination.SECTOR_DETAIL],
+        CopilotAgentName.THEME: [CopilotDestination.THEME_DETAIL],
+        CopilotAgentName.MACRO: [CopilotDestination.MACRO],
+        CopilotAgentName.LEADERSHIP: [CopilotDestination.LEADERSHIP],
+        CopilotAgentName.RISK: [CopilotDestination.HEALTH],
+        CopilotAgentName.RESEARCH: [CopilotDestination.REPORT_RESEARCH_FOCUS],
+        CopilotAgentName.REPORT: [CopilotDestination.REPORT],
+        CopilotAgentName.STOCK: [CopilotDestination.STOCK_DETAIL],
+        CopilotAgentName.WATCHLIST: [CopilotDestination.WATCHLIST],
+    }
+    return mapping.get(agent, [])
+
+
+def _news_destinations(
+    agent: CopilotAgentName,
+    deep_links: Iterable[Any],
+) -> list[CopilotDestination]:
+    destinations: list[CopilotDestination] = []
+    for item in deep_links:
+        try:
+            destination = CopilotDestination(getattr(item, "destination", item))
+        except (TypeError, ValueError):
+            continue
+        if destination not in destinations:
+            destinations.append(destination)
+    for destination in _stage8_destinations(agent):
+        if destination not in destinations:
+            destinations.append(destination)
+    return destinations
+
+
 def _freshness(
     *, source_state: Any, status: Any, generated_at: str | None,
     observed_at: str | None = None, market_date: str | None = None,
@@ -862,6 +1470,7 @@ def _result(
     destinations: list[CopilotDestination] | None = None,
     warnings: Iterable[str] = (),
     missing: Iterable[str] = (),
+    force_partial: bool = False,
 ) -> AgentResultV1:
     state = CopilotFreshnessState(freshness.state)
     status = {
@@ -871,6 +1480,8 @@ def _result(
         CopilotFreshnessState.MIXED: CopilotAgentStatus.PARTIAL,
         CopilotFreshnessState.TEST: CopilotAgentStatus.PARTIAL,
     }.get(state, CopilotAgentStatus.COMPLETE)
+    if force_partial and status is CopilotAgentStatus.COMPLETE:
+        status = CopilotAgentStatus.PARTIAL
     return AgentResultV1(
         agent=agent,
         status=status,

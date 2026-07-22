@@ -1,0 +1,122 @@
+{
+  "registryVersion": "stage8-news-sources-v1",
+  "sources": [
+    {
+      "source_id": "sec-edgar",
+      "display_name": "U.S. Securities and Exchange Commission EDGAR",
+      "domain": "sec.gov",
+      "quality_tier": "primary",
+      "primary_source_categories": ["earnings", "guidance", "merger_acquisition", "capital_raise", "buyback", "dividend", "legal", "management_change", "cybersecurity_incident"],
+      "allowed_event_types": ["earnings", "guidance", "merger_acquisition", "capital_raise", "buyback", "dividend", "product_launch", "supply_chain", "customer_contract", "legal", "management_change", "cybersecurity_incident", "other"],
+      "storage_licensing_notes": "Stage 8 stores identifiers, timestamps, canonical URLs, headlines and derived metadata only; filing or article bodies are excluded.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": false
+    },
+    {
+      "source_id": "federal-reserve",
+      "display_name": "Board of Governors of the Federal Reserve System",
+      "domain": "federalreserve.gov",
+      "quality_tier": "primary",
+      "primary_source_categories": ["monetary_policy", "regulation", "market_structure"],
+      "allowed_event_types": ["monetary_policy", "government_policy", "regulation", "market_structure", "other"],
+      "storage_licensing_notes": "Stage 8 stores source metadata and derived event intelligence only; document bodies are excluded.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": false
+    },
+    {
+      "source_id": "bls",
+      "display_name": "U.S. Bureau of Labor Statistics",
+      "domain": "bls.gov",
+      "quality_tier": "primary",
+      "primary_source_categories": ["inflation", "employment"],
+      "allowed_event_types": ["inflation", "employment", "economic_growth", "other"],
+      "storage_licensing_notes": "Stage 8 stores release metadata and derived event intelligence only; release bodies are excluded.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": false
+    },
+    {
+      "source_id": "bea",
+      "display_name": "U.S. Bureau of Economic Analysis",
+      "domain": "bea.gov",
+      "quality_tier": "primary",
+      "primary_source_categories": ["economic_growth", "inflation"],
+      "allowed_event_types": ["economic_growth", "inflation", "other"],
+      "storage_licensing_notes": "Stage 8 stores release metadata and derived event intelligence only; release bodies are excluded.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": false
+    },
+    {
+      "source_id": "nyse",
+      "display_name": "New York Stock Exchange",
+      "domain": "nyse.com",
+      "quality_tier": "primary",
+      "primary_source_categories": ["exchange_notice", "market_structure"],
+      "allowed_event_types": ["exchange_notice", "market_structure", "regulation", "other"],
+      "storage_licensing_notes": "Stage 8 stores notice metadata and canonical links only; notice bodies are excluded.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": false
+    },
+    {
+      "source_id": "fixture-company-ir",
+      "display_name": "Hermetic Company Investor Relations Fixture",
+      "domain": "ir.fixture.test",
+      "quality_tier": "primary",
+      "primary_source_categories": ["earnings", "guidance", "merger_acquisition", "capital_raise", "buyback", "dividend", "product_launch", "supply_chain", "customer_contract", "management_change", "cybersecurity_incident"],
+      "allowed_event_types": ["earnings", "guidance", "merger_acquisition", "capital_raise", "buyback", "dividend", "product_launch", "supply_chain", "customer_contract", "legal", "management_change", "cybersecurity_incident", "other"],
+      "storage_licensing_notes": "Synthetic fixture metadata may be stored in hermetic tests; no article body field exists.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": true
+    },
+    {
+      "source_id": "fixture-newswire",
+      "display_name": "Hermetic Professional Newswire Fixture",
+      "domain": "wire.fixture.test",
+      "quality_tier": "high_confidence_secondary",
+      "primary_source_categories": [],
+      "allowed_event_types": ["monetary_policy", "inflation", "employment", "economic_growth", "government_policy", "regulation", "geopolitics", "earnings", "guidance", "merger_acquisition", "capital_raise", "buyback", "dividend", "product_launch", "supply_chain", "customer_contract", "legal", "management_change", "analyst_action", "credit_rating", "cybersecurity_incident", "exchange_notice", "market_structure", "positioning_commentary", "other"],
+      "storage_licensing_notes": "Synthetic fixture metadata may be stored in hermetic tests; no article body field exists.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": true
+    },
+    {
+      "source_id": "fixture-commentary",
+      "display_name": "Hermetic Authored Commentary Fixture",
+      "domain": "commentary.fixture.test",
+      "quality_tier": "supporting_secondary",
+      "primary_source_categories": [],
+      "allowed_event_types": ["analyst_action", "positioning_commentary", "other"],
+      "storage_licensing_notes": "Synthetic fixture metadata may be stored in hermetic tests; no article body field exists.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": true
+    },
+    {
+      "source_id": "fixture-unverified",
+      "display_name": "Hermetic Unverified Source Fixture",
+      "domain": "unverified.fixture.test",
+      "quality_tier": "unverified",
+      "primary_source_categories": [],
+      "allowed_event_types": ["positioning_commentary", "other"],
+      "storage_licensing_notes": "Synthetic fixture metadata may be stored in hermetic tests; no article body field exists.",
+      "metadata_storage_allowed": true,
+      "article_body_storage_allowed": false,
+      "active": true,
+      "test_only": true
+    }
+  ]
+}

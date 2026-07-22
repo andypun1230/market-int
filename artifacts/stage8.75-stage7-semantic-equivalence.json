@@ -1,0 +1,224 @@
+{
+  "after": "2026-07-22T11:57:14.179847+00:00",
+  "before": "2026-07-22T05:56:30.076216+00:00",
+  "case_count": 30,
+  "cases": [
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-agent-contract-mismatch",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-agent-timeout",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-breadth",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-breadth-unavailable",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-educational",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-empty-watchlist",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-follow-up",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-index-comparison",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-leadership",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-macro",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-malformed-stock",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-market-source-error",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-market-state",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-navigation",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-partial-stock",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-portfolio-unavailable",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-report",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-report-unavailable",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-research",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-risk",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-sector",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-source-prompt-injection",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-stale-market",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-stock-analysis",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-stock-comparison",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-stock-decision",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-theme",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-unsafe-synthesis",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-unsupported",
+      "mismatches": []
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "runtime-watchlist",
+      "mismatches": []
+    }
+  ],
+  "compared_fields": {
+    "case": [
+      "component_scores",
+      "passed"
+    ],
+    "observed_candidate": [
+      "actionable",
+      "cited_evidence",
+      "claims",
+      "conclusion_class",
+      "confidence",
+      "contradictions",
+      "deep_links",
+      "freshness",
+      "intent",
+      "limitations",
+      "missing_evidence",
+      "model_calls",
+      "output_schema_version",
+      "selected_agents"
+    ],
+    "runtime_observations": [
+      "actions",
+      "agent_failure_categories",
+      "agent_statuses",
+      "evidence_count",
+      "fallback_used",
+      "injection_observed",
+      "pipeline_calls",
+      "registry_calls",
+      "source_calls",
+      "validation_issues",
+      "validation_status"
+    ]
+  },
+  "equivalent_count": 30,
+  "failed_count": 0,
+  "generated_at": "2026-07-22T11:57:16.080595+00:00",
+  "ignored_fields": [
+    "generated timestamps",
+    "case latency",
+    "agent latency",
+    "internal module paths"
+  ],
+  "performance": {
+    "after": {
+      "max_latency_ms": 8.989,
+      "mean_latency_ms": 4.309786,
+      "mean_model_calls": 0.0,
+      "p50_latency_ms": 4.0205,
+      "p95_latency_ms": 7.8437,
+      "p99_latency_ms": 8.75994,
+      "performance_case_count": 14
+    },
+    "before": {
+      "max_latency_ms": 7.345,
+      "mean_latency_ms": 2.839786,
+      "mean_model_calls": 0.0,
+      "p50_latency_ms": 2.483,
+      "p95_latency_ms": 5.8071,
+      "p99_latency_ms": 7.03742,
+      "performance_case_count": 14
+    },
+    "p95_delta_percent": 35.070862
+  },
+  "result": "PASS",
+  "schema_version": "stage75-semantic-equivalence-v1"
+}

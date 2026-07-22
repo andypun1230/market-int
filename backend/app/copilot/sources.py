@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Any, Iterable
 
 from app.analysis_engines.freshness import (
@@ -90,6 +90,114 @@ class TrustedCopilotSources:
             return ReportDocument.model_validate(report.report_document)
         except Exception:
             return None
+
+    def news_intelligence(
+        self,
+        intent: Any,
+        *,
+        watchlist_symbols: tuple[str, ...] = (),
+        as_of: datetime | None = None,
+    ) -> Any:
+        """Read only the validated metadata cache for explicit Stage 8 intents.
+
+        This method never invokes the configured NewsProvider.  The current
+        production factory has no metadata repository, so the honest default
+        is a typed unavailable result.
+        """
+
+        from app.intelligence.news import (
+            NewsQuery,
+            NewsQueryMode,
+            get_news_intelligence_service,
+        )
+
+        timestamp = as_of or datetime.now(timezone.utc)
+        event_ids = tuple(
+            item.entity_id
+            for item in getattr(intent, "entities", ())
+            if getattr(getattr(item, "entity_type", None), "value", None) == "news_event"
+        )
+        service = get_news_intelligence_service()
+        if getattr(intent, "sub_intent", None) == "event_detail" and event_ids:
+            return service.query_cached_event(event_ids[0], as_of=timestamp)
+        entity_types = {
+            getattr(getattr(item, "entity_type", None), "value", getattr(item, "entity_type", None))
+            for item in getattr(intent, "entities", ())
+        }
+        index_symbols = tuple(
+            item.symbol
+            for item in getattr(intent, "entities", ())
+            if getattr(getattr(item, "entity_type", None), "value", None) == "index"
+            and item.symbol
+        )
+        ticker_symbols = tuple(getattr(intent, "ticker_symbols", ()) or ())
+        sectors = tuple(getattr(intent, "sectors", ()) or ())
+        themes = tuple(getattr(intent, "themes", ()) or ())
+        if ticker_symbols:
+            mode, entity_id, symbols = NewsQueryMode.SECURITY, ticker_symbols[0], ticker_symbols
+        elif sectors:
+            mode, entity_id, symbols = NewsQueryMode.SECTOR, sectors[0], ()
+        elif themes:
+            mode, entity_id, symbols = NewsQueryMode.THEME, themes[0], ()
+        elif "index" in entity_types and index_symbols:
+            mode, entity_id, symbols = NewsQueryMode.INDEX, index_symbols[0], index_symbols
+        elif watchlist_symbols:
+            mode, entity_id, symbols = NewsQueryMode.WATCHLIST, None, watchlist_symbols
+        else:
+            mode, entity_id, symbols = NewsQueryMode.MARKET, None, ()
+        query = NewsQuery(
+            mode=mode,
+            as_of=timestamp,
+            entity_id=entity_id,
+            symbols=symbols,
+            limit=20,
+        )
+        return service.query_cached(
+            query,
+            watchlist_symbols=watchlist_symbols,
+        )
+
+    def session_narrative(
+        self,
+        intent: Any,
+        *,
+        as_of: datetime | None = None,
+    ) -> Any:
+        """Compose a provider-free production session availability result."""
+
+        from app.analysis_engines.session import BarInterval
+        from app.intelligence.session_narrative import (
+            ProductionSessionDataAdapter,
+            SessionNarrativeQuery,
+        )
+        from app.market_history.storage import DailyBarStorage
+
+        timestamp = as_of or datetime.now(timezone.utc)
+        symbols = list(getattr(intent, "ticker_symbols", ()) or ())
+        if not symbols:
+            symbols = [
+                item.symbol
+                for item in getattr(intent, "entities", ())
+                if getattr(getattr(item, "entity_type", None), "value", None) == "index"
+                and item.symbol
+            ]
+        symbol = symbols[0] if symbols else "SPY"
+        try:
+            latest_raw = DailyBarStorage().latest_session(symbol, "polygon")
+        except Exception:
+            latest_raw = None
+        latest = date.fromisoformat(latest_raw) if latest_raw else None
+        return ProductionSessionDataAdapter().query(
+            SessionNarrativeQuery(
+                symbol=symbol,
+                interval=BarInterval.FIVE_MINUTES,
+                as_of=timestamp,
+            ),
+            daily_history_available=latest is not None,
+            provider="polygon" if latest else None,
+            latest_daily_session=latest,
+            source_id=(f"daily_price_bars:{symbol}:{latest.isoformat()}" if latest else None),
+        )
 
 
 def normalize_source_state(value: Any, *, partial: bool = False, test: bool = False) -> str:

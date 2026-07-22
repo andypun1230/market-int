@@ -13,6 +13,8 @@ import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { StockCard } from '@/components/watchlist/StockCard';
 import { Spacing, Theme } from '@/constants/theme';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
+import { WatchlistCatalystsCard } from '@/features/context-intelligence/components/ContextIntelligenceCards';
+import { shouldRequestWatchlistCatalysts } from '@/features/context-intelligence/consumerPolicy';
 import { SectorDetailContent } from '@/features/sectors/components/SectorDetailContent';
 import { normalizeSectorId, type SectorId } from '@/features/sectors/sectorSnapshot';
 import { WatchlistSection } from '@/features/watchlist/components/WatchlistSection';
@@ -120,6 +122,15 @@ export default function WatchlistScreen() {
     ])).sort(),
     [requestedSymbol, watchlistStore.stockItems],
   );
+  const intelligenceSymbols = useMemo(
+    () => Array.from(new Set(
+      watchlistStore.stockItems
+        .map((item) => item.ticker.trim().toUpperCase())
+        .filter(Boolean),
+    )).sort(),
+    [watchlistStore.stockItems],
+  );
+  const intelligenceSymbolKey = intelligenceSymbols.join(',');
   const { error, loading, refetch, watchlist } = useWatchlistDashboard(requestedStockSymbols, isFocused && activeTab === 'stocks');
   const savedItems = useMemo(
     () => mergeWatchlistItems(watchlist?.items ?? [], watchlistStore.stockItems, removedSymbols),
@@ -315,6 +326,16 @@ export default function WatchlistScreen() {
         {activeTab === 'stocks' ? (
           <>
             {classifiedStockItems.length ? <WatchlistBrief items={classifiedStockItems} /> : null}
+            <WatchlistCatalystsCard
+              enabled={shouldRequestWatchlistCatalysts({
+                activeTab,
+                focused: isFocused,
+                hydrated: watchlistStore.hydrated,
+                symbolCount: intelligenceSymbols.length,
+              })}
+              key={intelligenceSymbolKey}
+              symbols={intelligenceSymbols}
+            />
 
             {loading ? (
               <WatchlistSkeleton />

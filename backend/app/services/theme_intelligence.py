@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from app.theme_snapshots.service import get_theme_snapshot_service
+from app.themes.intelligence import get_theme_intelligence_service
 
 
 UNAVAILABLE_MESSAGE = "Live Theme Intelligence is not yet available."
@@ -22,10 +23,12 @@ def build_theme_intelligence_context() -> dict[str, Any]:
     request-time market data. A consumer either receives the published durable
     snapshot or the explicit review-gate state.
     """
-    service = get_theme_snapshot_service()
-    snapshot = service.latest()
-    if snapshot is None or snapshot.source_state != "live":
-        status = service.status()
+    snapshot_service = get_theme_snapshot_service()
+    canonical = get_theme_intelligence_service()
+    snapshot = snapshot_service.latest()
+    rows = canonical.available_rows()
+    if snapshot is None or snapshot.source_state != "live" or not rows:
+        status = snapshot_service.status()
         return {
             "available": False,
             "availability": UNAVAILABLE_MESSAGE,
@@ -37,7 +40,6 @@ def build_theme_intelligence_context() -> dict[str, Any]:
             "warnings": [UNAVAILABLE_MESSAGE],
         }
 
-    rows = list(snapshot.rows)
     leaders = [leader_summary(row) for row in rows[:3]]
     decision_signals = [decision_theme_signal(snapshot, row) for row in rows]
     qualified = [signal for signal in decision_signals if signal["qualified"]]
@@ -60,7 +62,9 @@ def build_theme_intelligence_context() -> dict[str, Any]:
         "live_theme_signal_overrides_static_preferences": [signal["display_name"] for signal in qualified],
         "pilot_scope": {
             "active_reviewed_theme_count": len(rows),
-            "rank_scope": f"Rank reflects the leadership composite among the {len(rows)} currently active reviewed pilot themes.",
+            "launch_theme_count": canonical.registry.statistics()["launch_ready"],
+            "taxonomy_version": canonical.registry.statistics()["taxonomy_version"],
+            "rank_scope": f"Rank reflects governed market evidence among {len(rows)} themes with published analytics; unavailable launch themes are excluded from ranking.",
             "proposed_inactive_themes_excluded": True,
         },
         "warnings": list(snapshot.warnings),
@@ -195,7 +199,7 @@ def find_theme_row(message: str, context: dict[str, Any], rows: list[dict[str, A
     for row in rows:
         theme_id = str(row.get("theme_id") or "").lower()
         display = str(row.get("display_name") or "").lower()
-        aliases = {theme_id, theme_id.replace("_", " "), display}
+        aliases = {theme_id, theme_id.replace("_", " "), display, *(str(value).lower() for value in row.get("aliases", []) if value)}
         if any(alias and any(alias in candidate for candidate in candidates) for alias in aliases):
             return row
     if "this theme" in message.lower() and len(rows) == 1:

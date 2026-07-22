@@ -1,0 +1,154 @@
+{
+  "schema_version": "stage8-pre-implementation-validation-v1",
+  "stage": "8",
+  "captured_at": "2026-07-22T09:13:20Z",
+  "baseline_commit": "30dc780de6c004e239fe5d768bcc4cc098464573",
+  "baseline_tag": "stage7.5-validated",
+  "working_tree_clean_before_stage8": true,
+  "validation_result": "PASS WITH CONDITIONS",
+  "stage7": {
+    "command": "make validate-stage7 PYTHON=venv/bin/python",
+    "result": "PASS WITH CONDITIONS",
+    "backend_tests": {
+      "passed": 414,
+      "failed": 0
+    },
+    "runtime_scenarios": {
+      "passed": 30,
+      "total": 30,
+      "release_blockers": 0
+    },
+    "frozen_semantic_cases": {
+      "passed": 165,
+      "total": 165,
+      "release_bearing": false
+    },
+    "failure_injections": {
+      "passed": 7,
+      "total": 7
+    },
+    "routing": {
+      "intent_accuracy": 1.0,
+      "required_agent_recall": 1.0,
+      "unnecessary_agent_rate": 0.0,
+      "invalid_route_rate": 0.0,
+      "fallback_rate": 0.0,
+      "average_agent_count": 1.315789
+    },
+    "runtime_latency_ms": {
+      "mean": 3.995,
+      "p50": 3.1135,
+      "p95": 8.0427,
+      "max": 10.943,
+      "model_calls_mean": 0.0,
+      "note": "Single post-test hermetic sample; performance is machine-sensitive."
+    },
+    "runtime_artifact": "artifacts/stage8-pre-stage7-runtime.json",
+    "reference_artifact": "artifacts/stage8-pre-stage7-reference.json",
+    "human_review_artifact": "artifacts/stage8-pre-stage7-human-review.json"
+  },
+  "stage75": {
+    "command": "make validate-stage75 PYTHON=venv/bin/python",
+    "result": "PASS WITH CONDITIONS",
+    "backend_tests": {
+      "passed": 414,
+      "failed": 0
+    },
+    "stage7_focused_tests": {
+      "passed": 91,
+      "failed": 0
+    },
+    "institutional_copilot_tests": {
+      "passed": 39,
+      "failed": 0
+    },
+    "semantic_equivalence": {
+      "passed": 30,
+      "total": 30,
+      "failed": 0
+    },
+    "runtime_latency_ms": {
+      "mean": 3.301143,
+      "p50": 3.187,
+      "p95": 6.00815,
+      "p99": 7.09443,
+      "max": 7.366,
+      "model_calls_mean": 0.0
+    },
+    "baseline_comparison_p95_delta_percent": 3.462141,
+    "frontend": {
+      "typescript": "PASS",
+      "lint": "PASS",
+      "data_ui_screens": {
+        "passed": 28,
+        "total": 28
+      },
+      "copilot_contracts": "PASS",
+      "copilot_transport": "PASS",
+      "copilot_reducer": "PASS",
+      "copilot_destinations": "PASS",
+      "expo_web_export": {
+        "result": "PASS",
+        "static_routes": 25
+      }
+    },
+    "engine_benchmark": {
+      "model_calls": 0,
+      "network_calls": 0,
+      "peak_bytes": 228280,
+      "fresh_process_import_mean_delta_ms": 36.816643
+    }
+  },
+  "agent_inventory": {
+    "registered_count": 15,
+    "exercised_count": 15,
+    "all_registered_agents_exercised": true,
+    "agents": [
+      "market",
+      "index",
+      "breadth",
+      "leadership",
+      "sector",
+      "theme",
+      "macro",
+      "risk",
+      "stock",
+      "watchlist",
+      "report",
+      "research",
+      "navigation",
+      "educational",
+      "portfolio"
+    ]
+  },
+  "shared_engine_inventory": {
+    "implemented_count": 4,
+    "engines": [
+      {
+        "id": "freshness_availability",
+        "version": "freshness-availability-v1"
+      },
+      {
+        "id": "evidence_validation",
+        "version": "evidence-validation-v1"
+      },
+      {
+        "id": "contradiction_preservation",
+        "version": "contradiction-preservation-v1"
+      },
+      {
+        "id": "confidence_adjustment",
+        "version": "confidence-adjustment-v1"
+      }
+    ],
+    "manifest": "backend/app/analysis_engines/engine_manifest.json"
+  },
+  "known_conditions": [
+    "Runtime validation is hermetic and does not exercise live providers or network calls.",
+    "The active Stage 7 pipeline is deterministic and makes no model calls.",
+    "The 165-case reference corpus is non-release-bearing.",
+    "Native simulator rendering, rapid tab-switch cancellation, and native failure screenshots remain manual Stage 7 checks.",
+    "Latency measurements are machine-sensitive diagnostics."
+  ],
+  "failures": []
+}

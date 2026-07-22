@@ -2,8 +2,13 @@ PYTHON ?= python3
 STAGE7_RUNTIME_OUTPUT ?= ../artifacts/stage7-agent-validation.json
 STAGE7_REFERENCE_OUTPUT ?= ../artifacts/stage7-reference-evaluation.json
 STAGE7_REVIEW_OUTPUT ?= ../artifacts/stage7-human-review.json
+STAGE8_PERFORMANCE_OUTPUT ?= ../artifacts/stage8-performance.json
+STAGE8_VALIDATION_OUTPUT ?= ../artifacts/stage8-context-intelligence-validation.json
+STAGE875_PERFORMANCE_OUTPUT ?= ../artifacts/stage8.75-performance.json
+STAGE875_VALIDATION_OUTPUT ?= ../artifacts/stage8.75-theme-intelligence-validation.json
+STAGE875_REPORT_OUTPUT ?= ../docs/validation/stage8.75-theme-intelligence-validation-report.md
 
-.PHONY: validate-application-data validate-market-snapshot validate-stock-snapshot validate-phase-4-4a validate-phase-4-4b validate-phase-4-4c validate-phase-4-4c-semantics validate-phase-4-4c-release-gate validate-phase-4-4c-blockers validate-phase-4-4d validate-phase-4-4d-governance validate-phase-4-4d-pilot validate-phase-4-4d-pilot-integration validate-stage7 validate-stage75 audit-rotation-integrity
+.PHONY: validate-application-data validate-market-snapshot validate-stock-snapshot validate-phase-4-4a validate-phase-4-4b validate-phase-4-4c validate-phase-4-4c-semantics validate-phase-4-4c-release-gate validate-phase-4-4c-blockers validate-phase-4-4d validate-phase-4-4d-governance validate-phase-4-4d-pilot validate-phase-4-4d-pilot-integration validate-stage7 validate-stage75 test-stage8-news test-stage8-session test-stage8-routing test-stage8-safety test-stage8-performance validate-stage8-components validate-stage8 validate-stage8-75 audit-rotation-integrity
 
 validate-application-data:
 	cd backend && python3 -m compileall app main.py
@@ -104,3 +109,68 @@ validate-stage75:
 	cd backend && $(PYTHON) scripts/augment_stage75_runtime_actions.py --artifact ../artifacts/stage75-post-refactor-runtime-evaluation.json
 	cd backend && $(PYTHON) scripts/compare_stage75_semantics.py --before ../artifacts/stage75-pre-refactor-runtime-evaluation.json --after ../artifacts/stage75-post-refactor-runtime-evaluation.json --output ../artifacts/stage75-semantic-equivalence.json
 	cd backend && $(PYTHON) scripts/benchmark_stage75_engines.py --output ../artifacts/stage75-engine-performance.json
+
+test-stage8-news:
+	cd backend && $(PYTHON) -m unittest discover -s tests/stage8 -p 'test_news_*.py'
+
+test-stage8-session:
+	cd backend && $(PYTHON) -m unittest discover -s tests/stage8 -p 'test_session_*.py'
+
+test-stage8-routing:
+	cd backend && $(PYTHON) -m unittest tests.stage8.test_stage8_routing tests.stage8.test_stage8_copilot_integration tests.stage8.test_stage8_api
+
+test-stage8-safety:
+	cd backend && $(PYTHON) -m unittest tests.stage8.test_stage8_safety tests.stage8.test_stage8_failure_injection tests.stage8.test_golden_fixtures
+
+test-stage8-performance:
+	cd backend && $(PYTHON) -m unittest tests.stage8.test_stage8_performance
+	cd backend && $(PYTHON) scripts/benchmark_stage8_intelligence.py --output $(STAGE8_PERFORMANCE_OUTPUT)
+
+validate-stage8-components:
+	cd backend && $(PYTHON) -m compileall -q app main.py scripts tests
+	cd backend && $(PYTHON) tests/fixtures/stage8/generate_cases.py --check
+	cd backend && $(PYTHON) -m unittest discover -s tests/stage8 -p 'test_*.py'
+	cd frontend && npx tsc --noEmit
+	cd frontend && npm run lint
+	cd frontend && npm run validate:data-ui
+	cd frontend && npx tsx tests/newsIntelligenceNormalizer.test.ts
+	cd frontend && npx tsx tests/sessionNarrativePresenter.test.ts
+	cd frontend && npx tsx tests/contextIntelligenceConsumers.test.ts
+	cd frontend && npx tsx tests/newsRequestDeduplication.test.ts
+	cd backend && $(PYTHON) scripts/benchmark_stage8_intelligence.py --output $(STAGE8_PERFORMANCE_OUTPUT)
+
+validate-stage8:
+	$(MAKE) validate-stage75 PYTHON=$(PYTHON)
+	$(MAKE) validate-stage8-components PYTHON=$(PYTHON)
+	cd backend && $(PYTHON) scripts/validate_stage8_context_intelligence.py --performance-artifact $(STAGE8_PERFORMANCE_OUTPUT) --output $(STAGE8_VALIDATION_OUTPUT)
+
+validate-stage8-75:
+	cd backend && $(PYTHON) -m compileall -q app main.py scripts tests
+	cd backend && $(PYTHON) -m unittest discover -s tests/stage8_75 -p 'test_*.py'
+	cd backend && $(PYTHON) tests/fixtures/stage8/generate_cases.py --check
+	cd backend && $(PYTHON) -m unittest discover -s tests/stage8 -p 'test_*.py'
+	cd backend && $(PYTHON) scripts/generate_stage7_copilot_artifacts.py --check
+	cd backend && $(PYTHON) -m app.copilot.evaluation.run_stage7 --mode runtime --suite full --output ../artifacts/stage8.75-stage7-runtime-evaluation.json
+	cd backend && $(PYTHON) scripts/augment_stage75_runtime_actions.py --artifact ../artifacts/stage8.75-stage7-runtime-evaluation.json
+	cd backend && $(PYTHON) -m app.copilot.evaluation.run_stage7 --mode reference --suite full --output ../artifacts/stage8.75-stage7-reference-evaluation.json
+	cd backend && $(PYTHON) -m app.copilot.evaluation.review build --results ../artifacts/stage8.75-stage7-reference-evaluation.json --output ../artifacts/stage8.75-stage7-human-review.json
+	cd backend && $(PYTHON) scripts/compare_stage75_semantics.py --before ../artifacts/stage75-pre-refactor-runtime-evaluation.json --after ../artifacts/stage8.75-stage7-runtime-evaluation.json --output ../artifacts/stage8.75-stage7-semantic-equivalence.json
+	cd backend && $(PYTHON) -m unittest discover -s tests
+	cd frontend && npx tsc --noEmit
+	cd frontend && npm run lint
+	cd frontend && npm run validate:data-ui
+	cd frontend && npx tsx tests/copilotContracts.test.ts
+	cd frontend && npx tsx tests/copilotTransport.test.ts
+	cd frontend && npx tsx tests/copilotReducer.test.ts
+	cd frontend && npx tsx tests/copilotDestinations.test.ts
+	cd frontend && npx tsx tests/themeSnapshot.test.ts
+	cd frontend && npx tsx tests/themeGovernanceStatus.test.ts
+	cd frontend && npx tsx tests/themeHomeSummary.test.ts
+	cd frontend && npx tsx tests/watchlistSectorThemes.test.ts
+	cd frontend && npx tsx tests/newsIntelligenceNormalizer.test.ts
+	cd frontend && npx tsx tests/sessionNarrativePresenter.test.ts
+	cd frontend && npx tsx tests/contextIntelligenceConsumers.test.ts
+	cd frontend && npx tsx tests/newsRequestDeduplication.test.ts
+	cd frontend && npx expo export --platform web
+	cd backend && $(PYTHON) scripts/benchmark_stage8_75_theme_intelligence.py --output $(STAGE875_PERFORMANCE_OUTPUT)
+	cd backend && $(PYTHON) scripts/validate_stage8_75_theme_intelligence.py --release-gates-passed --performance-artifact $(STAGE875_PERFORMANCE_OUTPUT) --output $(STAGE875_VALIDATION_OUTPUT) --markdown-output $(STAGE875_REPORT_OUTPUT)

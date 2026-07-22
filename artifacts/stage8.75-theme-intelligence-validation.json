@@ -1,0 +1,656 @@
+{
+  "baseline_commit": "30dc780de6c004e239fe5d768bcc4cc098464573",
+  "benchmark_model_calls": 0,
+  "benchmark_network_calls": 0,
+  "coverage_statistics": {
+    "available_theme_count": 2,
+    "average_live_coverage_ratio": 1.0,
+    "maximum": 10,
+    "median_constituents": 9.0,
+    "minimum": 7,
+    "partial_theme_count": 0,
+    "sparse_or_partial_themes": [
+      "aerospace_defense",
+      "artificial_intelligence",
+      "biotechnology",
+      "clean_energy",
+      "cloud_computing",
+      "cryptocurrency_infrastructure",
+      "data_centers",
+      "digital_advertising",
+      "digital_payments",
+      "drones_autonomous_systems",
+      "ecommerce",
+      "electric_vehicles_batteries",
+      "enterprise_software",
+      "gaming_interactive_media",
+      "grid_modernization",
+      "medical_technology",
+      "networking_infrastructure",
+      "nuclear_energy",
+      "obesity_metabolic_health",
+      "online_travel",
+      "robotics_automation",
+      "semiconductors",
+      "space_economy",
+      "streaming_digital_entertainment"
+    ],
+    "unavailable_theme_count": 24
+  },
+  "known_conditions": [
+    "Only the original human-reviewed pilot themes can have live snapshots until providers publish governed history for the expanded taxonomy.",
+    "Unavailable launch themes are directory-ready but are excluded from rankings, Reports, and strong Copilot conclusions.",
+    "Historical analytics use current membership; historical membership reconstruction remains future work."
+  ],
+  "launch_themes": [
+    "artificial_intelligence",
+    "semiconductors",
+    "memory_storage",
+    "data_centers",
+    "cloud_computing",
+    "enterprise_software",
+    "cybersecurity",
+    "networking_infrastructure",
+    "robotics_automation",
+    "digital_advertising",
+    "ecommerce",
+    "digital_payments",
+    "online_travel",
+    "gaming_interactive_media",
+    "streaming_digital_entertainment",
+    "aerospace_defense",
+    "space_economy",
+    "drones_autonomous_systems",
+    "nuclear_energy",
+    "grid_modernization",
+    "clean_energy",
+    "electric_vehicles_batteries",
+    "biotechnology",
+    "obesity_metabolic_health",
+    "medical_technology",
+    "cryptocurrency_infrastructure"
+  ],
+  "mapping_statistics": {
+    "adjacent": 18,
+    "complete_provenance": 227,
+    "core": 135,
+    "experimental": 8,
+    "significant": 66,
+    "symbols_mapped_to_multiple_themes": 26,
+    "total": 227
+  },
+  "overall_result": "PASS WITH CONDITIONS",
+  "performance": {
+    "benchmark_type": "hermetic_local_fixture_and_repository_benchmark",
+    "benchmarks": {
+      "api_symbol_mapping": {
+        "iterations": 120,
+        "maximum_ms": 1.1105,
+        "minimum_ms": 0.7167,
+        "p50_ms": 0.7605,
+        "p95_ms": 0.8882
+      },
+      "api_theme_detail": {
+        "iterations": 120,
+        "maximum_ms": 26.9843,
+        "minimum_ms": 7.3116,
+        "p50_ms": 7.6261,
+        "p95_ms": 7.9895
+      },
+      "api_theme_directory": {
+        "iterations": 120,
+        "maximum_ms": 37.2728,
+        "minimum_ms": 14.3175,
+        "p50_ms": 14.6011,
+        "p95_ms": 15.0725
+      },
+      "copilot_theme_retrieval": {
+        "iterations": 120,
+        "maximum_ms": 13.715,
+        "minimum_ms": 12.3545,
+        "p50_ms": 12.441,
+        "p95_ms": 12.8265
+      },
+      "full_theme_ranking": {
+        "iterations": 120,
+        "maximum_ms": 31.3455,
+        "minimum_ms": 12.067,
+        "p50_ms": 12.2164,
+        "p95_ms": 12.7298
+      },
+      "report_theme_candidate_retrieval": {
+        "iterations": 120,
+        "maximum_ms": 1.242,
+        "minimum_ms": 0.8405,
+        "p50_ms": 0.8569,
+        "p95_ms": 0.9142
+      },
+      "single_theme_detail": {
+        "iterations": 120,
+        "maximum_ms": 6.6325,
+        "minimum_ms": 6.1967,
+        "p50_ms": 6.298,
+        "p95_ms": 6.4577
+      },
+      "symbol_to_theme_lookup": {
+        "iterations": 120,
+        "maximum_ms": 0.0237,
+        "minimum_ms": 0.0063,
+        "p50_ms": 0.0065,
+        "p95_ms": 0.0067
+      },
+      "taxonomy_retrieval": {
+        "iterations": 120,
+        "maximum_ms": 0.7739,
+        "minimum_ms": 0.2963,
+        "p50_ms": 0.3131,
+        "p95_ms": 0.4014
+      }
+    },
+    "hardware": "Local Codex workspace host; results are not production SLOs.",
+    "model_calls": 0,
+    "network_calls": 0,
+    "network_guard": "AF_INET and AF_INET6 socket creation blocked for the entire measured region; local event-loop socket pairs remain enabled",
+    "production_latency_claim": false,
+    "stage": "8.75",
+    "taxonomy_version": "2026.07.1"
+  },
+  "release_gates": {
+    "agent_registry": "passed",
+    "benchmark": "passed",
+    "focused_tests": "passed",
+    "frontend_data_ui": "passed",
+    "frontend_lint": "passed",
+    "frontend_route_export": "passed",
+    "frontend_typecheck": "passed",
+    "full_backend": "passed",
+    "stage7_5_semantic_equivalence": "passed",
+    "stage7_frozen_corpus": "passed",
+    "stage7_reference": "passed",
+    "stage7_runtime": "passed",
+    "stage8_regression": "passed"
+  },
+  "reproduction_command": "make validate-stage8-75 PYTHON=python3",
+  "stage": "8.75",
+  "taxonomy_validation_issues": [],
+  "taxonomy_version": "2026.07.1",
+  "test_counts": {
+    "focused_stage8_75": 30,
+    "full_backend_discovered": 566,
+    "stage8_regression": 122
+  },
+  "theme_counts": {
+    "active": 26,
+    "experimental": 0,
+    "launch_ready": 26,
+    "retired": 1
+  },
+  "theme_table": [
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "XLK"
+      ],
+      "constituent_count": 10,
+      "core_count": 2,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "artificial_intelligence",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Artificial Intelligence",
+      "parent_sectors": [
+        "information_technology",
+        "communication_services"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "SOXX"
+      ],
+      "constituent_count": 10,
+      "core_count": 7,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "semiconductors",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Semiconductors",
+      "parent_sectors": [
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "XLK"
+      ],
+      "constituent_count": 7,
+      "core_count": 4,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "memory_storage",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Memory & Storage",
+      "parent_sectors": [
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "XLRE"
+      ],
+      "constituent_count": 9,
+      "core_count": 3,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "data_centers",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Data Centers",
+      "parent_sectors": [
+        "real_estate",
+        "information_technology",
+        "industrials"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "SKYY"
+      ],
+      "constituent_count": 9,
+      "core_count": 4,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "cloud_computing",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Cloud Computing",
+      "parent_sectors": [
+        "information_technology",
+        "communication_services"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "IGV"
+      ],
+      "constituent_count": 9,
+      "core_count": 7,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "enterprise_software",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Enterprise Software",
+      "parent_sectors": [
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "CIBR"
+      ],
+      "constituent_count": 7,
+      "core_count": 6,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "cybersecurity",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Cybersecurity",
+      "parent_sectors": [
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "XLK"
+      ],
+      "constituent_count": 9,
+      "core_count": 4,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "networking_infrastructure",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Networking Infrastructure",
+      "parent_sectors": [
+        "information_technology",
+        "communication_services"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLI",
+        "ROBO"
+      ],
+      "constituent_count": 9,
+      "core_count": 4,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "robotics_automation",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Robotics & Automation",
+      "parent_sectors": [
+        "industrials",
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "XLC"
+      ],
+      "constituent_count": 9,
+      "core_count": 5,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "digital_advertising",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Digital Advertising",
+      "parent_sectors": [
+        "communication_services",
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "IBUY"
+      ],
+      "constituent_count": 9,
+      "core_count": 7,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "ecommerce",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "E-commerce",
+      "parent_sectors": [
+        "consumer_discretionary",
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLF",
+        "IPAY"
+      ],
+      "constituent_count": 9,
+      "core_count": 5,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "digital_payments",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Digital Payments",
+      "parent_sectors": [
+        "financials",
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLY",
+        "AWAY"
+      ],
+      "constituent_count": 7,
+      "core_count": 7,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "online_travel",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Online Travel",
+      "parent_sectors": [
+        "consumer_discretionary",
+        "communication_services"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLC",
+        "HERO"
+      ],
+      "constituent_count": 8,
+      "core_count": 4,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "gaming_interactive_media",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Gaming & Interactive Media",
+      "parent_sectors": [
+        "communication_services",
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLC",
+        "QQQ"
+      ],
+      "constituent_count": 8,
+      "core_count": 3,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "streaming_digital_entertainment",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Streaming & Digital Entertainment",
+      "parent_sectors": [
+        "communication_services"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLI",
+        "ITA"
+      ],
+      "constituent_count": 9,
+      "core_count": 6,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "aerospace_defense",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Aerospace & Defense",
+      "parent_sectors": [
+        "industrials"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLI",
+        "ARKX"
+      ],
+      "constituent_count": 8,
+      "core_count": 6,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "space_economy",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Space Economy",
+      "parent_sectors": [
+        "industrials",
+        "communication_services"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLI",
+        "ARKQ"
+      ],
+      "constituent_count": 8,
+      "core_count": 2,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "drones_autonomous_systems",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Drones & Autonomous Systems",
+      "parent_sectors": [
+        "industrials",
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLU",
+        "URA"
+      ],
+      "constituent_count": 9,
+      "core_count": 7,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "nuclear_energy",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Nuclear Energy",
+      "parent_sectors": [
+        "energy",
+        "utilities",
+        "industrials"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLI",
+        "GRID"
+      ],
+      "constituent_count": 9,
+      "core_count": 4,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "grid_modernization",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Grid Modernization",
+      "parent_sectors": [
+        "industrials",
+        "utilities",
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "ICLN",
+        "TAN"
+      ],
+      "constituent_count": 9,
+      "core_count": 6,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "clean_energy",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Clean Energy",
+      "parent_sectors": [
+        "energy",
+        "utilities",
+        "industrials",
+        "information_technology"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLY",
+        "DRIV"
+      ],
+      "constituent_count": 10,
+      "core_count": 6,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "electric_vehicles_batteries",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Electric Vehicles & Batteries",
+      "parent_sectors": [
+        "consumer_discretionary",
+        "industrials",
+        "materials"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLV",
+        "XBI"
+      ],
+      "constituent_count": 10,
+      "core_count": 8,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "biotechnology",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Biotechnology",
+      "parent_sectors": [
+        "health_care"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLV",
+        "XBI"
+      ],
+      "constituent_count": 8,
+      "core_count": 3,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "obesity_metabolic_health",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Obesity & Metabolic Health",
+      "parent_sectors": [
+        "health_care"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "XLV",
+        "IHI"
+      ],
+      "constituent_count": 9,
+      "core_count": 8,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "medical_technology",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Medical Technology",
+      "parent_sectors": [
+        "health_care"
+      ],
+      "status": "active"
+    },
+    {
+      "benchmarks": [
+        "SPY",
+        "QQQ",
+        "BITQ"
+      ],
+      "constituent_count": 9,
+      "core_count": 7,
+      "coverage": "market analytics unavailable until governed history is published",
+      "id": "cryptocurrency_infrastructure",
+      "known_limitations": "Current-basket mappings; historical membership reconstruction is not yet available.",
+      "name": "Cryptocurrency Infrastructure",
+      "parent_sectors": [
+        "financials",
+        "information_technology"
+      ],
+      "status": "active"
+    }
+  ],
+  "working_tree_dirty": true
+}

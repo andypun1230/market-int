@@ -6,6 +6,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
 import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
+import { EntityCatalystsCard } from '@/features/context-intelligence/components/ContextIntelligenceCards';
 import { useSectorDetail } from '@/hooks/useSectorSnapshot';
 import { formatClassification, formatCoverage, formatNullableCount, formatNullablePercent, sourceLabel, type SectorId } from '@/features/sectors/sectorSnapshot';
 import { WatchlistBookmarkButton } from '@/features/watchlist/WatchlistBookmarkButton';
@@ -32,6 +33,7 @@ export function SectorDetailContent({ sectorId }: { sectorId: SectorId }) {
     <WatchlistBookmarkButton id={row.sectorId} name={row.displayName} type="sector" />
     <Text style={styles.context}>S&P 100 · {detail.marketDate} · {detail.providerHistory ?? 'provider unavailable'} · {formatCoverage(detail.coverage.constituentCoverage)} constituent coverage</Text>
     <Text style={styles.context}>Snapshot {detail.snapshotId}</Text>
+    <EntityCatalystsCard enabled entityId={sectorId} key={sectorId} kind="sector" />
     <DashboardCard title="Performance Summary" accentColor={Theme.colors.success}><Grid values={[['1D',formatNullablePercent(row.returns['1D'])],['1W',formatNullablePercent(row.returns['1W'])],['1M',formatNullablePercent(row.returns['1M'])],['3M',formatNullablePercent(row.returns['3M'])],['6M',formatNullablePercent(row.returns['6M'])],['1Y',formatNullablePercent(row.returns['1Y'])]]} /></DashboardCard>
     <DashboardCard title="Relative Strength" accentColor={Theme.colors.accent}><Grid values={[['vs SPY 1M',formatNullablePercent(row.relativeStrength.vsSpy1M)],['vs SPY 3M',formatNullablePercent(row.relativeStrength.vsSpy3M)],['RS Trend',rsTrend],['Confidence',row.confidence]]} /></DashboardCard>
     <DashboardCard title="Breadth Participation" accentColor={Theme.colors.warning}><Grid values={[['Members',`${formatNullableCount(row.eligibleMembers)}/${formatNullableCount(row.totalMembers)}`],['Representativeness',row.representativeness.label ?? 'Unavailable'],['Above 20 EMA',formatNullablePercent(row.breadth.above20)],['Above 50 EMA',formatNullablePercent(row.breadth.above50)],['Above 200 EMA',formatNullablePercent(row.breadth.above200)],['Participation',formatNullablePercent(row.participation.positive)],['Data Confidence',row.dataConfidence.label ?? 'Unavailable'],['Signal Confidence',row.signalConfidence.label ?? 'Unavailable']]} /><Text style={styles.muted}>{row.representativeness.reason ?? row.participation.definition ?? 'Breadth representativeness is unavailable.'}</Text></DashboardCard>

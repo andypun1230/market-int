@@ -1422,6 +1422,32 @@ export type ThemeSnapshotResponse = {
   rows?: Record<string, unknown>[];
   alerts?: Record<string, unknown>[];
   warnings?: string[];
+  taxonomy_version?: string;
+  missing_data?: string[];
+  test_or_mock_label?: string | null;
+};
+
+export type SymbolThemeMapping = {
+  theme_id: string;
+  theme_name?: string;
+  symbol: string;
+  exposure: 'core' | 'significant' | 'adjacent' | 'experimental' | string;
+  mapping_source: string;
+  mapping_method: string;
+  rationale: string;
+  confidence: number;
+  taxonomy_version: string;
+};
+
+export type SymbolThemeMappingsResponse = {
+  symbol: string;
+  taxonomy_version: string;
+  status: 'available' | 'unavailable' | string;
+  source_state: string;
+  primary?: SymbolThemeMapping | null;
+  secondary?: SymbolThemeMapping[];
+  items: SymbolThemeMapping[];
+  missing_data?: string[];
 };
 
 export type ThemeStatusResponse = {
@@ -1443,6 +1469,10 @@ export type ThemeStatusResponse = {
   definition_count?: number;
   active_reviewed_definition_count?: number;
   live_theme_intelligence?: boolean;
+  taxonomy_version?: string;
+  launch_theme_count?: number;
+  launch_ready_theme_count?: number;
+  mapping_count?: number;
   reason?: string | null;
   test_fixtures_enabled?: boolean;
 };

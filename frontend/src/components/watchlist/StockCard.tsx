@@ -10,10 +10,13 @@ import { RiskPlanSection } from '@/components/watchlist/RiskPlanSection';
 import { Spacing, Theme } from '@/constants/theme';
 import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
+import { MaterialEventsCard } from '@/features/context-intelligence/components/ContextIntelligenceCards';
+import { shouldRequestStockMaterialEvents } from '@/features/context-intelligence/consumerPolicy';
 import { StockCompareSections } from '@/features/stock-detail/compare/components/StockCompareSections';
 import { StockDetailHeader } from '@/features/stock-detail/components/StockDetailHeader';
 import { applyCurrentPrice } from '@/features/stock-detail/currentPrice';
 import { StockOverviewSections } from '@/features/stock-detail/components/StockOverviewSections';
+import { StockThemeContext } from '@/features/stock-detail/components/StockThemeContext';
 import { buildStockDetailOverview } from '@/features/stock-detail/stockDetailPresenter';
 import { StockSignalsSections } from '@/features/stock-detail/signals/components/StockSignalsSections';
 import { StockTechnicalSections } from '@/features/stock-detail/technical/components/StockTechnicalSections';
@@ -182,7 +185,16 @@ export function StockCard({
     {
       key: 'overview',
       label: 'Overview',
-      content: <StockOverviewSections model={overviewModel} />,
+      content: (
+        <>
+          <StockOverviewSections model={overviewModel} />
+          <StockThemeContext mappings={detailState.data?.themeMappings} />
+          <MaterialEventsCard
+            enabled={shouldRequestStockMaterialEvents(showDetails, selectedDetailTab)}
+            symbol={stock.ticker}
+          />
+        </>
+      ),
     },
     {
       key: 'technical',
