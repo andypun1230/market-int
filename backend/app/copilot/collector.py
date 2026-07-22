@@ -3,6 +3,12 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor, wait
 from typing import Iterable
 
+from app.analysis_engines.contradiction import ContradictionEngine
+from app.analysis_engines.evidence_validation import EvidenceValidationEngine
+from app.analysis_engines.freshness import (
+    FreshnessAvailabilityEngine,
+    FreshnessSummaryInput,
+)
 from app.copilot.agents import AgentExecutionContext, CopilotAgentRegistry
 from app.copilot.contracts import (
     AgentResultV1,
@@ -15,7 +21,11 @@ from app.copilot.contracts import (
     CopilotFreshnessV1,
     CopilotPlanStepV1,
 )
-from app.copilot.sources import aggregate_source_states
+
+
+_CONTRADICTION_ENGINE = ContradictionEngine()
+_EVIDENCE_VALIDATION_ENGINE = EvidenceValidationEngine()
+_FRESHNESS_ENGINE = FreshnessAvailabilityEngine()
 
 
 class CopilotEvidenceCollector:
@@ -101,7 +111,10 @@ class CopilotEvidenceCollector:
         contradictory_ids = [
             item.evidence_id
             for item in evidence
-            if item.contradicts_claim_ids or item.interpretation_class == "contradiction"
+            if _CONTRADICTION_ENGINE.is_explicit_contradiction(
+                interpretation_class=item.interpretation_class.value,
+                contradicts_claim_ids=item.contradicts_claim_ids,
+            )
         ]
         targets = list(dict.fromkeys(target for result in results for target in result.deep_link_targets))
         return CopilotEvidenceBundleV1(
@@ -138,10 +151,11 @@ def _failed_result(agent: CopilotAgentName | str, *, message: str, failure_categ
 
 
 def _dedupe_evidence(values: Iterable[CopilotEvidenceV1]) -> list[CopilotEvidenceV1]:
-    result: dict[str, CopilotEvidenceV1] = {}
-    for value in values:
-        result.setdefault(value.evidence_id, value)
-    return list(result.values())
+    result = _EVIDENCE_VALIDATION_ENGINE.deduplicate(
+        values,
+        identity=lambda value: value.evidence_id,
+    )
+    return list(result.items)
 
 
 def _dedupe_sources(values: Iterable) -> list:
@@ -152,20 +166,23 @@ def _dedupe_sources(values: Iterable) -> list:
 
 
 def _freshness_summary(results: list[AgentResultV1]) -> CopilotFreshnessSummaryV1:
-    states = [result.freshness.state for result in results]
-    overall = CopilotFreshnessState(aggregate_source_states(states)) if states else CopilotFreshnessState.UNAVAILABLE
-    market_dates = sorted({result.freshness.market_date for result in results if result.freshness.market_date})
-    generated = sorted({result.freshness.generated_at for result in results if result.freshness.generated_at})
-    warnings = list(dict.fromkeys(warning for result in results for warning in result.freshness.warnings))
-    current_states = {CopilotFreshnessState.LIVE, CopilotFreshnessState.DELAYED, CopilotFreshnessState.CACHED}
+    summary = _FRESHNESS_ENGINE.summarize(
+        FreshnessSummaryInput(
+            state=result.freshness.state.value,
+            market_date=result.freshness.market_date,
+            generated_at=result.freshness.generated_at,
+            warnings=tuple(result.freshness.warnings),
+        )
+        for result in results
+    )
     return CopilotFreshnessSummaryV1(
-        overall_state=overall,
-        market_dates=market_dates,
-        generated_timestamps=generated,
-        current_count=sum(state in current_states for state in states),
-        stale_count=sum(state == CopilotFreshnessState.STALE for state in states),
-        partial_count=sum(state in {CopilotFreshnessState.PARTIAL, CopilotFreshnessState.MIXED} for state in states),
-        unavailable_count=sum(state == CopilotFreshnessState.UNAVAILABLE for state in states),
-        test_count=sum(state == CopilotFreshnessState.TEST for state in states),
-        warnings=warnings,
+        overall_state=CopilotFreshnessState(summary.overall_state),
+        market_dates=list(summary.market_dates),
+        generated_timestamps=list(summary.generated_timestamps),
+        current_count=summary.current_count,
+        stale_count=summary.stale_count,
+        partial_count=summary.partial_count,
+        unavailable_count=summary.unavailable_count,
+        test_count=summary.test_count,
+        warnings=list(summary.warnings),
     )

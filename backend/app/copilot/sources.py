@@ -4,6 +4,10 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Iterable
 
+from app.analysis_engines.freshness import (
+    TRUSTED_SOURCE_STATES as ENGINE_TRUSTED_SOURCE_STATES,
+    FreshnessAvailabilityEngine,
+)
 from app.breadth.models import BreadthSnapshot
 from app.breadth.service import get_breadth_snapshot_service
 from app.reports.document import ReportDocument
@@ -18,16 +22,8 @@ from app.theme_snapshots.models import ThemeSnapshot
 from app.theme_snapshots.service import get_theme_snapshot_service
 
 
-TRUSTED_SOURCE_STATES = {
-    "live",
-    "delayed",
-    "cached",
-    "stale",
-    "test",
-    "partial",
-    "mixed",
-    "unavailable",
-}
+TRUSTED_SOURCE_STATES = set(ENGINE_TRUSTED_SOURCE_STATES)
+_FRESHNESS_ENGINE = FreshnessAvailabilityEngine()
 
 
 @dataclass(frozen=True)
@@ -97,48 +93,15 @@ class TrustedCopilotSources:
 
 
 def normalize_source_state(value: Any, *, partial: bool = False, test: bool = False) -> str:
-    if test:
-        return "test"
-    text = str(getattr(value, "value", value) or "unavailable").strip().lower()
-    if partial and text not in {"test", "stale", "unavailable"}:
-        return "partial"
-    if text in TRUSTED_SOURCE_STATES:
-        return text
-    if text in {"current", "fresh", "official", "available"}:
-        return "live"
-    if text in {"mock", "generated_test_data"}:
-        return "test"
-    if text in {"initializing", "failed", "error"}:
-        return "unavailable"
-    return "unavailable"
+    return _FRESHNESS_ENGINE.normalize_source_state(value, partial=partial, test=test)
 
 
 def aggregate_source_states(states: Iterable[str]) -> str:
-    values = {normalize_source_state(state) for state in states}
-    if not values or values == {"unavailable"}:
-        return "unavailable"
-    unavailable = "unavailable" in values
-    values.discard("unavailable")
-    if "test" in values:
-        result = "test" if values == {"test"} else "mixed"
-        return "mixed" if unavailable else result
-    if "stale" in values:
-        result = "stale" if values == {"stale"} else "mixed"
-        return "mixed" if unavailable else result
-    if "partial" in values:
-        return "partial" if values <= {"partial", "live", "cached", "delayed"} else "mixed"
-    if unavailable:
-        return "partial"
-    if len(values) == 1:
-        return next(iter(values))
-    return "mixed"
+    return _FRESHNESS_ENGINE.aggregate_states(states)
 
 
 def is_expired(expires_at: str | None, *, now: datetime | None = None) -> bool:
-    value = parse_datetime(expires_at)
-    if value is None:
-        return False
-    return value <= (now or datetime.now(timezone.utc))
+    return _FRESHNESS_ENGINE.is_expired(expires_at, now=now)
 
 
 def freshness_state(
@@ -148,28 +111,16 @@ def freshness_state(
     expires_at: str | None = None,
     test_data: bool = False,
 ) -> str:
-    normalized_status = str(getattr(status, "value", status) or "").lower()
-    if test_data:
-        return "test"
-    if is_expired(expires_at) or normalized_status == "stale":
-        return "stale"
-    if normalized_status in {"partial", "initializing"}:
-        return "partial" if normalized_status == "partial" else "unavailable"
-    if normalized_status in {"unavailable", "failed"}:
-        return "unavailable"
-    return normalize_source_state(source_state)
+    return _FRESHNESS_ENGINE.state_from_source(
+        source_state=source_state,
+        provider_status=status,
+        expires_at=expires_at,
+        test_data=test_data,
+    )
 
 
 def parse_datetime(value: str | None) -> datetime | None:
-    if not value:
-        return None
-    try:
-        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
-    return parsed
+    return _FRESHNESS_ENGINE.parse_datetime(value)
 
 
 def extract_saved_symbols(context: dict[str, Any] | None) -> list[str]:

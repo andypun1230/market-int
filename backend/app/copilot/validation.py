@@ -6,6 +6,25 @@ from collections.abc import Callable, Iterable, Sequence
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from app.analysis_engines.confidence import (
+    ConfidenceAdjustmentEngine,
+    ConfidenceAdjustmentInput,
+)
+from app.analysis_engines.contradiction import (
+    ContradictionEngine,
+    ContradictionPreservationInput,
+)
+from app.analysis_engines.evidence_validation import (
+    BreakoutEvidence,
+    BreakoutValidationInput,
+    ClaimBindingInput,
+    EvidenceValidationEngine,
+    SourceRecord,
+)
+from app.analysis_engines.freshness import (
+    CONSTRAINED_FRESHNESS_STATES,
+    FreshnessAvailabilityEngine,
+)
 from app.copilot.actions import get_registered_action, is_registered_route
 from app.copilot.contracts import (
     CopilotActionType,
@@ -15,6 +34,7 @@ from app.copilot.contracts import (
     CopilotEvidenceBundleV1,
     CopilotEvidenceV1,
     CopilotFreshnessState,
+    CopilotInterpretationClass,
     CopilotIntentType,
     CopilotIntentV1,
     CopilotReasoningFactorV1,
@@ -44,12 +64,12 @@ SourceValidator = Callable[[CopilotSourceReferenceV1, CopilotEvidenceBundleV1], 
 
 _CHECKS = list(CopilotValidationCheck)
 _CONSTRAINED_STATES = {
-    CopilotFreshnessState.STALE,
-    CopilotFreshnessState.TEST,
-    CopilotFreshnessState.PARTIAL,
-    CopilotFreshnessState.MIXED,
-    CopilotFreshnessState.UNAVAILABLE,
+    CopilotFreshnessState(value) for value in CONSTRAINED_FRESHNESS_STATES
 }
+_CONFIDENCE_ENGINE = ConfidenceAdjustmentEngine()
+_CONTRADICTION_ENGINE = ContradictionEngine()
+_EVIDENCE_VALIDATION_ENGINE = EvidenceValidationEngine()
+_FRESHNESS_ENGINE = FreshnessAvailabilityEngine()
 
 _NUMERIC_PATTERN = re.compile(r"(?<![A-Za-z])[-+]?\d[\d,]*(?:\.\d+)?%?")
 _UPPER_TOKEN_PATTERN = re.compile(r"(?<![A-Za-z0-9_$])\$?([A-Z][A-Z0-9.-]{0,5})(?![A-Za-z0-9_])")
@@ -79,20 +99,6 @@ _DIRECT_YIELD_PATTERN = re.compile(
 )
 _PROXY_MARKERS = {"etf", "proxy", "tlt", "ief", "shy", "hyg", "lqd"}
 _FLOW_MARKERS = {"flow", "fund flow", "institutional", "accumulation", "smart money"}
-_METRIC_FAMILY_PATTERNS: dict[str, tuple[str, ...]] = {
-    "price": ("price", "close", "support", "resistance", "breakout", "trigger", "level"),
-    "rsi": ("rsi",),
-    "moving_average": ("ema", "sma", "moving average"),
-    "return": ("return", "performance", "gain", "loss", "change"),
-    "score": ("score", "rating"),
-    "volume": ("volume", "participation"),
-    "yield": ("yield",),
-    "breadth": ("breadth", "advance decline", "constituents above"),
-    "count": ("count", "constituent", "securities", "figure types", "items"),
-    "ratio": ("ratio", "relative strength"),
-    "risk": ("risk", "volatility"),
-}
-
 # These are common market/application terms rather than security symbols.
 _NON_TICKER_TOKENS = {
     "AD",
@@ -256,6 +262,21 @@ class CopilotResponseValidator:
                     CopilotValidationSeverity.ERROR,
                     "A factual reasoning factor has no evidence reference.",
                 ))
+            unsuitable = [
+                value
+                for value in factor.evidence_ids
+                if value in known
+                and next(
+                    item for item in bundle.evidence if item.evidence_id == value
+                ).interpretation_class
+                == CopilotInterpretationClass.MISSING_EVIDENCE
+            ]
+            if unsuitable:
+                issues.append(_issue(
+                    CopilotValidationCheck.EVIDENCE_REFERENCES,
+                    CopilotValidationSeverity.ERROR,
+                    "A factual reasoning factor cites quarantined or missing evidence.",
+                ))
 
         intent_type = CopilotIntentType(intent.intent)
         exempt = {
@@ -352,12 +373,6 @@ class CopilotResponseValidator:
                 or "insufficient validated evidence" in reasoning.direct_answer.casefold()
             )
         )
-        if deterministic_no_claim_fallback:
-            # A fail-closed response promotes no thesis, so it has no thesis
-            # whose counter-evidence could be misleadingly omitted.  Bundle
-            # defects are still caught by their own checks on the second
-            # validation pass and cause evidence quarantine.
-            return []
         expected = set(bundle.contradictory_evidence_ids)
         if not expected:
             return []
@@ -370,19 +385,25 @@ class CopilotResponseValidator:
             ]
             for evidence_id in factor.evidence_ids
         }
-        preserved = expected.intersection(cited)
-        if not preserved:
+        disclosure = any(
+            "additional contradictory evidence" in value.casefold()
+            for value in reasoning.missing_evidence
+        )
+        preservation = _CONTRADICTION_ENGINE.validate_preservation(
+            ContradictionPreservationInput(
+                expected_evidence_ids=tuple(bundle.contradictory_evidence_ids),
+                cited_evidence_ids=tuple(cited),
+                truncation_disclosed=disclosure,
+                fail_closed_no_claim=deterministic_no_claim_fallback,
+            )
+        )
+        if preservation.reason == "no_contradiction_preserved":
             return [_issue(
                 CopilotValidationCheck.CONTRADICTION_PRESERVATION,
                 CopilotValidationSeverity.ERROR,
                 "Collected contradictory evidence was omitted from challenge/risk reasoning.",
             )]
-        omitted = expected - cited
-        disclosure = any(
-            "additional contradictory evidence" in value.casefold()
-            for value in reasoning.missing_evidence
-        )
-        if omitted and not disclosure:
+        if preservation.reason == "truncation_not_disclosed":
             return [_issue(
                 CopilotValidationCheck.CONTRADICTION_PRESERVATION,
                 CopilotValidationSeverity.ERROR,
@@ -462,8 +483,25 @@ class CopilotResponseValidator:
                         "One source ID resolves to conflicting provider, dataset, timestamp, or raw-snapshot lineage.",
                     ))
                 registered.setdefault(source.source_id, source)
+        for source in registered.values():
+            if not _EVIDENCE_VALIDATION_ENGINE.source_timestamp_is_valid(
+                _engine_source_record(source)
+            ):
+                issues.append(_issue(
+                    CopilotValidationCheck.SOURCES,
+                    CopilotValidationSeverity.ERROR,
+                    "A registered evidence source has an invalid generation timestamp or market date.",
+                ))
         for item in bundle.evidence:
             source = item.source
+            if not _EVIDENCE_VALIDATION_ENGINE.source_timestamp_is_valid(
+                _engine_source_record(source)
+            ):
+                issues.append(_issue(
+                    CopilotValidationCheck.SOURCES,
+                    CopilotValidationSeverity.ERROR,
+                    "An evidence item has an invalid source generation timestamp or market date.",
+                ))
             if source.source_id not in registered:
                 # Report evidence can retain a more precise per-item source
                 # than the agent-level source summary. Accept that typed raw
@@ -582,32 +620,23 @@ class CopilotResponseValidator:
             cited = [evidence_by_id[value] for value in cited_ids if value in evidence_by_id]
             candidates = cited if cited_ids else bundle.evidence
             claimed_entities = _explicit_claim_entities(text, bundle)
-            by_entity: dict[str, dict[str, Any]] = {}
-            for item in candidates:
-                entity_keys = _evidence_entity_keys(item)
-                if claimed_entities and not entity_keys.intersection(claimed_entities):
-                    continue
-                entity_key = item.entity.strip().casefold()
-                state = by_entity.setdefault(
-                    entity_key,
-                    {"current": [], "trigger": [], "volume": False},
+            supported = _EVIDENCE_VALIDATION_ENGINE.validate_breakout_confirmation(
+                BreakoutValidationInput(
+                    claimed_entities=frozenset(claimed_entities),
+                    evidence=tuple(
+                        BreakoutEvidence(
+                            entity=item.entity,
+                            entity_keys=frozenset(_evidence_entity_keys(item)),
+                            metric=item.metric,
+                            value=(
+                                item.current_state
+                                if item.current_state is not None
+                                else item.value
+                            ),
+                        )
+                        for item in candidates
+                    ),
                 )
-                metric = item.metric.casefold()
-                number = _scalar_decimal(item.current_state if item.current_state is not None else item.value)
-                if any(term in metric for term in ("breakout", "resistance", "confirmation", "trigger")):
-                    if number is not None:
-                        state["trigger"].append(number)
-                elif metric in {"price", "current price", "last price", "close", "closing price"}:
-                    if number is not None:
-                        state["current"].append(number)
-                if "volume" in metric and _volume_supports_confirmation(item):
-                    state["volume"] = True
-            supported = any(
-                state["current"]
-                and state["trigger"]
-                and max(state["current"]) > max(state["trigger"])
-                and state["volume"]
-                for state in by_entity.values()
             )
             if not supported:
                 return [_issue(
@@ -663,12 +692,17 @@ class CopilotResponseValidator:
         if intent.intent in exempt or reasoning.confidence_label != CopilotConfidenceLabel.HIGH:
             return []
         summary = bundle.freshness_summary
-        constrained = summary.overall_state in _CONSTRAINED_STATES or any((
-            summary.stale_count,
-            summary.partial_count,
-            summary.unavailable_count,
-            summary.test_count,
-        ))
+        constrained = _CONFIDENCE_ENGINE.is_constrained(
+            ConfidenceAdjustmentInput(
+                intent=intent.intent.value,
+                evidence_count=len(bundle.evidence),
+                freshness_state=_FRESHNESS_ENGINE.normalize_source_state(summary.overall_state),
+                stale_count=summary.stale_count,
+                partial_count=summary.partial_count,
+                unavailable_count=summary.unavailable_count,
+                test_count=summary.test_count,
+            )
+        )
         if not constrained:
             return []
         return [_issue(
@@ -746,16 +780,15 @@ class CopilotResponseValidator:
         reasoning: CopilotReasoningV1,
     ) -> list[CopilotValidationIssueV1]:
         summary = bundle.freshness_summary
-        try:
-            state = CopilotFreshnessState(summary.overall_state)
-        except ValueError:
-            state = CopilotFreshnessState.UNAVAILABLE
-        constrained = state in _CONSTRAINED_STATES or any(
-            (
-                summary.stale_count,
-                summary.partial_count,
-                summary.unavailable_count,
-                summary.test_count,
+        constrained = _CONFIDENCE_ENGINE.is_constrained(
+            ConfidenceAdjustmentInput(
+                intent=bundle.intent.intent.value,
+                evidence_count=len(bundle.evidence),
+                freshness_state=_FRESHNESS_ENGINE.normalize_source_state(summary.overall_state),
+                stale_count=summary.stale_count,
+                partial_count=summary.partial_count,
+                unavailable_count=summary.unavailable_count,
+                test_count=summary.test_count,
             )
         )
         if not constrained:
@@ -1122,12 +1155,7 @@ def _evidence_entity_keys(item: CopilotEvidenceV1) -> set[str]:
 
 
 def _metric_families(text: str) -> set[str]:
-    lowered = text.casefold().replace("-", " ")
-    return {
-        family
-        for family, markers in _METRIC_FAMILY_PATTERNS.items()
-        if any(marker in lowered for marker in markers)
-    }
+    return _EVIDENCE_VALIDATION_ENGINE.metric_families(text)
 
 
 def _evidence_matches_claim(
@@ -1136,28 +1164,20 @@ def _evidence_matches_claim(
     bundle: CopilotEvidenceBundleV1,
 ) -> bool:
     entities = _explicit_claim_entities(claim, bundle)
-    if entities and not entities.intersection(_evidence_entity_keys(item)):
-        return False
-    claim_metrics = _metric_families(claim)
-    evidence_descriptor = " ".join((
-        item.metric,
-        item.unit or "",
-        _json_text(item.value),
-        _json_text(item.current_state),
-    ))
-    evidence_metrics = _metric_families(evidence_descriptor)
-    if claim_metrics and not claim_metrics.intersection(evidence_metrics):
-        return False
-    lowered = claim.casefold()
-    unit = f"{item.unit or ''} {_json_text(item.value)} {_json_text(item.current_state)}".casefold()
-    metric = item.metric.casefold()
-    if ("%" in claim or "percent" in lowered or "percentage" in lowered) and not (
-        "%" in unit or "percent" in unit or "percentage" in metric
-    ):
-        return False
-    if "$" in claim and not any(value in f"{metric} {unit}" for value in ("price", "usd", "dollar")):
-        return False
-    return True
+    result = _EVIDENCE_VALIDATION_ENGINE.validate_claim_binding(
+        ClaimBindingInput(
+            claim=claim,
+            claim_entities=frozenset(entities),
+            evidence_entities=frozenset(_evidence_entity_keys(item)),
+            evidence_metric=item.metric,
+            evidence_unit=item.unit,
+            evidence_value=item.value,
+            evidence_current_state=item.current_state,
+            evidence_interpretation_class=item.interpretation_class.value,
+            evidence_timeframe=item.timeframe,
+        )
+    )
+    return result.valid
 
 
 def _claims_semantically_compatible(
@@ -1165,19 +1185,12 @@ def _claims_semantically_compatible(
     second: str,
     bundle: CopilotEvidenceBundleV1,
 ) -> bool:
-    first_entities = _explicit_claim_entities(first, bundle)
-    second_entities = _explicit_claim_entities(second, bundle)
-    if first_entities and second_entities and not first_entities.intersection(second_entities):
-        return False
-    first_metrics = _metric_families(first)
-    second_metrics = _metric_families(second)
-    if first_metrics and second_metrics and not first_metrics.intersection(second_metrics):
-        return False
-    first_percent = "%" in first or "percent" in first.casefold() or "percentage" in first.casefold()
-    second_percent = "%" in second or "percent" in second.casefold() or "percentage" in second.casefold()
-    if first_percent != second_percent and (first_metrics or second_metrics):
-        return False
-    return True
+    return _EVIDENCE_VALIDATION_ENGINE.claims_semantically_compatible(
+        first,
+        second,
+        first_entities=frozenset(_explicit_claim_entities(first, bundle)),
+        second_entities=frozenset(_explicit_claim_entities(second, bundle)),
+    )
 
 
 def _cited_support_for_uncited_number(
@@ -1224,39 +1237,18 @@ def _explicit_freshness_limitation(text: str) -> bool:
     )
 
 
-def _scalar_decimal(value: Any) -> Decimal | None:
-    if value is None or isinstance(value, bool):
-        return None
-    raw = str(value).strip().replace(",", "").rstrip("%")
-    if not re.fullmatch(r"[-+]?\d+(?:\.\d+)?", raw):
-        return None
-    try:
-        return Decimal(raw)
-    except InvalidOperation:
-        return None
-
-
-def _volume_supports_confirmation(item: CopilotEvidenceV1) -> bool:
-    value = item.current_state if item.current_state is not None else item.value
-    if isinstance(value, bool):
-        return value
-    number = _scalar_decimal(value)
-    metric = item.metric.casefold()
-    if number is not None:
-        return any(term in metric for term in ("ratio", "relative", "vs average")) and number >= 1
-    text = str(value or "").casefold()
-    if any(term in text for term in ("weak", "below average", "declining", "missing", "partial", "unavailable", "not confirmed")):
-        return False
-    return any(term in text for term in ("strong", "above average", "expanding", "confirmed", "supportive"))
-
-
 def _source_identity(source: CopilotSourceReferenceV1) -> tuple[str | None, ...]:
-    return (
-        source.provider,
-        source.dataset,
-        source.generated_at,
-        source.market_date,
-        source.raw_engine_reference,
+    return _EVIDENCE_VALIDATION_ENGINE.source_identity(_engine_source_record(source))
+
+
+def _engine_source_record(source: CopilotSourceReferenceV1) -> SourceRecord:
+    return SourceRecord(
+        source_id=source.source_id,
+        provider=source.provider,
+        dataset=source.dataset,
+        generated_at=source.generated_at,
+        market_date=source.market_date,
+        raw_engine_reference=source.raw_engine_reference,
     )
 
 

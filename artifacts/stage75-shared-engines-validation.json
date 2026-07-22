@@ -1,0 +1,582 @@
+{
+  "schema_version": "stage75-shared-engines-validation-v1",
+  "stage": "7.5",
+  "generated_at": "2026-07-22T06:30:00Z",
+  "overall_result": "PASS WITH CONDITIONS",
+  "release_bearing": true,
+  "baseline": {
+    "commit": "218e7ea53f98df14e8d864c6cd123952ad51fe0e",
+    "working_tree_clean": true,
+    "validation_command": "make validate-stage7 PYTHON=venv/bin/python",
+    "result": "PASS WITH CONDITIONS",
+    "backend_tests": {
+      "passed": 395,
+      "failed": 0
+    },
+    "stage7_focused_tests": {
+      "passed": 72,
+      "failed": 0
+    },
+    "institutional_copilot_tests": {
+      "passed": 39,
+      "failed": 0
+    },
+    "runtime_scenarios": {
+      "passed": 30,
+      "total": 30
+    },
+    "frozen_semantic_cases": {
+      "passed": 165,
+      "total": 165,
+      "release_bearing": false
+    },
+    "failure_injections": {
+      "passed": 7,
+      "total": 7
+    },
+    "initial_worktree_runtime_latency_ms": {
+      "mean": 2.820929,
+      "p50": 2.417,
+      "p95": 5.69965,
+      "max": 7.376
+    },
+    "isolated_commit_performance_latency_ms": {
+      "mean": 2.839786,
+      "p50": 2.483,
+      "p95": 5.8071,
+      "p99": 7.03742,
+      "max": 7.345
+    },
+    "artifact": "artifacts/stage75-pre-refactor-validation.json",
+    "runtime_artifact": "artifacts/stage75-pre-refactor-runtime-evaluation.json"
+  },
+  "final_target": {
+    "commit": null,
+    "head_commit": "218e7ea53f98df14e8d864c6cd123952ad51fe0e",
+    "description": "Validated working tree based on the baseline commit; no commit was created by Stage 7.5.",
+    "validation_command": "make validate-stage75 PYTHON=venv/bin/python",
+    "result": "PASS WITH CONDITIONS",
+    "runtime_artifact": "artifacts/stage75-post-refactor-runtime-evaluation.json",
+    "reference_artifact": "artifacts/stage75-post-refactor-reference-evaluation.json",
+    "human_review_artifact": "artifacts/stage75-post-refactor-human-review.json",
+    "canonical_stage7_artifacts_preserved": true
+  },
+  "engine_inventory": {
+    "package_version": "stage75-analysis-engines-v1",
+    "implemented_count": 4,
+    "manifest": "backend/app/analysis_engines/engine_manifest.json",
+    "engines": [
+      {
+        "id": "freshness_availability",
+        "version": "freshness-availability-v1",
+        "typed_contracts": true,
+        "deterministic": true,
+        "implementation": "backend/app/analysis_engines/freshness/engine.py"
+      },
+      {
+        "id": "evidence_validation",
+        "version": "evidence-validation-v1",
+        "typed_contracts": true,
+        "deterministic": true,
+        "fail_closed": true,
+        "implementation": "backend/app/analysis_engines/evidence_validation/engine.py"
+      },
+      {
+        "id": "contradiction_preservation",
+        "version": "contradiction-preservation-v1",
+        "typed_contracts": true,
+        "deterministic": true,
+        "implementation": "backend/app/analysis_engines/contradiction/engine.py"
+      },
+      {
+        "id": "confidence_adjustment",
+        "version": "confidence-adjustment-v1",
+        "typed_contracts": true,
+        "deterministic": true,
+        "explicit_rule_contributions": true,
+        "implementation": "backend/app/analysis_engines/confidence/engine.py"
+      }
+    ]
+  },
+  "dependency_map": {
+    "human_readable": "docs/stage75-engine-dependency-map.md",
+    "machine_readable": "backend/app/analysis_engines/engine_manifest.json",
+    "registered_agent_count": 15,
+    "domain_specific_component_count": 9,
+    "deferred_candidate_count": 8
+  },
+  "agent_migration_status": {
+    "registered_count": 15,
+    "available_count": 15,
+    "all_registered_agents_exercised": true,
+    "agents": [
+      "market",
+      "index",
+      "breadth",
+      "leadership",
+      "sector",
+      "theme",
+      "macro",
+      "risk",
+      "stock",
+      "watchlist",
+      "report",
+      "research",
+      "navigation",
+      "educational",
+      "portfolio"
+    ],
+    "freshness_availability": {
+      "direct_adapter_agents": [
+        "market",
+        "index",
+        "breadth",
+        "leadership",
+        "sector",
+        "theme",
+        "macro",
+        "risk",
+        "stock",
+        "report",
+        "research"
+      ],
+      "downstream_contract_agents": [
+        "watchlist",
+        "navigation",
+        "educational",
+        "portfolio"
+      ]
+    },
+    "evidence_validation": {
+      "normal_result_boundary_agent_count": 15,
+      "downstream_contract_agent_count": 15
+    },
+    "contradiction_preservation": {
+      "downstream_pipeline_agent_count": 15,
+      "direct_agent_adapter_count": 0,
+      "mode": "downstream by design"
+    },
+    "confidence_adjustment": {
+      "downstream_pipeline_agent_count": 15,
+      "direct_agent_adapter_count": 0,
+      "mode": "downstream by design"
+    }
+  },
+  "duplicate_implementations_removed": [
+    {
+      "family": "freshness and availability",
+      "result": "Source normalization, timestamp parsing, expiry, aggregation, completeness, fallback and confidence-cap behavior now delegate to one engine."
+    },
+    {
+      "family": "evidence validation",
+      "result": "Stable evidence identity, collision reporting, claim binding, source lineage/timestamp checks, semantic compatibility and same-security breakout validation now share one engine."
+    },
+    {
+      "family": "contradiction preservation",
+      "result": "Evidence polarity partitioning and response-level preservation/truncation rules now share one engine."
+    },
+    {
+      "family": "confidence constraints",
+      "result": "Freshness and evidence-count caps now use explicit shared rule contributions at contract, reasoning and response-validation boundaries."
+    },
+    {
+      "family": "stock snapshot computation",
+      "result": "A per-build memoized DAG reduces support/resistance, relative strength, volume, trend, risk and pattern analysis from 13/9/8/7/6/3 calls respectively to one call each while preserving section payloads."
+    }
+  ],
+  "tests": {
+    "new_tests": {
+      "passed": 19,
+      "failed": 0,
+      "files": {
+        "backend/tests/test_stage75_shared_engines.py": 12,
+        "backend/tests/test_stage75_copilot_engine_adapters.py": 3,
+        "backend/tests/test_stage7_5_stock_snapshot_dag.py": 3,
+        "backend/tests/test_stage75_semantic_comparison.py": 1
+      }
+    },
+    "backend_full": {
+      "passed": 414,
+      "failed": 0
+    },
+    "stage7_focused": {
+      "passed": 91,
+      "failed": 0
+    },
+    "institutional_copilot": {
+      "passed": 39,
+      "failed": 0
+    },
+    "release_runtime": {
+      "passed": 30,
+      "total": 30,
+      "release_blockers": 0,
+      "result": "PASS WITH CONDITIONS"
+    },
+    "frozen_semantic_corpus": {
+      "passed": 165,
+      "total": 165,
+      "result": "NON-RELEASE"
+    },
+    "executable_fixtures": {
+      "passed": 30,
+      "total": 30
+    },
+    "failure_injections": {
+      "passed": 7,
+      "total": 7
+    },
+    "frontend": {
+      "typescript": "PASS",
+      "lint": "PASS",
+      "data_ui_screens": {
+        "passed": 28,
+        "total": 28
+      },
+      "copilot_contracts": "PASS",
+      "copilot_transport": "PASS",
+      "copilot_reducer": "PASS",
+      "copilot_destinations": "PASS",
+      "expo_web_export": {
+        "result": "PASS",
+        "static_routes": 25
+      }
+    }
+  },
+  "validation_metrics": {
+    "routing": {
+      "intent_accuracy": 1.0,
+      "required_agent_recall": 1.0,
+      "unnecessary_agent_rate": 0.0,
+      "invalid_route_rate": 0.0,
+      "fallback_rate": 0.0,
+      "average_agent_count": 1.315789
+    },
+    "component_scores": {
+      "contract_correctness": 1.0,
+      "contradiction_handling": 1.0,
+      "cost_efficiency": 1.0,
+      "deep_link_accuracy": 1.0,
+      "evidence_grounding": 1.0,
+      "factual_correctness": 1.0,
+      "format_compliance": 1.0,
+      "freshness_honesty": 1.0,
+      "latency": 1.0,
+      "routing_relevance": 1.0,
+      "safety": 1.0
+    },
+    "model_calls": 0,
+    "network_calls_in_hermetic_validation": 0,
+    "release_blockers": 0
+  },
+  "semantic_equivalence": {
+    "result": "PASS",
+    "equivalent_cases": 30,
+    "total_cases": 30,
+    "failed_cases": 0,
+    "artifact": "artifacts/stage75-semantic-equivalence.json",
+    "action_capture": {
+      "schema_version": "stage75-runtime-action-capture-v1",
+      "baseline_cases": 30,
+      "final_cases": 30,
+      "exact_parameters_compared": true
+    },
+    "protected_meaning": [
+      "conclusion class",
+      "evidence identity",
+      "claims",
+      "contradictions",
+      "confidence",
+      "freshness",
+      "missing evidence",
+      "selected agents",
+      "deep links",
+      "exact action IDs, destinations and parameters",
+      "validation status",
+      "failure categories",
+      "component scores"
+    ],
+    "ignored_only": [
+      "generated timestamps",
+      "measured latency",
+      "agent duration",
+      "internal module paths"
+    ]
+  },
+  "latency_comparison_ms": {
+    "measurement": "14-case release-bearing hermetic performance subset from isolated baseline commit and final working tree",
+    "before": {
+      "mean": 2.839786,
+      "p50": 2.483,
+      "p95": 5.8071,
+      "p99": 7.03742,
+      "max": 7.345
+    },
+    "after": {
+      "mean": 3.057786,
+      "p50": 2.5685,
+      "p95": 5.89245,
+      "p99": 6.88409,
+      "max": 7.132
+    },
+    "delta_percent": {
+      "mean": 7.676635,
+      "p50": 3.443415,
+      "p95": 1.469753,
+      "p99": -2.178781,
+      "max": -2.899932
+    },
+    "p95_guardrail_percent": 15.0,
+    "p95_guardrail_passed": true,
+    "material_unexplained_regression": false,
+    "runtime_artifact": "artifacts/stage75-post-refactor-runtime-evaluation.json"
+  },
+  "per_agent_latency_ms": {
+    "measurement": "Hermetic runtime evaluator; p50 and p95 compare the isolated baseline artifact with the final dedicated post-export runtime artifact.",
+    "agents": {
+      "breadth": {
+        "calls": 5,
+        "before_p50": 0.332,
+        "after_p50": 0.358,
+        "before_p95": 0.3896,
+        "after_p95": 0.4546,
+        "p95_delta_percent": 16.683778
+      },
+      "educational": {
+        "calls": 1,
+        "before_p50": 0.017,
+        "after_p50": 0.02,
+        "before_p95": 0.017,
+        "after_p95": 0.02,
+        "p95_delta_percent": 17.647059
+      },
+      "index": {
+        "calls": 1,
+        "before_p50": 0.441,
+        "after_p50": 0.497,
+        "before_p95": 0.441,
+        "after_p95": 0.497,
+        "p95_delta_percent": 12.698413
+      },
+      "leadership": {
+        "calls": 1,
+        "before_p50": 0.314,
+        "after_p50": 0.346,
+        "before_p95": 0.314,
+        "after_p95": 0.346,
+        "p95_delta_percent": 10.191083
+      },
+      "macro": {
+        "calls": 1,
+        "before_p50": 0.421,
+        "after_p50": 0.426,
+        "before_p95": 0.421,
+        "after_p95": 0.426,
+        "p95_delta_percent": 1.187648
+      },
+      "market": {
+        "calls": 6,
+        "before_p50": 0.137,
+        "after_p50": 0.1495,
+        "before_p95": 0.4185,
+        "after_p95": 0.443,
+        "p95_delta_percent": 5.854241
+      },
+      "navigation": {
+        "calls": 1,
+        "before_p50": 0.017,
+        "after_p50": 0.022,
+        "before_p95": 0.017,
+        "after_p95": 0.022,
+        "p95_delta_percent": 29.411765
+      },
+      "portfolio": {
+        "calls": 1,
+        "before_p50": 0.025,
+        "after_p50": 0.028,
+        "before_p95": 0.025,
+        "after_p95": 0.028,
+        "p95_delta_percent": 12.0
+      },
+      "report": {
+        "calls": 4,
+        "before_p50": 0.679,
+        "after_p50": 0.7725,
+        "before_p95": 0.7173,
+        "after_p95": 1.177,
+        "p95_delta_percent": 64.087551
+      },
+      "research": {
+        "calls": 1,
+        "before_p50": 0.502,
+        "after_p50": 0.532,
+        "before_p95": 0.502,
+        "after_p95": 0.532,
+        "p95_delta_percent": 5.976096
+      },
+      "risk": {
+        "calls": 5,
+        "before_p50": 0.502,
+        "after_p50": 0.567,
+        "before_p95": 0.5764,
+        "after_p95": 0.669,
+        "p95_delta_percent": 16.065232
+      },
+      "sector": {
+        "calls": 1,
+        "before_p50": 0.184,
+        "after_p50": 0.199,
+        "before_p95": 0.184,
+        "after_p95": 0.199,
+        "p95_delta_percent": 8.152174
+      },
+      "stock": {
+        "calls": 9,
+        "before_p50": 0.697,
+        "after_p50": 0.713,
+        "before_p95": 1.9886,
+        "after_p95": 1.7124,
+        "p95_delta_percent": -13.889168
+      },
+      "theme": {
+        "calls": 1,
+        "before_p50": 0.164,
+        "after_p50": 0.188,
+        "before_p95": 0.164,
+        "after_p95": 0.188,
+        "p95_delta_percent": 14.634146
+      },
+      "watchlist": {
+        "calls": 2,
+        "before_p50": 0.1585,
+        "after_p50": 0.167,
+        "before_p95": 0.17875,
+        "after_p95": 0.2012,
+        "p95_delta_percent": 12.559441
+      }
+    },
+    "interpretation": "Agent samples are small and sub-millisecond for most agents; total-request p95 is the release guardrail."
+  },
+  "engine_performance": {
+    "artifact": "artifacts/stage75-engine-performance.json",
+    "iterations_per_engine": 5000,
+    "p95_microseconds": {
+      "freshness_availability": 28.667,
+      "evidence_claim_binding": 105.083,
+      "evidence_breakout_validation": 51.667,
+      "contradiction_preservation": 35.625,
+      "confidence_adjustment": 14.208
+    },
+    "benchmark_peak_bytes": 228112,
+    "fresh_process_import_mean_ms": {
+      "baseline": 20.572256,
+      "with_analysis_engines": 57.390595,
+      "delta": 36.818339
+    },
+    "import_timing_is_diagnostic": true
+  },
+  "api_frontend_compatibility": {
+    "public_endpoints_changed": false,
+    "public_routes_changed": false,
+    "public_fields_removed": false,
+    "deep_links_preserved": true,
+    "new_screens_added": false,
+    "report_or_pdf_design_changed": false,
+    "frontend_validation": "PASS"
+  },
+  "defects_found_and_fixed": [
+    {
+      "id": "stock-section-recomputation",
+      "classification": "pre-existing architectural inefficiency",
+      "fix": "Introduced a per-snapshot typed dependency DAG that memoizes both values and failures.",
+      "behavior_change": false,
+      "regression_test": "backend/tests/test_stage7_5_stock_snapshot_dag.py"
+    },
+    {
+      "id": "duplicate-evidence-fingerprint-overhead",
+      "classification": "refactor performance regression found during Stage 7.5",
+      "fix": "Compute canonical fingerprints only when a duplicate identity actually conflicts.",
+      "behavior_change": false,
+      "verification": "Final matched p95 delta is +1.469753%, within the 15% guardrail."
+    },
+    {
+      "id": "invalid-source-time-and-missing-evidence-citation",
+      "classification": "pre-existing fail-closed validation gap exposed by extraction",
+      "fix": "Reject malformed source timestamps/market dates and factual reasoning factors that cite missing-evidence records.",
+      "behavior_change": "Only previously invalid evidence paths now fail closed; all 30 frozen runtime meanings remain equivalent.",
+      "regression_test": "backend/tests/test_stage75_shared_engines.py"
+    },
+    {
+      "id": "stage75-validation-output-isolation",
+      "classification": "validation-tooling reproducibility gap",
+      "fix": "Made Stage 7 result paths overridable and routed Stage 7.5 reproduction outputs to Stage 7.5-specific artifacts.",
+      "behavior_change": false,
+      "verification": "Canonical Stage 7 validation artifacts remain byte-clean after make validate-stage75."
+    },
+    {
+      "id": "semantic-action-parameter-coverage",
+      "classification": "semantic-equivalence coverage gap",
+      "fix": "Captured and compared exact action IDs, destinations and parameter maps for all 30 baseline and final runtime cases.",
+      "behavior_change": false,
+      "regression_test": "backend/tests/test_stage75_semantic_comparison.py"
+    }
+  ],
+  "deferred_extractions": [
+    {
+      "id": "shared_trend_engine",
+      "reason": "Current calculations and contracts remain stock-domain-specific; no second equivalent consumer contract is proven."
+    },
+    {
+      "id": "shared_relative_strength_engine",
+      "reason": "Benchmark selection, weighting and stock market-model outputs are domain-coupled."
+    },
+    {
+      "id": "shared_volume_engine",
+      "reason": "Current service functions and stock input adapters do not yet share a versioned cross-domain contract."
+    },
+    {
+      "id": "shared_pattern_engine",
+      "reason": "Pattern input is not yet a frozen shared-history contract and no new pattern behavior was authorized."
+    },
+    {
+      "id": "shared_support_resistance_engine",
+      "reason": "Current level generation is a stock-domain implementation with observable market-model outputs."
+    },
+    {
+      "id": "shared_risk_metric_engine",
+      "reason": "Risk is composed inside the stock snapshot DAG and has no reusable versioned contract."
+    },
+    {
+      "id": "shared_time_series_alignment_engine",
+      "reason": "Existing consumers have materially different alignment semantics; unification would be a behavior migration."
+    },
+    {
+      "id": "shared_data_completeness_engine",
+      "reason": "Completeness thresholds are domain-specific and require an explicit typed contract extension."
+    }
+  ],
+  "warnings": [
+    "Runtime and performance validation use deterministic hermetic sources and do not measure live-provider or network latency.",
+    "Fresh-process import timing includes interpreter startup noise and is diagnostic only.",
+    "The 165-case frozen semantic corpus is non-release-bearing; the 30-case runtime suite is release-bearing."
+  ],
+  "remaining_conditions": [
+    "Native simulator visual rendering remains a manual Stage 7 check.",
+    "Rapid tab-switch cancellation remains a manual Stage 7 check.",
+    "Native screenshot capture on UI failures remains a manual Stage 7 check.",
+    "Live-provider latency and behavior are outside the hermetic validation boundary.",
+    "Deferred domain-formula engines require separately versioned behavioral migrations before extraction."
+  ],
+  "failures": [],
+  "scope_confirmations": {
+    "all_15_stage7_agents_available": true,
+    "future_stage_agents_added": false,
+    "model_calls_introduced": false,
+    "network_calls_introduced_in_hermetic_path": false,
+    "report_or_pdf_redesigned": false,
+    "frontend_redesigned": false,
+    "public_api_renamed": false,
+    "historical_stage7_validation_results_rewritten": false
+  },
+  "final_classification": "PASS WITH CONDITIONS"
+}

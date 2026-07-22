@@ -1,0 +1,913 @@
+{
+  "schema_version": "stage75-engine-manifest-v1",
+  "inventory_date": "2026-07-22",
+  "package": {
+    "python_package": "app.analysis_engines",
+    "path": "backend/app/analysis_engines",
+    "version_constant": "ANALYSIS_ENGINE_PACKAGE_VERSION",
+    "version": "stage75-analysis-engines-v1"
+  },
+  "scope": {
+    "implemented_engine_rule": "Only versioned engines with an executable implementation under backend/app/analysis_engines are listed in implemented_engines.",
+    "consumer_scope": "Production consumers are listed separately from verification consumers.",
+    "direct_adapter_use": "The engine is called while a source or agent adapter constructs or normalizes an AgentResultV1.",
+    "shared_downstream_validation": "The engine is called after an agent result exists, at the agent-contract, collection, reasoning, or response-validation boundary.",
+    "domain_component_rule": "Existing stock and Copilot helpers outside app.analysis_engines remain domain-specific components and are not represented as shared engines.",
+    "deferred_rule": "A deferred candidate has no implemented shared-engine package, version, or stable shared-engine contract in this inventory."
+  },
+  "implemented_engines": [
+    {
+      "id": "freshness_availability",
+      "name": "Freshness and Availability Engine",
+      "status": "implemented",
+      "version_constant": "FRESHNESS_ENGINE_VERSION",
+      "version": "freshness-availability-v1",
+      "implementation_path": "backend/app/analysis_engines/freshness/engine.py",
+      "public_module_path": "backend/app/analysis_engines/freshness/__init__.py",
+      "public_import": "app.analysis_engines.freshness",
+      "engine_class": "FreshnessAvailabilityEngine",
+      "contracts": {
+        "inputs": [
+          "FreshnessAvailabilityInput",
+          "FreshnessSummaryInput"
+        ],
+        "outputs": [
+          "FreshnessAvailabilityResult",
+          "FreshnessSummaryResult"
+        ],
+        "exported_constants": [
+          "TRUSTED_SOURCE_STATES",
+          "CONSTRAINED_FRESHNESS_STATES"
+        ]
+      },
+      "operations": [
+        "evaluate",
+        "summarize",
+        "state_from_source",
+        "normalize_source_state",
+        "aggregate_states",
+        "is_expired",
+        "parse_datetime",
+        "clamp_completeness"
+      ],
+      "engine_dependencies": [],
+      "direct_adapter_consumers": [
+        {
+          "path": "backend/app/copilot/engine_adapters.py",
+          "symbols": [
+            "CopilotFreshnessAdapter.evaluate",
+            "CopilotFreshnessAdapter.aggregate_states"
+          ],
+          "purpose": "Map engine output to CopilotFreshnessV1 and merge per-symbol freshness."
+        },
+        {
+          "path": "backend/app/copilot/agents.py",
+          "symbols": [
+            "_freshness",
+            "_merge_freshness"
+          ],
+          "purpose": "Use CopilotFreshnessAdapter while source-backed agent results are built."
+        },
+        {
+          "path": "backend/app/copilot/sources.py",
+          "symbols": [
+            "normalize_source_state",
+            "aggregate_source_states",
+            "is_expired",
+            "freshness_state",
+            "parse_datetime"
+          ],
+          "purpose": "Keep source-state normalization and expiry rules on the shared implementation."
+        }
+      ],
+      "shared_downstream_consumers": [
+        {
+          "path": "backend/app/copilot/agent_contracts.py",
+          "symbols": [
+            "validate_agent_result"
+          ],
+          "purpose": "Normalize result freshness before enforcing status and confidence constraints."
+        },
+        {
+          "path": "backend/app/copilot/collector.py",
+          "symbols": [
+            "_freshness_summary"
+          ],
+          "purpose": "Produce CopilotFreshnessSummaryV1 for the collected evidence bundle."
+        },
+        {
+          "path": "backend/app/copilot/reasoning.py",
+          "symbols": [
+            "CopilotReasoningEngine._confidence",
+            "_is_constrained"
+          ],
+          "purpose": "Normalize aggregate freshness before confidence adjustment."
+        },
+        {
+          "path": "backend/app/copilot/validation.py",
+          "symbols": [
+            "CopilotResponseValidator._validate_confidence_freshness",
+            "CopilotResponseValidator._validate_stale_actionability"
+          ],
+          "purpose": "Normalize freshness for response-level confidence and actionability checks."
+        }
+      ],
+      "agent_migration": {
+        "direct_adapter_agents": [
+          "market",
+          "index",
+          "breadth",
+          "leadership",
+          "sector",
+          "theme",
+          "macro",
+          "risk",
+          "stock",
+          "report",
+          "research"
+        ],
+        "downstream_validation_only_agents": [
+          "watchlist",
+          "navigation",
+          "educational",
+          "portfolio"
+        ],
+        "status": "11_direct_adapter_4_downstream_only",
+        "note": "The four downstream-only agents construct contract-specific cached, live, or unavailable CopilotFreshnessV1 values directly; every registry result is still normalized by validate_agent_result."
+      }
+    },
+    {
+      "id": "evidence_validation",
+      "name": "Evidence Validation Engine",
+      "status": "implemented",
+      "version_constant": "EVIDENCE_VALIDATION_ENGINE_VERSION",
+      "version": "evidence-validation-v1",
+      "implementation_path": "backend/app/analysis_engines/evidence_validation/engine.py",
+      "public_module_path": "backend/app/analysis_engines/evidence_validation/__init__.py",
+      "public_import": "app.analysis_engines.evidence_validation",
+      "engine_class": "EvidenceValidationEngine",
+      "contracts": {
+        "inputs": [
+          "ClaimBindingInput",
+          "BreakoutValidationInput",
+          "BreakoutEvidence",
+          "SourceRecord"
+        ],
+        "outputs": [
+          "StableDeduplicationResult",
+          "DeduplicationCollision",
+          "ClaimBindingResult"
+        ]
+      },
+      "operations": [
+        "deduplicate",
+        "validate_claim_binding",
+        "validate_breakout_confirmation",
+        "claims_semantically_compatible",
+        "source_identity",
+        "source_timestamp_is_valid",
+        "metric_families",
+        "scalar_decimal",
+        "volume_supports_confirmation",
+        "canonical_fingerprint",
+        "json_text"
+      ],
+      "engine_dependencies": [],
+      "direct_adapter_consumers": [
+        {
+          "path": "backend/app/copilot/engine_adapters.py",
+          "symbols": [
+            "CopilotEvidenceValidationAdapter.deduplicate"
+          ],
+          "purpose": "Map stable first-win engine deduplication back to CopilotEvidenceV1 lists."
+        },
+        {
+          "path": "backend/app/copilot/agents.py",
+          "symbols": [
+            "_dedupe_agent_evidence",
+            "_result"
+          ],
+          "purpose": "Deduplicate evidence at the normal successful AgentResultV1 construction boundary."
+        }
+      ],
+      "shared_downstream_consumers": [
+        {
+          "path": "backend/app/copilot/agent_contracts.py",
+          "symbols": [
+            "validate_agent_result"
+          ],
+          "purpose": "Reject duplicate evidence IDs at the registry contract boundary."
+        },
+        {
+          "path": "backend/app/copilot/collector.py",
+          "symbols": [
+            "_dedupe_evidence"
+          ],
+          "purpose": "Deduplicate the combined evidence set from all planned agents."
+        },
+        {
+          "path": "backend/app/copilot/validation.py",
+          "symbols": [
+            "CopilotResponseValidator._validate_sources",
+            "CopilotResponseValidator._validate_confirmed_claims",
+            "_metric_families",
+            "_evidence_matches_claim",
+            "_claims_semantically_compatible",
+            "_source_identity"
+          ],
+          "purpose": "Validate source lineage and timestamps, claim binding, semantic compatibility, and confirmed-breakout evidence."
+        }
+      ],
+      "agent_migration": {
+        "normal_result_boundary_agents": [
+          "market",
+          "index",
+          "breadth",
+          "leadership",
+          "sector",
+          "theme",
+          "macro",
+          "risk",
+          "stock",
+          "watchlist",
+          "report",
+          "research",
+          "navigation",
+          "educational",
+          "portfolio"
+        ],
+        "status": "all_15_normal_results_and_all_15_downstream_contracts",
+        "note": "Typed early unavailable or failed results bypass _result because they contain no factual evidence; validate_agent_result still applies the downstream uniqueness and lineage boundary."
+      }
+    },
+    {
+      "id": "contradiction_preservation",
+      "name": "Contradiction Preservation Engine",
+      "status": "implemented",
+      "version_constant": "CONTRADICTION_ENGINE_VERSION",
+      "version": "contradiction-preservation-v1",
+      "implementation_path": "backend/app/analysis_engines/contradiction/engine.py",
+      "public_module_path": "backend/app/analysis_engines/contradiction/__init__.py",
+      "public_import": "app.analysis_engines.contradiction",
+      "engine_class": "ContradictionEngine",
+      "contracts": {
+        "inputs": [
+          "ContradictionFinding",
+          "ContradictionAnalysisInput",
+          "ContradictionPreservationInput"
+        ],
+        "outputs": [
+          "ContradictionAnalysisResult",
+          "ContradictionPreservationResult"
+        ]
+      },
+      "operations": [
+        "analyze",
+        "validate_preservation",
+        "is_explicit_contradiction",
+        "polarity"
+      ],
+      "engine_dependencies": [],
+      "direct_adapter_consumers": [],
+      "shared_downstream_consumers": [
+        {
+          "path": "backend/app/copilot/collector.py",
+          "symbols": [
+            "CopilotEvidenceCollector.collect"
+          ],
+          "purpose": "Classify explicit contradiction links when building the evidence bundle."
+        },
+        {
+          "path": "backend/app/copilot/reasoning.py",
+          "symbols": [
+            "CopilotReasoningEngine._partition_evidence"
+          ],
+          "purpose": "Partition support, opposition, and neutral evidence without hiding declared contradictions."
+        },
+        {
+          "path": "backend/app/copilot/validation.py",
+          "symbols": [
+            "CopilotResponseValidator._validate_contradiction_preservation"
+          ],
+          "purpose": "Fail closed when collected contradictions disappear or are truncated without disclosure."
+        }
+      ],
+      "agent_migration": {
+        "direct_adapter_agents": [],
+        "downstream_pipeline_agents": [
+          "market",
+          "index",
+          "breadth",
+          "leadership",
+          "sector",
+          "theme",
+          "macro",
+          "risk",
+          "stock",
+          "watchlist",
+          "report",
+          "research",
+          "navigation",
+          "educational",
+          "portfolio"
+        ],
+        "status": "downstream_only_by_design",
+        "note": "Agents emit typed contradiction facts and links; the shared engine operates after collection and during reasoning and response validation."
+      }
+    },
+    {
+      "id": "confidence_adjustment",
+      "name": "Confidence Adjustment Engine",
+      "status": "implemented",
+      "version_constant": "CONFIDENCE_ENGINE_VERSION",
+      "version": "confidence-adjustment-v1",
+      "implementation_path": "backend/app/analysis_engines/confidence/engine.py",
+      "public_module_path": "backend/app/analysis_engines/confidence/__init__.py",
+      "public_import": "app.analysis_engines.confidence",
+      "engine_class": "ConfidenceAdjustmentEngine",
+      "contracts": {
+        "inputs": [
+          "ConfidenceAdjustmentInput"
+        ],
+        "outputs": [
+          "ConfidenceAdjustmentResult",
+          "ConfidenceRuleContribution"
+        ]
+      },
+      "operations": [
+        "adjust",
+        "is_constrained",
+        "label_exceeds"
+      ],
+      "engine_dependencies": [
+        {
+          "engine_id": "freshness_availability",
+          "imported_contract": "CONSTRAINED_FRESHNESS_STATES",
+          "purpose": "Apply the shared stale, test, partial, mixed, and unavailable confidence cap."
+        }
+      ],
+      "direct_adapter_consumers": [],
+      "shared_downstream_consumers": [
+        {
+          "path": "backend/app/copilot/agent_contracts.py",
+          "symbols": [
+            "validate_agent_result"
+          ],
+          "purpose": "Prevent high-confidence evidence and complete status from concealing constrained freshness."
+        },
+        {
+          "path": "backend/app/copilot/reasoning.py",
+          "symbols": [
+            "CopilotReasoningEngine._confidence",
+            "_is_constrained"
+          ],
+          "purpose": "Set the final reasoning confidence label and expose constrained state."
+        },
+        {
+          "path": "backend/app/copilot/validation.py",
+          "symbols": [
+            "CopilotResponseValidator._validate_confidence_freshness",
+            "CopilotResponseValidator._validate_stale_actionability"
+          ],
+          "purpose": "Reject response confidence or actionable language that exceeds freshness constraints."
+        }
+      ],
+      "agent_migration": {
+        "direct_adapter_agents": [],
+        "downstream_pipeline_agents": [
+          "market",
+          "index",
+          "breadth",
+          "leadership",
+          "sector",
+          "theme",
+          "macro",
+          "risk",
+          "stock",
+          "watchlist",
+          "report",
+          "research",
+          "navigation",
+          "educational",
+          "portfolio"
+        ],
+        "status": "downstream_only_by_design",
+        "note": "Agents retain evidence-level confidence labels; shared adjustment occurs at contract, synthesis, and response-validation boundaries."
+      }
+    }
+  ],
+  "agent_migration": {
+    "registry_path": "backend/app/copilot/agents.py",
+    "registry_class": "CopilotAgentRegistry",
+    "manifest_path": "backend/app/copilot/agent_manifest.json",
+    "registered_agent_count": 15,
+    "agent_output_contract": "app.copilot.contracts.AgentResultV1",
+    "agent_output_schema_version": "copilot-agent-result-v1",
+    "contract_path": "backend/app/copilot/contracts.py",
+    "coverage_summary": {
+      "direct_freshness_adapter_agents": 11,
+      "normal_result_evidence_boundary_agents": 15,
+      "all_result_contract_validation_agents": 15,
+      "direct_contradiction_engine_agents": 0,
+      "direct_confidence_engine_agents": 0,
+      "shared_downstream_pipeline_agents": 15
+    },
+    "agents": [
+      {
+        "id": "market",
+        "handler": "CopilotAgentRegistry._market",
+        "source_boundary": "TrustedCopilotSources.market_snapshot -> get_market_snapshot_service().get_latest_snapshot",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "index",
+        "handler": "CopilotAgentRegistry._index",
+        "source_boundary": "TrustedCopilotSources.market_snapshot -> MarketSnapshot.section_payload('indexes')",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "breadth",
+        "handler": "CopilotAgentRegistry._breadth",
+        "source_boundary": "TrustedCopilotSources.breadth_snapshot -> get_breadth_snapshot_service().latest",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "leadership",
+        "handler": "CopilotAgentRegistry._leadership",
+        "source_boundary": "TrustedCopilotSources.sector_snapshot -> reviewed SectorSnapshot rankings",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "sector",
+        "handler": "CopilotAgentRegistry._sector",
+        "source_boundary": "TrustedCopilotSources.sector_snapshot -> get_sector_snapshot_service().latest",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "theme",
+        "handler": "CopilotAgentRegistry._theme",
+        "source_boundary": "TrustedCopilotSources.theme_snapshot -> get_theme_snapshot_service().latest",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "macro",
+        "handler": "CopilotAgentRegistry._macro",
+        "source_boundary": "TrustedCopilotSources.latest_report_document -> get_latest_daily_report -> ReportDocument",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "risk",
+        "handler": "CopilotAgentRegistry._risk",
+        "source_boundary": "TrustedCopilotSources.latest_report_document -> get_latest_daily_report -> ReportDocument",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "stock",
+        "handler": "CopilotAgentRegistry._stock",
+        "source_boundary": "TrustedCopilotSources.stock_snapshot -> get_stock_snapshot_service().get_latest_snapshot",
+        "freshness_migration": "direct_adapter_and_aggregate",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "watchlist",
+        "handler": "CopilotAgentRegistry._watchlist",
+        "source_boundary": "explicit client saved-symbol identity hint, otherwise TrustedCopilotSources.watchlist_membership returns typed unavailable",
+        "freshness_migration": "downstream_validation_only_manual_cached_contract",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "shared_downstream_with_contract_specific_freshness"
+      },
+      {
+        "id": "report",
+        "handler": "CopilotAgentRegistry._report",
+        "source_boundary": "TrustedCopilotSources.latest_report_document -> get_latest_daily_report -> ReportDocument",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "research",
+        "handler": "CopilotAgentRegistry._research",
+        "source_boundary": "TrustedCopilotSources.latest_report_document -> ReportDocument.research_focus",
+        "freshness_migration": "direct_adapter",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "adapter_and_downstream_migrated"
+      },
+      {
+        "id": "navigation",
+        "handler": "CopilotAgentRegistry._navigation",
+        "source_boundary": "navigation_destination route registry",
+        "freshness_migration": "downstream_validation_only_manual_live_contract",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline_non_market_exemption",
+        "migration_status": "shared_downstream_with_contract_specific_freshness"
+      },
+      {
+        "id": "educational",
+        "handler": "CopilotAgentRegistry._educational",
+        "source_boundary": "bounded inline Copilot glossary; no market-data source",
+        "freshness_migration": "downstream_validation_only_manual_unavailable_contract",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline_non_market_exemption",
+        "migration_status": "shared_downstream_with_contract_specific_freshness"
+      },
+      {
+        "id": "portfolio",
+        "handler": "CopilotAgentRegistry._portfolio",
+        "source_boundary": "typed unavailable; portfolio holdings are not connected",
+        "freshness_migration": "downstream_validation_only_manual_unavailable_contract",
+        "evidence_validation_migration": "direct_normal_result_boundary",
+        "contradiction_migration": "shared_downstream_pipeline",
+        "confidence_migration": "shared_downstream_pipeline",
+        "migration_status": "shared_downstream_with_contract_specific_freshness"
+      }
+    ]
+  },
+  "domain_specific_components": [
+    {
+      "id": "stock_snapshot_computation_dag",
+      "name": "Stock Analysis Snapshot Computation DAG",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "algorithm_version": "stock-analysis-snapshot-v2",
+      "snapshot_schema_version": 2,
+      "paths": [
+        "backend/app/stock_snapshots/input_planner.py",
+        "backend/app/stock_snapshots/input_bundle.py",
+        "backend/app/stock_snapshots/builder.py",
+        "backend/app/stock_snapshots/models.py",
+        "backend/app/stock_snapshots/storage.py",
+        "backend/app/stock_snapshots/service.py",
+        "backend/app/stock_snapshots/provenance.py"
+      ],
+      "entrypoints": [
+        "StockAnalysisSnapshotBuilder.build_and_publish",
+        "StockAnalysisSnapshotBuilder.build",
+        "_StockSectionComputation.get"
+      ],
+      "inputs": {
+        "planner": "StockDetailInputPlanner.plan",
+        "bundle": "build_input_bundle",
+        "required": [
+          "quote",
+          "selected_history"
+        ],
+        "optional": [
+          "benchmark_history:SPY",
+          "benchmark_history:QQQ",
+          "benchmark_history:<sector benchmark>"
+        ]
+      },
+      "nodes": [
+        {
+          "id": "chart",
+          "dependencies": []
+        },
+        {
+          "id": "technical",
+          "dependencies": []
+        },
+        {
+          "id": "support_resistance",
+          "dependencies": []
+        },
+        {
+          "id": "trend",
+          "dependencies": []
+        },
+        {
+          "id": "volume",
+          "dependencies": []
+        },
+        {
+          "id": "relative_strength",
+          "dependencies": []
+        },
+        {
+          "id": "pattern",
+          "dependencies": [],
+          "note": "build_pattern_section calls detect_patterns(symbol); it does not consume the bundle's selected_history directly."
+        },
+        {
+          "id": "risk",
+          "dependencies": [
+            "support_resistance"
+          ]
+        },
+        {
+          "id": "rating",
+          "dependencies": [
+            "relative_strength",
+            "volume",
+            "risk",
+            "support_resistance",
+            "trend"
+          ]
+        },
+        {
+          "id": "signals",
+          "dependencies": [
+            "support_resistance",
+            "trend",
+            "volume",
+            "relative_strength",
+            "pattern"
+          ]
+        },
+        {
+          "id": "leadership",
+          "dependencies": [
+            "relative_strength",
+            "volume",
+            "signals",
+            "rating"
+          ]
+        },
+        {
+          "id": "executive_summary",
+          "dependencies": [
+            "rating",
+            "risk"
+          ]
+        },
+        {
+          "id": "overall_assessment",
+          "dependencies": [
+            "rating",
+            "relative_strength"
+          ]
+        }
+      ],
+      "publication_boundary": "StockAnalysisSnapshotBuilder.build_and_publish -> StockSnapshotStorage.publish_snapshot",
+      "copilot_read_boundary": "TrustedCopilotSources.stock_snapshot -> StockSnapshotService.get_latest_snapshot -> latest compatible or last successful compatible snapshot",
+      "copilot_does_not_call": [
+        "StockSnapshotService.get_analysis_payload",
+        "StockSnapshotService.trigger_background_refresh",
+        "StockAnalysisSnapshotBuilder.build",
+        "StockAnalysisSnapshotBuilder.build_and_publish"
+      ],
+      "copilot_consumed_sections": [
+        "rating",
+        "overall_assessment",
+        "executive_summary",
+        "technical",
+        "trend",
+        "volume",
+        "relative_strength",
+        "support_resistance"
+      ]
+    },
+    {
+      "id": "stock_trend_analysis",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "version": null,
+      "versioning": "Persisted output inherits stock-analysis-snapshot-v2; the service functions have no standalone engine version.",
+      "implementation_paths": [
+        "backend/app/services/trendline.py",
+        "backend/app/stock_snapshots/builder.py::build_trend_section"
+      ]
+    },
+    {
+      "id": "stock_relative_strength_analysis",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "version": null,
+      "versioning": "Persisted output inherits stock-analysis-snapshot-v2; the service functions have no standalone engine version.",
+      "implementation_paths": [
+        "backend/app/services/relative_strength.py",
+        "backend/app/stock_snapshots/builder.py::build_relative_strength_section"
+      ]
+    },
+    {
+      "id": "stock_volume_analysis",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "version": null,
+      "versioning": "Persisted output inherits stock-analysis-snapshot-v2; the service functions have no standalone engine version.",
+      "implementation_paths": [
+        "backend/app/services/volume_analysis.py",
+        "backend/app/stock_snapshots/builder.py::build_volume_section"
+      ]
+    },
+    {
+      "id": "stock_pattern_analysis",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "version": null,
+      "versioning": "Persisted output inherits stock-analysis-snapshot-v2; the service functions have no standalone engine version.",
+      "implementation_paths": [
+        "backend/app/services/pattern_detection.py",
+        "backend/app/stock_snapshots/builder.py::build_pattern_section"
+      ]
+    },
+    {
+      "id": "stock_support_resistance_analysis",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "version": null,
+      "versioning": "Persisted output inherits stock-analysis-snapshot-v2; the service functions have no standalone engine version.",
+      "implementation_paths": [
+        "backend/app/services/support_resistance.py",
+        "backend/app/stock_snapshots/builder.py::build_support_resistance_section"
+      ]
+    },
+    {
+      "id": "stock_risk_metrics",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "version": null,
+      "versioning": "Persisted output inherits stock-analysis-snapshot-v2; the service functions have no standalone engine version.",
+      "implementation_paths": [
+        "backend/app/services/risk.py",
+        "backend/app/stock_snapshots/builder.py::_build_risk_section_from_dependencies"
+      ]
+    },
+    {
+      "id": "copilot_ranked_snapshot_adapter",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "version": null,
+      "implementation_paths": [
+        "backend/app/copilot/agents.py::CopilotAgentRegistry._ranked_snapshot_result"
+      ],
+      "consumers": [
+        "sector",
+        "theme"
+      ]
+    },
+    {
+      "id": "copilot_report_evidence_adapter",
+      "status": "existing_domain_component",
+      "shared_analysis_engine": false,
+      "version": null,
+      "implementation_paths": [
+        "backend/app/copilot/agents.py::CopilotAgentRegistry._report_evidence",
+        "backend/app/copilot/agents.py::_report_freshness_and_source"
+      ],
+      "consumers": [
+        "macro",
+        "risk",
+        "report",
+        "research"
+      ]
+    }
+  ],
+  "deferred_candidates": [
+    {
+      "id": "shared_trend_engine",
+      "status": "deferred",
+      "implemented_shared_version": null,
+      "implemented_shared_contract": null,
+      "current_domain_component": "stock_trend_analysis",
+      "current_paths": [
+        "backend/app/services/trendline.py",
+        "backend/app/stock_snapshots/builder.py::build_trend_section"
+      ],
+      "reason": "Trend calculations exist only in stock-domain service and snapshot contracts; no app.analysis_engines.trend package exists."
+    },
+    {
+      "id": "shared_relative_strength_engine",
+      "status": "deferred",
+      "implemented_shared_version": null,
+      "implemented_shared_contract": null,
+      "current_domain_component": "stock_relative_strength_analysis",
+      "current_paths": [
+        "backend/app/services/relative_strength.py",
+        "backend/app/stock_snapshots/builder.py::build_relative_strength_section"
+      ],
+      "reason": "Relative-strength calculations remain coupled to stock-domain benchmarks and market models; no shared engine package exists."
+    },
+    {
+      "id": "shared_volume_engine",
+      "status": "deferred",
+      "implemented_shared_version": null,
+      "implemented_shared_contract": null,
+      "current_domain_component": "stock_volume_analysis",
+      "current_paths": [
+        "backend/app/services/volume_analysis.py",
+        "backend/app/stock_snapshots/builder.py::build_volume_section"
+      ],
+      "reason": "Volume calculations remain service functions and StockDetailInputBundle adapters; no shared engine package exists."
+    },
+    {
+      "id": "shared_pattern_engine",
+      "status": "deferred",
+      "implemented_shared_version": null,
+      "implemented_shared_contract": null,
+      "current_domain_component": "stock_pattern_analysis",
+      "current_paths": [
+        "backend/app/services/pattern_detection.py",
+        "backend/app/stock_snapshots/builder.py::build_pattern_section"
+      ],
+      "reason": "Pattern detection has no frozen-input shared contract, and the snapshot adapter currently calls detect_patterns(symbol) rather than consuming the canonical bundle history."
+    },
+    {
+      "id": "shared_support_resistance_engine",
+      "status": "deferred",
+      "implemented_shared_version": null,
+      "implemented_shared_contract": null,
+      "current_domain_component": "stock_support_resistance_analysis",
+      "current_paths": [
+        "backend/app/services/support_resistance.py",
+        "backend/app/stock_snapshots/builder.py::build_support_resistance_section"
+      ],
+      "reason": "Support and resistance functions are stock-domain implementations with market-model outputs; no shared engine package exists."
+    },
+    {
+      "id": "shared_risk_metric_engine",
+      "status": "deferred",
+      "implemented_shared_version": null,
+      "implemented_shared_contract": null,
+      "current_domain_component": "stock_risk_metrics",
+      "current_paths": [
+        "backend/app/services/risk.py",
+        "backend/app/stock_snapshots/builder.py::_build_risk_section_from_dependencies"
+      ],
+      "reason": "Risk metrics are composed inside the stock snapshot DAG and do not expose a versioned shared-engine contract."
+    },
+    {
+      "id": "shared_time_series_alignment_engine",
+      "status": "deferred",
+      "implemented_shared_version": null,
+      "implemented_shared_contract": null,
+      "current_domain_component": "multiple_domain_specific_alignment_paths",
+      "current_paths": [
+        "backend/app/rotation/engine.py",
+        "backend/app/reports/document_builder.py",
+        "backend/app/services/relative_strength.py"
+      ],
+      "reason": "Date-keyed intersection and positional or independently-ended comparisons coexist. Adopting one shared aligner would intentionally correct outputs and requires a versioned behavioral migration."
+    },
+    {
+      "id": "shared_data_completeness_engine",
+      "status": "deferred",
+      "implemented_shared_version": null,
+      "implemented_shared_contract": null,
+      "current_domain_component": "domain_specific_completeness_and_evidence_requirements",
+      "current_paths": [
+        "backend/app/copilot/collector.py",
+        "backend/app/copilot/contracts.py",
+        "backend/app/reports/research.py",
+        "backend/app/stock_snapshots/builder.py"
+      ],
+      "reason": "Completeness thresholds remain domain-specific. Per-entity and per-metric evidence requirements need a typed contract extension rather than a silent Stage 7.5 behavior change."
+    }
+  ],
+  "verification_consumers": [
+    {
+      "path": "backend/tests/test_stage75_shared_engines.py",
+      "purpose": "Deterministic shared-engine and Copilot integration coverage."
+    },
+    {
+      "path": "backend/scripts/benchmark_stage75_engines.py",
+      "purpose": "Hermetic engine microbenchmarks and import-startup measurement."
+    },
+    {
+      "path": "artifacts/stage75-engine-performance.json",
+      "purpose": "Captured Stage 7.5 performance output; not a runtime consumer."
+    }
+  ]
+}

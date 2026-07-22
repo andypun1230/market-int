@@ -206,6 +206,35 @@ The 30 executable Stage 7 fixtures exercise the public pipeline with an injected
 - Backend conversation continuity is process-local only. Frontend conversation persistence is local to the device and best-effort.
 - Saved-symbol membership is device-local identity context, not authenticated ownership. Portfolio remains unavailable.
 
+## Stage 7.5 shared-engine dependencies
+
+Stage 7.5 does not change the 15-agent registry, routing matrix, public agent result
+contract, evidence IDs, destinations, or model boundary described above. It moves
+cross-cutting policy behind deterministic, versioned engines in
+`backend/app/analysis_engines/` and maps those results back to the unchanged Stage 7
+contracts through `backend/app/copilot/engine_adapters.py`.
+
+- Snapshot/report-backed adapters (Market, Index, Breadth, Leadership, Sector,
+  Theme, Macro, Risk, Stock, Report, and Research) use the shared Freshness and
+  Availability Engine through `CopilotFreshnessAdapter`.
+- Every registry result remains subject to the shared Evidence Validation Engine
+  at the agent-contract boundary; evidence-bearing responses also use it for
+  stable identity, entity/metric/unit binding, source lineage, report lineage,
+  and same-security breakout confirmation.
+- Evidence-bearing reasoning uses the shared Contradiction Engine, and the
+  validator independently verifies preservation through the same structured
+  contract without forcing consensus.
+- Factual reasoning uses the shared Confidence Adjustment Engine. Navigation,
+  bounded education, and the explicit Portfolio unavailable boundary retain
+  their existing special-purpose deterministic responses.
+- Stock Agent still consumes `StockAnalysisSnapshot`. Its builder now uses one
+  per-build computation DAG so each existing leaf analysis is calculated once;
+  formulas and serialized section payloads are unchanged.
+
+The complete direct-versus-downstream dependency map is in
+`docs/stage75-engine-dependency-map.md`; the machine-readable source of truth is
+`backend/app/analysis_engines/engine_manifest.json`.
+
 ## Audit commands
 
 The inventory was derived with repository searches and source reads, including:

@@ -1,6 +1,9 @@
 PYTHON ?= python3
+STAGE7_RUNTIME_OUTPUT ?= ../artifacts/stage7-agent-validation.json
+STAGE7_REFERENCE_OUTPUT ?= ../artifacts/stage7-reference-evaluation.json
+STAGE7_REVIEW_OUTPUT ?= ../artifacts/stage7-human-review.json
 
-.PHONY: validate-application-data validate-market-snapshot validate-stock-snapshot validate-phase-4-4a validate-phase-4-4b validate-phase-4-4c validate-phase-4-4c-semantics validate-phase-4-4c-release-gate validate-phase-4-4c-blockers validate-phase-4-4d validate-phase-4-4d-governance validate-phase-4-4d-pilot validate-phase-4-4d-pilot-integration validate-stage7 audit-rotation-integrity
+.PHONY: validate-application-data validate-market-snapshot validate-stock-snapshot validate-phase-4-4a validate-phase-4-4b validate-phase-4-4c validate-phase-4-4c-semantics validate-phase-4-4c-release-gate validate-phase-4-4c-blockers validate-phase-4-4d validate-phase-4-4d-governance validate-phase-4-4d-pilot validate-phase-4-4d-pilot-integration validate-stage7 validate-stage75 audit-rotation-integrity
 
 validate-application-data:
 	cd backend && python3 -m compileall app main.py
@@ -83,9 +86,9 @@ validate-stage7:
 	cd backend && $(PYTHON) -m compileall -q app main.py scripts tests
 	cd backend && $(PYTHON) -m unittest discover -s tests
 	cd backend && $(PYTHON) scripts/generate_stage7_copilot_artifacts.py --check
-	cd backend && $(PYTHON) -m app.copilot.evaluation.run_stage7 --mode runtime --suite full --output ../artifacts/stage7-agent-validation.json
-	cd backend && $(PYTHON) -m app.copilot.evaluation.run_stage7 --mode reference --suite full --output ../artifacts/stage7-reference-evaluation.json
-	cd backend && $(PYTHON) -m app.copilot.evaluation.review build --results ../artifacts/stage7-reference-evaluation.json --output ../artifacts/stage7-human-review.json
+	cd backend && $(PYTHON) -m app.copilot.evaluation.run_stage7 --mode runtime --suite full --output $(STAGE7_RUNTIME_OUTPUT)
+	cd backend && $(PYTHON) -m app.copilot.evaluation.run_stage7 --mode reference --suite full --output $(STAGE7_REFERENCE_OUTPUT)
+	cd backend && $(PYTHON) -m app.copilot.evaluation.review build --results $(STAGE7_REFERENCE_OUTPUT) --output $(STAGE7_REVIEW_OUTPUT)
 	cd frontend && npx tsc --noEmit
 	cd frontend && npm run lint
 	cd frontend && npm run validate:data-ui
@@ -93,3 +96,11 @@ validate-stage7:
 	cd frontend && npx tsx tests/copilotTransport.test.ts
 	cd frontend && npx tsx tests/copilotReducer.test.ts
 	cd frontend && npx tsx tests/copilotDestinations.test.ts
+
+validate-stage75:
+	$(MAKE) validate-stage7 PYTHON=$(PYTHON) STAGE7_RUNTIME_OUTPUT=../artifacts/stage75-post-refactor-runtime-evaluation.json STAGE7_REFERENCE_OUTPUT=../artifacts/stage75-post-refactor-reference-evaluation.json STAGE7_REVIEW_OUTPUT=../artifacts/stage75-post-refactor-human-review.json
+	cd frontend && npx expo export --platform web
+	cd backend && $(PYTHON) -m app.copilot.evaluation.run_stage7 --mode runtime --suite full --output ../artifacts/stage75-post-refactor-runtime-evaluation.json
+	cd backend && $(PYTHON) scripts/augment_stage75_runtime_actions.py --artifact ../artifacts/stage75-post-refactor-runtime-evaluation.json
+	cd backend && $(PYTHON) scripts/compare_stage75_semantics.py --before ../artifacts/stage75-pre-refactor-runtime-evaluation.json --after ../artifacts/stage75-post-refactor-runtime-evaluation.json --output ../artifacts/stage75-semantic-equivalence.json
+	cd backend && $(PYTHON) scripts/benchmark_stage75_engines.py --output ../artifacts/stage75-engine-performance.json

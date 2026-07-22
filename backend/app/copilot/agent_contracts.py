@@ -7,6 +7,12 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.analysis_engines.confidence import (
+    ConfidenceAdjustmentEngine,
+    ConfidenceAdjustmentInput,
+)
+from app.analysis_engines.evidence_validation import EvidenceValidationEngine
+from app.analysis_engines.freshness import FreshnessAvailabilityEngine
 from app.copilot.contracts import (
     AgentResultV1,
     CopilotAgentName,
@@ -18,6 +24,9 @@ from app.copilot.contracts import (
 
 
 AGENT_MANIFEST_PATH = Path(__file__).with_name("agent_manifest.json")
+_CONFIDENCE_ENGINE = ConfidenceAdjustmentEngine()
+_EVIDENCE_VALIDATION_ENGINE = EvidenceValidationEngine()
+_FRESHNESS_ENGINE = FreshnessAvailabilityEngine()
 
 
 class AgentFreshnessContractV1(BaseModel):
@@ -108,7 +117,11 @@ def validate_agent_result(
         add("destination", "error", "The agent emitted a deep link outside its manifest contract.")
 
     evidence_ids = [item.evidence_id for item in result.evidence]
-    if len(evidence_ids) != len(set(evidence_ids)):
+    evidence_dedupe = _EVIDENCE_VALIDATION_ENGINE.deduplicate(
+        result.evidence,
+        identity=lambda item: item.evidence_id,
+    )
+    if evidence_dedupe.duplicate_count:
         add("evidence_id", "error", "Agent evidence IDs must be unique.")
     known_evidence = set(evidence_ids)
     for level in result.levels:
@@ -127,13 +140,13 @@ def validate_agent_result(
     if confirmation_ids.intersection(invalidation_ids):
         add("condition_collision", "error", "One evidence item cannot be both confirmation and invalidation.")
 
-    constrained = result.freshness.state in {
-        CopilotFreshnessState.STALE,
-        CopilotFreshnessState.TEST,
-        CopilotFreshnessState.PARTIAL,
-        CopilotFreshnessState.MIXED,
-        CopilotFreshnessState.UNAVAILABLE,
-    }
+    constrained = _CONFIDENCE_ENGINE.is_constrained(
+        ConfidenceAdjustmentInput(
+            intent=f"agent:{result.agent.value}",
+            evidence_count=len(result.evidence),
+            freshness_state=_FRESHNESS_ENGINE.normalize_source_state(result.freshness.state),
+        )
+    )
     if constrained and any(item.confidence == CopilotConfidenceLabel.HIGH for item in result.evidence):
         add("confidence_cap", "error", "Constrained evidence cannot retain high confidence.")
     if result.status == CopilotAgentStatus.COMPLETE and constrained:

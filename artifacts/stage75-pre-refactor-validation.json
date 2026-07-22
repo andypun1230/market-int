@@ -1,0 +1,102 @@
+{
+  "schema_version": "stage75-pre-refactor-validation-v1",
+  "stage": "7.5",
+  "captured_at": "2026-07-22T05:39:37Z",
+  "baseline_commit": "218e7ea53f98df14e8d864c6cd123952ad51fe0e",
+  "working_tree_clean_before_refactor": true,
+  "validation_command": "make validate-stage7 PYTHON=venv/bin/python",
+  "validation_result": "PASS WITH CONDITIONS",
+  "release_bearing": true,
+  "tests": {
+    "backend": {
+      "passed": 395,
+      "failed": 0
+    },
+    "stage7_focused": {
+      "passed": 72,
+      "failed": 0
+    },
+    "institutional_copilot": {
+      "passed": 39,
+      "failed": 0
+    },
+    "frontend": {
+      "typescript": "passed",
+      "lint": "passed",
+      "data_ui": "passed",
+      "copilot_contracts": "passed",
+      "copilot_transport": "passed",
+      "copilot_reducer": "passed",
+      "copilot_destinations": "passed"
+    }
+  },
+  "agent_inventory": {
+    "registered_count": 15,
+    "exercised_count": 15,
+    "all_registered_agents_exercised": true,
+    "agents": [
+      "market",
+      "index",
+      "breadth",
+      "leadership",
+      "sector",
+      "theme",
+      "macro",
+      "risk",
+      "stock",
+      "watchlist",
+      "report",
+      "research",
+      "navigation",
+      "educational",
+      "portfolio"
+    ]
+  },
+  "fixtures": {
+    "runtime_scenarios": {
+      "passed": 30,
+      "total": 30
+    },
+    "frozen_semantic_cases": {
+      "passed": 165,
+      "total": 165,
+      "release_bearing": false
+    },
+    "executable_fixtures": {
+      "passed": 30,
+      "total": 30
+    },
+    "failure_injections": {
+      "passed": 7,
+      "total": 7
+    }
+  },
+  "routing": {
+    "intent_accuracy": 1.0,
+    "required_agent_recall": 1.0,
+    "unnecessary_agent_rate": 0.0,
+    "invalid_route_rate": 0.0,
+    "fallback_rate": 0.0
+  },
+  "latency_ms": {
+    "mean": 2.820929,
+    "p50": 2.417,
+    "p95": 5.69965,
+    "p99": null,
+    "max": 7.376,
+    "model_calls_mean": 0.0,
+    "measurement": "production runtime pipeline with hermetic sources"
+  },
+  "known_conditions": [
+    "Runtime validation uses deterministic hermetic source adapters and performs no live provider or network calls.",
+    "The active synthesis path is deterministic; model token use and model cost are zero.",
+    "The 165-case frozen reference corpus is semantic and non-release-bearing.",
+    "Frontend simulator rendering and rapid tab-switch cancellation remain manual validation items from Stage 7."
+  ],
+  "source_artifacts": {
+    "runtime": "artifacts/stage7-agent-validation.json",
+    "reference": "artifacts/stage7-reference-evaluation.json",
+    "human_review": "artifacts/stage7-human-review.json",
+    "agent_manifest": "backend/app/copilot/agent_manifest.json"
+  }
+}

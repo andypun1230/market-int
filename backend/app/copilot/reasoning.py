@@ -3,6 +3,16 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
+from app.analysis_engines.confidence import (
+    ConfidenceAdjustmentEngine,
+    ConfidenceAdjustmentInput,
+)
+from app.analysis_engines.contradiction import (
+    ContradictionAnalysisInput,
+    ContradictionEngine,
+    ContradictionFinding,
+)
+from app.analysis_engines.freshness import FreshnessAvailabilityEngine
 from app.copilot.contracts import (
     CopilotConfidenceLabel,
     CopilotDestination,
@@ -30,55 +40,9 @@ PORTFOLIO_FALLBACK = (
     "Portfolio holdings are not yet connected. I can analyse your watchlist and saved themes instead."
 )
 
-_CONSTRAINED_STATES = {
-    CopilotFreshnessState.STALE,
-    CopilotFreshnessState.TEST,
-    CopilotFreshnessState.PARTIAL,
-    CopilotFreshnessState.MIXED,
-    CopilotFreshnessState.UNAVAILABLE,
-}
-
-_NEGATIVE_TERMS = {
-    "avoid",
-    "bearish",
-    "below",
-    "cautious",
-    "defensive",
-    "deteriorating",
-    "deterioration",
-    "elevated risk",
-    "failed",
-    "fragile",
-    "high risk",
-    "lagging",
-    "missing",
-    "negative",
-    "narrow",
-    "not confirmed",
-    "partial",
-    "risk-off",
-    "stale",
-    "unavailable",
-    "unconfirmed",
-    "weak",
-    "weakening",
-}
-
-_POSITIVE_TERMS = {
-    "above",
-    "bullish",
-    "confirmed",
-    "constructive",
-    "healthy",
-    "improving",
-    "leading",
-    "low risk",
-    "outperforming",
-    "positive",
-    "risk-on",
-    "strong",
-    "strengthening",
-}
+_CONFIDENCE_ENGINE = ConfidenceAdjustmentEngine()
+_CONTRADICTION_ENGINE = ContradictionEngine()
+_FRESHNESS_ENGINE = FreshnessAvailabilityEngine()
 
 _WATCHLIST_CAUTION_STATUS_TERMS = (
     "avoid",
@@ -324,39 +288,38 @@ class CopilotReasoningEngine:
     ) -> tuple[list[CopilotEvidenceV1], list[CopilotEvidenceV1]]:
         explicit_opposing = set(bundle.contradictory_evidence_ids)
         preferred_support = set(bundle.supporting_evidence_ids)
-        positive: list[CopilotEvidenceV1] = []
-        neutral: list[CopilotEvidenceV1] = []
-        opposing: list[CopilotEvidenceV1] = []
+        evidence_by_id: dict[str, CopilotEvidenceV1] = {}
+        findings: list[ContradictionFinding] = []
         for item in bundle.evidence:
             statement = _evidence_statement(item)
             if statement is None:
                 continue
-            polarity = _polarity(statement)
-            if item.evidence_id in explicit_opposing or item.interpretation_class.value == "contradiction":
-                opposing.append(item)
-            elif (
-                bundle.intent.intent == CopilotIntentType.WATCHLIST_REVIEW
-                and _is_watchlist_caution_evidence(item)
-            ):
-                opposing.append(item)
-            elif polarity < 0:
-                opposing.append(item)
-            elif polarity > 0:
-                positive.append(item)
-            else:
-                neutral.append(item)
-
-        ordered_support = [
-            item
-            for item in [*positive, *neutral]
-            if not preferred_support or item.evidence_id in preferred_support
-        ]
-        if not ordered_support:
-            ordered_support = [*positive, *neutral]
-        if bundle.intent.intent == CopilotIntentType.RESEARCH_QUERY:
-            selection = [item for item in ordered_support if "selection reason" in item.metric.casefold()]
-            ordered_support = [*selection, *[item for item in ordered_support if item not in selection]]
-        return _dedupe_evidence(ordered_support), _dedupe_evidence(opposing)
+            evidence_by_id.setdefault(item.evidence_id, item)
+            findings.append(
+                ContradictionFinding(
+                    evidence_id=item.evidence_id,
+                    statement=statement,
+                    interpretation_class=item.interpretation_class.value,
+                    contradicts_claim_ids=tuple(item.contradicts_claim_ids),
+                    explicitly_opposing=item.evidence_id in explicit_opposing,
+                    preferred_support=item.evidence_id in preferred_support,
+                    watchlist_caution=(
+                        bundle.intent.intent == CopilotIntentType.WATCHLIST_REVIEW
+                        and _is_watchlist_caution_evidence(item)
+                    ),
+                    priority_support=(
+                        bundle.intent.intent == CopilotIntentType.RESEARCH_QUERY
+                        and "selection reason" in item.metric.casefold()
+                    ),
+                )
+            )
+        analysis = _CONTRADICTION_ENGINE.analyze(
+            ContradictionAnalysisInput(findings=tuple(findings))
+        )
+        return (
+            [evidence_by_id[value] for value in analysis.supporting_evidence_ids],
+            [evidence_by_id[value] for value in analysis.opposing_evidence_ids],
+        )
 
     def _evidence_factors(self, evidence: Iterable[CopilotEvidenceV1]) -> list[CopilotReasoningFactorV1]:
         factors: list[CopilotReasoningFactorV1] = []
@@ -586,13 +549,26 @@ class CopilotReasoningEngine:
         missing: list[str],
         constrained: bool,
     ) -> CopilotConfidenceLabel:
-        if intent in {CopilotIntentType.APP_NAVIGATION, CopilotIntentType.EDUCATIONAL_QUERY}:
-            return CopilotConfidenceLabel.HIGH
-        if constrained or missing or not bundle.evidence:
-            return CopilotConfidenceLabel.LIMITED
-        if len(bundle.evidence) >= 3:
-            return CopilotConfidenceLabel.MODERATE
-        return CopilotConfidenceLabel.LIMITED
+        summary = bundle.freshness_summary
+        assessment = _CONFIDENCE_ENGINE.adjust(
+            ConfidenceAdjustmentInput(
+                intent=intent.value,
+                evidence_count=len(bundle.evidence),
+                freshness_state=_FRESHNESS_ENGINE.normalize_source_state(summary.overall_state),
+                missing_evidence_count=len(missing),
+                stale_count=summary.stale_count,
+                partial_count=summary.partial_count,
+                unavailable_count=summary.unavailable_count,
+                test_count=summary.test_count,
+                contradiction_count=len(bundle.contradictory_evidence_ids),
+                fallback_used=constrained and summary.overall_state == CopilotFreshnessState.UNAVAILABLE,
+                exempt_from_market_evidence=intent in {
+                    CopilotIntentType.APP_NAVIGATION,
+                    CopilotIntentType.EDUCATIONAL_QUERY,
+                },
+            )
+        )
+        return CopilotConfidenceLabel(assessment.label)
 
 
 def build_reasoning(
@@ -718,16 +694,15 @@ def _join_names(values: list[str]) -> str:
 
 def _is_constrained(bundle: CopilotEvidenceBundleV1) -> bool:
     summary = bundle.freshness_summary
-    try:
-        state = CopilotFreshnessState(summary.overall_state)
-    except ValueError:
-        return True
-    return state in _CONSTRAINED_STATES or any(
-        (
-            summary.stale_count,
-            summary.partial_count,
-            summary.unavailable_count,
-            summary.test_count,
+    return _CONFIDENCE_ENGINE.is_constrained(
+        ConfidenceAdjustmentInput(
+            intent=bundle.intent.intent.value,
+            evidence_count=len(bundle.evidence),
+            freshness_state=_FRESHNESS_ENGINE.normalize_source_state(summary.overall_state),
+            stale_count=summary.stale_count,
+            partial_count=summary.partial_count,
+            unavailable_count=summary.unavailable_count,
+            test_count=summary.test_count,
         )
     )
 
@@ -792,17 +767,6 @@ def _safe_external_text(value: Any, *, maximum_length: int = 360) -> str | None:
     return f"{prefix}…"
 
 
-def _polarity(statement: str) -> int:
-    lowered = statement.casefold()
-    negative = any(term in lowered for term in _NEGATIVE_TERMS)
-    positive = any(term in lowered for term in _POSITIVE_TERMS)
-    if negative and not positive:
-        return -1
-    if positive and not negative:
-        return 1
-    return 0
-
-
 def _metric_value(evidence: list[CopilotEvidenceV1], metric: str) -> str | None:
     for item in evidence:
         if item.metric.casefold() == metric.casefold():
@@ -842,13 +806,6 @@ def _registered_destination_candidates(bundle: CopilotEvidenceBundleV1) -> list[
         if destination not in result:
             result.append(destination)
     return result
-
-
-def _dedupe_evidence(values: Iterable[CopilotEvidenceV1]) -> list[CopilotEvidenceV1]:
-    result: dict[str, CopilotEvidenceV1] = {}
-    for value in values:
-        result.setdefault(value.evidence_id, value)
-    return list(result.values())
 
 
 def _dedupe_factors(values: Iterable[CopilotReasoningFactorV1]) -> list[CopilotReasoningFactorV1]:

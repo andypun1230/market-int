@@ -25,19 +25,24 @@ from app.copilot.contracts import (
     CopilotPlanV1,
     CopilotSourceReferenceV1,
 )
+from app.copilot.engine_adapters import (
+    CopilotEvidenceValidationAdapter,
+    CopilotFreshnessAdapter,
+)
 from app.copilot.planner import navigation_destination
 from app.copilot.policy import contains_prompt_injection, contains_secret
 from app.copilot.sources import (
     CopilotWatchlistMembership,
     TrustedCopilotSources,
-    aggregate_source_states,
     extract_saved_symbols,
-    freshness_state,
     has_explicit_saved_symbol_hint,
     normalize_source_state,
-    parse_datetime,
 )
 from app.reports.document import EvidencePoint, ReportDocument
+
+
+_FRESHNESS_ADAPTER = CopilotFreshnessAdapter()
+_EVIDENCE_VALIDATION_ADAPTER = CopilotEvidenceValidationAdapter()
 
 
 @dataclass(frozen=True)
@@ -765,23 +770,18 @@ def _freshness(
     provider: str = "unavailable", warnings: Iterable[str] = (), test: bool = False,
     stale_after_seconds: int = 129_600,
 ) -> CopilotFreshnessV1:
-    state = freshness_state(source_state=source_state, status=status, expires_at=expires_at, test_data=test)
-    timestamp = parse_datetime(observed_at) or parse_datetime(generated_at)
-    age: float | None = None
-    if timestamp is not None:
-        age = max(0, (datetime.now(timezone.utc) - timestamp).total_seconds())
-        if state not in {"test", "unavailable"} and age > stale_after_seconds:
-            state = "stale"
-    return CopilotFreshnessV1(
-        state=state,
-        market_date=(market_date or "")[:10] or None,
+    return _FRESHNESS_ADAPTER.evaluate(
+        source_state=source_state,
+        status=status,
         generated_at=generated_at,
         observed_at=observed_at,
+        market_date=market_date,
         expires_at=expires_at,
-        age_seconds=round(age, 3) if age is not None else None,
-        completeness=max(0, min(1, float(completeness or 0))),
+        completeness=completeness,
         provider=provider,
-        warnings=list(dict.fromkeys(_safe_note(value) for value in warnings if value)),
+        warnings=tuple(_safe_note(value) for value in warnings if value),
+        test=test,
+        stale_after_seconds=stale_after_seconds,
     )
 
 
@@ -903,7 +903,7 @@ def _merge_freshness(values: list[CopilotFreshnessV1]) -> CopilotFreshnessV1:
     if not values:
         return CopilotFreshnessV1(state=CopilotFreshnessState.UNAVAILABLE, completeness=0, provider="unavailable")
     return CopilotFreshnessV1(
-        state=aggregate_source_states(value.state for value in values),
+        state=_FRESHNESS_ADAPTER.aggregate_states(value.state for value in values),
         market_date=max((value.market_date for value in values if value.market_date), default=None),
         generated_at=max((value.generated_at for value in values if value.generated_at), default=None),
         age_seconds=max((value.age_seconds for value in values if value.age_seconds is not None), default=None),
@@ -921,10 +921,7 @@ def _dedupe_sources(values: Iterable[CopilotSourceReferenceV1]) -> list[CopilotS
 
 
 def _dedupe_agent_evidence(values: Iterable[CopilotEvidenceV1]) -> list[CopilotEvidenceV1]:
-    result: dict[str, CopilotEvidenceV1] = {}
-    for value in values:
-        result.setdefault(value.evidence_id, value)
-    return list(result.values())
+    return _EVIDENCE_VALIDATION_ADAPTER.deduplicate(values)
 
 
 def _digest(*values: Any) -> str:

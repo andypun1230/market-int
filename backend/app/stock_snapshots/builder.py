@@ -233,26 +233,12 @@ class StockAnalysisSnapshotBuilder:
         )
 
     def _build_sections(self, bundle: StockDetailInputBundle) -> dict[str, StockSnapshotSection]:
-        builders: dict[str, Callable[[StockDetailInputBundle], Any]] = {
-            "chart": build_chart_section,
-            "technical": build_technical_section,
-            "support_resistance": build_support_resistance_section,
-            "trend": build_trend_section,
-            "volume": build_volume_section,
-            "risk": build_risk_section,
-            "relative_strength": build_relative_strength_section,
-            "pattern": build_pattern_section,
-            "rating": build_rating_section,
-            "signals": build_signals_section,
-            "leadership": build_leadership_section,
-            "executive_summary": build_executive_summary_section,
-            "overall_assessment": build_overall_assessment_section,
-        }
+        computation = _StockSectionComputation(bundle)
         sections: dict[str, StockSnapshotSection] = {}
-        for name, fn in builders.items():
+        for name in computation.section_names:
             started = time.perf_counter()
             try:
-                payload = fn(bundle)
+                payload = computation.get(name)
                 status = "complete"
                 warnings: list[str] = []
                 if name == "relative_strength" and getattr(payload, "degraded", False):
@@ -274,6 +260,83 @@ class StockAnalysisSnapshotBuilder:
                     payload=None,
                 )
         return sections
+
+
+class _StockSectionComputation:
+    """Per-build computation DAG for stock snapshot sections.
+
+    Values and failures are both memoized so a section analysis is attempted at
+    most once during a snapshot build. Public section builders remain usable as
+    standalone entry points; the DAG supplies their already-computed inputs to
+    private behavior-equivalent helpers for composite sections.
+    """
+
+    def __init__(self, bundle: StockDetailInputBundle) -> None:
+        self.bundle = bundle
+        self._values: dict[str, Any] = {}
+        self._failures: dict[str, Exception] = {}
+        self._builders: dict[str, Callable[[], Any]] = {
+            "chart": lambda: build_chart_section(bundle),
+            "technical": lambda: build_technical_section(bundle),
+            "support_resistance": lambda: build_support_resistance_section(bundle),
+            "trend": lambda: build_trend_section(bundle),
+            "volume": lambda: build_volume_section(bundle),
+            "risk": lambda: _build_risk_section_from_dependencies(
+                bundle,
+                support_resistance=self.get("support_resistance"),
+            ),
+            "relative_strength": lambda: build_relative_strength_section(bundle),
+            "pattern": lambda: build_pattern_section(bundle),
+            "rating": lambda: _build_rating_section_from_dependencies(
+                bundle,
+                relative_strength=self.get("relative_strength"),
+                volume=self.get("volume"),
+                risk=self.get("risk"),
+                support=self.get("support_resistance"),
+                trend=self.get("trend"),
+            ),
+            "signals": lambda: _build_signals_section_from_dependencies(
+                bundle,
+                support=self.get("support_resistance"),
+                trend=self.get("trend"),
+                volume=self.get("volume"),
+                relative_strength=self.get("relative_strength"),
+                patterns=self.get("pattern"),
+            ),
+            "leadership": lambda: _build_leadership_section_from_dependencies(
+                bundle,
+                relative_strength=self.get("relative_strength"),
+                volume=self.get("volume"),
+                signals=self.get("signals"),
+                rating=self.get("rating"),
+            ),
+            "executive_summary": lambda: _build_executive_summary_section_from_dependencies(
+                rating=self.get("rating"),
+                risk=self.get("risk"),
+            ),
+            "overall_assessment": lambda: _build_overall_assessment_section_from_dependencies(
+                bundle,
+                rating=self.get("rating"),
+                relative_strength=self.get("relative_strength"),
+            ),
+        }
+
+    @property
+    def section_names(self) -> tuple[str, ...]:
+        return tuple(self._builders)
+
+    def get(self, name: str) -> Any:
+        if name in self._values:
+            return self._values[name]
+        if name in self._failures:
+            raise self._failures[name]
+        try:
+            value = self._builders[name]()
+        except Exception as exc:
+            self._failures[name] = exc
+            raise
+        self._values[name] = value
+        return value
 
 
 def build_chart_section(bundle: StockDetailInputBundle) -> dict[str, Any]:
@@ -421,11 +484,21 @@ def build_volume_section(bundle: StockDetailInputBundle) -> VolumeAnalysis:
 
 
 def build_risk_section(bundle: StockDetailInputBundle) -> RiskPlan:
+    return _build_risk_section_from_dependencies(
+        bundle,
+        support_resistance=build_support_resistance_section(bundle),
+    )
+
+
+def _build_risk_section_from_dependencies(
+    bundle: StockDetailInputBundle,
+    *,
+    support_resistance: SupportResistanceResponse,
+) -> RiskPlan:
     history = require_history(bundle)
     metadata = metadata_for(history)
     candles = candles_to_dicts(history.candles)
     current_price = round(candles[-1]["close"], 2)
-    support_resistance = build_support_resistance_section(bundle)
     atr_14 = calculate_atr(candles, 14)
     fallback_atr = atr_14 if atr_14 is not None else current_price * 0.03
     entry = support_resistance.breakout_level or current_price
@@ -517,11 +590,25 @@ def build_pattern_section(bundle: StockDetailInputBundle) -> dict[str, Any]:
 
 
 def build_rating_section(bundle: StockDetailInputBundle) -> StockRatingItem:
-    relative_strength = build_relative_strength_section(bundle)
-    volume = build_volume_section(bundle)
-    risk = build_risk_section(bundle)
-    support = build_support_resistance_section(bundle)
-    trend = build_trend_section(bundle)
+    return _build_rating_section_from_dependencies(
+        bundle,
+        relative_strength=build_relative_strength_section(bundle),
+        volume=build_volume_section(bundle),
+        risk=build_risk_section(bundle),
+        support=build_support_resistance_section(bundle),
+        trend=build_trend_section(bundle),
+    )
+
+
+def _build_rating_section_from_dependencies(
+    bundle: StockDetailInputBundle,
+    *,
+    relative_strength: RelativeStrengthItem,
+    volume: VolumeAnalysis,
+    risk: RiskPlan,
+    support: SupportResistanceResponse,
+    trend: dict[str, Any],
+) -> StockRatingItem:
     pattern_quality = max(45, min(85, 55 + (10 if volume.accumulation_volume else 0) + (8 if volume.breakout_volume else 0) - (10 if volume.distribution_volume else 0)))
     sector_strength = max(45, min(90, relative_strength.rs_vs_sector))
     components = StockRatingComponents(
@@ -553,20 +640,37 @@ def build_rating_section(bundle: StockDetailInputBundle) -> StockRatingItem:
 
 
 def build_signals_section(bundle: StockDetailInputBundle) -> MultiTimeframeTechnicalSignals:
+    return _build_signals_section_from_dependencies(
+        bundle,
+        support=build_support_resistance_section(bundle),
+        trend=build_trend_section(bundle),
+        volume=build_volume_section(bundle),
+        relative_strength=build_relative_strength_section(bundle),
+        patterns=build_pattern_section(bundle),
+    )
+
+
+def _build_signals_section_from_dependencies(
+    bundle: StockDetailInputBundle,
+    *,
+    support: SupportResistanceResponse,
+    trend: dict[str, Any],
+    volume: VolumeAnalysis,
+    relative_strength: RelativeStrengthItem,
+    patterns: dict[str, Any],
+) -> MultiTimeframeTechnicalSignals:
     history = require_history(bundle)
-    support = to_jsonable(build_support_resistance_section(bundle))
-    trend = build_trend_section(bundle)
-    volume = to_jsonable(build_volume_section(bundle))
-    relative_strength = to_jsonable(build_relative_strength_section(bundle))
-    patterns = build_pattern_section(bundle)
+    support_payload = to_jsonable(support)
+    volume_payload = to_jsonable(volume)
+    relative_strength_payload = to_jsonable(relative_strength)
     closes = [float(candle.close) for candle in history.candles if candle.close and candle.close > 0]
     indicators = build_indicator_context(closes)
-    statuses = collect_input_statuses(get_history_status(history), support, trend, volume, relative_strength)
-    pattern_factor = build_pattern_factor(patterns, support)
+    statuses = collect_input_statuses(get_history_status(history), support_payload, trend, volume_payload, relative_strength_payload)
+    pattern_factor = build_pattern_factor(patterns, support_payload)
     factors = {
-        "short": build_short_factors(indicators, statuses, volume, relative_strength, support, pattern_factor),
-        "medium": build_medium_factors(indicators, statuses, volume, relative_strength, support, trend, pattern_factor),
-        "long": build_long_factors(indicators, statuses, relative_strength, support),
+        "short": build_short_factors(indicators, statuses, volume_payload, relative_strength_payload, support_payload, pattern_factor),
+        "medium": build_medium_factors(indicators, statuses, volume_payload, relative_strength_payload, support_payload, trend, pattern_factor),
+        "long": build_long_factors(indicators, statuses, relative_strength_payload, support_payload),
     }
     signals = {timeframe: calculate_timeframe_signal(timeframe, items, history.as_of) for timeframe, items in factors.items()}
     return MultiTimeframeTechnicalSignals(
@@ -580,18 +684,44 @@ def build_signals_section(bundle: StockDetailInputBundle) -> MultiTimeframeTechn
 
 
 def build_leadership_section(bundle: StockDetailInputBundle) -> Any:
+    return _build_leadership_section_from_dependencies(
+        bundle,
+        relative_strength=build_relative_strength_section(bundle),
+        volume=build_volume_section(bundle),
+        signals=build_signals_section(bundle),
+        rating=build_rating_section(bundle),
+    )
+
+
+def _build_leadership_section_from_dependencies(
+    bundle: StockDetailInputBundle,
+    *,
+    relative_strength: RelativeStrengthItem,
+    volume: VolumeAnalysis,
+    signals: MultiTimeframeTechnicalSignals,
+    rating: StockRatingItem,
+) -> Any:
     return calculate_leadership_signal(
         bundle.plan.symbol,
-        relative_strength=to_jsonable(build_relative_strength_section(bundle)),
-        volume_analysis=to_jsonable(build_volume_section(bundle)),
-        multi_timeframe_signals=to_jsonable(build_signals_section(bundle)),
-        stock_rating=to_jsonable(build_rating_section(bundle)),
+        relative_strength=to_jsonable(relative_strength),
+        volume_analysis=to_jsonable(volume),
+        multi_timeframe_signals=to_jsonable(signals),
+        stock_rating=to_jsonable(rating),
     )
 
 
 def build_executive_summary_section(bundle: StockDetailInputBundle) -> dict[str, Any]:
-    rating = build_rating_section(bundle)
-    risk = build_risk_section(bundle)
+    return _build_executive_summary_section_from_dependencies(
+        rating=build_rating_section(bundle),
+        risk=build_risk_section(bundle),
+    )
+
+
+def _build_executive_summary_section_from_dependencies(
+    *,
+    rating: StockRatingItem,
+    risk: RiskPlan,
+) -> dict[str, Any]:
     return {
         "headline": rating.status,
         "body": rating.explanation,
@@ -602,8 +732,19 @@ def build_executive_summary_section(bundle: StockDetailInputBundle) -> dict[str,
 
 
 def build_overall_assessment_section(bundle: StockDetailInputBundle) -> dict[str, Any]:
-    rating = build_rating_section(bundle)
-    relative_strength = build_relative_strength_section(bundle)
+    return _build_overall_assessment_section_from_dependencies(
+        bundle,
+        rating=build_rating_section(bundle),
+        relative_strength=build_relative_strength_section(bundle),
+    )
+
+
+def _build_overall_assessment_section_from_dependencies(
+    bundle: StockDetailInputBundle,
+    *,
+    rating: StockRatingItem,
+    relative_strength: RelativeStrengthItem,
+) -> dict[str, Any]:
     return {
         "symbol": bundle.plan.symbol,
         "score": rating.overall_score,
