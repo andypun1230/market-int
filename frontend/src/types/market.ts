@@ -1427,6 +1427,8 @@ export type ThemeSnapshotResponse = {
   test_or_mock_label?: string | null;
 };
 
+export type ThemeRotationResponse = Record<string, unknown>;
+
 export type SymbolThemeMapping = {
   theme_id: string;
   theme_name?: string;

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import threading
 import os
+import time
 from typing import Any
 
 from app.theme_snapshots.builder import ThemeSnapshotBuilder, theme_namespace
@@ -14,13 +15,21 @@ from app.themes.launch import get_launch_theme_registry
 
 class ThemeSnapshotService:
     def __init__(self, storage: ThemeSnapshotStorage | None = None) -> None:
-        self.storage = storage or ThemeSnapshotStorage(); self.builder = ThemeSnapshotBuilder(snapshot_storage=self.storage); self._lock = threading.Lock()
+        self.storage = storage or ThemeSnapshotStorage(); self.builder = ThemeSnapshotBuilder(snapshot_storage=self.storage); self._lock = threading.Lock(); self._latest_loaded = False; self._latest: ThemeSnapshot | None = None; self._latest_checked_at = 0.0; self._cache_ttl_seconds = 5.0
 
-    def latest(self) -> ThemeSnapshot | None: return self.storage.latest(theme_namespace())
+    def latest(self) -> ThemeSnapshot | None:
+        now = time.monotonic()
+        if not self._latest_loaded or now - self._latest_checked_at >= self._cache_ttl_seconds:
+            self._latest = self.storage.latest(theme_namespace()); self._latest_loaded = True; self._latest_checked_at = now
+        return self._latest
     def history(self, days: int = 90) -> list[dict[str, Any]]: return self.storage.history(theme_namespace(), days)
     def build_now(self, *, publish: bool = True) -> ThemeSnapshot | None:
         if not self._lock.acquire(blocking=False): return self.latest()
-        try: return self.builder.build(publish=publish)
+        try:
+            snapshot = self.builder.build(publish=publish)
+            if publish:
+                self._latest = snapshot; self._latest_loaded = True; self._latest_checked_at = time.monotonic()
+            return snapshot
         finally: self._lock.release()
 
     def status(self) -> dict[str, Any]:

@@ -1,0 +1,191 @@
+{
+  "downstream_compatibility": {
+    "canonical_series_location": "SectorSnapshot.sectors[].rotation_series",
+    "legacy_series_location": "SectorSnapshot.sectors[].legacy_rotation_series",
+    "report_candidate_scoring_changed": false,
+    "sector_classification_changed": false,
+    "sector_rank_changed": false
+  },
+  "focused_test_count": 9,
+  "market_date": "2026-07-21",
+  "model_version": "sector-relative-trend-momentum-v1",
+  "normalization_version": "zero-centered-rolling-robust-scale-v1",
+  "overall_result": "PASS",
+  "parameter_parity_with_theme_model": true,
+  "performance": {
+    "benchmark_type": "hermetic_local_persisted_sector_snapshot",
+    "model_calls": 0,
+    "model_version": "sector-relative-trend-momentum-v1",
+    "network_calls": 0,
+    "observations_per_sector": {
+      "long": 8,
+      "medium": 10,
+      "short": 8
+    },
+    "production_latency_claim": false,
+    "provider_calls": 0,
+    "sectors_calculated": 11,
+    "single_profile_retrieval": {
+      "long": {
+        "iterations": 25,
+        "maximum_ms": 29.3645,
+        "minimum_ms": 22.891292,
+        "p50_ms": 23.35625,
+        "p95_ms": 28.337709
+      },
+      "medium": {
+        "iterations": 25,
+        "maximum_ms": 29.979916,
+        "minimum_ms": 22.919834,
+        "p50_ms": 23.392292,
+        "p95_ms": 28.497292
+      },
+      "short": {
+        "iterations": 25,
+        "maximum_ms": 29.822667,
+        "minimum_ms": 22.842667,
+        "p50_ms": 23.420625,
+        "p95_ms": 29.380583
+      }
+    },
+    "total_coordinate_count": 286,
+    "warm_read_provider_calls": 0
+  },
+  "profiles": {
+    "long": {
+      "coordinate_count": 88,
+      "eligible_count": 11,
+      "excluded_count": 0,
+      "latest_common_date": "2026-07-17",
+      "profile_definition": {
+        "benchmark": "SPY",
+        "effective_from": "2026-07-23",
+        "epsilon": 1e-08,
+        "fast_window": 10,
+        "interval_alias": "3M",
+        "model_id": "sector-relative-trend-momentum",
+        "model_version": "sector-relative-trend-momentum-v1",
+        "momentum_lag": 4,
+        "momentum_scale": 2.0,
+        "momentum_smoothing": 4,
+        "normalization_method": "zero-centered-rolling-robust-scale-v1",
+        "normalization_window": 52,
+        "observation_spacing": 1,
+        "profile": "long",
+        "sampling_frequency": "weekly_last_complete_session",
+        "slow_window": 26,
+        "tail_observations": 8,
+        "trend_scale": 2.0,
+        "volatility_window": 26,
+        "winsor_limit": 3.0
+      },
+      "quadrant_counts": {
+        "improving": 5,
+        "lagging": 4,
+        "leading": 1,
+        "weakening": 1
+      },
+      "relative_momentum_range": [
+        94.0,
+        104.820934
+      ],
+      "relative_trend_range": [
+        94.0,
+        104.221902
+      ],
+      "tail_observations_per_sector": 8
+    },
+    "medium": {
+      "coordinate_count": 110,
+      "eligible_count": 11,
+      "excluded_count": 0,
+      "latest_common_date": "2026-07-21",
+      "profile_definition": {
+        "benchmark": "SPY",
+        "effective_from": "2026-07-23",
+        "epsilon": 1e-08,
+        "fast_window": 20,
+        "interval_alias": "1M",
+        "model_id": "sector-relative-trend-momentum",
+        "model_version": "sector-relative-trend-momentum-v1",
+        "momentum_lag": 5,
+        "momentum_scale": 2.0,
+        "momentum_smoothing": 10,
+        "normalization_method": "zero-centered-rolling-robust-scale-v1",
+        "normalization_window": 126,
+        "observation_spacing": 3,
+        "profile": "medium",
+        "sampling_frequency": "daily",
+        "slow_window": 50,
+        "tail_observations": 10,
+        "trend_scale": 2.0,
+        "volatility_window": 50,
+        "winsor_limit": 3.0
+      },
+      "quadrant_counts": {
+        "improving": 6,
+        "lagging": 1,
+        "leading": 2,
+        "weakening": 2
+      },
+      "relative_momentum_range": [
+        95.789986,
+        106.0
+      ],
+      "relative_trend_range": [
+        94.0,
+        106.0
+      ],
+      "tail_observations_per_sector": 10
+    },
+    "short": {
+      "coordinate_count": 88,
+      "eligible_count": 11,
+      "excluded_count": 0,
+      "latest_common_date": "2026-07-21",
+      "profile_definition": {
+        "benchmark": "SPY",
+        "effective_from": "2026-07-23",
+        "epsilon": 1e-08,
+        "fast_window": 10,
+        "interval_alias": "1W",
+        "model_id": "sector-relative-trend-momentum",
+        "model_version": "sector-relative-trend-momentum-v1",
+        "momentum_lag": 3,
+        "momentum_scale": 2.0,
+        "momentum_smoothing": 5,
+        "normalization_method": "zero-centered-rolling-robust-scale-v1",
+        "normalization_window": 60,
+        "observation_spacing": 1,
+        "profile": "short",
+        "sampling_frequency": "daily",
+        "slow_window": 30,
+        "tail_observations": 8,
+        "trend_scale": 2.0,
+        "volatility_window": 30,
+        "winsor_limit": 3.0
+      },
+      "quadrant_counts": {
+        "improving": 2,
+        "lagging": 5,
+        "leading": 4,
+        "weakening": 0
+      },
+      "relative_momentum_range": [
+        97.132907,
+        105.473524
+      ],
+      "relative_trend_range": [
+        98.040949,
+        101.353252
+      ],
+      "tail_observations_per_sector": 8
+    }
+  },
+  "reproduction_command": "make validate-stage8-75 PYTHON=python3",
+  "sector_count": 11,
+  "snapshot_id": "sector-sp100-v20260718-2026-07-21-67cb07c4fe",
+  "snapshot_schema_version": 5,
+  "stage": "8.75-sector-rotation-mathematics",
+  "total_coordinate_count": 286
+}

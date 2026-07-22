@@ -147,10 +147,10 @@ _MEMBERS: dict[str, tuple[tuple[str, ThemeExposure], ...]] = {
     "robotics_automation": (("ROK", "core"), ("TER", "significant"), ("ZBRA", "significant"), ("ABB", "core"), ("HON", "significant"), ("EMR", "significant"), ("CGNX", "core"), ("ISRG", "adjacent"), ("FANUY", "core")),
     "digital_advertising": (("GOOGL", "core"), ("META", "core"), ("AMZN", "significant"), ("TTD", "core"), ("PINS", "core"), ("SNAP", "core"), ("ROKU", "significant"), ("RDDT", "significant"), ("APP", "significant")),
     "ecommerce": (("AMZN", "core"), ("SHOP", "core"), ("MELI", "core"), ("EBAY", "core"), ("ETSY", "core"), ("BABA", "core"), ("JD", "core"), ("W", "significant"), ("SE", "significant")),
-    "digital_payments": (("V", "core"), ("MA", "core"), ("PYPL", "core"), ("SQ", "core"), ("FI", "significant"), ("GPN", "significant"), ("ADYEY", "core"), ("NU", "significant"), ("SOFI", "adjacent")),
+    "digital_payments": (("V", "core"), ("MA", "core"), ("PYPL", "core"), ("XYZ", "core"), ("FISV", "significant"), ("GPN", "significant"), ("ADYEY", "core"), ("NU", "significant"), ("SOFI", "adjacent")),
     "online_travel": (("BKNG", "core"), ("EXPE", "core"), ("ABNB", "core"), ("TRIP", "core"), ("TCOM", "core"), ("DESP", "core"), ("MMYT", "core")),
     "gaming_interactive_media": (("MSFT", "adjacent"), ("SONY", "significant"), ("NTDOY", "core"), ("EA", "core"), ("TTWO", "core"), ("RBLX", "core"), ("U", "significant"), ("SE", "significant")),
-    "streaming_digital_entertainment": (("NFLX", "core"), ("DIS", "significant"), ("WBD", "significant"), ("PARA", "significant"), ("SPOT", "core"), ("ROKU", "core"), ("AMZN", "adjacent"), ("GOOGL", "significant")),
+    "streaming_digital_entertainment": (("NFLX", "core"), ("DIS", "significant"), ("WBD", "significant"), ("PSKY", "significant"), ("SPOT", "core"), ("ROKU", "core"), ("AMZN", "adjacent"), ("GOOGL", "significant")),
     "aerospace_defense": (("LMT", "core"), ("NOC", "core"), ("RTX", "core"), ("GD", "core"), ("LHX", "core"), ("BA", "significant"), ("HII", "core"), ("TDG", "significant"), ("BWXT", "significant")),
     "space_economy": (("RKLB", "core"), ("ASTS", "core"), ("RDW", "core"), ("PL", "core"), ("IRDM", "core"), ("VSAT", "significant"), ("LUNR", "core"), ("SPCE", "experimental")),
     "drones_autonomous_systems": (("AVAV", "core"), ("KTOS", "significant"), ("RCAT", "core"), ("ONDS", "experimental"), ("JOBY", "adjacent"), ("ACHR", "adjacent"), ("LMT", "adjacent"), ("NOC", "adjacent")),
@@ -167,6 +167,11 @@ _MEMBERS: dict[str, tuple[tuple[str, ThemeExposure], ...]] = {
 
 def _mapping(theme: LaunchThemeDefinition, symbol: str, exposure: ThemeExposure) -> ThemeConstituentMapping:
     method = "primary_business_exposure" if exposure == "core" else "reliable_product_or_revenue_exposure" if exposure == "significant" else "industry_or_curated_support"
+    correction = {
+        ("digital_payments", "XYZ"): "Verified same-entity ticker successor to SQ; Polygon CIK/FIGI continuity and the 2025-01-17/2025-01-21 provider boundary are retained in security history.",
+        ("digital_payments", "FISV"): "Verified same-entity ticker successor to FI; Polygon CIK/FIGI continuity and the 2025-11-10/2025-11-11 provider boundary are retained in security history.",
+        ("streaming_digital_entertainment", "PSKY"): "Verified merger successor to PARA; the 2025-08-06/2025-08-07 provider boundary and distinct successor identity are retained in security history.",
+    }.get((theme.id, symbol))
     return ThemeConstituentMapping(
         theme_id=theme.id,
         symbol=symbol,
@@ -178,7 +183,7 @@ def _mapping(theme: LaunchThemeDefinition, symbol: str, exposure: ThemeExposure)
         effective_from=TAXONOMY_EFFECTIVE_FROM,
         taxonomy_version=TAXONOMY_VERSION,
         review_status="curated_launch_catalog",
-        revenue_or_product_exposure_notes="Exposure is tiered; diversified issuers are not automatically treated as core.",
+        revenue_or_product_exposure_notes=" ".join(filter(None, ("Exposure is tiered; diversified issuers are not automatically treated as core.", correction))),
         benchmark_or_etf_evidence=f"Theme benchmark set: {', '.join(theme.benchmark_symbols)}.",
     )
 
@@ -190,14 +195,45 @@ THEME_MAPPINGS: tuple[ThemeConstituentMapping, ...] = tuple(
 )
 
 
+def _retired_mapping(theme_id: str, symbol: str, exposure: ThemeExposure, provider_transition_date: str) -> ThemeConstituentMapping:
+    """Preserve the exact launch mapping lineage for a verified ticker transition."""
+    theme = next(item for item in LAUNCH_THEMES if item.id == theme_id)
+    original = _mapping(theme, symbol, exposure)
+    return ThemeConstituentMapping(
+        **{
+            **original.model_dump(),
+            # The mapping amendment occurred on the launch taxonomy effective
+            # date. Provider-symbol history below retains the older market-date
+            # boundary independently from taxonomy lineage.
+            "effective_to": TAXONOMY_EFFECTIVE_FROM,
+            "review_status": "retired_verified_provider_ticker_transition",
+            "revenue_or_product_exposure_notes": (
+                f"The thematic exposure is unchanged; the approved Polygon identity/history audit "
+                f"verified the provider-symbol transition after {provider_transition_date}."
+            ),
+        }
+    )
+
+
+# These records are lineage only.  They are not active mappings and therefore
+# do not alter the reviewed 227-row launch exposure catalog.
+RETIRED_THEME_MAPPINGS: tuple[ThemeConstituentMapping, ...] = (
+    _retired_mapping("digital_payments", "SQ", "core", "2025-01-17"),
+    _retired_mapping("digital_payments", "FI", "significant", "2025-11-10"),
+    _retired_mapping("streaming_digital_entertainment", "PARA", "significant", "2025-08-06"),
+)
+
+
 class ThemeRegistry:
     def __init__(
         self,
         definitions: Iterable[LaunchThemeDefinition] = (*LAUNCH_THEMES, *RETIRED_THEMES),
         mappings: Iterable[ThemeConstituentMapping] = THEME_MAPPINGS,
+        mapping_history: Iterable[ThemeConstituentMapping] = RETIRED_THEME_MAPPINGS,
     ) -> None:
         self.definitions = tuple(definitions)
         self.mappings = tuple(mappings)
+        self.mapping_history = tuple(mapping_history)
         self._by_id = {item.id: item for item in self.definitions}
         self._alias_to_id: dict[str, str] = {}
         for item in self.definitions:
@@ -295,6 +331,7 @@ class ThemeRegistry:
             "retired": sum(item.status == "retired" for item in self.definitions),
             "launch_ready": sum(len(self.constituents(item.id)) >= item.minimum_constituents for item in self.launch()),
             "total_mappings": len(self.mappings),
+            "retired_mapping_lineage": len(self.mapping_history),
             "core": exposures["core"],
             "significant": exposures["significant"],
             "adjacent": exposures["adjacent"],

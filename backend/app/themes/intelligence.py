@@ -57,6 +57,8 @@ class ThemeIntelligenceService:
             "rankings": [row["theme_id"] for row in rows if row.get("rank") is not None],
             "pagination": {"offset": max(0, offset), "limit": max(1, min(limit, 100)), "total": len(rows)},
             "warnings": ["Themes without a governed market snapshot remain explicitly unavailable; taxonomy membership is not market evidence."],
+            "coverage_audit": list(snapshot.coverage_audit) if snapshot else [],
+            "repository_stats": dict(snapshot.repository_stats) if snapshot else {},
             "test_or_mock_label": "HERMETIC TEST DATA — NOT LIVE" if snapshot and snapshot.source_state == "test" else None,
         }
 
@@ -211,6 +213,7 @@ class ThemeIntelligenceService:
     def _merged_rows(self) -> list[dict[str, Any]]:
         snapshot = self.snapshots.latest()
         live_rows: dict[str, dict[str, Any]] = {}
+        coverage_audit = {item.get("theme_id"): item for item in (snapshot.coverage_audit if snapshot else ())}
         if snapshot:
             for row in snapshot.rows:
                 canonical = self._canonical_legacy(row.get("theme_id"))
@@ -223,7 +226,7 @@ class ThemeIntelligenceService:
             definition_payload = definition.model_dump()
             if source:
                 coverage = float(source.get("coverage_ratio") or 0)
-                state = "available" if source.get("coverage_status") == "complete" else "partial" if source.get("coverage_status") == "partial" else "unavailable"
+                state = source.get("status") or ("available" if source.get("coverage_status") == "complete" else "partial" if source.get("coverage_status") == "partial" else "unavailable")
                 row = {
                     **source,
                     "theme_id": definition.id,
@@ -232,9 +235,9 @@ class ThemeIntelligenceService:
                     "status": state,
                     "leadership_state": str(source.get("classification") or "neutral").casefold(),
                     "source_state": snapshot.source_state if snapshot else "unavailable",
-                    "freshness": {"state": snapshot.source_state if snapshot else "unavailable", "market_date": snapshot.market_date if snapshot else None},
-                    "confidence": (source.get("signal_confidence") or {}).get("label", "limited"),
-                    "missing_data": [] if state == "available" else ["constituent_coverage"],
+                    "freshness": source.get("freshness") or {"state": snapshot.source_state if snapshot else "unavailable", "market_date": snapshot.market_date if snapshot else None},
+                    "confidence": (source.get("confidence") or {}).get("label", (source.get("signal_confidence") or {}).get("label", "limited")) if isinstance(source.get("confidence") or {}, dict) else source.get("confidence", "limited"),
+                    "missing_data": source.get("missing_data") or ([] if state == "available" else ["constituent_coverage"]),
                     "definition": {**(source.get("definition") or {}), **definition_payload},
                     "aliases": list(definition.aliases),
                     "benchmark_symbols": list(definition.benchmark_symbols),
@@ -246,6 +249,15 @@ class ThemeIntelligenceService:
                 }
             else:
                 row = self._catalog_row(definition_payload, len(mappings))
+                gate = coverage_audit.get(definition.id)
+                if gate:
+                    row.update({
+                        "coverage_ratio": gate.get("coverage_ratio", 0.0),
+                        "covered_constituent_count": gate.get("history_21d_count", 0),
+                        "eligible_count": gate.get("history_21d_count", 0),
+                        "coverage_gate": gate,
+                        "missing_data": gate.get("cause_categories") or row["missing_data"],
+                    })
             result.append(row)
         result.sort(key=lambda item: (item.get("rank") is None, int(item.get("rank") or 10_000), item["display_name"]))
         return result

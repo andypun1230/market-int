@@ -1,0 +1,35 @@
+{
+  "benchmark": "SPY",
+  "confidence": "coverage- and tail-aware; winsorization reduces confidence; Stage 7.5 row evidence remains required",
+  "effective_from": "2026-07-23",
+  "formulas": {
+    "log_relative": "ln(relative_price)",
+    "relative_momentum": "100 + momentum_scale * winsor(EMA(trend_change) / max(median_abs, 1.4826*MAD, 0.1), +/-3)",
+    "relative_price": "theme_index / benchmark_adjusted_close",
+    "relative_trend": "100 + trend_scale * winsor(scaled_trend / max(median_abs, 1.4826*MAD, 1.0), +/-3)",
+    "scaled_trend": "trend_spread / max(EWMA_std(delta_log_relative), epsilon)",
+    "trend_change": "Relative Trend(t) - Relative Trend(t-momentum_lag)",
+    "trend_spread": "EMA(log_relative, fast) - EMA(log_relative, slow)"
+  },
+  "human_specification": "docs/stage8.75-theme-rotation-model-specification.md",
+  "intellectual_property_disclaimer": "Original transparent implementation inspired only by the general relative-trend/momentum rotation concept; it does not reproduce proprietary formulas or claim third-party equivalence.",
+  "limitations": [
+    "current-membership historical baskets",
+    "descriptive not predictive",
+    "weekly completeness uses observed Friday",
+    "new themes require causal warm-up"
+  ],
+  "missing_data": "exact valid adjusted date intersection; no forward fill; no zero fill; continuity breaks on a missing benchmark session",
+  "model_id": "theme-relative-trend-momentum",
+  "normalization": "causal zero-centered rolling robust signed scale; no cross-sectional centering; winsorization serialized per observation",
+  "normalization_version": "zero-centered-rolling-robust-scale-v1",
+  "quadrant_logic": "Leading x>=100,y>=100; Improving x<100,y>=100; Weakening x>=100,y<100; Lagging x<100,y<100",
+  "sampling": {
+    "long": "weekly_last_complete_session",
+    "medium": "daily",
+    "short": "daily"
+  },
+  "tail_logic": "latest continuous segment; chronological backend observations; no interpolation or synthetic previous point",
+  "taxonomy_version": "2026.07.1",
+  "version": "theme-relative-trend-momentum-v1"
+}

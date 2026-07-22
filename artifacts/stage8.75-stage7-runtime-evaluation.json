@@ -2,108 +2,108 @@
   "agent_performance_metrics": {
     "breadth": {
       "count": 5.0,
-      "max_latency_ms": 0.434,
-      "mean_latency_ms": 0.3258,
-      "p50_latency_ms": 0.396,
-      "p95_latency_ms": 0.4276
+      "max_latency_ms": 0.501,
+      "mean_latency_ms": 0.376,
+      "p50_latency_ms": 0.442,
+      "p95_latency_ms": 0.4996
     },
     "educational": {
       "count": 1.0,
-      "max_latency_ms": 0.025,
-      "mean_latency_ms": 0.025,
-      "p50_latency_ms": 0.025,
-      "p95_latency_ms": 0.025
+      "max_latency_ms": 0.027,
+      "mean_latency_ms": 0.027,
+      "p50_latency_ms": 0.027,
+      "p95_latency_ms": 0.027
     },
     "index": {
       "count": 1.0,
-      "max_latency_ms": 0.526,
-      "mean_latency_ms": 0.526,
-      "p50_latency_ms": 0.526,
-      "p95_latency_ms": 0.526
+      "max_latency_ms": 0.502,
+      "mean_latency_ms": 0.502,
+      "p50_latency_ms": 0.502,
+      "p95_latency_ms": 0.502
     },
     "leadership": {
       "count": 1.0,
-      "max_latency_ms": 0.497,
-      "mean_latency_ms": 0.497,
-      "p50_latency_ms": 0.497,
-      "p95_latency_ms": 0.497
+      "max_latency_ms": 0.49,
+      "mean_latency_ms": 0.49,
+      "p50_latency_ms": 0.49,
+      "p95_latency_ms": 0.49
     },
     "macro": {
       "count": 1.0,
-      "max_latency_ms": 0.556,
-      "mean_latency_ms": 0.556,
-      "p50_latency_ms": 0.556,
-      "p95_latency_ms": 0.556
+      "max_latency_ms": 0.537,
+      "mean_latency_ms": 0.537,
+      "p50_latency_ms": 0.537,
+      "p95_latency_ms": 0.537
     },
     "market": {
       "count": 6.0,
-      "max_latency_ms": 0.522,
-      "mean_latency_ms": 0.209,
-      "p50_latency_ms": 0.183,
-      "p95_latency_ms": 0.439
+      "max_latency_ms": 0.564,
+      "mean_latency_ms": 0.252833,
+      "p50_latency_ms": 0.24,
+      "p95_latency_ms": 0.49725
     },
     "navigation": {
       "count": 1.0,
-      "max_latency_ms": 0.029,
-      "mean_latency_ms": 0.029,
-      "p50_latency_ms": 0.029,
-      "p95_latency_ms": 0.029
+      "max_latency_ms": 0.023,
+      "mean_latency_ms": 0.023,
+      "p50_latency_ms": 0.023,
+      "p95_latency_ms": 0.023
     },
     "portfolio": {
       "count": 1.0,
-      "max_latency_ms": 0.036,
-      "mean_latency_ms": 0.036,
-      "p50_latency_ms": 0.036,
-      "p95_latency_ms": 0.036
+      "max_latency_ms": 0.064,
+      "mean_latency_ms": 0.064,
+      "p50_latency_ms": 0.064,
+      "p95_latency_ms": 0.064
     },
     "report": {
       "count": 4.0,
-      "max_latency_ms": 1.082,
-      "mean_latency_ms": 0.6825,
-      "p50_latency_ms": 0.818,
-      "p95_latency_ms": 1.0442
+      "max_latency_ms": 1.021,
+      "mean_latency_ms": 0.73025,
+      "p50_latency_ms": 0.9435,
+      "p95_latency_ms": 1.01725
     },
     "research": {
       "count": 1.0,
-      "max_latency_ms": 0.665,
-      "mean_latency_ms": 0.665,
-      "p50_latency_ms": 0.665,
-      "p95_latency_ms": 0.665
+      "max_latency_ms": 0.694,
+      "mean_latency_ms": 0.694,
+      "p50_latency_ms": 0.694,
+      "p95_latency_ms": 0.694
     },
     "risk": {
       "count": 5.0,
-      "max_latency_ms": 0.753,
-      "mean_latency_ms": 0.5612,
-      "p50_latency_ms": 0.703,
-      "p95_latency_ms": 0.7432
+      "max_latency_ms": 4.048,
+      "mean_latency_ms": 1.2832,
+      "p50_latency_ms": 0.706,
+      "p95_latency_ms": 3.441
     },
     "sector": {
       "count": 1.0,
-      "max_latency_ms": 0.225,
-      "mean_latency_ms": 0.225,
-      "p50_latency_ms": 0.225,
-      "p95_latency_ms": 0.225
+      "max_latency_ms": 0.239,
+      "mean_latency_ms": 0.239,
+      "p50_latency_ms": 0.239,
+      "p95_latency_ms": 0.239
     },
     "stock": {
       "count": 9.0,
-      "max_latency_ms": 2.457,
-      "mean_latency_ms": 1.038889,
-      "p50_latency_ms": 0.901,
-      "p95_latency_ms": 2.0758
+      "max_latency_ms": 2.722,
+      "mean_latency_ms": 1.035111,
+      "p50_latency_ms": 0.83,
+      "p95_latency_ms": 2.2952
     },
     "theme": {
       "count": 1.0,
-      "max_latency_ms": 0.402,
-      "mean_latency_ms": 0.402,
-      "p50_latency_ms": 0.402,
-      "p95_latency_ms": 0.402
+      "max_latency_ms": 0.275,
+      "mean_latency_ms": 0.275,
+      "p50_latency_ms": 0.275,
+      "p95_latency_ms": 0.275
     },
     "watchlist": {
       "count": 2.0,
-      "max_latency_ms": 0.239,
-      "mean_latency_ms": 0.1745,
-      "p50_latency_ms": 0.1745,
-      "p95_latency_ms": 0.23255
+      "max_latency_ms": 0.24,
+      "mean_latency_ms": 0.1755,
+      "p50_latency_ms": 0.1755,
+      "p95_latency_ms": 0.23355
     }
   },
   "case_results": [
@@ -127,7 +127,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 5.086,
+        "latency_ms": 4.743,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -152,7 +152,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "market": 0.522
+          "market": 0.564
         },
         "agent_statuses": {
           "market": "complete"
@@ -218,7 +218,7 @@
         ],
         "freshness": "cached",
         "intent": "MARKET_STATE",
-        "latency_ms": 5.086,
+        "latency_ms": 4.743,
         "limitations": [
           "An engine reported a contradiction without an evidence-level citation; it was not promoted as a factual claim."
         ],
@@ -260,7 +260,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 2.799,
+        "latency_ms": 2.474,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -285,7 +285,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "index": 0.526
+          "index": 0.502
         },
         "agent_statuses": {
           "index": "complete"
@@ -404,7 +404,7 @@
         ],
         "freshness": "cached",
         "intent": "INDEX_ANALYSIS",
-        "latency_ms": 2.799,
+        "latency_ms": 2.474,
         "limitations": [],
         "missing_evidence": [],
         "model_calls": 0,
@@ -442,7 +442,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 2.266,
+        "latency_ms": 5.567,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -467,7 +467,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "breadth": 0.434
+          "breadth": 0.494
         },
         "agent_statuses": {
           "breadth": "complete"
@@ -565,7 +565,7 @@
         ],
         "freshness": "cached",
         "intent": "BREADTH_QUERY",
-        "latency_ms": 2.266,
+        "latency_ms": 5.567,
         "limitations": [
           "An engine reported a contradiction without an evidence-level citation; it was not promoted as a factual claim."
         ],
@@ -607,7 +607,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 2.893,
+        "latency_ms": 2.379,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -632,7 +632,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "leadership": 0.497
+          "leadership": 0.49
         },
         "agent_statuses": {
           "leadership": "complete"
@@ -748,7 +748,7 @@
         ],
         "freshness": "cached",
         "intent": "SECTOR_ANALYSIS",
-        "latency_ms": 2.893,
+        "latency_ms": 2.379,
         "limitations": [],
         "missing_evidence": [],
         "model_calls": 0,
@@ -786,7 +786,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 2.558,
+        "latency_ms": 1.278,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -813,7 +813,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "sector": 0.225
+          "sector": 0.239
         },
         "agent_statuses": {
           "sector": "complete"
@@ -889,7 +889,7 @@
         ],
         "freshness": "cached",
         "intent": "SECTOR_ANALYSIS",
-        "latency_ms": 2.558,
+        "latency_ms": 1.278,
         "limitations": [],
         "missing_evidence": [],
         "model_calls": 0,
@@ -927,7 +927,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 2.33,
+        "latency_ms": 1.388,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -954,7 +954,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "theme": 0.402
+          "theme": 0.275
         },
         "agent_statuses": {
           "theme": "complete"
@@ -1030,7 +1030,7 @@
         ],
         "freshness": "cached",
         "intent": "THEME_ANALYSIS",
-        "latency_ms": 2.33,
+        "latency_ms": 1.388,
         "limitations": [],
         "missing_evidence": [],
         "model_calls": 0,
@@ -1068,7 +1068,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 1.588,
+        "latency_ms": 1.444,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -1093,7 +1093,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "macro": 0.556
+          "macro": 0.537
         },
         "agent_statuses": {
           "macro": "complete"
@@ -1159,7 +1159,7 @@
         ],
         "freshness": "cached",
         "intent": "MACRO_QUERY",
-        "latency_ms": 1.588,
+        "latency_ms": 1.444,
         "limitations": [
           "Direct yield data is unavailable; a bond ETF proxy is labelled explicitly."
         ],
@@ -1199,7 +1199,7 @@
       "metrics": {
         "agent_count": 2.0,
         "intent_match": 1.0,
-        "latency_ms": 4.079,
+        "latency_ms": 7.794,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -1222,8 +1222,8 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "report": 0.83,
-          "risk": 0.703
+          "report": 1.021,
+          "risk": 4.048
         },
         "agent_statuses": {
           "report": "complete",
@@ -1396,7 +1396,7 @@
         ],
         "freshness": "cached",
         "intent": "RISK_QUERY",
-        "latency_ms": 4.079,
+        "latency_ms": 7.794,
         "limitations": [
           "Direct yield data is unavailable; a bond ETF proxy is labelled explicitly."
         ],
@@ -1437,7 +1437,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 5.56,
+        "latency_ms": 2.757,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -1464,7 +1464,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "stock": 0.901
+          "stock": 0.798
         },
         "agent_statuses": {
           "stock": "complete"
@@ -1589,7 +1589,7 @@
         ],
         "freshness": "cached",
         "intent": "STOCK_ANALYSIS",
-        "latency_ms": 5.56,
+        "latency_ms": 2.757,
         "limitations": [],
         "missing_evidence": [],
         "model_calls": 0,
@@ -1627,7 +1627,7 @@
       "metrics": {
         "agent_count": 4.0,
         "intent_match": 1.0,
-        "latency_ms": 6.109,
+        "latency_ms": 10.424,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -1675,10 +1675,10 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "breadth": 0.386,
-          "market": 0.162,
-          "risk": 0.704,
-          "stock": 0.817
+          "breadth": 0.501,
+          "market": 0.255,
+          "risk": 1.013,
+          "stock": 0.873
         },
         "agent_statuses": {
           "breadth": "complete",
@@ -1872,7 +1872,7 @@
         ],
         "freshness": "cached",
         "intent": "STOCK_DECISION_SUPPORT",
-        "latency_ms": 6.109,
+        "latency_ms": 10.424,
         "limitations": [
           "Direct yield data is unavailable; a bond ETF proxy is labelled explicitly."
         ],
@@ -1915,7 +1915,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 7.227,
+        "latency_ms": 6.068,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -1959,7 +1959,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "stock": 1.504
+          "stock": 1.655
         },
         "agent_statuses": {
           "stock": "complete"
@@ -2118,7 +2118,7 @@
         ],
         "freshness": "cached",
         "intent": "STOCK_COMPARISON",
-        "latency_ms": 7.227,
+        "latency_ms": 6.068,
         "limitations": [],
         "missing_evidence": [],
         "model_calls": 0,
@@ -2156,7 +2156,7 @@
       "metrics": {
         "agent_count": 2.0,
         "intent_match": 1.0,
-        "latency_ms": 8.989,
+        "latency_ms": 9.161,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -2179,8 +2179,8 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "stock": 2.457,
-          "watchlist": 0.239
+          "stock": 2.722,
+          "watchlist": 0.24
         },
         "agent_statuses": {
           "stock": "complete",
@@ -2429,7 +2429,7 @@
         ],
         "freshness": "cached",
         "intent": "WATCHLIST_REVIEW",
-        "latency_ms": 8.989,
+        "latency_ms": 9.161,
         "limitations": [
           "Saved-list membership came from this device's local app context; backend account scoping is not available."
         ],
@@ -2470,7 +2470,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 3.962,
+        "latency_ms": 5.342,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -2495,7 +2495,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "report": 1.082
+          "report": 0.891
         },
         "agent_statuses": {
           "report": "complete"
@@ -2665,7 +2665,7 @@
         ],
         "freshness": "cached",
         "intent": "REPORT_QUERY",
-        "latency_ms": 3.962,
+        "latency_ms": 5.342,
         "limitations": [
           "Direct yield data is unavailable; a bond ETF proxy is labelled explicitly."
         ],
@@ -2705,7 +2705,7 @@
       "metrics": {
         "agent_count": 2.0,
         "intent_match": 1.0,
-        "latency_ms": 4.891,
+        "latency_ms": 5.23,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -2731,8 +2731,8 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "report": 0.806,
-          "research": 0.665
+          "report": 0.996,
+          "research": 0.694
         },
         "agent_statuses": {
           "report": "complete",
@@ -2961,7 +2961,7 @@
         ],
         "freshness": "cached",
         "intent": "RESEARCH_QUERY",
-        "latency_ms": 4.891,
+        "latency_ms": 5.23,
         "limitations": [
           "Direct yield data is unavailable; a bond ETF proxy is labelled explicitly."
         ],
@@ -3002,7 +3002,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 0.576,
+        "latency_ms": 0.55,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -3028,7 +3028,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "navigation": 0.029
+          "navigation": 0.023
         },
         "agent_statuses": {
           "navigation": "complete"
@@ -3070,7 +3070,7 @@
         ],
         "freshness": "live",
         "intent": "APP_NAVIGATION",
-        "latency_ms": 0.576,
+        "latency_ms": 0.55,
         "limitations": [],
         "missing_evidence": [],
         "model_calls": 0,
@@ -3107,7 +3107,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 0.787,
+        "latency_ms": 0.705,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -3132,7 +3132,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "educational": 0.025
+          "educational": 0.027
         },
         "agent_statuses": {
           "educational": "unavailable"
@@ -3174,7 +3174,7 @@
         ],
         "freshness": "unavailable",
         "intent": "EDUCATIONAL_QUERY",
-        "latency_ms": 0.787,
+        "latency_ms": 0.705,
         "limitations": [
           "Evidence freshness is unavailable; conclusions are constrained accordingly."
         ],
@@ -3213,7 +3213,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 2.923,
+        "latency_ms": 0.675,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -3236,7 +3236,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "portfolio": 0.036
+          "portfolio": 0.064
         },
         "agent_statuses": {
           "portfolio": "unavailable"
@@ -3278,7 +3278,7 @@
         ],
         "freshness": "unavailable",
         "intent": "PORTFOLIO_QUERY",
-        "latency_ms": 2.923,
+        "latency_ms": 0.675,
         "limitations": [
           "Evidence freshness is unavailable; conclusions are constrained accordingly.",
           "Portfolio holdings are not connected."
@@ -3321,7 +3321,7 @@
       "metrics": {
         "agent_count": 0.0,
         "intent_match": 1.0,
-        "latency_ms": 0.572,
+        "latency_ms": 0.369,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -3364,7 +3364,7 @@
         "deep_links": [],
         "freshness": "unavailable",
         "intent": "UNSUPPORTED_OR_AMBIGUOUS",
-        "latency_ms": 0.572,
+        "latency_ms": 0.369,
         "limitations": [
           "Evidence freshness is unavailable; conclusions are constrained accordingly."
         ],
@@ -3402,7 +3402,7 @@
       "metrics": {
         "agent_count": 2.0,
         "intent_match": 1.0,
-        "latency_ms": 6.538,
+        "latency_ms": 7.111,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -3498,8 +3498,8 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "risk": 0.753,
-          "stock": 0.802
+          "risk": 0.706,
+          "stock": 0.83
         },
         "agent_statuses": {
           "risk": "complete",
@@ -3689,7 +3689,7 @@
         ],
         "freshness": "cached",
         "intent": "FOLLOW_UP",
-        "latency_ms": 6.538,
+        "latency_ms": 7.111,
         "limitations": [
           "Direct yield data is unavailable; a bond ETF proxy is labelled explicitly."
         ],
@@ -3729,7 +3729,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 1.269,
+        "latency_ms": 1.378,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -3754,7 +3754,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "market": 0.19
+          "market": 0.225
         },
         "agent_statuses": {
           "market": "stale"
@@ -3826,7 +3826,7 @@
         ],
         "freshness": "stale",
         "intent": "MARKET_STATE",
-        "latency_ms": 1.269,
+        "latency_ms": 1.378,
         "limitations": [
           "Evidence freshness is stale; conclusions are constrained accordingly.",
           "An engine reported a contradiction without an evidence-level citation; it was not promoted as a factual claim."
@@ -3867,7 +3867,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 3.021,
+        "latency_ms": 2.817,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -3894,7 +3894,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "stock": 0.89
+          "stock": 0.81
         },
         "agent_statuses": {
           "stock": "partial"
@@ -4024,7 +4024,7 @@
         ],
         "freshness": "partial",
         "intent": "STOCK_ANALYSIS",
-        "latency_ms": 3.021,
+        "latency_ms": 2.817,
         "limitations": [
           "Volume history is partial.",
           "Complete volume history is unavailable.",
@@ -4066,7 +4066,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 0.728,
+        "latency_ms": 0.868,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -4089,7 +4089,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "watchlist": 0.11
+          "watchlist": 0.111
         },
         "agent_statuses": {
           "watchlist": "complete"
@@ -4131,7 +4131,7 @@
         ],
         "freshness": "cached",
         "intent": "WATCHLIST_REVIEW",
-        "latency_ms": 0.728,
+        "latency_ms": 0.868,
         "limitations": [
           "Saved-list membership came from this device's local app context; backend account scoping is not available."
         ],
@@ -4169,7 +4169,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 1.006,
+        "latency_ms": 0.731,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -4194,7 +4194,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "report": 0.012
+          "report": 0.013
         },
         "agent_statuses": {
           "report": "unavailable"
@@ -4244,7 +4244,7 @@
         ],
         "freshness": "unavailable",
         "intent": "REPORT_QUERY",
-        "latency_ms": 1.006,
+        "latency_ms": 0.731,
         "limitations": [
           "No validated ReportDocument is available.",
           "Evidence freshness is unavailable; conclusions are constrained accordingly.",
@@ -4287,7 +4287,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 0.809,
+        "latency_ms": 0.695,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -4314,7 +4314,7 @@
           "market": "RuntimeError"
         },
         "agent_latency_ms": {
-          "market": 0.014
+          "market": 0.02
         },
         "agent_statuses": {
           "market": "failed"
@@ -4364,7 +4364,7 @@
         ],
         "freshness": "unavailable",
         "intent": "MARKET_STATE",
-        "latency_ms": 0.809,
+        "latency_ms": 0.695,
         "limitations": [
           "market evidence adapter failed safely.",
           "Evidence freshness is unavailable; conclusions are constrained accordingly.",
@@ -4407,7 +4407,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 0.73,
+        "latency_ms": 0.675,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -4436,7 +4436,7 @@
           "stock": "AttributeError"
         },
         "agent_latency_ms": {
-          "stock": 0.019
+          "stock": 0.016
         },
         "agent_statuses": {
           "stock": "failed"
@@ -4488,7 +4488,7 @@
         ],
         "freshness": "unavailable",
         "intent": "STOCK_ANALYSIS",
-        "latency_ms": 0.73,
+        "latency_ms": 0.675,
         "limitations": [
           "stock evidence adapter failed safely.",
           "Evidence freshness is unavailable; conclusions are constrained accordingly.",
@@ -4531,7 +4531,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 0.883,
+        "latency_ms": 4.068,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -4556,7 +4556,7 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "breadth": 0.011
+          "breadth": 0.021
         },
         "agent_statuses": {
           "breadth": "unavailable"
@@ -4606,7 +4606,7 @@
         ],
         "freshness": "unavailable",
         "intent": "BREADTH_QUERY",
-        "latency_ms": 0.883,
+        "latency_ms": 4.068,
         "limitations": [
           "No immutable breadth snapshot is available.",
           "Evidence freshness is unavailable; conclusions are constrained accordingly.",
@@ -4649,7 +4649,7 @@
       "metrics": {
         "agent_count": 4.0,
         "intent_match": 1.0,
-        "latency_ms": 68.643,
+        "latency_ms": 61.494,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -4699,10 +4699,10 @@
           "risk": "timeout"
         },
         "agent_latency_ms": {
-          "breadth": 0.402,
-          "market": 0.19,
+          "breadth": 0.442,
+          "market": 0.156,
           "risk": 0.0,
-          "stock": 1.011
+          "stock": 0.832
         },
         "agent_statuses": {
           "breadth": "complete",
@@ -4861,7 +4861,7 @@
         ],
         "freshness": "partial",
         "intent": "STOCK_DECISION_SUPPORT",
-        "latency_ms": 68.643,
+        "latency_ms": 61.494,
         "limitations": [
           "risk exceeded the bounded plan latency.",
           "Evidence freshness is partial; conclusions are constrained accordingly.",
@@ -4909,7 +4909,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 1.947,
+        "latency_ms": 1.904,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -4962,7 +4962,7 @@
         "deep_links": [],
         "freshness": "unavailable",
         "intent": "MARKET_STATE",
-        "latency_ms": 1.947,
+        "latency_ms": 1.904,
         "limitations": [
           "market output failed its Stage 7 validation contract (agent_mismatch, evidence_category, destination).",
           "Evidence freshness is unavailable; conclusions are constrained accordingly.",
@@ -5006,7 +5006,7 @@
       "metrics": {
         "agent_count": 4.0,
         "intent_match": 1.0,
-        "latency_ms": 5.216,
+        "latency_ms": 5.791,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -5054,10 +5054,10 @@
         ],
         "agent_failure_categories": {},
         "agent_latency_ms": {
-          "breadth": 0.396,
-          "market": 0.176,
-          "risk": 0.646,
-          "stock": 0.949
+          "breadth": 0.422,
+          "market": 0.297,
+          "risk": 0.649,
+          "stock": 0.78
         },
         "agent_statuses": {
           "breadth": "complete",
@@ -5147,7 +5147,7 @@
         ],
         "freshness": "cached",
         "intent": "STOCK_DECISION_SUPPORT",
-        "latency_ms": 5.216,
+        "latency_ms": 5.791,
         "limitations": [
           "Direct yield data is unavailable; a bond ETF proxy is labelled explicitly.",
           "Collected contradictory evidence was omitted from challenge/risk reasoning.",
@@ -5193,7 +5193,7 @@
       "metrics": {
         "agent_count": 1.0,
         "intent_match": 1.0,
-        "latency_ms": 3.753,
+        "latency_ms": 3.657,
         "model_calls": 0.0,
         "required_agent_recall": 1.0,
         "unnecessary_agent_count": 0.0
@@ -5244,7 +5244,7 @@
         "deep_links": [],
         "freshness": "unavailable",
         "intent": "MARKET_STATE",
-        "latency_ms": 3.753,
+        "latency_ms": 3.657,
         "limitations": [
           "Collected evidence was quarantined because response validation did not pass.",
           "Untrusted instructions or secret-like content were detected and were not promoted into the answer."
@@ -5303,7 +5303,7 @@
   "failed_count": 0,
   "failures": [],
   "fixture_count": 30,
-  "generated_at": "2026-07-22T11:57:14.179847+00:00",
+  "generated_at": "2026-07-22T20:17:22.196255+00:00",
   "limitations": [
     "The runtime suite uses deterministic hermetic source adapters and makes no live provider or network calls.",
     "The current Copilot synthesis is deterministic, so token usage and model cost are zero and stochastic-model quality is out of scope.",
@@ -5311,11 +5311,11 @@
   ],
   "passed_count": 30,
   "performance_metrics": {
-    "max_latency_ms": 8.989,
-    "mean_latency_ms": 4.309786,
+    "max_latency_ms": 10.424,
+    "mean_latency_ms": 4.717786,
     "mean_model_calls": 0.0,
-    "p50_latency_ms": 4.0205,
-    "p95_latency_ms": 7.8437
+    "p50_latency_ms": 4.9865,
+    "p95_latency_ms": 9.60305
   },
   "release_bearing": true,
   "release_blocker_count": 0,
@@ -5492,7 +5492,7 @@
   },
   "schema_version": "stage7-evaluation-result-v1",
   "stage75_action_capture": {
-    "captured_at": "2026-07-22T11:57:14.876486+00:00",
+    "captured_at": "2026-07-22T20:17:22.923909+00:00",
     "case_count": 30,
     "exact_parameters_captured": true,
     "schema_version": "stage75-runtime-action-capture-v1"

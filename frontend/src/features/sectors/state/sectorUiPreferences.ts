@@ -13,7 +13,10 @@ const DEFAULT_SECTOR_UI_PREFERENCES: SectorUiPreferences = {
   themeHeatmapInterval: '1W',
   themeRotationInterval: '1M',
   themeRotationLabelMode: 'smart',
+  themeRotationMovement: 'meaningful',
   themeRotationQuadrant: 'all',
+  themeRotationTailLength: '5',
+  themeRotationUniverse: 'all',
 };
 
 let sessionPreferences: SectorUiPreferences = DEFAULT_SECTOR_UI_PREFERENCES;

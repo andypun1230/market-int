@@ -19,6 +19,7 @@ import {
   filterRotationItemsByQuadrant,
   findAvailableLabelPlacement,
   getRotationShortLabel,
+  getSmartRotationLabelLimit,
   selectSmartLabelKeys,
   type PlacedLabel,
   type Rect,
@@ -35,6 +36,7 @@ type ChartItem<T> = RotationLabelCandidate & {
   color: string;
   item: T;
   momentum: number;
+  opacity: number;
   strength: number;
 };
 
@@ -48,17 +50,23 @@ type SelectedPoint<T> = {
 type RotationQuadrantChartProps<T> = {
   benchmark: string;
   chartSize?: number;
+  domainPoints?: ChartRotationPoint[];
   emptyLabel?: string;
   getHistory?: (item: T) => ChartRotationPoint[];
   getItemKey?: (item: T) => string;
   getItemType?: (item: T) => 'sector' | 'theme' | string;
   getLabel?: (item: T) => string;
   getLabelPriority?: (item: T) => number;
+  getOpacity?: (item: T) => number;
   getName: (item: T) => string;
   getRelativeMomentum: (item: T) => number | null;
   getRelativeStrength: (item: T) => number | null;
+  horizontalAxisLabel?: string;
+  indicatorDescription?: string;
+  interpretationText?: string;
   interval: string;
   items: T[];
+  labelItemKeys?: ReadonlySet<string>;
   labelMode?: RotationLabelMode;
   maxItems?: number;
   maxSmartLabels?: number;
@@ -71,6 +79,8 @@ type RotationQuadrantChartProps<T> = {
   presentation?: 'card' | 'fullscreen';
   quadrantFilter?: RotationQuadrantFilter;
   selectedItemKey?: string | null;
+  selectedItemKeys?: ReadonlySet<string>;
+  showControls?: boolean;
   showExpandButton?: boolean;
   showTestDataBadge?: boolean;
   trailLength?: number;
@@ -81,6 +91,7 @@ const DEFAULT_CHART_SIZE = 300;
 const PADDING = 34;
 const LABEL_MODE_OPTIONS = [
   { key: 'smart', label: 'Smart' },
+  { key: 'selected', label: 'Selected' },
   { key: 'all', label: 'All' },
   { key: 'none', label: 'None' },
 ];
@@ -95,17 +106,23 @@ const QUADRANT_OPTIONS = [
 export function RotationQuadrantChart<T>({
   benchmark,
   chartSize = DEFAULT_CHART_SIZE,
+  domainPoints,
   emptyLabel = 'No rotation data available.',
   getHistory,
   getItemKey,
   getItemType,
   getLabel,
   getLabelPriority,
+  getOpacity,
   getName,
   getRelativeMomentum,
   getRelativeStrength,
+  horizontalAxisLabel = 'Relative Strength',
+  indicatorDescription,
+  interpretationText,
   interval,
   items,
+  labelItemKeys,
   labelMode: controlledLabelMode,
   maxItems,
   maxSmartLabels,
@@ -118,6 +135,8 @@ export function RotationQuadrantChart<T>({
   presentation = 'card',
   quadrantFilter: controlledQuadrantFilter,
   selectedItemKey: controlledSelectedItemKey,
+  selectedItemKeys,
+  showControls = true,
   showExpandButton = false,
   showTestDataBadge = false,
   trailLength,
@@ -130,7 +149,7 @@ export function RotationQuadrantChart<T>({
   const labelMode = controlledLabelMode ?? localLabelMode;
   const quadrantFilter = controlledQuadrantFilter ?? localQuadrantFilter;
   const selectedItemKey = controlledSelectedItemKey ?? localSelectedItemKey;
-  const smartLabelLimit = maxSmartLabels ?? getSmartLabelLimit(chartSize, presentation, maxItems);
+  const smartLabelLimit = maxSmartLabels ?? getSmartRotationLabelLimit(chartSize, presentation, maxItems);
   const plotSize = chartSize - PADDING * 2;
 
   const chartItems = useMemo<ChartItem<T>[]>(() => {
@@ -159,6 +178,7 @@ export function RotationQuadrantChart<T>({
           key,
           latest,
           momentum,
+          opacity: Math.max(0, Math.min(1, getOpacity?.(item) ?? 1)),
           priority: getLabelPriority?.(item) ?? 0,
           shortName: getLabel?.(item) ?? getRotationShortLabel({ name: fullName }),
           strength,
@@ -166,7 +186,7 @@ export function RotationQuadrantChart<T>({
         });
       });
     return mappedItems;
-  }, [getHistory, getItemKey, getItemType, getLabel, getLabelPriority, getName, getRelativeMomentum, getRelativeStrength, items, trailLength]);
+  }, [getHistory, getItemKey, getItemType, getLabel, getLabelPriority, getName, getOpacity, getRelativeMomentum, getRelativeStrength, items, trailLength]);
 
   const visibleItems = useMemo<ChartItem<T>[]>(
     () => filterRotationItemsByQuadrant(chartItems, quadrantFilter),
@@ -184,17 +204,28 @@ export function RotationQuadrantChart<T>({
         totalPoints: selectedItem.history.length,
       }
     : null;
-  const allPoints = visibleItems.flatMap((item) => item.history);
+  // The profile/snapshot domain is intentionally independent of quadrant and
+  // label filters so filtering cannot visually move an unchanged point.
+  const allPoints = useMemo(() => domainPoints ?? items.flatMap((item) => {
+    const strength = getRelativeStrength(item);
+    const momentum = getRelativeMomentum(item);
+    return strength === null || momentum === null
+      ? []
+      : normalizeHistory(getHistory?.(item), strength, momentum);
+  }), [domainPoints, getHistory, getRelativeMomentum, getRelativeStrength, items]);
   const domain = calculateRotationDomain(allPoints);
   const labelKeys = useMemo(
-    () =>
+    () => labelItemKeys
+      ? new Set(labelItemKeys)
+      :
       selectSmartLabelKeys(visibleItems, {
         labelMode,
         maxLabelCount: smartLabelLimit,
         selectedItemKey,
+        selectedItemKeys,
         watchlistKeys,
       }),
-    [labelMode, selectedItemKey, smartLabelLimit, visibleItems, watchlistKeys],
+    [labelItemKeys, labelMode, selectedItemKey, selectedItemKeys, smartLabelLimit, visibleItems, watchlistKeys],
   );
   const placedLabels = useMemo(
     () => buildPlacedLabels(visibleItems, labelKeys, labelMode, selectedItemKey, domain, plotSize, chartSize),
@@ -226,7 +257,7 @@ export function RotationQuadrantChart<T>({
     <View style={styles.wrapper}>
       <View style={styles.chartHeader}>
         <Text style={styles.description}>
-          Rotation based on relative strength and momentum vs {benchmark} · {interval}
+          {indicatorDescription ?? `Rotation based on relative strength and momentum vs ${benchmark} · ${interval}`}
         </Text>
         {showExpandButton && onExpand ? (
           <Pressable
@@ -239,7 +270,7 @@ export function RotationQuadrantChart<T>({
         ) : null}
       </View>
 
-      <View style={styles.controlStack}>
+      {showControls ? <View style={styles.controlStack}>
         <SegmentedControl
           label="Labels"
           options={LABEL_MODE_OPTIONS}
@@ -255,7 +286,7 @@ export function RotationQuadrantChart<T>({
           variant="switch"
           onChange={(value) => updateQuadrantFilter(value as RotationQuadrantFilter)}
         />
-      </View>
+      </View> : null}
 
       {!visibleItems.length ? (
         <Text style={styles.emptyText}>No points match the selected quadrant.</Text>
@@ -264,7 +295,7 @@ export function RotationQuadrantChart<T>({
           <QuadrantLabels />
           <View style={[styles.verticalAxis, { height: plotSize, left: scaleX(100, domain, plotSize), top: PADDING }]} />
           <View style={[styles.horizontalAxis, { left: PADDING, top: scaleY(100, domain, plotSize), width: plotSize }]} />
-          <Text style={[styles.neutralLabel, { left: scaleX(100, domain, plotSize) + 4, top: PADDING + 3 }]}>100 RS</Text>
+          <Text style={[styles.neutralLabel, { left: scaleX(100, domain, plotSize) + 4, top: PADDING + 3 }]}>100 {horizontalAxisLabel === 'Relative Trend' ? 'Trend' : 'RS'}</Text>
           <Text style={[styles.neutralLabel, { left: PADDING + 4, top: scaleY(100, domain, plotSize) + 3 }]}>100 Mom</Text>
 
           {visibleItems.map((item) => (
@@ -272,6 +303,7 @@ export function RotationQuadrantChart<T>({
               domain={domain}
               item={item}
               key={item.key}
+              horizontalAxisLabel={horizontalAxisLabel}
               plotSize={plotSize}
               selected={item.key === selectedItemKey}
               selectedItemKey={selectedItemKey}
@@ -293,7 +325,7 @@ export function RotationQuadrantChart<T>({
             />
           ))}
 
-          <Text style={styles.xAxisLabel}>Relative Strength</Text>
+          <Text style={styles.xAxisLabel}>{horizontalAxisLabel}</Text>
           <Text style={styles.yAxisLabel}>Relative Momentum</Text>
         </View>
       )}
@@ -307,7 +339,7 @@ export function RotationQuadrantChart<T>({
           total: chartItems.length,
         })}
       </Text>
-      <Text style={styles.helperText}>Values above 100 outperform the benchmark; momentum above 100 is improving.</Text>
+      <Text style={styles.helperText}>{interpretationText ?? 'Values above 100 outperform the benchmark; momentum above 100 is improving.'}</Text>
 
       {labelMode === 'all' ? (
         <Text style={styles.helperText}>All labels are attempted; tap any point when labels compete for space.</Text>
@@ -317,7 +349,7 @@ export function RotationQuadrantChart<T>({
         <View style={styles.summaryCard}>
           <Text style={styles.summaryTitle}>Rotation Summary</Text>
           <Text style={styles.summaryText}>
-            {formatQuadrant(summary.startQuadrant)} to {formatQuadrant(summary.currentQuadrant)} · RS {formatSigned(summary.netRelativeStrength)} · Mom{' '}
+            {formatQuadrant(summary.startQuadrant)} to {formatQuadrant(summary.currentQuadrant)} · {horizontalAxisLabel === 'Relative Trend' ? 'Trend' : 'RS'} {formatSigned(summary.netRelativeStrength)} · Mom{' '}
             {formatSigned(summary.netRelativeMomentum)} · {summary.speed}
           </Text>
         </View>
@@ -326,6 +358,7 @@ export function RotationQuadrantChart<T>({
       {selectedPoint ? (
         <PointInspector
           benchmark={benchmark}
+          horizontalAxisLabel={horizontalAxisLabel}
           interval={interval}
           selectedPoint={selectedPoint}
           showTestDataBadge={showTestDataBadge}
@@ -340,6 +373,7 @@ export function RotationQuadrantChart<T>({
 
 function ChartTrail<T>({
   domain,
+  horizontalAxisLabel,
   item,
   onSelect,
   plotSize,
@@ -347,6 +381,7 @@ function ChartTrail<T>({
   selectedItemKey,
 }: {
   domain: RotationDomain;
+  horizontalAxisLabel: string;
   item: ChartItem<T>;
   onSelect: () => void;
   plotSize: number;
@@ -355,7 +390,7 @@ function ChartTrail<T>({
 }) {
   const dimmed = selectedItemKey !== null && !selected;
   return (
-    <View>
+    <View style={{ opacity: item.opacity }}>
       {item.history.map((point, pointIndex) => {
         const nextPoint = item.history[pointIndex + 1];
         const x = scaleX(point.relativeStrength, domain, plotSize);
@@ -408,7 +443,7 @@ function ChartTrail<T>({
               </Text>
             ) : null}
             <Pressable
-              accessibilityLabel={`${item.fullName} ${item.type}. ${formatQuadrant(classifyQuadrant(point.relativeStrength, point.relativeMomentum))} quadrant. Relative strength ${point.relativeStrength.toFixed(1)}. Relative momentum ${point.relativeMomentum.toFixed(1)}. Tap for details.`}
+              accessibilityLabel={`${item.fullName} ${item.type}. ${formatQuadrant(classifyQuadrant(point.relativeStrength, point.relativeMomentum))} quadrant. ${horizontalAxisLabel} ${point.relativeStrength.toFixed(1)}. Relative Momentum ${point.relativeMomentum.toFixed(1)}. Tap for details.`}
               accessibilityRole="button"
               onPress={(event) => {
                 event.stopPropagation();
@@ -509,6 +544,7 @@ function RotationLabel<T>({
 
 function PointInspector<T>({
   benchmark,
+  horizontalAxisLabel,
   interval,
   onOpenDetails,
   onToggleWatchlist,
@@ -517,6 +553,7 @@ function PointInspector<T>({
   watchlisted,
 }: {
   benchmark: string;
+  horizontalAxisLabel: string;
   interval: string;
   onOpenDetails?: () => void;
   onToggleWatchlist?: () => void;
@@ -542,10 +579,10 @@ function PointInspector<T>({
           {showTestDataBadge ? <TestDataBadge /> : null}
         </View>
         <Text style={styles.inspectorText}>
-          Relative Strength {selectedPoint.point.relativeStrength.toFixed(2)} · Relative Momentum {selectedPoint.point.relativeMomentum.toFixed(2)}
+          {horizontalAxisLabel} {selectedPoint.point.relativeStrength.toFixed(2)} · Relative Momentum {selectedPoint.point.relativeMomentum.toFixed(2)}
         </Text>
         <Text style={styles.inspectorText}>
-          {interval} direction {summary ? `${formatSigned(summary.netRelativeStrength)} RS, ${formatSigned(summary.netRelativeMomentum)} Mom` : 'Insufficient snapshot history'} · Benchmark {benchmark}
+          {interval} direction {summary ? `${formatSigned(summary.netRelativeStrength)} ${horizontalAxisLabel === 'Relative Trend' ? 'Trend' : 'RS'}, ${formatSigned(summary.netRelativeMomentum)} Mom` : 'Insufficient snapshot history'} · Benchmark {benchmark}
         </Text>
         {onOpenDetails ? (
           <View style={styles.inspectorActions}>
@@ -612,7 +649,7 @@ function buildPlacedLabels<T>(
       placedRects,
       reservedRects,
     );
-    const fallback = labelMode === 'all' ? fallbackAllLabelLayout(pointX, pointY, index, chartSize) : null;
+    const fallback = labelMode !== 'none' ? fallbackAllLabelLayout(pointX, pointY, index, chartSize) : null;
     if (!layout && !fallback) {
       return;
     }
@@ -671,12 +708,12 @@ function QuadrantLabels() {
 }
 
 function scaleX(value: number, domain: RotationDomain, plotSize: number) {
-  const percent = (clamp(value, domain.xMin, domain.xMax) - domain.xMin) / Math.max(domain.xMax - domain.xMin, 1);
+  const percent = (value - domain.xMin) / Math.max(domain.xMax - domain.xMin, 1);
   return PADDING + percent * plotSize;
 }
 
 function scaleY(value: number, domain: RotationDomain, plotSize: number) {
-  const percent = (clamp(value, domain.yMin, domain.yMax) - domain.yMin) / Math.max(domain.yMax - domain.yMin, 1);
+  const percent = (value - domain.yMin) / Math.max(domain.yMax - domain.yMin, 1);
   return PADDING + (1 - percent) * plotSize;
 }
 
@@ -719,16 +756,6 @@ function getArrowStyle(x1: number, y1: number, x2: number, y2: number, color: st
   };
 }
 
-function getSmartLabelLimit(chartSize: number, presentation: 'card' | 'fullscreen', legacyMax?: number) {
-  if (presentation === 'fullscreen') {
-    return chartSize >= 420 ? 15 : 12;
-  }
-  if (legacyMax && legacyMax < 12) {
-    return Math.max(6, legacyMax);
-  }
-  return chartSize < 310 ? 6 : 8;
-}
-
 function getQuadrantTone(quadrant: RotationQuadrant): Tone {
   switch (quadrant) {
     case 'leading':
@@ -740,10 +767,6 @@ function getQuadrantTone(quadrant: RotationQuadrant): Tone {
     case 'lagging':
       return 'danger';
   }
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value));
 }
 
 function formatSigned(value: number) {

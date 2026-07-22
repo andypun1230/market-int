@@ -666,6 +666,11 @@ def normalize_rotation_score(value: float | None) -> float | None:
 
 def rotation_delta(row: dict[str, Any]) -> float | None:
     selected = path(row, "rotation_series", "1M") or {}
+    # The new Theme Rotation coordinates are contextual visualization evidence,
+    # not an implicit replacement for report candidate relative-strength
+    # scoring. Only the explicitly legacy dependency may supply this fallback.
+    if selected.get("formula_version") != "relative-return-momentum-v1":
+        return None
     points = [point for point in selected.get("trail_points") or [] if isinstance(point, dict)]
     if len(points) < 2:
         return None

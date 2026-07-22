@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 from typing import Any, Iterable
 
 from app.market_history.storage import DailyBar
-from app.rotation.engine import build_rotation_series
-from app.rotation.policy import INTERVAL_POLICIES
+from app.rotation.theme_engine import build_theme_rotation_series
+from app.rotation.theme_policy import THEME_ROTATION_PROFILES
 from app.semantics import advance_decline_semantics, confidence_contract, coverage_dimension
 from app.themes.models import ThemeBasketBar, ThemeDefinition, ThemeMember
 from app.themes.policy import THEME_PARTICIPATION_FORMULA_VERSION, THEME_SCORING_WEIGHTS, ThemePolicy, clip_score, coverage_status, representativeness, score_classification
@@ -72,14 +72,18 @@ def build_theme_row(
         signal_reason=f"{supportive} supportive, {len(signal_values) - supportive - caution} mixed, and {caution} caution score dimensions.",
     )
     rotation = {
-        interval: build_rotation_series(
-            entity_type="theme", entity_id=definition.theme_id, display_name=definition.display_name,
-            short_label=definition.theme_id, entity_symbol=f"theme:{definition.theme_id}:{definition.version}",
-            entity_history=basket_history, benchmark_symbol="SPY", benchmark_history=benchmark,
-            interval=interval, source_state=source_state, data_mode="live" if source_state == "live" else "test",
-            universe_id=definition.theme_id, universe_version=definition.version, coverage_ratio=coverage,
-        ).model_dump()
-        for interval in INTERVAL_POLICIES
+        profile.interval_alias: build_theme_rotation_series(
+            theme_id=definition.theme_id,
+            display_name=definition.display_name,
+            short_label=definition.theme_id,
+            theme_version=definition.version,
+            basket_history=basket,
+            benchmark_history=benchmark,
+            profile=profile.profile,
+            source_state=source_state,
+            data_mode="live" if source_state == "live" else "test",
+        )
+        for profile in THEME_ROTATION_PROFILES.values()
     }
     warnings = ["Historical results use the current reviewed constituent basket; historical membership versions are not yet available."]
     if len(active) < 4:

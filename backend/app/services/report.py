@@ -632,6 +632,7 @@ def canonical_theme_rotation(row: dict[str, Any], interval: str) -> dict[str, An
     trail_points = [
         {
             "market_date": point.get("market_date"),
+            "relative_trend": point.get("relative_trend", point.get("plotted_x")),
             "relative_strength": point.get("plotted_x"),
             "relative_momentum": point.get("plotted_y"),
             "raw_relative_strength": point.get("raw_rs"),
@@ -649,6 +650,7 @@ def canonical_theme_rotation(row: dict[str, Any], interval: str) -> dict[str, An
         "selected_interval": interval,
         "current": {
             "market_date": current.get("market_date"),
+            "relative_trend": current.get("relative_trend", current.get("plotted_x")),
             "relative_strength": current.get("plotted_x"),
             "relative_momentum": current.get("plotted_y"),
             "raw_relative_strength": current.get("raw_rs"),
@@ -664,6 +666,8 @@ def canonical_theme_rotation(row: dict[str, Any], interval: str) -> dict[str, An
             "data_mode": selected.get("data_mode"),
             "formula_version": selected.get("formula_version"),
             "normalization_version": selected.get("normalization_version"),
+            "model_version": selected.get("model_version"),
+            "profile": selected.get("profile"),
             "synthetic_point_count": selected.get("synthetic_point_count"),
         },
     }
@@ -3109,22 +3113,27 @@ def theme_bar_chart(report: DailyReportResponse, width: float, height: float) ->
 
 
 def sector_rotation_chart(report: DailyReportResponse, width: float, height: float) -> ScatterChartFlowable:
-    return ScatterChartFlowable(rotation_items(get_sector_items(report)), width, height, title="RS vs momentum")
+    return ScatterChartFlowable(rotation_items(get_sector_items(report)), width, height, title="Relative Trend vs Momentum")
 
 
 def theme_rotation_chart(report: DailyReportResponse, width: float, height: float) -> ScatterChartFlowable:
     interval = ((report.theme_report or {}).get("rotation") or {}).get("selected_interval") or "1M"
-    return ScatterChartFlowable(theme_rotation_items(report), width, height, title=f"RS vs momentum - {interval}")
+    return ScatterChartFlowable(theme_rotation_items(report), width, height, title=f"Relative Trend vs Momentum - {interval}")
 
 
 def rotation_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     output = []
     palette = [REPORT_COLORS["green"], REPORT_COLORS["blue"], REPORT_COLORS["orange"], REPORT_COLORS["purple"], REPORT_COLORS["red"]]
     for index, item in enumerate(items):
-        rotation = (item.get("rotation") or {}).get("1m") or (item.get("rotation") or {}).get("1w") or {}
-        rs = rotation.get("relative_strength") or rotation.get("relativeStrength")
+        rotation = (item.get("canonical_rotation") or {}).get("1m") or (item.get("canonical_rotation") or {}).get("1w") or (item.get("rotation") or {}).get("1m") or (item.get("rotation") or {}).get("1w") or {}
+        rs = rotation.get("relative_trend") or rotation.get("relative_strength") or rotation.get("relativeStrength")
         momentum = rotation.get("relative_momentum") or rotation.get("relativeMomentum")
-        output.append({"label": item.get("name"), "x": rs, "y": momentum, "color": palette[index % len(palette)]})
+        trail = [
+            {"x": point.get("relative_trend"), "y": point.get("relative_momentum")}
+            for point in rotation.get("history") or []
+            if isinstance(point, dict)
+        ]
+        output.append({"label": item.get("name"), "x": rs, "y": momentum, "trail": trail, "color": palette[index % len(palette)]})
     return output
 
 
@@ -3138,13 +3147,13 @@ def theme_rotation_items(report: DailyReportResponse) -> list[dict[str, Any]]:
             continue
         current = item.get("current") if isinstance(item.get("current"), dict) else {}
         trail = [
-            {"x": point.get("relative_strength"), "y": point.get("relative_momentum")}
+            {"x": point.get("relative_trend", point.get("relative_strength")), "y": point.get("relative_momentum")}
             for point in item.get("trail_points") or []
             if isinstance(point, dict)
         ]
         items.append({
             "label": item.get("display_name"),
-            "x": current.get("relative_strength"),
+            "x": current.get("relative_trend", current.get("relative_strength")),
             "y": current.get("relative_momentum"),
             "trail": trail,
             "color": palette[index % len(palette)],
@@ -3431,7 +3440,7 @@ def theme_rotation_panel(report: DailyReportResponse, styles: dict[str, Paragrap
             continue
         current = item.get("current") if isinstance(item.get("current"), dict) else {}
         coordinates.append(
-            f"{item.get('display_name')}: {current.get('quadrant') or 'N/A'} | RS {format_number(current.get('raw_relative_strength'))} | Momentum {format_number(current.get('raw_relative_momentum'))}"
+            f"{item.get('display_name')}: {current.get('quadrant') or 'N/A'} | Relative Trend {format_number(current.get('relative_trend'))} | Relative Momentum {format_number(current.get('relative_momentum'))}"
         )
     return [
         theme_rotation_chart(report, 3.25 * inch, 1.38 * inch),

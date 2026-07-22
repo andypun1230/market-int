@@ -483,7 +483,7 @@ export default function WatchlistScreen() {
                         entityId: row?.id ?? stored.id,
                         entityKind: 'theme',
                         entityName: row?.name ?? stored.name,
-                        section: 'themesHeatmap',
+                        section: 'themesRotation',
                       },
                     })}
                     onRemove={() => removeGroup(stored)}

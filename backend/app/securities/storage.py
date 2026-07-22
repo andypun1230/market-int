@@ -253,6 +253,29 @@ class SecurityMasterStorage:
         values[13] = tuple(json.loads(values[13]))
         return SecurityRecord(*values)
 
+    def active_securities(self, tickers: list[str] | tuple[str, ...]) -> dict[str, SecurityRecord]:
+        """Resolve a symbol set in one durable read; aliases remain date-aware on the single-symbol seam."""
+        self.initialize()
+        symbols = sorted({ticker.strip().upper() for ticker in tickers if ticker.strip()})
+        if not symbols:
+            return {}
+        placeholders = ",".join("?" for _ in symbols)
+        with _lock, self._connect() as connection:
+            rows = connection.execute(
+                f"""SELECT security_id, ticker, company_name, exchange, asset_type, active, sector, sector_id, industry,
+                quote_provider_symbol, history_provider_symbol, currency, country, index_memberships_json, effective_from,
+                effective_to, source, source_timestamp, verified_at, metadata_version
+                FROM securities WHERE ticker IN ({placeholders}) AND active=1""",
+                symbols,
+            ).fetchall()
+        result: dict[str, SecurityRecord] = {}
+        for row in rows:
+            values = list(row)
+            values[13] = tuple(json.loads(values[13]))
+            record = SecurityRecord(*values)
+            result[record.ticker.upper()] = record
+        return result
+
     def _connect(self) -> sqlite3.Connection:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         return sqlite3.connect(self.db_path, timeout=10, check_same_thread=False)

@@ -1,0 +1,1049 @@
+{
+  "latest_common_market_date": "2026-07-21",
+  "promotions": {
+    "partial_to_available": [
+      "aerospace_defense",
+      "biotechnology",
+      "cloud_computing",
+      "digital_advertising",
+      "digital_payments",
+      "electric_vehicles_batteries",
+      "grid_modernization",
+      "medical_technology",
+      "networking_infrastructure",
+      "obesity_metabolic_health",
+      "robotics_automation",
+      "streaming_digital_entertainment"
+    ],
+    "unavailable_to_available": [
+      "clean_energy",
+      "cryptocurrency_infrastructure",
+      "data_centers",
+      "drones_autonomous_systems",
+      "ecommerce",
+      "gaming_interactive_media",
+      "nuclear_energy",
+      "online_travel",
+      "space_economy"
+    ],
+    "unavailable_to_partial": []
+  },
+  "remaining_symbols": {
+    "insufficient_history": [],
+    "missing_security_master": [
+      "ABB",
+      "ADYEY",
+      "DESP",
+      "FANUY",
+      "JNPR",
+      "NTDOY"
+    ],
+    "unsupported": [
+      "ABB",
+      "ADYEY",
+      "DESP",
+      "FANUY",
+      "JNPR",
+      "NTDOY"
+    ]
+  },
+  "snapshot_id": "theme-2026-07-22-c8d9a44cdd",
+  "stage": "8.75-final-security-master-coverage",
+  "summary": {
+    "available_theme_count": 26,
+    "average_live_coverage_ratio": 0.96833,
+    "full_production_eligible_theme_count": 26,
+    "maximum": 10,
+    "median_constituents": 9.0,
+    "minimum": 7,
+    "partial_theme_count": 0,
+    "production_capable_theme_count": 26,
+    "ranked_theme_count": 26,
+    "unavailable_theme_count": 0
+  },
+  "taxonomy_version": "2026.07.1",
+  "themes": [
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "available",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Artificial Intelligence",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 10,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 10,
+      "history_50d_sufficient_count": 10,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 10,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLC",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "information_technology",
+        "communication_services"
+      ],
+      "provider_capable_count": 10,
+      "rank": 14,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 10,
+      "snapshot_status": "available",
+      "theme_id": "artificial_intelligence",
+      "valid_canonical_constituent_count": 10
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "available",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Semiconductors",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 10,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 10,
+      "history_50d_sufficient_count": 10,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 10,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLK"
+      ],
+      "parent_sectors": [
+        "information_technology"
+      ],
+      "provider_capable_count": 10,
+      "rank": 21,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 10,
+      "snapshot_status": "available",
+      "theme_id": "semiconductors",
+      "valid_canonical_constituent_count": 10
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "available",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "limited",
+      "coverage_status": "complete",
+      "display_name": "Memory & Storage",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 7,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 7,
+      "history_50d_sufficient_count": 7,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 7,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLK"
+      ],
+      "parent_sectors": [
+        "information_technology"
+      ],
+      "provider_capable_count": 7,
+      "rank": 7,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 7,
+      "snapshot_status": "available",
+      "theme_id": "memory_storage",
+      "valid_canonical_constituent_count": 7
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Data Centers",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-22",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLI",
+        "XLK",
+        "XLRE"
+      ],
+      "parent_sectors": [
+        "real_estate",
+        "information_technology",
+        "industrials"
+      ],
+      "provider_capable_count": 9,
+      "rank": 18,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "data_centers",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Cloud Computing",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLC",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "information_technology",
+        "communication_services"
+      ],
+      "provider_capable_count": 9,
+      "rank": 12,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "cloud_computing",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "available",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Enterprise Software",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLK"
+      ],
+      "parent_sectors": [
+        "information_technology"
+      ],
+      "provider_capable_count": 9,
+      "rank": 8,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "enterprise_software",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "available",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "limited",
+      "coverage_status": "complete",
+      "display_name": "Cybersecurity",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 7,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 7,
+      "history_50d_sufficient_count": 7,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 7,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLK"
+      ],
+      "parent_sectors": [
+        "information_technology"
+      ],
+      "provider_capable_count": 7,
+      "rank": 1,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 7,
+      "snapshot_status": "available",
+      "theme_id": "cybersecurity",
+      "valid_canonical_constituent_count": 7
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "missing_security_master_registration"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "partial",
+      "display_name": "Networking Infrastructure",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [
+        "JNPR"
+      ],
+      "exact_unsupported_symbols": [
+        "JNPR"
+      ],
+      "history_200d_sufficient_count": 8,
+      "history_21d_mapped_coverage": 0.888889,
+      "history_21d_sufficient_count": 8,
+      "history_50d_sufficient_count": 8,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLC",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "information_technology",
+        "communication_services"
+      ],
+      "provider_capable_count": 8,
+      "rank": 24,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 8,
+      "snapshot_status": "available",
+      "theme_id": "networking_infrastructure",
+      "valid_canonical_constituent_count": 8
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "missing_security_master_registration"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "partial",
+      "display_name": "Robotics & Automation",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [
+        "ABB",
+        "FANUY"
+      ],
+      "exact_unsupported_symbols": [
+        "ABB",
+        "FANUY"
+      ],
+      "history_200d_sufficient_count": 7,
+      "history_21d_mapped_coverage": 0.777778,
+      "history_21d_sufficient_count": 7,
+      "history_50d_sufficient_count": 7,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLI",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "industrials",
+        "information_technology"
+      ],
+      "provider_capable_count": 8,
+      "rank": 17,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 7,
+      "snapshot_status": "available",
+      "theme_id": "robotics_automation",
+      "valid_canonical_constituent_count": 8
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Digital Advertising",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLC",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "communication_services",
+        "information_technology"
+      ],
+      "provider_capable_count": 9,
+      "rank": 10,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "digital_advertising",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "E-commerce",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLK",
+        "XLY"
+      ],
+      "parent_sectors": [
+        "consumer_discretionary",
+        "information_technology"
+      ],
+      "provider_capable_count": 9,
+      "rank": 4,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "ecommerce",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "missing_security_master_registration"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "partial",
+      "display_name": "Digital Payments",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [
+        "ADYEY"
+      ],
+      "exact_unsupported_symbols": [
+        "ADYEY"
+      ],
+      "history_200d_sufficient_count": 8,
+      "history_21d_mapped_coverage": 0.888889,
+      "history_21d_sufficient_count": 8,
+      "history_50d_sufficient_count": 8,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLF",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "financials",
+        "information_technology"
+      ],
+      "provider_capable_count": 9,
+      "rank": 3,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 8,
+      "snapshot_status": "available",
+      "theme_id": "digital_payments",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "missing_security_master_registration"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "partial",
+      "display_name": "Online Travel",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [
+        "DESP"
+      ],
+      "exact_unsupported_symbols": [
+        "DESP"
+      ],
+      "history_200d_sufficient_count": 6,
+      "history_21d_mapped_coverage": 0.857143,
+      "history_21d_sufficient_count": 6,
+      "history_50d_sufficient_count": 6,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 7,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLC",
+        "XLY"
+      ],
+      "parent_sectors": [
+        "consumer_discretionary",
+        "communication_services"
+      ],
+      "provider_capable_count": 6,
+      "rank": 5,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 6,
+      "snapshot_status": "available",
+      "theme_id": "online_travel",
+      "valid_canonical_constituent_count": 6
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "missing_security_master_registration"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "partial",
+      "display_name": "Gaming & Interactive Media",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [
+        "NTDOY"
+      ],
+      "exact_unsupported_symbols": [
+        "NTDOY"
+      ],
+      "history_200d_sufficient_count": 7,
+      "history_21d_mapped_coverage": 0.875,
+      "history_21d_sufficient_count": 7,
+      "history_50d_sufficient_count": 7,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 8,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLC",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "communication_services",
+        "information_technology"
+      ],
+      "provider_capable_count": 8,
+      "rank": 6,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 7,
+      "snapshot_status": "available",
+      "theme_id": "gaming_interactive_media",
+      "valid_canonical_constituent_count": 8
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Streaming & Digital Entertainment",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 8,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 8,
+      "history_50d_sufficient_count": 8,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 8,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLC"
+      ],
+      "parent_sectors": [
+        "communication_services"
+      ],
+      "provider_capable_count": 8,
+      "rank": 16,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 8,
+      "snapshot_status": "available",
+      "theme_id": "streaming_digital_entertainment",
+      "valid_canonical_constituent_count": 8
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Aerospace & Defense",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLI"
+      ],
+      "parent_sectors": [
+        "industrials"
+      ],
+      "provider_capable_count": 9,
+      "rank": 19,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "aerospace_defense",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Space Economy",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 8,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 8,
+      "history_50d_sufficient_count": 8,
+      "latest_common_date": "2026-07-22",
+      "mapped_constituent_count": 8,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLC",
+        "XLI"
+      ],
+      "parent_sectors": [
+        "industrials",
+        "communication_services"
+      ],
+      "provider_capable_count": 8,
+      "rank": 22,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 8,
+      "snapshot_status": "available",
+      "theme_id": "space_economy",
+      "valid_canonical_constituent_count": 8
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Drones & Autonomous Systems",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 8,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 8,
+      "history_50d_sufficient_count": 8,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 8,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLI",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "industrials",
+        "information_technology"
+      ],
+      "provider_capable_count": 8,
+      "rank": 26,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 8,
+      "snapshot_status": "available",
+      "theme_id": "drones_autonomous_systems",
+      "valid_canonical_constituent_count": 8
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Nuclear Energy",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-22",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLE",
+        "XLI",
+        "XLU"
+      ],
+      "parent_sectors": [
+        "energy",
+        "utilities",
+        "industrials"
+      ],
+      "provider_capable_count": 9,
+      "rank": 23,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "nuclear_energy",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "missing_security_master_registration"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "partial",
+      "display_name": "Grid Modernization",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [
+        "ABB"
+      ],
+      "exact_unsupported_symbols": [
+        "ABB"
+      ],
+      "history_200d_sufficient_count": 8,
+      "history_21d_mapped_coverage": 0.888889,
+      "history_21d_sufficient_count": 8,
+      "history_50d_sufficient_count": 8,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLI",
+        "XLK",
+        "XLU"
+      ],
+      "parent_sectors": [
+        "industrials",
+        "utilities",
+        "information_technology"
+      ],
+      "provider_capable_count": 8,
+      "rank": 15,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 8,
+      "snapshot_status": "available",
+      "theme_id": "grid_modernization",
+      "valid_canonical_constituent_count": 8
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Clean Energy",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLE",
+        "XLI",
+        "XLK",
+        "XLU"
+      ],
+      "parent_sectors": [
+        "energy",
+        "utilities",
+        "industrials",
+        "information_technology"
+      ],
+      "provider_capable_count": 9,
+      "rank": 25,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "clean_energy",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Electric Vehicles & Batteries",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 10,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 10,
+      "history_50d_sufficient_count": 10,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 10,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLB",
+        "XLI",
+        "XLY"
+      ],
+      "parent_sectors": [
+        "consumer_discretionary",
+        "industrials",
+        "materials"
+      ],
+      "provider_capable_count": 10,
+      "rank": 13,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 10,
+      "snapshot_status": "available",
+      "theme_id": "electric_vehicles_batteries",
+      "valid_canonical_constituent_count": 10
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Biotechnology",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 10,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 10,
+      "history_50d_sufficient_count": 10,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 10,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLV"
+      ],
+      "parent_sectors": [
+        "health_care"
+      ],
+      "provider_capable_count": 10,
+      "rank": 11,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 10,
+      "snapshot_status": "available",
+      "theme_id": "biotechnology",
+      "valid_canonical_constituent_count": 10
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Obesity & Metabolic Health",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 8,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 8,
+      "history_50d_sufficient_count": 8,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 8,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLV"
+      ],
+      "parent_sectors": [
+        "health_care"
+      ],
+      "provider_capable_count": 8,
+      "rank": 2,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 8,
+      "snapshot_status": "available",
+      "theme_id": "obesity_metabolic_health",
+      "valid_canonical_constituent_count": 8
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "partial",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Medical Technology",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-21",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLV"
+      ],
+      "parent_sectors": [
+        "health_care"
+      ],
+      "provider_capable_count": 9,
+      "rank": 9,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "medical_technology",
+      "valid_canonical_constituent_count": 9
+    },
+    {
+      "availability_gate": "available requires >=75% mapped 21-session coverage, registry minimum, SPY and every parent-sector reference, current freshness, and moderate confidence; partial requires >=2 computable histories; unavailable is below that floor or lacks SPY.",
+      "baseline_status": "unavailable",
+      "benchmark_availability": true,
+      "cause_categories": [
+        "none"
+      ],
+      "confidence": "moderate",
+      "coverage_status": "complete",
+      "display_name": "Cryptocurrency Infrastructure",
+      "exact_failed_gate": "none",
+      "exact_insufficient_history_symbols": [],
+      "exact_missing_symbols": [],
+      "exact_unsupported_symbols": [],
+      "history_200d_sufficient_count": 9,
+      "history_21d_mapped_coverage": 1.0,
+      "history_21d_sufficient_count": 9,
+      "history_50d_sufficient_count": 9,
+      "latest_common_date": "2026-07-22",
+      "mapped_constituent_count": 9,
+      "parent_sector_benchmark_availability": true,
+      "parent_sector_benchmarks": [
+        "XLF",
+        "XLK"
+      ],
+      "parent_sectors": [
+        "financials",
+        "information_technology"
+      ],
+      "provider_capable_count": 9,
+      "rank": 20,
+      "ranking_eligibility": true,
+      "registered_constituent_count": 9,
+      "snapshot_status": "available",
+      "theme_id": "cryptocurrency_infrastructure",
+      "valid_canonical_constituent_count": 9
+    }
+  ]
+}

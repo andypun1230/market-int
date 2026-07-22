@@ -147,6 +147,22 @@ class PolygonMarketDataProvider(MarketDataProvider):
             fetched_at=now_iso(),
         )
 
+    def get_ticker_details(self, symbol: str, *, on_date: str | None = None) -> dict[str, Any]:
+        """Return approved Polygon reference metadata for a stock symbol.
+
+        This is intentionally a maintenance/audit seam rather than an interactive
+        request path.  It keeps security-master identity checks on the configured
+        provider client, including its authentication, retry, rate-limit, SSL and
+        redaction behavior.
+        """
+        normalized = normalize_polygon_symbol(symbol)
+        params = {"date": on_date} if on_date else {}
+        payloads = self._request_paginated_json(f"/v3/reference/tickers/{normalized}", params)
+        results = payloads[-1].get("results") if payloads else None
+        if not isinstance(results, dict) or not results:
+            raise ProviderRequestError(f"No Polygon reference metadata for {normalized}", category="no_data")
+        return dict(results)
+
     def get_provider_health(self) -> ProviderHealth:
         configured = bool(self.api_key)
         status = "healthy" if configured and self.recent_error_count == 0 else "degraded" if configured else "not_configured"

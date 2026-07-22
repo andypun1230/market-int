@@ -150,10 +150,19 @@ async def get_sector_snapshot_history(days: int = Query(default=90, ge=1, le=260
 
 
 @router.get("/market/sectors/rotation")
-async def get_sector_rotation() -> dict:
+async def get_sector_rotation(
+    profile: str | None = Query(default=None, description="Canonical short, medium, or long model profile."),
+    timeframe: str | None = Query(default=None, description="Compatibility alias: 1W, 1M, or 3M."),
+    interval: str | None = Query(default=None, description="Deprecated alias for timeframe."),
+) -> dict:
     service = get_sector_snapshot_service()
     snapshot = service.latest()
-    rotation = build_sector_rotation_trails(snapshot, service.history()) if snapshot else {"entity_type": "sector", "source_state": "unavailable", "data_mode": "unavailable", "formula_version": "relative-return-momentum-v1", "normalization_version": "midpoint-100-relative-return-v1", "benchmark": "SPY", "trails": {}, "published_snapshot_trails": {}, "market_trails": {}, "current_points": {}, "series": [], "current_positions_available": False, "etf_trails_available": False, "snapshot_transition_history_available": False, "current_point_count": 0, "trail_point_count": 0, "transition_snapshot_count": 0, "limited_history_reason": "No sector snapshot is available.", "movements": {}, "flow_groups": {"gaining": [], "losing": [], "stable": []}, "history_point_count": 0, "movement_available": False, "trail_limit": 4, "trail_source": "published_sector_snapshots", "market_trail_source": "durable_polygon_adjusted_daily_history", "warnings": ["No sector snapshot is available."]}
+    selected = profile or interval or timeframe or "medium"
+    try:
+        rotation = build_sector_rotation_trails(snapshot, service.history(), profile=selected) if snapshot else {"entity_type": "sector", "source_state": "unavailable", "data_mode": "unavailable", "formula_version": "sector-relative-trend-momentum-v1", "rotation_model_id": "sector-relative-trend-momentum", "rotation_model_version": "sector-relative-trend-momentum-v1", "normalization_version": "zero-centered-rolling-robust-scale-v1", "benchmark": "SPY", "profile": "medium", "timeframe": "1M", "interval": "1M", "points": [], "tails": [], "published_snapshot_trails": {}, "market_trails": {}, "current_points": {}, "series": [], "current_positions_available": False, "etf_trails_available": False, "snapshot_transition_history_available": False, "current_point_count": 0, "trail_point_count": 0, "transition_snapshot_count": 0, "limited_history_reason": "No sector snapshot is available.", "movements": {}, "flow_groups": {"gaining": [], "losing": [], "stable": []}, "history_point_count": 0, "movement_available": False, "trail_limit": 10, "trail_source": "published_sector_snapshots", "market_trail_source": "durable_polygon_adjusted_daily_history", "warnings": ["No sector snapshot is available."]}
+    except ValueError:
+        rotation = build_sector_rotation_trails(snapshot, service.history(), profile="medium") if snapshot else {}
+        rotation = {**rotation, "status": "unavailable", "warnings": ["Unsupported Sector Rotation profile."]}
     return {"snapshot_id": snapshot.snapshot_id if snapshot else None, "universe_version": snapshot.universe_version if snapshot else None, "market_date": snapshot.market_date if snapshot else None, "rankings": list(snapshot.rankings) if snapshot else [], "summary": snapshot.rotation_summary if snapshot else "Sector snapshot is unavailable.", "source_state": snapshot.source_state if snapshot else "unavailable", **rotation}
 
 
@@ -189,9 +198,22 @@ async def get_theme_snapshot_history(days: int = Query(default=90, ge=1, le=260)
 
 
 @router.get("/market/themes/rotation")
-async def get_theme_rotation(interval: str = Query(default="1m")) -> dict:
-    try: return theme_rotation_payload(get_theme_snapshot_service().latest(), interval)
-    except ValueError: return {**theme_snapshot_payload(None), "interval": interval.upper(), "series": [], "warnings": ["Unsupported Theme Rotation interval."]}
+async def get_theme_rotation(
+    profile: str | None = Query(default=None, description="Canonical short, medium, or long model profile."),
+    timeframe: str | None = Query(default=None, description="Compatibility alias: 1W, 1M, or 3M."),
+    interval: str | None = Query(default=None, description="Deprecated alias for timeframe."),
+) -> dict:
+    selected = profile or interval or timeframe or "medium"
+    try:
+        return theme_rotation_payload(get_theme_snapshot_service().latest(), selected)
+    except ValueError:
+        return {
+            **theme_rotation_payload(None, "medium"),
+            "timeframe": selected.upper(),
+            "interval": selected.upper(),
+            "profile": selected.lower(),
+            "warnings": ["Unsupported Theme Rotation profile."],
+        }
 
 
 @router.get("/market/themes/alerts")
@@ -302,8 +324,8 @@ async def get_sector_detail(sector_id: str) -> dict:
             relevance = "Above EMA50" if ema50 is not None and closes[-1] >= ema50 else "Below EMA50" if ema50 is not None else None
             constituents.append({"ticker": member.ticker, "company_name": security.company_name if security else member.ticker, "sector_id": canonical_id, "eligible": len(closes) >= 200, "returns": {"1d": change(1), "1w": change(5), "1m": change(21), "3m": change(63), "6m": change(126), "1y": change(252)}, "relevance": relevance})
     rotation = build_sector_rotation_trails(snapshot, get_sector_snapshot_service().history()) if snapshot and row else {"trails": {}, "movements": {}, "series": []}
-    sector_series = [item for item in rotation.get("series", []) if item.get("entity_id") == canonical_id]
-    return {"snapshot_id": snapshot.snapshot_id if snapshot else None, "universe_id": snapshot.universe_id if snapshot else None, "universe_version": snapshot.universe_version if snapshot else None, "market_date": snapshot.market_date if snapshot else None, "source_state": snapshot.source_state if snapshot else "unavailable", "status": snapshot.status if snapshot else "unavailable", "coverage": snapshot.coverage if snapshot else {}, "benchmark": snapshot.benchmark if snapshot else "SPY", "provider_provenance": snapshot.provider_provenance if snapshot else {}, "alerts": list(snapshot.alerts) if snapshot else [], "warnings": list(snapshot.warnings) if snapshot else [], "sector": row, "constituents": constituents, "rotation_history": rotation.get("trails", {}).get(canonical_id, []), "rotation_series": sector_series, "rotation_movement": rotation.get("movements", {}).get(canonical_id)}
+    sector_series = list((row.get("rotation_series") or {}).values()) if row else []
+    return {"snapshot_id": snapshot.snapshot_id if snapshot else None, "universe_id": snapshot.universe_id if snapshot else None, "universe_version": snapshot.universe_version if snapshot else None, "market_date": snapshot.market_date if snapshot else None, "source_state": snapshot.source_state if snapshot else "unavailable", "status": snapshot.status if snapshot else "unavailable", "coverage": snapshot.coverage if snapshot else {}, "benchmark": snapshot.benchmark if snapshot else "SPY", "provider_provenance": snapshot.provider_provenance if snapshot else {}, "alerts": list(snapshot.alerts) if snapshot else [], "warnings": list(snapshot.warnings) if snapshot else [], "sector": row, "constituents": constituents, "rotation_history": rotation.get("published_snapshot_trails", {}).get(canonical_id, []), "rotation_series": sector_series, "rotation_movement": rotation.get("movements", {}).get(canonical_id)}
 
 
 @router.get("/market/watchlist", response_model=WatchlistResponse)

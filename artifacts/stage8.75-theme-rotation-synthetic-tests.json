@@ -1,0 +1,18 @@
+{
+  "errors": 0,
+  "essential_mechanics": {
+    "constant_equal_performance": "PASS \u2014 Relative Trend and Relative Momentum converge to 100.",
+    "leadership_loss": "PASS \u2014 momentum crosses first; Weakening precedes Lagging.",
+    "missing_observations": "PASS \u2014 no zero fill or fabricated tail; continuity breaks.",
+    "new_improvement_after_underperformance": "PASS \u2014 momentum crosses first; Improving precedes Leading.",
+    "persistent_outperformance": "PASS \u2014 trend remains above 100 while momentum leads then settles toward 100.",
+    "recovery": "PASS \u2014 Lagging to Improving to Leading occurs without a forced cycle.",
+    "temporary_shock": "PASS \u2014 robust scaling bounds the shock and coordinates return to neutral.",
+    "universe_membership_change": "PASS \u2014 another theme's membership has zero coordinate effect."
+  },
+  "failures": 0,
+  "model_calls": 0,
+  "network_calls": 0,
+  "result": "PASS",
+  "test_count": 18
+}

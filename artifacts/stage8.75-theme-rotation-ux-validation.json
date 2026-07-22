@@ -1,0 +1,99 @@
+{
+  "automated_result": "PASS",
+  "canonical_source_immutable": true,
+  "filter_changes_trigger_refetch": false,
+  "generated_at": "2026-07-22T20:22:10.496Z",
+  "interaction_artifact": "/Users/andypun/Downloads/market-intelligence-app/artifacts/stage8.75-theme-rotation-interaction-validation.json",
+  "math_changed": false,
+  "normalization_changed": false,
+  "performance": {
+    "filter_pipeline": {
+      "iterations": 1000,
+      "p50_ms": 0.015,
+      "p95_ms": 0.0222,
+      "minimum_ms": 0.0138,
+      "maximum_ms": 1.4024
+    },
+    "universe_filter": {
+      "iterations": 1000,
+      "p50_ms": 0.0116,
+      "p95_ms": 0.0124,
+      "minimum_ms": 0.011,
+      "maximum_ms": 0.547
+    },
+    "movement_filter": {
+      "iterations": 1000,
+      "p50_ms": 0.0112,
+      "p95_ms": 0.0127,
+      "minimum_ms": 0.0107,
+      "maximum_ms": 0.5078
+    },
+    "transition_filter": {
+      "iterations": 1000,
+      "p50_ms": 0.0113,
+      "p95_ms": 0.0353,
+      "minimum_ms": 0.0108,
+      "maximum_ms": 1.0018
+    },
+    "tail_projection": {
+      "iterations": 1000,
+      "p50_ms": 0.0156,
+      "p95_ms": 0.0279,
+      "minimum_ms": 0.015,
+      "maximum_ms": 1.5993
+    },
+    "focus_interaction": {
+      "iterations": 1000,
+      "p50_ms": 0.0168,
+      "p95_ms": 0.0192,
+      "minimum_ms": 0.0158,
+      "maximum_ms": 1.0439
+    },
+    "compare_interaction": {
+      "iterations": 1000,
+      "p50_ms": 0.0112,
+      "p95_ms": 0.0179,
+      "minimum_ms": 0.0106,
+      "maximum_ms": 2.7438
+    }
+  },
+  "policy_version": "theme-rotation-view-policy-v1",
+  "result": "PASS",
+  "screenshots": [
+    {
+      "exists": true,
+      "path": "/Users/andypun/Downloads/market-intelligence-app/artifacts/theme-rotation-ux-screenshots/mobile-overview-default.png"
+    },
+    {
+      "exists": true,
+      "path": "/Users/andypun/Downloads/market-intelligence-app/artifacts/theme-rotation-ux-screenshots/mobile-all-themes.png"
+    },
+    {
+      "exists": true,
+      "path": "/Users/andypun/Downloads/market-intelligence-app/artifacts/theme-rotation-ux-screenshots/mobile-focus.png"
+    },
+    {
+      "exists": true,
+      "path": "/Users/andypun/Downloads/market-intelligence-app/artifacts/theme-rotation-ux-screenshots/mobile-compare.png"
+    },
+    {
+      "exists": true,
+      "path": "/Users/andypun/Downloads/market-intelligence-app/artifacts/theme-rotation-ux-screenshots/desktop-overview.png"
+    },
+    {
+      "exists": true,
+      "path": "/Users/andypun/Downloads/market-intelligence-app/artifacts/theme-rotation-ux-screenshots/desktop-compare.png"
+    },
+    {
+      "exists": true,
+      "path": "/Users/andypun/Downloads/market-intelligence-app/artifacts/theme-rotation-ux-screenshots/quadrant-filtered.png"
+    },
+    {
+      "exists": true,
+      "path": "/Users/andypun/Downloads/market-intelligence-app/artifacts/theme-rotation-ux-screenshots/fast-movers-filtered.png"
+    }
+  ],
+  "screenshots_missing": 0,
+  "source_rotation_artifact": "/Users/andypun/Downloads/market-intelligence-app/artifacts/stage8.75-theme-rotation-validation.json",
+  "source_snapshot_artifact": "/Users/andypun/Downloads/market-intelligence-app/artifacts/stage8.75-canonical-theme-snapshot.json"
+}

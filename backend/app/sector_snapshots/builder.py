@@ -5,8 +5,14 @@ import os
 from datetime import datetime, timezone
 
 from app.market_history.storage import DailyBarStorage
-from app.rotation.engine import build_rotation_series
+from app.rotation.engine import build_rotation_series as build_legacy_rotation_series
 from app.rotation.policy import INTERVAL_POLICIES, ROTATION_FORMULA_VERSION, ROTATION_NORMALIZATION_VERSION
+from app.rotation.sector_engine import build_sector_rotation_series
+from app.rotation.sector_policy import (
+    SECTOR_ROTATION_MODEL_VERSION,
+    SECTOR_ROTATION_NORMALIZATION_VERSION,
+    SECTOR_ROTATION_PROFILES,
+)
 from app.securities.registry import SECTOR_BY_ID
 from app.securities.service import SecurityMasterService
 from app.sector_snapshots.engine import build_sector_rows
@@ -56,8 +62,8 @@ class SectorSnapshotBuilder:
         ordered = sorted(rows, key=lambda row: (row["composite_score"] if row["composite_score"] is not None else -1, row["sector_id"]), reverse=True)
         for rank, row in enumerate(ordered, 1):
             row["rank"] = rank
-            row["rotation_series"] = {
-                interval: build_rotation_series(
+            row["legacy_rotation_series"] = {
+                interval: build_legacy_rotation_series(
                     entity_type="sector",
                     entity_id=row["sector_id"],
                     display_name=row["display_name"],
@@ -75,10 +81,28 @@ class SectorSnapshotBuilder:
                 ).model_dump()
                 for interval in INTERVAL_POLICIES
             }
+            row["rotation_series"] = {
+                profile.interval_alias: build_sector_rotation_series(
+                    sector_id=row["sector_id"],
+                    display_name=row["display_name"],
+                    etf_symbol=row["etf_symbol"],
+                    etf_history=etf_histories[row["etf_symbol"]],
+                    benchmark_history=benchmark,
+                    profile=profile.profile,
+                    source_state=source_state(),
+                    data_mode="live" if source_state() == "live" else "test",
+                    universe_id=universe.universe_id,
+                    universe_version=universe.version,
+                    coverage_ratio=row["coverage_ratio"],
+                    eligible_members=row.get("eligible_members"),
+                    total_members=row.get("total_members"),
+                )
+                for profile in SECTOR_ROTATION_PROFILES.values()
+            }
         rankings = tuple(row["sector_id"] for row in ordered)
         alerts = alerts_for(rows, self.storage.history(universe.universe_id, 30))
-        input_hash = hashlib.sha256(f"{input_hash}:rotation-series-contract-v1:{ROTATION_FORMULA_VERSION}:{ROTATION_NORMALIZATION_VERSION}:{SEMANTICS_VERSION}".encode()).hexdigest()
-        snapshot = SectorSnapshot(snapshot_id=f"sector-{universe.universe_id}-{market_date}-{hashlib.sha256(input_hash.encode()).hexdigest()[:10]}", schema_version=4, universe_id=universe.universe_id, universe_version=universe.version, market_date=market_date, generated_at=now, status=status, coverage=coverage, benchmark="SPY", source_state=source_state(), provider_provenance={"history_provider": "polygon", "history_source_state": source_state(), "request_time_provider_calls": 0, "universe_scope": "S&P 100", "rotation_formula_version": ROTATION_FORMULA_VERSION, "rotation_normalization_version": ROTATION_NORMALIZATION_VERSION}, sectors=tuple(ordered), rankings=rankings, rotation_summary=rotation_summary(ordered), alerts=tuple(alerts), warnings=tuple(warnings), input_hash=input_hash, semantics_version=SEMANTICS_VERSION)
+        input_hash = hashlib.sha256(f"{input_hash}:rotation-series-contract-v2:{SECTOR_ROTATION_MODEL_VERSION}:{SECTOR_ROTATION_NORMALIZATION_VERSION}:{ROTATION_FORMULA_VERSION}:{ROTATION_NORMALIZATION_VERSION}:{SEMANTICS_VERSION}".encode()).hexdigest()
+        snapshot = SectorSnapshot(snapshot_id=f"sector-{universe.universe_id}-{market_date}-{hashlib.sha256(input_hash.encode()).hexdigest()[:10]}", schema_version=5, universe_id=universe.universe_id, universe_version=universe.version, market_date=market_date, generated_at=now, status=status, coverage=coverage, benchmark="SPY", source_state=source_state(), provider_provenance={"history_provider": "polygon", "history_source_state": source_state(), "request_time_provider_calls": 0, "universe_scope": "S&P 100", "rotation_model_version": SECTOR_ROTATION_MODEL_VERSION, "rotation_normalization_version": SECTOR_ROTATION_NORMALIZATION_VERSION, "legacy_rotation_formula_version": ROTATION_FORMULA_VERSION, "legacy_rotation_normalization_version": ROTATION_NORMALIZATION_VERSION}, sectors=tuple(ordered), rankings=rankings, rotation_summary=rotation_summary(ordered), alerts=tuple(alerts), warnings=tuple(warnings), input_hash=input_hash, semantics_version=SEMANTICS_VERSION)
         if publish and status != "unavailable":
             self.storage.publish(snapshot, sector_namespace())
         elif status == "unavailable":

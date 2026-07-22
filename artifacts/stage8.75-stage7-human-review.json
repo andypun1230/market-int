@@ -60751,11 +60751,11 @@
       }
     }
   ],
-  "generated_at": "2026-07-22T11:57:15.925273+00:00",
+  "generated_at": "2026-07-22T20:17:23.884171+00:00",
   "schema_version": "stage7-human-review-v1",
   "source": {
     "cases": "/Users/andypun/Downloads/market-intelligence-app/backend/tests/fixtures/stage7/cases.jsonl",
-    "evaluation_generated_at": "2026-07-22T11:57:15.420018+00:00",
+    "evaluation_generated_at": "2026-07-22T20:17:23.396033+00:00",
     "evaluation_mode": "offline-frozen-reference-only",
     "evaluation_release_result": "NON-RELEASE",
     "evaluation_result": "/Users/andypun/Downloads/market-intelligence-app/artifacts/stage8.75-stage7-reference-evaluation.json",

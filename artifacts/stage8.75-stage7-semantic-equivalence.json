@@ -1,5 +1,5 @@
 {
-  "after": "2026-07-22T11:57:14.179847+00:00",
+  "after": "2026-07-22T20:17:22.196255+00:00",
   "before": "2026-07-22T05:56:30.076216+00:00",
   "case_count": 30,
   "cases": [
@@ -191,7 +191,7 @@
   },
   "equivalent_count": 30,
   "failed_count": 0,
-  "generated_at": "2026-07-22T11:57:16.080595+00:00",
+  "generated_at": "2026-07-22T20:17:24.065690+00:00",
   "ignored_fields": [
     "generated timestamps",
     "case latency",
@@ -200,12 +200,12 @@
   ],
   "performance": {
     "after": {
-      "max_latency_ms": 8.989,
-      "mean_latency_ms": 4.309786,
+      "max_latency_ms": 10.424,
+      "mean_latency_ms": 4.717786,
       "mean_model_calls": 0.0,
-      "p50_latency_ms": 4.0205,
-      "p95_latency_ms": 7.8437,
-      "p99_latency_ms": 8.75994,
+      "p50_latency_ms": 4.9865,
+      "p95_latency_ms": 9.60305,
+      "p99_latency_ms": 10.25981,
       "performance_case_count": 14
     },
     "before": {
@@ -217,7 +217,7 @@
       "p99_latency_ms": 7.03742,
       "performance_case_count": 14
     },
-    "p95_delta_percent": 35.070862
+    "p95_delta_percent": 65.367395
   },
   "result": "PASS",
   "schema_version": "stage75-semantic-equivalence-v1"

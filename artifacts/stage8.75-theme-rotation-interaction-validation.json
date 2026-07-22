@@ -1,0 +1,229 @@
+{
+  "assertions": [
+    {
+      "name": "all_eligible_themes_restorable",
+      "result": "PASS",
+      "plotted": 26
+    },
+    {
+      "name": "source_immutable_after_all_view",
+      "result": "PASS"
+    },
+    {
+      "name": "universe_all",
+      "result": "PASS",
+      "plotted": 26
+    },
+    {
+      "name": "universe_technology_ai",
+      "result": "PASS",
+      "plotted": 17
+    },
+    {
+      "name": "universe_consumer_digital",
+      "result": "PASS",
+      "plotted": 10
+    },
+    {
+      "name": "universe_industrials_strategic_growth",
+      "result": "PASS",
+      "plotted": 9
+    },
+    {
+      "name": "universe_healthcare",
+      "result": "PASS",
+      "plotted": 3
+    },
+    {
+      "name": "universe_finance_crypto",
+      "result": "PASS",
+      "plotted": 2
+    },
+    {
+      "name": "universe_saved",
+      "result": "PASS",
+      "plotted": 3
+    },
+    {
+      "name": "universe_custom",
+      "result": "PASS",
+      "plotted": 0
+    },
+    {
+      "name": "compare_eight_themes",
+      "result": "PASS"
+    },
+    {
+      "name": "focus_full_tail",
+      "result": "PASS"
+    },
+    {
+      "name": "focus_faint_context",
+      "result": "PASS"
+    },
+    {
+      "name": "focus_related_deterministic",
+      "result": "PASS"
+    },
+    {
+      "name": "quadrant_all",
+      "result": "PASS"
+    },
+    {
+      "name": "quadrant_leading",
+      "result": "PASS"
+    },
+    {
+      "name": "quadrant_improving",
+      "result": "PASS"
+    },
+    {
+      "name": "quadrant_weakening",
+      "result": "PASS"
+    },
+    {
+      "name": "quadrant_lagging",
+      "result": "PASS"
+    },
+    {
+      "name": "tail_current",
+      "result": "PASS"
+    },
+    {
+      "name": "tail_3",
+      "result": "PASS"
+    },
+    {
+      "name": "tail_5",
+      "result": "PASS"
+    },
+    {
+      "name": "tail_8",
+      "result": "PASS"
+    },
+    {
+      "name": "tail_full",
+      "result": "PASS"
+    },
+    {
+      "name": "movement_all",
+      "result": "PASS"
+    },
+    {
+      "name": "movement_meaningful",
+      "result": "PASS"
+    },
+    {
+      "name": "movement_fast",
+      "result": "PASS"
+    },
+    {
+      "name": "movement_stable",
+      "result": "PASS"
+    },
+    {
+      "name": "transition_all",
+      "result": "PASS"
+    },
+    {
+      "name": "transition_entered_leading",
+      "result": "PASS"
+    },
+    {
+      "name": "transition_entered_improving",
+      "result": "PASS"
+    },
+    {
+      "name": "transition_lost_leading",
+      "result": "PASS"
+    },
+    {
+      "name": "transition_quadrant_changed",
+      "result": "PASS"
+    },
+    {
+      "name": "transition_no_recent_change",
+      "result": "PASS"
+    },
+    {
+      "name": "label_point_count_invariant",
+      "result": "PASS",
+      "labelPointCounts": {
+        "smart": 26,
+        "selected": 26,
+        "all": 26,
+        "none": 26
+      }
+    },
+    {
+      "name": "no_n_a_to_zero",
+      "result": "PASS"
+    },
+    {
+      "name": "no_synthetic_tail_projection",
+      "result": "PASS"
+    }
+  ],
+  "canonical": {
+    "eligible_count": 26,
+    "excluded_count": 0,
+    "model_version": "theme-relative-trend-momentum-v1",
+    "snapshot_id": "theme-2026-07-22-c8d9a44cdd",
+    "taxonomy_version": "2026.07.1"
+  },
+  "counts": {
+    "movement": {
+      "all": 26,
+      "meaningful": 19,
+      "fast": 6,
+      "stable": 6
+    },
+    "quadrants": {
+      "all": 26,
+      "leading": 5,
+      "improving": 5,
+      "weakening": 8,
+      "lagging": 8
+    },
+    "tails": {
+      "3": 78,
+      "5": 130,
+      "8": 208,
+      "current": 26,
+      "full": 260
+    },
+    "transitions": {
+      "all": 26,
+      "entered_leading": 0,
+      "entered_improving": 1,
+      "lost_leading": 2,
+      "quadrant_changed": 3,
+      "no_recent_change": 23
+    },
+    "universes": {
+      "all": 26,
+      "technology_ai": 17,
+      "consumer_digital": 10,
+      "industrials_strategic_growth": 9,
+      "healthcare": 3,
+      "finance_crypto": 2,
+      "saved": 3,
+      "custom": 0
+    }
+  },
+  "generated_at": "2026-07-22T20:22:10.495Z",
+  "label_point_counts": {
+    "smart": 26,
+    "selected": 26,
+    "all": 26,
+    "none": 26
+  },
+  "movement_policy": {
+    "fastMoverFraction": 0.2,
+    "meaningfulNetDisplacementPercentile": 0.5,
+    "meaningfulSpeedPercentile": 0.5,
+    "stableFraction": 0.2,
+    "version": "theme-rotation-view-policy-v1"
+  },
+  "result": "PASS"
+}

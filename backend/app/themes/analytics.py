@@ -41,6 +41,8 @@ class ThemeAnalyticsEngine:
         generated_at: str | None = None,
         previous_snapshot: dict[str, Any] | None = None,
         test_data: bool = False,
+        observed_at: str | None = None,
+        required_benchmark_symbols: Sequence[str] | None = None,
     ) -> dict[str, Any]:
         definition = self.registry.definition(theme_id)
         if definition is None or definition.status == "retired":
@@ -64,6 +66,7 @@ class ThemeAnalyticsEngine:
         freshness = self.freshness.evaluate(FreshnessAvailabilityInput(
             source_state=source_state,
             generated_at=generated,
+            observed_at=observed_at,
             market_date=market_date,
             completeness=coverage,
             provider="caller_supplied_theme_history" if status != "unavailable" else "unavailable",
@@ -85,11 +88,14 @@ class ThemeAnalyticsEngine:
             for window, values in constituent_returns.items()
         }
         relative_strength: dict[str, Any] = {"equal_weight_returns": equal_weight, "median_constituent_returns": median_returns}
+        required_benchmarks = {symbol.upper() for symbol in (required_benchmark_symbols or definition.benchmark_symbols)}
         missing_benchmarks: list[str] = []
-        for benchmark in definition.benchmark_symbols:
+        optional_missing_benchmarks: list[str] = []
+        benchmark_order = tuple(dict.fromkeys((*definition.benchmark_symbols, *sorted(required_benchmarks))))
+        for benchmark in benchmark_order:
             values = benchmark_values.get(benchmark, ())
             if not values:
-                missing_benchmarks.append(benchmark)
+                (missing_benchmarks if benchmark in required_benchmarks else optional_missing_benchmarks).append(benchmark)
             relative_strength[f"vs_{benchmark.lower()}"] = {
                 window: self._subtract(equal_weight[window], self._return(values, days))
                 for window, days in WINDOWS.items()
@@ -132,6 +138,8 @@ class ThemeAnalyticsEngine:
         missing_data = []
         if missing_benchmarks:
             missing_data.append({"dimension": "benchmarks", "symbols": missing_benchmarks})
+        if optional_missing_benchmarks:
+            missing_data.append({"dimension": "optional_benchmarks", "symbols": optional_missing_benchmarks})
         for period, eligible in breadth["eligible_counts"].items():
             if eligible < covered:
                 missing_data.append({"dimension": f"breadth_{period}", "covered": eligible, "expected": covered})
@@ -159,6 +167,7 @@ class ThemeAnalyticsEngine:
             "adjacent_constituent_count": adjacent,
             "experimental_constituent_count": experimental,
             "benchmark_symbols": list(definition.benchmark_symbols),
+            "required_benchmark_symbols": sorted(required_benchmarks),
             "relative_strength": relative_strength,
             "breadth": breadth,
             "momentum": momentum,

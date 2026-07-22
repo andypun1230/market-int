@@ -25,6 +25,9 @@ class ThemeSnapshot:
     input_hash: str = ""
     formula_version: str = "theme-leadership-composite-v1"
     configuration_signature: str = ""
+    taxonomy_version: str | None = None
+    repository_stats: dict[str, Any] = field(default_factory=dict)
+    coverage_audit: tuple[dict[str, Any], ...] = ()
 
     def model_dump(self) -> dict[str, Any]:
         return asdict(self)

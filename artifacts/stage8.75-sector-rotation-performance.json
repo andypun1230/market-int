@@ -1,0 +1,39 @@
+{
+  "benchmark_type": "hermetic_local_persisted_sector_snapshot",
+  "model_calls": 0,
+  "model_version": "sector-relative-trend-momentum-v1",
+  "network_calls": 0,
+  "observations_per_sector": {
+    "long": 8,
+    "medium": 10,
+    "short": 8
+  },
+  "production_latency_claim": false,
+  "provider_calls": 0,
+  "sectors_calculated": 11,
+  "single_profile_retrieval": {
+    "long": {
+      "iterations": 25,
+      "maximum_ms": 29.3645,
+      "minimum_ms": 22.891292,
+      "p50_ms": 23.35625,
+      "p95_ms": 28.337709
+    },
+    "medium": {
+      "iterations": 25,
+      "maximum_ms": 29.979916,
+      "minimum_ms": 22.919834,
+      "p50_ms": 23.392292,
+      "p95_ms": 28.497292
+    },
+    "short": {
+      "iterations": 25,
+      "maximum_ms": 29.822667,
+      "minimum_ms": 22.842667,
+      "p50_ms": 23.420625,
+      "p95_ms": 29.380583
+    }
+  },
+  "total_coordinate_count": 286,
+  "warm_read_provider_calls": 0
+}

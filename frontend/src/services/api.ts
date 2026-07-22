@@ -54,6 +54,7 @@ import {
   ServiceCacheStatus,
   TrendlineResponse,
   ThemeSnapshotResponse,
+  ThemeRotationResponse,
   ThemeStatusResponse,
   TestDataScenariosResponse,
   TestDataStatus,
@@ -62,15 +63,20 @@ import {
   VolumeAnalysisResponse,
   WatchlistResponse,
   WatchlistSummaryResponse,
-} from '@/types/market';
-import { cachedRequest } from '@/services/requestCache';
-import { API_URL } from '@/services/apiConfig';
-import { normalizeSectorId } from '@/features/sectors/sectorSnapshot';
-import type { CopilotChatRequest, CopilotChatResponse } from '@/features/copilot/types';
+} from "@/types/market";
+import { cachedRequest } from "@/services/requestCache";
+import { API_URL } from "@/services/apiConfig";
+import { normalizeSectorId } from "@/features/sectors/sectorSnapshot";
+import type {
+  CopilotChatRequest,
+  CopilotChatResponse,
+} from "@/features/copilot/types";
 import type {
   NewsIntelligenceDto,
   SessionNarrativeDto,
-} from '@/features/context-intelligence/types';
+} from "@/features/context-intelligence/types";
+import { themeRotationCacheKey } from "@/features/themes/themeRotation";
+import type { ThemeRotationInterval } from "@/features/themes/themeSnapshot";
 
 type RequestOptions = {
   timeoutMs?: number;
@@ -78,26 +84,29 @@ type RequestOptions = {
 
 export { API_URL };
 
-async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+async function request<T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
   const { timeoutMs = 10_000 } = options;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const started = Date.now();
 
-  logRequest('GET', path);
+  logRequest("GET", path);
   try {
     const response = await fetch(`${API_URL}${path}`, {
       signal: controller.signal,
     }).finally(() => clearTimeout(timeout));
 
     if (!response.ok) {
-      throw await buildApiError('GET', path, response);
+      throw await buildApiError("GET", path, response);
     }
 
-    logSuccess('GET', path, response.status, started);
+    logSuccess("GET", path, response.status, started);
     return response.json() as Promise<T>;
   } catch (error) {
-    logError('GET', path, error, started);
+    logError("GET", path, error, started);
     throw error;
   }
 }
@@ -112,25 +121,25 @@ async function post<TRequest, TResponse>(
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const started = Date.now();
 
-  logRequest('POST', path);
+  logRequest("POST", path);
   try {
     const response = await fetch(`${API_URL}${path}`, {
       body: JSON.stringify(body),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      method: 'POST',
+      method: "POST",
       signal: controller.signal,
     }).finally(() => clearTimeout(timeout));
 
     if (!response.ok) {
-      throw await buildApiError('POST', path, response);
+      throw await buildApiError("POST", path, response);
     }
 
-    logSuccess('POST', path, response.status, started);
+    logSuccess("POST", path, response.status, started);
     return response.json() as Promise<TResponse>;
   } catch (error) {
-    logError('POST', path, error, started);
+    logError("POST", path, error, started);
     throw error;
   }
 }
@@ -138,28 +147,32 @@ async function post<TRequest, TResponse>(
 async function postWithoutBody<TResponse>(path: string): Promise<TResponse> {
   const started = Date.now();
 
-  logRequest('POST', path);
+  logRequest("POST", path);
   try {
     const response = await fetch(`${API_URL}${path}`, {
-      method: 'POST',
+      method: "POST",
     });
 
     if (!response.ok) {
-      throw await buildApiError('POST', path, response);
+      throw await buildApiError("POST", path, response);
     }
 
-    logSuccess('POST', path, response.status, started);
+    logSuccess("POST", path, response.status, started);
     return response.json() as Promise<TResponse>;
   } catch (error) {
-    logError('POST', path, error, started);
+    logError("POST", path, error, started);
     throw error;
   }
 }
 
-async function buildApiError(method: string, path: string, response: Response): Promise<Error> {
+async function buildApiError(
+  method: string,
+  path: string,
+  response: Response,
+): Promise<Error> {
   const body = await safeReadResponseBody(response);
   return new Error(
-    `${method} ${path} failed with HTTP ${response.status}${body ? `: ${body}` : ''}`,
+    `${method} ${path} failed with HTTP ${response.status}${body ? `: ${body}` : ""}`,
   );
 }
 
@@ -168,7 +181,7 @@ async function safeReadResponseBody(response: Response): Promise<string> {
     const text = await response.text();
     return text.length > 600 ? `${text.slice(0, 600)}...` : text;
   } catch {
-    return '';
+    return "";
   }
 }
 
@@ -178,36 +191,53 @@ function logRequest(method: string, path: string) {
   }
 }
 
-function logSuccess(method: string, path: string, status: number, started: number) {
+function logSuccess(
+  method: string,
+  path: string,
+  status: number,
+  started: number,
+) {
   if (isNetworkDebugEnabled()) {
-    console.log(`[API SUCCESS] ${method} ${path} ${status} ${Date.now() - started}ms`);
+    console.log(
+      `[API SUCCESS] ${method} ${path} ${status} ${Date.now() - started}ms`,
+    );
   }
 }
 
-function logError(method: string, path: string, error: unknown, started: number) {
+function logError(
+  method: string,
+  path: string,
+  error: unknown,
+  started: number,
+) {
   if (isNetworkDebugEnabled()) {
     const message = error instanceof Error ? error.message : String(error);
-    console.log(`[API ERROR] ${method} ${path} ${Date.now() - started}ms ${message}`);
+    console.log(
+      `[API ERROR] ${method} ${path} ${Date.now() - started}ms ${message}`,
+    );
   }
 }
 
 function isNetworkDebugEnabled(): boolean {
-  return process.env.EXPO_PUBLIC_NETWORK_DEBUG === 'true';
+  return process.env.EXPO_PUBLIC_NETWORK_DEBUG === "true";
 }
 
 export function getMarketBrief() {
-  return request<MarketBrief>('/market/brief');
+  return request<MarketBrief>("/market/brief");
 }
 
 export function getMarketRegime() {
-  return request<MarketRegime>('/market/regime');
+  return request<MarketRegime>("/market/regime");
 }
 
 export function getMarketNewsIntelligence(limit = 5) {
   const normalizedLimit = normalizeIntelligenceLimit(limit, 5);
   return cachedRequest(
     `intelligence-news:market:${normalizedLimit}`,
-    () => request<NewsIntelligenceDto>(`/intelligence/news/market?limit=${normalizedLimit}`),
+    () =>
+      request<NewsIntelligenceDto>(
+        `/intelligence/news/market?limit=${normalizedLimit}`,
+      ),
     60_000,
   );
 }
@@ -216,11 +246,16 @@ export function getSecurityNewsIntelligence(symbol: string, limit = 5) {
   const normalizedSymbol = symbol.trim().toUpperCase();
   const normalizedLimit = normalizeIntelligenceLimit(limit, 5);
   if (!normalizedSymbol) {
-    return Promise.reject(new Error('A symbol is required for security intelligence.'));
+    return Promise.reject(
+      new Error("A symbol is required for security intelligence."),
+    );
   }
   return cachedRequest(
     `intelligence-news:security:${normalizedSymbol}:${normalizedLimit}`,
-    () => request<NewsIntelligenceDto>(`/intelligence/news/security/${encodeURIComponent(normalizedSymbol)}?limit=${normalizedLimit}`),
+    () =>
+      request<NewsIntelligenceDto>(
+        `/intelligence/news/security/${encodeURIComponent(normalizedSymbol)}?limit=${normalizedLimit}`,
+      ),
     60_000,
   );
 }
@@ -229,11 +264,16 @@ export function getSectorNewsIntelligence(sectorId: string, limit = 5) {
   const normalizedId = sectorId.trim().toLowerCase();
   const normalizedLimit = normalizeIntelligenceLimit(limit, 5);
   if (!normalizedId) {
-    return Promise.reject(new Error('A sector is required for sector intelligence.'));
+    return Promise.reject(
+      new Error("A sector is required for sector intelligence."),
+    );
   }
   return cachedRequest(
     `intelligence-news:sector:${normalizedId}:${normalizedLimit}`,
-    () => request<NewsIntelligenceDto>(`/intelligence/news/sector/${encodeURIComponent(normalizedId)}?limit=${normalizedLimit}`),
+    () =>
+      request<NewsIntelligenceDto>(
+        `/intelligence/news/sector/${encodeURIComponent(normalizedId)}?limit=${normalizedLimit}`,
+      ),
     60_000,
   );
 }
@@ -242,11 +282,16 @@ export function getThemeNewsIntelligence(themeId: string, limit = 5) {
   const normalizedId = themeId.trim().toLowerCase();
   const normalizedLimit = normalizeIntelligenceLimit(limit, 5);
   if (!normalizedId) {
-    return Promise.reject(new Error('A theme is required for theme intelligence.'));
+    return Promise.reject(
+      new Error("A theme is required for theme intelligence."),
+    );
   }
   return cachedRequest(
     `intelligence-news:theme:${normalizedId}:${normalizedLimit}`,
-    () => request<NewsIntelligenceDto>(`/intelligence/news/theme/${encodeURIComponent(normalizedId)}?limit=${normalizedLimit}`),
+    () =>
+      request<NewsIntelligenceDto>(
+        `/intelligence/news/theme/${encodeURIComponent(normalizedId)}?limit=${normalizedLimit}`,
+      ),
     60_000,
   );
 }
@@ -255,36 +300,54 @@ export function getWatchlistNewsIntelligence(symbols: string[], limit = 10) {
   const normalizedSymbols = normalizeIntelligenceSymbols(symbols);
   const normalizedLimit = normalizeIntelligenceLimit(limit, 10);
   if (!normalizedSymbols.length) {
-    return Promise.reject(new Error('At least one saved symbol is required for watchlist intelligence.'));
+    return Promise.reject(
+      new Error(
+        "At least one saved symbol is required for watchlist intelligence.",
+      ),
+    );
   }
   if (normalizedSymbols.length > 50) {
-    return Promise.reject(new Error('Watchlist intelligence supports at most 50 saved symbols per batched request.'));
+    return Promise.reject(
+      new Error(
+        "Watchlist intelligence supports at most 50 saved symbols per batched request.",
+      ),
+    );
   }
-  const symbolKey = normalizedSymbols.join(',');
+  const symbolKey = normalizedSymbols.join(",");
   if (symbolKey.length > 500) {
-    return Promise.reject(new Error('Saved symbols exceed the 500-character batched request limit.'));
+    return Promise.reject(
+      new Error(
+        "Saved symbols exceed the 500-character batched request limit.",
+      ),
+    );
   }
   return cachedRequest(
     `intelligence-news:watchlist:${symbolKey}:${normalizedLimit}`,
-    () => request<NewsIntelligenceDto>(`/intelligence/news/watchlist?symbols=${encodeURIComponent(symbolKey)}&limit=${normalizedLimit}`),
+    () =>
+      request<NewsIntelligenceDto>(
+        `/intelligence/news/watchlist?symbols=${encodeURIComponent(symbolKey)}&limit=${normalizedLimit}`,
+      ),
     60_000,
   );
 }
 
-export function getMarketSessionNarrative(interval: '5m' | '15m' = '5m') {
+export function getMarketSessionNarrative(interval: "5m" | "15m" = "5m") {
   return cachedRequest(
     `intelligence-session:market:${interval}`,
-    () => request<SessionNarrativeDto>(`/intelligence/session/market?interval=${interval}`),
+    () =>
+      request<SessionNarrativeDto>(
+        `/intelligence/session/market?interval=${interval}`,
+      ),
     30_000,
   );
 }
 
 export function normalizeIntelligenceSymbols(symbols: string[]): string[] {
-  return [...new Set(
-    symbols
-      .map((symbol) => symbol.trim().toUpperCase())
-      .filter(Boolean),
-  )].sort();
+  return [
+    ...new Set(
+      symbols.map((symbol) => symbol.trim().toUpperCase()).filter(Boolean),
+    ),
+  ].sort();
 }
 
 function normalizeIntelligenceLimit(limit: number, fallback: number): number {
@@ -293,66 +356,110 @@ function normalizeIntelligenceLimit(limit: number, fallback: number): number {
 }
 
 export function getMarketIndexes() {
-  return request<IndexesResponse>('/market/indexes');
+  return request<IndexesResponse>("/market/indexes");
 }
 
 export function getMarketBreadth() {
-  return request<MarketBreadthResponse>('/market/breadth');
+  return request<MarketBreadthResponse>("/market/breadth");
 }
 
 export function getInstitutionalActivity() {
-  return request<InstitutionalActivityResponse>('/market/institutional-activity');
+  return request<InstitutionalActivityResponse>(
+    "/market/institutional-activity",
+  );
 }
 
 export function getMarketSectors() {
-  return cachedRequest('sectors', () => request<SectorResponse>('/market/sectors'), 300_000);
+  return cachedRequest(
+    "sectors",
+    () => request<SectorResponse>("/market/sectors"),
+    300_000,
+  );
 }
 
 export function getSectorsSummary() {
-  return cachedRequest('sectors-summary', () => request<SectorsSummaryResponse>('/market/sectors/summary'), 60_000);
+  return cachedRequest(
+    "sectors-summary",
+    () => request<SectorsSummaryResponse>("/market/sectors/summary"),
+    60_000,
+  );
 }
 
 export function getSectorDashboard() {
   return cachedRequest(
-    'sector-dashboard',
-    () => request<SectorDashboardResponse>('/market/sector-dashboard', { timeoutMs: 10_000 }),
+    "sector-dashboard",
+    () =>
+      request<SectorDashboardResponse>("/market/sector-dashboard", {
+        timeoutMs: 10_000,
+      }),
     300_000,
   );
 }
 
 export function getSectorSnapshot() {
-  return cachedRequest('sector-snapshot:latest', () => request<unknown>('/market/sectors/snapshot/latest'), 60_000);
+  return cachedRequest(
+    "sector-snapshot:latest",
+    () => request<unknown>("/market/sectors/snapshot/latest"),
+    60_000,
+  );
 }
 
-export function getSectorRotation() {
-  return cachedRequest('sector-rotation', () => request<unknown>('/market/sectors/rotation'), 60_000);
+export function getSectorRotation(
+  timeframe: "1W" | "1M" | "3M" = "1M",
+  identity?: { snapshotId: string; universeVersion: string },
+) {
+  const profile =
+    timeframe === "1W" ? "short" : timeframe === "3M" ? "long" : "medium";
+  const cacheKey = `sector-rotation:${identity?.universeVersion ?? "unknown"}:${identity?.snapshotId ?? "latest"}:sector-relative-trend-momentum-v1:${timeframe}`;
+  return cachedRequest(
+    cacheKey,
+    () => request<unknown>(`/market/sectors/rotation?profile=${profile}`),
+    60_000,
+  );
 }
 
 export function getSectorDetail(sectorId: string) {
   const canonicalId = normalizeSectorId(sectorId) ?? sectorId;
-  return cachedRequest(`sector-detail:${canonicalId}`, () => request<unknown>(`/market/sectors/${encodeURIComponent(canonicalId)}`), 60_000);
+  return cachedRequest(
+    `sector-detail:${canonicalId}`,
+    () =>
+      request<unknown>(`/market/sectors/${encodeURIComponent(canonicalId)}`),
+    60_000,
+  );
 }
 
 export function getMarketWatchlist() {
-  return request<WatchlistResponse>('/market/watchlist');
+  return request<WatchlistResponse>("/market/watchlist");
 }
 
-export function getWatchlistSummary(symbols: string[] = [], options: { bypassCache?: boolean } = {}) {
-  const normalizedSymbols = [...new Set(symbols.map((symbol) => symbol.trim().toUpperCase()).filter(Boolean))].sort();
-  const query = normalizedSymbols.length ? `?symbols=${encodeURIComponent(normalizedSymbols.join(','))}` : '';
-  const fetcher = () => request<WatchlistSummaryResponse>(`/watchlist/summary${query}`, { timeoutMs: 5000 });
+export function getWatchlistSummary(
+  symbols: string[] = [],
+  options: { bypassCache?: boolean } = {},
+) {
+  const normalizedSymbols = [
+    ...new Set(
+      symbols.map((symbol) => symbol.trim().toUpperCase()).filter(Boolean),
+    ),
+  ].sort();
+  const query = normalizedSymbols.length
+    ? `?symbols=${encodeURIComponent(normalizedSymbols.join(","))}`
+    : "";
+  const fetcher = () =>
+    request<WatchlistSummaryResponse>(`/watchlist/summary${query}`, {
+      timeoutMs: 5000,
+    });
   if (options.bypassCache) {
     return fetcher();
   }
   return cachedRequest(
-    `watchlist-summary:v2:${normalizedSymbols.join(',') || 'default'}`,
+    `watchlist-summary:v2:${normalizedSymbols.join(",") || "default"}`,
     fetcher,
     60_000,
   );
 }
 
 export function getMarketPatterns() {
-  return request<PatternResponse>('/market/patterns');
+  return request<PatternResponse>("/market/patterns");
 }
 
 export function getMarketPatternsBySymbol(symbol: string) {
@@ -360,20 +467,29 @@ export function getMarketPatternsBySymbol(symbol: string) {
 }
 
 export function getSupportResistance(symbol: string) {
-  return request<SupportResistanceResponse>(`/market/support-resistance/${symbol}`);
+  return request<SupportResistanceResponse>(
+    `/market/support-resistance/${symbol}`,
+  );
 }
 
 export function getTrendlines() {
-  return request<TrendlineResponse[]>('/market/trendlines');
+  return request<TrendlineResponse[]>("/market/trendlines");
 }
 
 export function getTrendline(symbol: string) {
   return request<TrendlineResponse>(`/market/trendline/${symbol}`);
 }
 
-export function getStockAnalysis(symbol: string, options: { bypassCache?: boolean } = {}) {
+export function getStockAnalysis(
+  symbol: string,
+  options: { bypassCache?: boolean } = {},
+) {
   const normalizedSymbol = symbol.toUpperCase();
-  const fetcher = () => request<StockAnalysisAggregate>(`/market/stock-analysis/${normalizedSymbol}`, { timeoutMs: 10_000 });
+  const fetcher = () =>
+    request<StockAnalysisAggregate>(
+      `/market/stock-analysis/${normalizedSymbol}`,
+      { timeoutMs: 10_000 },
+    );
   if (options.bypassCache) {
     return fetcher();
   }
@@ -386,14 +502,15 @@ export function getStockAnalysis(symbol: string, options: { bypassCache?: boolea
 
 export function getStockSnapshot(symbol: string) {
   const normalizedSymbol = symbol.toUpperCase();
-  return request<{ status: string; analysis?: StockAnalysisAggregate; snapshot?: unknown }>(
-    `/market/stock-snapshot/${normalizedSymbol}`,
-    { timeoutMs: 5_000 },
-  );
+  return request<{
+    status: string;
+    analysis?: StockAnalysisAggregate;
+    snapshot?: unknown;
+  }>(`/market/stock-snapshot/${normalizedSymbol}`, { timeoutMs: 5_000 });
 }
 
 export function getVolumeAnalysis() {
-  return request<VolumeAnalysisResponse>('/market/volume');
+  return request<VolumeAnalysisResponse>("/market/volume");
 }
 
 export function getVolumeAnalysisBySymbol(symbol: string) {
@@ -401,7 +518,7 @@ export function getVolumeAnalysisBySymbol(symbol: string) {
 }
 
 export function getRiskPlans() {
-  return request<RiskPlanResponse>('/market/risk-plans');
+  return request<RiskPlanResponse>("/market/risk-plans");
 }
 
 export function getRiskPlanBySymbol(symbol: string) {
@@ -409,7 +526,7 @@ export function getRiskPlanBySymbol(symbol: string) {
 }
 
 export function getMultiTimeframe() {
-  return request<MultiTimeframeResponse>('/market/multi-timeframe');
+  return request<MultiTimeframeResponse>("/market/multi-timeframe");
 }
 
 export function getMultiTimeframeBySymbol(symbol: string) {
@@ -417,127 +534,155 @@ export function getMultiTimeframeBySymbol(symbol: string) {
 }
 
 export function getRelativeStrength() {
-  return request<RelativeStrengthResponse>('/market/relative-strength');
+  return request<RelativeStrengthResponse>("/market/relative-strength");
 }
 
 export function getStockRatings() {
-  return request<StockRatingResponse>('/market/stock-ratings');
+  return request<StockRatingResponse>("/market/stock-ratings");
 }
 
 export function getMarketRisk() {
-  return request<RiskResponse>('/market/risk');
+  return request<RiskResponse>("/market/risk");
 }
 
 export function getMarketHealth() {
-  return request<MarketHealthResponse>('/market/health');
+  return request<MarketHealthResponse>("/market/health");
 }
 
 export function getMarketCoreSnapshot() {
   return cachedRequest(
-    'market-core-snapshot',
-    () => request<MarketCoreSnapshot>('/market/core-snapshot', { timeoutMs: 5000 }),
+    "market-core-snapshot",
+    () =>
+      request<MarketCoreSnapshot>("/market/core-snapshot", { timeoutMs: 5000 }),
     60_000,
   );
 }
 
 export function getLatestMarketSnapshot() {
   return cachedRequest(
-    'market-snapshot-latest',
-    () => request<MarketSnapshotResponse>('/market/snapshot/latest', { timeoutMs: 2_000 }),
+    "market-snapshot-latest",
+    () =>
+      request<MarketSnapshotResponse>("/market/snapshot/latest", {
+        timeoutMs: 2_000,
+      }),
     30_000,
   );
 }
 
 export function getHomeDashboard() {
   return cachedRequest(
-    'home-dashboard',
-    () => request<HomeDashboardResponse>('/home/dashboard', { timeoutMs: 5000 }),
+    "home-dashboard",
+    () =>
+      request<HomeDashboardResponse>("/home/dashboard", { timeoutMs: 5000 }),
     60_000,
   );
 }
 
 export function getDecisionDashboard() {
   return cachedRequest(
-    'market:decision-dashboard',
-    () => request<DecisionDashboardResponse>('/market/decision-dashboard'),
+    "market:decision-dashboard",
+    () => request<DecisionDashboardResponse>("/market/decision-dashboard"),
     120_000,
   );
 }
 
 export function getMarketDecisionDetails() {
   return cachedRequest(
-    'market-details-decision',
-    () => request<Record<string, unknown>>('/market/details/decision', { timeoutMs: 10_000 }),
+    "market-details-decision",
+    () =>
+      request<Record<string, unknown>>("/market/details/decision", {
+        timeoutMs: 10_000,
+      }),
     120_000,
   );
 }
 
 export function getMarketInstitutionalDetails() {
   return cachedRequest(
-    'market-details-institutional',
-    () => request<Record<string, unknown>>('/market/details/institutional', { timeoutMs: 10_000 }),
+    "market-details-institutional",
+    () =>
+      request<Record<string, unknown>>("/market/details/institutional", {
+        timeoutMs: 10_000,
+      }),
     300_000,
   );
 }
 
 export function getMarketStructureDetails() {
   return cachedRequest(
-    'market-details-structure',
-    () => request<Record<string, unknown>>('/market/details/structure', { timeoutMs: 10_000 }),
+    "market-details-structure",
+    () =>
+      request<Record<string, unknown>>("/market/details/structure", {
+        timeoutMs: 10_000,
+      }),
     300_000,
   );
 }
 
 export function getMarketProbabilities() {
-  return request<ProbabilityResponse>('/market/probabilities');
+  return request<ProbabilityResponse>("/market/probabilities");
 }
 
 export function getMarketLeadership() {
-  return request<LeadershipResponse>('/market/leadership');
+  return request<LeadershipResponse>("/market/leadership");
 }
 
 export function getMarketComparison() {
-  return request<DashboardComparisonResponse>('/market/comparison');
+  return request<DashboardComparisonResponse>("/market/comparison");
 }
 
 export function getIndustryRotation() {
-  return cachedRequest('industry-rotation', () => request<IndustryRotationResponse>('/market/industry-rotation'), 300_000);
+  return cachedRequest(
+    "industry-rotation",
+    () => request<IndustryRotationResponse>("/market/industry-rotation"),
+    300_000,
+  );
 }
 
 export function getSectorEtfs() {
-  return cachedRequest('sector-etfs', () => request<SectorEtfResponse>('/market/sector-etfs'), 300_000);
+  return cachedRequest(
+    "sector-etfs",
+    () => request<SectorEtfResponse>("/market/sector-etfs"),
+    300_000,
+  );
 }
 
 export function getIndustryGroups() {
-  return cachedRequest('industry-groups', () => request<IndustryGroupResponse>('/market/industry-groups'), 300_000);
+  return cachedRequest(
+    "industry-groups",
+    () => request<IndustryGroupResponse>("/market/industry-groups"),
+    300_000,
+  );
 }
 
 export function getMarketCapRotation() {
-  return request<MarketCapRotationResponse>('/market/cap-rotation');
+  return request<MarketCapRotationResponse>("/market/cap-rotation");
 }
 
 export function getFearGreed() {
-  return request<FearGreedResponse>('/market/fear-greed');
+  return request<FearGreedResponse>("/market/fear-greed");
 }
 
 export function getMarketSentiment() {
-  return request<MarketSentimentResponse>('/market/sentiment');
+  return request<MarketSentimentResponse>("/market/sentiment");
 }
 
 export function getMoneyFlow() {
-  return request<MoneyFlowResponse>('/market/money-flow');
+  return request<MoneyFlowResponse>("/market/money-flow");
 }
 
 export function getMarketInstitutional() {
-  return request<InstitutionalDashboardResponse>('/market/institutional');
+  return request<InstitutionalDashboardResponse>("/market/institutional");
 }
 
 export function getMarketInstitutionalBySymbol(symbol: string) {
-  return request<InstitutionalDashboardResponse>(`/market/institutional/${symbol}`);
+  return request<InstitutionalDashboardResponse>(
+    `/market/institutional/${symbol}`,
+  );
 }
 
 export function getOptionsIntelligence() {
-  return request<OptionsIntelligenceResponse>('/market/options');
+  return request<OptionsIntelligenceResponse>("/market/options");
 }
 
 export function getOptionsIntelligenceBySymbol(symbol: string) {
@@ -545,20 +690,50 @@ export function getOptionsIntelligenceBySymbol(symbol: string) {
 }
 
 export function getLiquidityDashboard() {
-  return request<LiquidityDashboardResponse>('/market/liquidity');
+  return request<LiquidityDashboardResponse>("/market/liquidity");
 }
 
 export function getLiquidityDashboardBySymbol(symbol: string) {
   return request<SymbolLiquidityResponse>(`/market/liquidity/${symbol}`);
 }
 
-export function getDailyReport(preferences?: { stocks?: string[]; sectors?: string[]; themes?: string[] }) {
+export function getDailyReport(preferences?: {
+  stocks?: string[];
+  sectors?: string[];
+  themes?: string[];
+}) {
   const params = new URLSearchParams();
-  if (preferences?.stocks?.length) params.set('stocks', [...new Set(preferences.stocks.map((item) => item.trim().toUpperCase()).filter(Boolean))].join(','));
-  if (preferences?.sectors?.length) params.set('sectors', [...new Set(preferences.sectors.map((item) => item.trim()).filter(Boolean))].join(','));
-  if (preferences?.themes?.length) params.set('themes', [...new Set(preferences.themes.map((item) => item.trim()).filter(Boolean))].join(','));
+  if (preferences?.stocks?.length)
+    params.set(
+      "stocks",
+      [
+        ...new Set(
+          preferences.stocks
+            .map((item) => item.trim().toUpperCase())
+            .filter(Boolean),
+        ),
+      ].join(","),
+    );
+  if (preferences?.sectors?.length)
+    params.set(
+      "sectors",
+      [
+        ...new Set(
+          preferences.sectors.map((item) => item.trim()).filter(Boolean),
+        ),
+      ].join(","),
+    );
+  if (preferences?.themes?.length)
+    params.set(
+      "themes",
+      [
+        ...new Set(
+          preferences.themes.map((item) => item.trim()).filter(Boolean),
+        ),
+      ].join(","),
+    );
   const query = params.toString();
-  return request<DailyReport>(`/report/daily${query ? `?${query}` : ''}`);
+  return request<DailyReport>(`/report/daily${query ? `?${query}` : ""}`);
 }
 
 export function getDailyReportById(reportId: string) {
@@ -566,13 +741,29 @@ export function getDailyReportById(reportId: string) {
 }
 
 export function getDailyReportHistory() {
-  return request<{ items: Record<string, unknown>[] }>('/report/daily/history');
+  return request<{ items: Record<string, unknown>[] }>("/report/daily/history");
 }
 
 export function getThemeSnapshot() {
   return cachedRequest(
-    'theme-intelligence:directory:v2',
-    () => request<ThemeSnapshotResponse>('/market/themes'),
+    "theme-intelligence:directory:v2",
+    () => request<ThemeSnapshotResponse>("/market/themes"),
+    60_000,
+  );
+}
+
+export function getThemeRotation(
+  timeframe: ThemeRotationInterval,
+  identity: { snapshotId: string; taxonomyVersion: string },
+) {
+  const profile =
+    timeframe === "1W" ? "short" : timeframe === "1M" ? "medium" : "long";
+  return cachedRequest(
+    themeRotationCacheKey(timeframe, identity),
+    () =>
+      request<ThemeRotationResponse>(
+        `/market/themes/rotation?profile=${profile}`,
+      ),
     60_000,
   );
 }
@@ -581,28 +772,31 @@ export function getSymbolThemeMappings(symbol: string) {
   const normalizedSymbol = symbol.trim().toUpperCase();
   return cachedRequest(
     `theme-intelligence:mappings:${normalizedSymbol}:v1`,
-    () => request<SymbolThemeMappingsResponse>(`/market/themes/mappings/${encodeURIComponent(normalizedSymbol)}`),
+    () =>
+      request<SymbolThemeMappingsResponse>(
+        `/market/themes/mappings/${encodeURIComponent(normalizedSymbol)}`,
+      ),
     300_000,
   );
 }
 
 export function getThemeStatus() {
   return cachedRequest(
-    'theme-status:v1',
-    () => request<ThemeStatusResponse>('/market/themes/status'),
+    "theme-status:v1",
+    () => request<ThemeStatusResponse>("/market/themes/status"),
     30_000,
   );
 }
 
 export function getDailyReportPdfUrl(reportId?: string | null) {
-  const suffix = reportId ? `?report_id=${encodeURIComponent(reportId)}` : '';
+  const suffix = reportId ? `?report_id=${encodeURIComponent(reportId)}` : "";
   return `${API_URL}/report/daily/pdf${suffix}`;
 }
 
 export function getMarketAISummary() {
   return cachedRequest(
-    'ai:market-summary',
-    () => request<MarketAISummary>('/ai/market-summary'),
+    "ai:market-summary",
+    () => request<MarketAISummary>("/ai/market-summary"),
     60_000,
   );
 }
@@ -613,88 +807,101 @@ export function askAIChat(message: string, symbol?: string) {
     symbol: symbol || undefined,
   };
 
-  return post<AIChatRequest, AIChatResponse>('/ai/chat', body);
+  return post<AIChatRequest, AIChatResponse>("/ai/chat", body);
 }
 
 export function postCopilotChat(body: CopilotChatRequest) {
-  return post<CopilotChatRequest, CopilotChatResponse>('/copilot/chat', body, { timeoutMs: 30_000 });
+  return post<CopilotChatRequest, CopilotChatResponse>("/copilot/chat", body, {
+    timeoutMs: 30_000,
+  });
 }
 
 export function getProviderStatus() {
-  return request<ProviderStatus>('/system/provider-status');
+  return request<ProviderStatus>("/system/provider-status");
 }
 
 export function getTestDataStatus() {
-  return request<TestDataStatus>('/test-data/status');
+  return request<TestDataStatus>("/test-data/status");
 }
 
 export function getTestDataScenarios() {
-  return request<TestDataScenariosResponse>('/test-data/scenarios');
+  return request<TestDataScenariosResponse>("/test-data/scenarios");
 }
 
 export function regenerateTestData(body: RegenerateTestDataRequest) {
   return post<RegenerateTestDataRequest, RegenerateTestDataResponse>(
-    '/test-data/regenerate',
+    "/test-data/regenerate",
     body,
     { timeoutMs: 30_000 },
   );
 }
 
 export function getProviderCacheStatus() {
-  return request<ProviderCacheStatus>('/system/provider-cache');
+  return request<ProviderCacheStatus>("/system/provider-cache");
 }
 
 export function getMarketDataCacheStatus() {
-  return request<ProviderCacheStatus>('/market-data/cache/status');
+  return request<ProviderCacheStatus>("/market-data/cache/status");
 }
 
 export function getServiceCacheStatus() {
-  return request<ServiceCacheStatus>('/system/service-cache');
+  return request<ServiceCacheStatus>("/system/service-cache");
 }
 
 export function getUniverseStatus() {
-  return request<UniverseStatus>('/system/universe-status');
+  return request<UniverseStatus>("/system/universe-status");
 }
 
 export function getIntelligenceStatus() {
-  return request<IntelligenceStatus>('/system/intelligence-status');
+  return request<IntelligenceStatus>("/system/intelligence-status");
 }
 
 export function clearProviderCache() {
-  return postWithoutBody<ProviderCacheStatus>('/system/provider-cache/clear');
+  return postWithoutBody<ProviderCacheStatus>("/system/provider-cache/clear");
 }
 
 export function clearMarketDataCache(domain?: string) {
-  const query = domain ? `?domain=${encodeURIComponent(domain)}` : '';
-  return postWithoutBody<ProviderCacheStatus>(`/market-data/cache/invalidate${query}`);
+  const query = domain ? `?domain=${encodeURIComponent(domain)}` : "";
+  return postWithoutBody<ProviderCacheStatus>(
+    `/market-data/cache/invalidate${query}`,
+  );
 }
 
 export function cleanupMarketDataCache() {
-  return postWithoutBody<Record<string, unknown>>('/market-data/cache/cleanup');
+  return postWithoutBody<Record<string, unknown>>("/market-data/cache/cleanup");
 }
 
 export function clearServiceCache(prefix?: string) {
-  const query = prefix ? `?prefix=${encodeURIComponent(prefix)}` : '';
-  return postWithoutBody<ServiceCacheStatus>(`/system/service-cache/clear${query}`);
+  const query = prefix ? `?prefix=${encodeURIComponent(prefix)}` : "";
+  return postWithoutBody<ServiceCacheStatus>(
+    `/system/service-cache/clear${query}`,
+  );
 }
 
-export function getLiveQuote(symbol: string, options: { bypassCache?: boolean } = {}) {
+export function getLiveQuote(
+  symbol: string,
+  options: { bypassCache?: boolean } = {},
+) {
   const normalizedSymbol = symbol.trim().toUpperCase();
-  const fetcher = () => request<QuoteData>(`/market/live/quote/${encodeURIComponent(normalizedSymbol)}`);
+  const fetcher = () =>
+    request<QuoteData>(
+      `/market/live/quote/${encodeURIComponent(normalizedSymbol)}`,
+    );
   if (options.bypassCache) {
     return fetcher();
   }
   return cachedRequest(`live-quote:v1:${normalizedSymbol}`, fetcher, 15_000);
 }
 
-export function getLiveHistory(symbol: string, resolution = 'D', days = 240) {
+export function getLiveHistory(symbol: string, resolution = "D", days = 240) {
   const normalizedSymbol = normalizeProviderHistorySymbol(symbol);
   return cachedRequest(
     `live-history:v3:${normalizedSymbol}:${resolution}:${days}`,
-    () => request<HistoryData>(
-      `/market/live/history/${encodeURIComponent(normalizedSymbol)}?resolution=${encodeURIComponent(resolution)}&days=${days}`,
-      { timeoutMs: 10_000 },
-    ).then((history) => assertCompatibleHistoryRange(history, days)),
+    () =>
+      request<HistoryData>(
+        `/market/live/history/${encodeURIComponent(normalizedSymbol)}?resolution=${encodeURIComponent(resolution)}&days=${days}`,
+        { timeoutMs: 10_000 },
+      ).then((history) => assertCompatibleHistoryRange(history, days)),
     300_000,
   );
 }
@@ -702,25 +909,34 @@ export function getLiveHistory(symbol: string, resolution = 'D', days = 240) {
 export function getMarketMacro(days = 110) {
   return cachedRequest(
     `market-macro:v1:${days}`,
-    () => request<MarketMacroResponse>(`/market/macro?days=${days}`, { timeoutMs: 15_000 }),
+    () =>
+      request<MarketMacroResponse>(`/market/macro?days=${days}`, {
+        timeoutMs: 15_000,
+      }),
     300_000,
   );
 }
 
 function normalizeProviderHistorySymbol(symbol: string): string {
   const normalized = symbol.trim().toUpperCase();
-  return {
-    DJI: 'DIA',
-    IXIC: 'QQQ',
-    NDX: 'QQQ',
-    QQQEW: 'QQEW',
-    RUT: 'IWM',
-    SPX: 'SPY',
-  }[normalized] ?? normalized;
+  return (
+    {
+      DJI: "DIA",
+      IXIC: "QQQ",
+      NDX: "QQQ",
+      QQQEW: "QQEW",
+      RUT: "IWM",
+      SPX: "SPY",
+    }[normalized] ?? normalized
+  );
 }
 
-function assertCompatibleHistoryRange(history: HistoryData, requestedDays: number): HistoryData {
-  const returnedCandles = history.returned_candles ?? history.candles?.length ?? 0;
+function assertCompatibleHistoryRange(
+  history: HistoryData,
+  requestedDays: number,
+): HistoryData {
+  const returnedCandles =
+    history.returned_candles ?? history.candles?.length ?? 0;
   if (requestedDays >= 300) {
     const minimumCandles = Math.min(220, Math.round(requestedDays * 0.6));
     if (returnedCandles < minimumCandles) {
@@ -742,6 +958,6 @@ function assertCompatibleHistoryRange(history: HistoryData, requestedDays: numbe
 
 export function getLiveQuotes(symbols: string[]) {
   return request<LiveQuotesResponse>(
-    `/market/live/quotes?symbols=${encodeURIComponent(symbols.join(','))}`,
+    `/market/live/quotes?symbols=${encodeURIComponent(symbols.join(","))}`,
   );
 }

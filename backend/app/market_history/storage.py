@@ -59,6 +59,7 @@ class DailyBar:
 class DailyBarStorage:
     def __init__(self, db_path: str | Path | None = None) -> None:
         self.db_path = Path(db_path or os.getenv("BREADTH_DB_PATH") or DEFAULT_DB_PATH)
+        self.query_statistics = {"single_history_queries": 0, "batch_history_queries": 0, "batch_symbols_requested": 0}
 
     def initialize(self) -> None:
         with _lock, self._connect() as connection:
@@ -109,6 +110,7 @@ class DailyBarStorage:
 
     def history(self, ticker: str, provider: str = "polygon", *, end_date: str | None = None) -> list[DailyBar]:
         self.initialize()
+        self.query_statistics["single_history_queries"] += 1
         sql = "SELECT * FROM daily_price_bars WHERE ticker=? AND provider=? AND adjusted=1"
         args: list[object] = [ticker.upper(), provider.lower()]
         if end_date:
@@ -118,6 +120,28 @@ class DailyBarStorage:
         with _lock, self._connect() as connection:
             rows = connection.execute(sql, args).fetchall()
         return [DailyBar(*row[:10], fetched_at=row[10], source_timestamp=row[11], data_version=row[12], quality_status=row[13], payload_hash=row[14], canonical_security_id=row[15], canonical_ticker=row[16], source_symbol=row[17], corporate_action_lineage=row[18]) for row in rows]
+
+    def histories(self, tickers: list[str] | tuple[str, ...], provider: str = "polygon", *, end_date: str | None = None) -> dict[str, list[DailyBar]]:
+        """Read many durable histories with one repository query."""
+        self.initialize()
+        symbols = sorted({ticker.strip().upper() for ticker in tickers if ticker.strip()})
+        self.query_statistics["batch_history_queries"] += 1
+        self.query_statistics["batch_symbols_requested"] += len(symbols)
+        result: dict[str, list[DailyBar]] = {symbol: [] for symbol in symbols}
+        if not symbols:
+            return result
+        placeholders = ",".join("?" for _ in symbols)
+        sql = f"SELECT * FROM daily_price_bars WHERE ticker IN ({placeholders}) AND provider=? AND adjusted=1"
+        args: list[object] = [*symbols, provider.lower()]
+        if end_date:
+            sql += " AND session_date <= ?"
+            args.append(end_date)
+        sql += " ORDER BY ticker, session_date"
+        with _lock, self._connect() as connection:
+            rows = connection.execute(sql, args).fetchall()
+        for row in rows:
+            result[row[0]].append(DailyBar(*row[:10], fetched_at=row[10], source_timestamp=row[11], data_version=row[12], quality_status=row[13], payload_hash=row[14], canonical_security_id=row[15], canonical_ticker=row[16], source_symbol=row[17], corporate_action_lineage=row[18]))
+        return result
 
     def latest_session(self, ticker: str, provider: str = "polygon") -> str | None:
         self.initialize()

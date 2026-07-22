@@ -34,6 +34,8 @@ export type RotationDomain = {
   xMax: number;
   yMin: number;
   yMax: number;
+  includedPointCount: number;
+  scalePolicy: 'all-valid-centered-100-padded-v1';
 };
 
 export type RotationSpeed = 'Stable' | 'Gradual' | 'Accelerating' | 'Rapid';
@@ -392,6 +394,8 @@ export function calculateRotationDomain(points: RotationPoint[]): RotationDomain
     xMax: xBounds.max,
     yMin: yBounds.min,
     yMax: yBounds.max,
+    includedPointCount: Math.min(strengths.length, momentum.length),
+    scalePolicy: 'all-valid-centered-100-padded-v1',
   };
 }
 
@@ -595,13 +599,18 @@ function sampleRotationTrail(history: RotationPoint[], targetPoints: number) {
 }
 
 function calculateAxisBounds(values: number[]) {
-  const validValues = values.length ? values : [100];
-  const rawMin = Math.min(100, ...validValues);
-  const rawMax = Math.max(100, ...validValues);
-  const center = (rawMin + rawMax) / 2;
-  const span = Math.max(rawMax - rawMin + 1.2, 6);
-  const min = clamp(center - span / 2, 92, 108 - span);
-  const max = clamp(center + span / 2, min + span, 108);
+  const validValues = values.filter(Number.isFinite);
+  const sorted = [...(validValues.length ? validValues : [100])].sort((a, b) => a - b);
+  const lower = sorted[0];
+  const upper = sorted[sorted.length - 1];
+  const coreMin = Math.min(100, lower);
+  const coreMax = Math.max(100, upper);
+  const coreSpan = Math.max(coreMax - coreMin, 6);
+  const padding = Math.max(0.6, coreSpan * 0.12);
+  const center = (coreMin + coreMax) / 2;
+  const span = coreSpan + padding * 2;
+  const min = center - span / 2;
+  const max = center + span / 2;
   return {
     max: round(max, 1),
     min: round(min, 1),

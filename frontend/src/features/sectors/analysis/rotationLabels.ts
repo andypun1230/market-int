@@ -5,7 +5,7 @@ import {
   type RotationQuadrant,
 } from '@/data/sectorTabTestData';
 
-export type RotationLabelMode = 'smart' | 'all' | 'none';
+export type RotationLabelMode = 'smart' | 'selected' | 'all' | 'none';
 export type RotationQuadrantFilter = RotationQuadrant | 'all';
 export type LabelPlacement =
   | 'right'
@@ -39,6 +39,7 @@ export type RotationLabelContext = {
   labelMode: RotationLabelMode;
   maxLabelCount: number;
   selectedItemKey?: string | null;
+  selectedItemKeys?: ReadonlySet<string>;
   watchlistKeys?: Set<string>;
 };
 
@@ -158,6 +159,11 @@ export function selectSmartLabelKeys(items: RotationLabelCandidate[], context: R
   if (context.labelMode === 'all') {
     return new Set(items.map((item) => item.key));
   }
+  if (context.labelMode === 'selected') {
+    const selectedKeys = new Set(context.selectedItemKeys ?? []);
+    if (context.selectedItemKey) selectedKeys.add(context.selectedItemKey);
+    return new Set(items.filter((item) => selectedKeys.has(item.key)).map((item) => item.key));
+  }
 
   const selectedKey = context.selectedItemKey;
   const ranked = rankRotationLabels(items, context);
@@ -167,6 +173,16 @@ export function selectSmartLabelKeys(items: RotationLabelCandidate[], context: R
     keys.add(selectedKey);
   }
   return keys;
+}
+
+export function getSmartRotationLabelLimit(chartSize: number, presentation: 'card' | 'fullscreen', legacyMax?: number) {
+  if (presentation === 'fullscreen') {
+    return chartSize >= 420 ? 15 : 12;
+  }
+  if (legacyMax && legacyMax < 12) {
+    return Math.max(6, legacyMax);
+  }
+  return chartSize < 310 ? 6 : 8;
 }
 
 export function estimateLabelBounds(label: string, fontSize: number) {
@@ -248,7 +264,7 @@ export function buildRotationVisibilitySummary({
 }) {
   const filterText = quadrantFilter === 'all' ? '' : ` · ${formatQuadrant(quadrantFilter)} filter`;
   if (mode === 'none') {
-    return `${filtered} points shown · Labels hidden${filterText}`;
+    return `${filtered} points shown · 0 labels shown${filterText}`;
   }
   return `${filtered} points shown · ${labels} labels shown${filterText}${filtered < total ? ` · ${total - filtered} filtered` : ''}`;
 }

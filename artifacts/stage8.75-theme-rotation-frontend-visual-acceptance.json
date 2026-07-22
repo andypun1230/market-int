@@ -1,0 +1,181 @@
+{
+  "artifact": "stage8.75-theme-rotation-frontend-visual-acceptance",
+  "automated_at": "2026-07-22T20:03:01.064824+00:00",
+  "browser": "Codex in-app browser",
+  "checks": {
+    "all_eligible_themes_plotted": {
+      "evidence": "Show all themes rendered footer: 26 themes plotted",
+      "result": "PASS"
+    },
+    "all_labels_preserve_points": {
+      "evidence": "Browser label switch preserved 19 points while rendering 19 labels; all 26 remain restorable",
+      "result": "PASS"
+    },
+    "axis_names": {
+      "evidence": "Relative Trend horizontal axis and Relative Momentum vertical axis rendered",
+      "result": "PASS"
+    },
+    "browser_console_errors": {
+      "count": 0,
+      "result": "PASS"
+    },
+    "chronological_tails": {
+      "evidence": "Multiple fading connected observations and emphasized arrow endpoints rendered per theme",
+      "result": "PASS"
+    },
+    "compare_mode": {
+      "evidence": "8 selected themes, 8 labels, 8-point tails, stable full-source chart domain, and governed comparison summary",
+      "result": "PASS"
+    },
+    "current_point_inspector": {
+      "evidence": "Inspector used Relative Trend, Relative Momentum, profile, direction, and SPY benchmark terminology",
+      "result": "PASS"
+    },
+    "focus_mode": {
+      "evidence": "One 10-node full tail plus 25 faint current points; 35 genuine nodes and one selected label",
+      "result": "PASS"
+    },
+    "indicator_explanation": {
+      "evidence": "Relative Trend and momentum-of-relative-trend explanation rendered",
+      "result": "PASS"
+    },
+    "long_leading_filter": {
+      "evidence": "4 points shown / 4 labels shown / Leading filter / 22 filtered",
+      "result": "PASS"
+    },
+    "long_profile_retrieval": {
+      "evidence": "Long profile explanation became visible after control selection",
+      "result": "PASS"
+    },
+    "mobile_render": {
+      "evidence": "390x844 viewport displayed readable Overview, All, Focus, Compare, labels, counts, and fixed navigation without horizontal overflow",
+      "result": "PASS"
+    },
+    "n_a_at_zero": {
+      "evidence": "No unavailable coordinate rendered at an axis zero",
+      "result": "PASS"
+    },
+    "none_labels_preserve_points": {
+      "evidence": "Browser label switch preserved 19 points while rendering 0 labels",
+      "result": "PASS"
+    },
+    "profile_controls_are_explicit": {
+      "evidence": "Short, Medium, Long controls and not-simple-return-windows disclosure rendered",
+      "result": "PASS"
+    },
+    "progressive_mobile_default": {
+      "evidence": "19 of 26 meaningful movers, 3-point trails, Smart labels, and visible Show all themes action",
+      "result": "PASS"
+    },
+    "proprietary_claims_absent": {
+      "evidence": "No prohibited proprietary indicator name or third-party equivalence claim rendered",
+      "result": "PASS"
+    },
+    "smart_labels_preserve_points": {
+      "evidence": "Mobile Overview rendered 19 meaningful points with Smart labels; selector invariant proves labels never filter points",
+      "result": "PASS"
+    },
+    "tail_and_transition_controls": {
+      "evidence": "Current/3/5/8/Full produced 19/57/95/152/190 nodes; Entered Leading empty state and 2 Lost Leading themes rendered",
+      "result": "PASS"
+    },
+    "universe_and_alias_search": {
+      "evidence": "Technology & AI, Healthcare, and adtech alias search exercised in the browser",
+      "result": "PASS"
+    },
+    "web_render": {
+      "evidence": "Desktop viewport displayed Overview and 8-theme Compare chart geometry, tails, filters, axes, counts, and summaries",
+      "result": "PASS"
+    }
+  },
+  "generation": {
+    "latest_snapshot_generated_at": "2026-07-22T19:28:33.272327+00:00",
+    "method": "fresh_in_app_browser_renders_against_latest_canonical_snapshot",
+    "required_check_count": 21,
+    "screenshot_receipts": {
+      "fast_movers": {
+        "dimensions": [
+          1280,
+          720
+        ],
+        "modified_at": "2026-07-22T20:02:55.991771+00:00",
+        "path": "artifacts/theme-rotation-ux-screenshots/fast-movers-filtered.png"
+      },
+      "mobile_390px_chart": {
+        "dimensions": [
+          390,
+          844
+        ],
+        "modified_at": "2026-07-22T20:02:56.024214+00:00",
+        "path": "artifacts/theme-rotation-ux-screenshots/mobile-overview-default.png"
+      },
+      "mobile_all_themes": {
+        "dimensions": [
+          390,
+          844
+        ],
+        "modified_at": "2026-07-22T20:02:56.053414+00:00",
+        "path": "artifacts/theme-rotation-ux-screenshots/mobile-all-themes.png"
+      },
+      "mobile_compare": {
+        "dimensions": [
+          390,
+          844
+        ],
+        "modified_at": "2026-07-22T20:02:56.109018+00:00",
+        "path": "artifacts/theme-rotation-ux-screenshots/mobile-compare.png"
+      },
+      "mobile_focus": {
+        "dimensions": [
+          390,
+          844
+        ],
+        "modified_at": "2026-07-22T20:02:56.081008+00:00",
+        "path": "artifacts/theme-rotation-ux-screenshots/mobile-focus.png"
+      },
+      "quadrant_filtered": {
+        "dimensions": [
+          1280,
+          720
+        ],
+        "modified_at": "2026-07-22T20:02:55.945022+00:00",
+        "path": "artifacts/theme-rotation-ux-screenshots/quadrant-filtered.png"
+      },
+      "web_desktop_chart": {
+        "dimensions": [
+          1280,
+          720
+        ],
+        "modified_at": "2026-07-22T20:02:55.855664+00:00",
+        "path": "artifacts/theme-rotation-ux-screenshots/desktop-overview.png"
+      },
+      "web_desktop_compare": {
+        "dimensions": [
+          1280,
+          720
+        ],
+        "modified_at": "2026-07-22T20:02:55.900369+00:00",
+        "path": "artifacts/theme-rotation-ux-screenshots/desktop-compare.png"
+      }
+    }
+  },
+  "model_version": "theme-relative-trend-momentum-v1",
+  "notes": [
+    "Visual acceptance used the live local API backed by the published immutable snapshot, not test-scenario fixtures.",
+    "Clockwise motion was not required or forced; the rendered real tails include reversals, stalls, and different directions.",
+    "This artifact is local visual acceptance, not production monitoring evidence.",
+    "The regenerated snapshot retains the same governed taxonomy/model/profile contract; current screenshots cover the progressive UX on its live local API route."
+  ],
+  "result": "PASS",
+  "screenshots": {
+    "fast_movers": "artifacts/theme-rotation-ux-screenshots/fast-movers-filtered.png",
+    "mobile_390px_chart": "artifacts/theme-rotation-ux-screenshots/mobile-overview-default.png",
+    "mobile_all_themes": "artifacts/theme-rotation-ux-screenshots/mobile-all-themes.png",
+    "mobile_compare": "artifacts/theme-rotation-ux-screenshots/mobile-compare.png",
+    "mobile_focus": "artifacts/theme-rotation-ux-screenshots/mobile-focus.png",
+    "quadrant_filtered": "artifacts/theme-rotation-ux-screenshots/quadrant-filtered.png",
+    "web_desktop_chart": "artifacts/theme-rotation-ux-screenshots/desktop-overview.png",
+    "web_desktop_compare": "artifacts/theme-rotation-ux-screenshots/desktop-compare.png"
+  },
+  "snapshot_id": "theme-2026-07-22-c8d9a44cdd"
+}

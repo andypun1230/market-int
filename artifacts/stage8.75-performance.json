@@ -3,66 +3,94 @@
   "benchmarks": {
     "api_symbol_mapping": {
       "iterations": 120,
-      "maximum_ms": 1.1105,
-      "minimum_ms": 0.7167,
-      "p50_ms": 0.7605,
-      "p95_ms": 0.8882
+      "maximum_ms": 0.8653,
+      "minimum_ms": 0.7061,
+      "p50_ms": 0.737,
+      "p95_ms": 0.8281
     },
     "api_theme_detail": {
       "iterations": 120,
-      "maximum_ms": 26.9843,
-      "minimum_ms": 7.3116,
-      "p50_ms": 7.6261,
-      "p95_ms": 7.9895
+      "maximum_ms": 3.6576,
+      "minimum_ms": 1.8825,
+      "p50_ms": 1.9749,
+      "p95_ms": 2.116
     },
     "api_theme_directory": {
       "iterations": 120,
-      "maximum_ms": 37.2728,
-      "minimum_ms": 14.3175,
-      "p50_ms": 14.6011,
-      "p95_ms": 15.0725
+      "maximum_ms": 934.4289,
+      "minimum_ms": 50.2189,
+      "p50_ms": 51.9863,
+      "p95_ms": 54.1433
     },
     "copilot_theme_retrieval": {
       "iterations": 120,
-      "maximum_ms": 13.715,
-      "minimum_ms": 12.3545,
-      "p50_ms": 12.441,
-      "p95_ms": 12.8265
+      "maximum_ms": 0.6107,
+      "minimum_ms": 0.5143,
+      "p50_ms": 0.5179,
+      "p95_ms": 0.53
+    },
+    "direct_symbol_lookup": {
+      "iterations": 120,
+      "maximum_ms": 1.939,
+      "minimum_ms": 0.4875,
+      "p50_ms": 0.5132,
+      "p95_ms": 1.0795
     },
     "full_theme_ranking": {
       "iterations": 120,
-      "maximum_ms": 31.3455,
-      "minimum_ms": 12.067,
-      "p50_ms": 12.2164,
-      "p95_ms": 12.7298
+      "maximum_ms": 880.162,
+      "minimum_ms": 0.2671,
+      "p50_ms": 0.2691,
+      "p95_ms": 0.2903
+    },
+    "history_batch_retrieval": {
+      "iterations": 10,
+      "maximum_ms": 475.8553,
+      "minimum_ms": 424.3671,
+      "p50_ms": 460.8215,
+      "p95_ms": 475.8553
     },
     "report_theme_candidate_retrieval": {
       "iterations": 120,
-      "maximum_ms": 1.242,
-      "minimum_ms": 0.8405,
-      "p50_ms": 0.8569,
-      "p95_ms": 0.9142
+      "maximum_ms": 1.4881,
+      "minimum_ms": 1.179,
+      "p50_ms": 1.1907,
+      "p95_ms": 1.203
+    },
+    "security_master_batch_resolution": {
+      "iterations": 120,
+      "maximum_ms": 6.1414,
+      "minimum_ms": 1.7153,
+      "p50_ms": 1.9585,
+      "p95_ms": 4.8478
     },
     "single_theme_detail": {
       "iterations": 120,
-      "maximum_ms": 6.6325,
-      "minimum_ms": 6.1967,
-      "p50_ms": 6.298,
-      "p95_ms": 6.4577
+      "maximum_ms": 0.2901,
+      "minimum_ms": 0.2643,
+      "p50_ms": 0.2654,
+      "p95_ms": 0.2765
+    },
+    "snapshot_batch_build": {
+      "iterations": 10,
+      "maximum_ms": 3848.5898,
+      "minimum_ms": 3795.2008,
+      "p50_ms": 3802.738,
+      "p95_ms": 3848.5898
     },
     "symbol_to_theme_lookup": {
       "iterations": 120,
-      "maximum_ms": 0.0237,
-      "minimum_ms": 0.0063,
-      "p50_ms": 0.0065,
-      "p95_ms": 0.0067
+      "maximum_ms": 0.0167,
+      "minimum_ms": 0.0062,
+      "p50_ms": 0.0063,
+      "p95_ms": 0.0065
     },
     "taxonomy_retrieval": {
       "iterations": 120,
-      "maximum_ms": 0.7739,
-      "minimum_ms": 0.2963,
-      "p50_ms": 0.3131,
-      "p95_ms": 0.4014
+      "maximum_ms": 0.3784,
+      "minimum_ms": 0.2937,
+      "p50_ms": 0.2959,
+      "p95_ms": 0.3025
     }
   },
   "hardware": "Local Codex workspace host; results are not production SLOs.",
@@ -70,6 +98,47 @@
   "network_calls": 0,
   "network_guard": "AF_INET and AF_INET6 socket creation blocked for the entire measured region; local event-loop socket pairs remain enabled",
   "production_latency_claim": false,
+  "repository_call_and_cache_statistics": {
+    "available_themes": 26,
+    "benchmark_provider_calls": 0,
+    "history_200d_capable_symbols": 186,
+    "history_capable_symbols": 186,
+    "measured_region_provider_history_calls": 0,
+    "measured_region_snapshot_rebuilds": 0,
+    "overlapping_mapping_reuse": 35,
+    "partial_themes": 0,
+    "ranked_themes": 26,
+    "registered_symbols": 186,
+    "snapshot_build": {
+      "batch_history_queries": 2,
+      "batch_symbols_requested": 450,
+      "benchmark_reference_reuse": 48,
+      "benchmark_symbols_requested": 33,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "cache_note": "Canonical snapshot build reads the durable repository directly; published warm reads use the taxonomy-versioned snapshot namespace.",
+      "history_repository_calls": 1,
+      "overlapping_mapping_reuse": 35,
+      "provider_history_calls": 0,
+      "ranked_rows": 26,
+      "security_master_batch_queries": 1,
+      "single_history_queries": 0,
+      "snapshot_rows": 26,
+      "unique_mapped_symbols": 192,
+      "unique_symbols_requested": 225
+    },
+    "snapshot_rows_published": 26,
+    "taxonomy_registry_indexes": [
+      "id",
+      "alias",
+      "theme_to_symbol",
+      "symbol_to_theme"
+    ],
+    "unavailable_themes": 0,
+    "unique_mapped_symbols": 192,
+    "warm_published_snapshot_cache_hit_ratio": 1.0,
+    "warm_reads_use_published_snapshot": true
+  },
   "stage": "8.75",
   "taxonomy_version": "2026.07.1"
 }

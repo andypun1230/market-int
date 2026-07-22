@@ -1,0 +1,70 @@
+{
+  "benchmark_queries": 1,
+  "benchmark_relative_batch": {
+    "iterations": 9,
+    "maximum_ms": 20.462666,
+    "minimum_ms": 20.301708,
+    "p50_ms": 20.328292,
+    "p95_ms": 20.462666
+  },
+  "benchmark_type": "hermetic_local_recorded_history",
+  "cache_hits": 25,
+  "cache_misses": 0,
+  "full_26_theme_rotation_snapshot": {
+    "iterations": 9,
+    "maximum_ms": 1.478542,
+    "minimum_ms": 1.149459,
+    "p50_ms": 1.161334,
+    "p95_ms": 1.478542
+  },
+  "history_repository_queries": 1,
+  "model_calls": 0,
+  "model_version": "theme-relative-trend-momentum-v1",
+  "network_calls": 0,
+  "observations_per_theme": {
+    "long": 8,
+    "medium": 10,
+    "short": 8
+  },
+  "overlapping_constituent_reuse": 35,
+  "production_latency_claim": false,
+  "provider_calls": 0,
+  "relative_momentum_calculation": {
+    "iterations": 9,
+    "maximum_ms": 610.871583,
+    "minimum_ms": 579.493042,
+    "p50_ms": 585.215583,
+    "p95_ms": 610.871583
+  },
+  "relative_trend_and_momentum_all_profiles": {
+    "iterations": 9,
+    "maximum_ms": 1087.028709,
+    "minimum_ms": 1055.499583,
+    "p50_ms": 1061.753958,
+    "p95_ms": 1087.028709
+  },
+  "relative_trend_calculation": {
+    "iterations": 9,
+    "maximum_ms": 617.589417,
+    "minimum_ms": 580.251875,
+    "p50_ms": 589.422959,
+    "p95_ms": 617.589417
+  },
+  "single_profile_retrieval": {
+    "iterations": 25,
+    "maximum_ms": 0.42175,
+    "minimum_ms": 0.404834,
+    "p50_ms": 0.405917,
+    "p95_ms": 0.412708
+  },
+  "theme_index_batch_construction": {
+    "iterations": 9,
+    "maximum_ms": 188.797375,
+    "minimum_ms": 161.158792,
+    "p50_ms": 161.509541,
+    "p95_ms": 188.797375
+  },
+  "themes_calculated": 26,
+  "total_coordinate_count": 676,
+  "warm_read_provider_calls": 0
+}

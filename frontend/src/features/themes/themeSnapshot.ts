@@ -12,7 +12,9 @@ export type ThemeOverlap = { leftThemeId: string; rightThemeId: string; commonMe
 export type LiveThemeItem = {
   id: string;
   name: string;
+  aliases: string[];
   parentSector: string;
+  parentSectorIds: string[];
   returns: Record<ThemeInterval, number | null>;
   rotation: Record<ThemeRotationInterval, { relativeStrength: number | null; relativeMomentum: number | null; history: ThemeRotationPoint[] }>;
   rank: number | null;
@@ -33,8 +35,9 @@ export type LiveThemeItem = {
   historicalDisclosure: string | null;
   corporateActionAmendment: boolean;
   reviewCommit: string | null;
+  taxonomyStatus: string;
 };
-export type ThemeSnapshotModel = { snapshotId: string; marketDate: string; sourceState: string; status: string; items: LiveThemeItem[]; alerts: Record<string, unknown>[]; warnings: string[]; overlap: ThemeOverlap[]; pilotScope: string | null };
+export type ThemeSnapshotModel = { snapshotId: string; taxonomyVersion: string; marketDate: string; sourceState: string; status: string; items: LiveThemeItem[]; alerts: Record<string, unknown>[]; warnings: string[]; overlap: ThemeOverlap[]; pilotScope: string | null };
 
 type RecordValue = Record<string, unknown>;
 
@@ -43,6 +46,7 @@ export function adaptThemeSnapshot(value: unknown): ThemeSnapshotModel | null {
   const items = list(value.items ?? value.rows).flatMap(adaptThemeItem);
   return {
     snapshotId: text(value.snapshot_id)!,
+    taxonomyVersion: text(value.taxonomy_version) ?? '',
     marketDate: text(value.market_date) ?? '',
     sourceState: text(value.source_state) ?? 'unavailable',
     status: text(value.status) ?? 'unavailable',
@@ -60,7 +64,9 @@ function adaptThemeItem(value: unknown): LiveThemeItem[] {
   const series = isRecord(value.rotation_series) ? value.rotation_series : {};
   return [{
     id: themeId, name: text(value.display_name) ?? themeId,
+    aliases: themeAliases(value),
     parentSector: parentSector(value),
+    parentSectorIds: parentSectorIds(value),
     returns: returns(value.performance), rotation: { '1W': rotation(series['1W']), '1M': rotation(series['1M']), '3M': rotation(series['3M']) },
     rank: number(value.rank), classification: text(value.classification) ?? 'Unavailable', compositeScore: number(value.composite_score),
     coverageRatio: number(value.coverage_ratio), memberCount: number(value.member_count),
@@ -75,11 +81,14 @@ function adaptThemeItem(value: unknown): LiveThemeItem[] {
     historicalDisclosure: text(isRecord(value.definition) ? value.definition.historical_disclosure : undefined),
     corporateActionAmendment: isRecord(value.provenance) && value.provenance.corporate_action_amendment === true,
     reviewCommit: text(isRecord(value.provenance) ? value.provenance.review_commit : undefined),
+    taxonomyStatus: text(isRecord(value.definition) ? value.definition.status : undefined) ?? 'active',
   }];
 }
 
 function returns(value: unknown): Record<ThemeInterval, number | null> { return { '1D': numberAt(value, '1d'), '1W': numberAt(value, '1w'), '1M': numberAt(value, '1m'), '3M': numberAt(value, '3m'), '6M': numberAt(value, '6m'), '1Y': numberAt(value, '1y') }; }
 function parentSector(value: RecordValue) { const definition = isRecord(value.definition) ? value.definition : {}; const labels = list(definition.parent_sector_labels).filter((item): item is string => typeof item === 'string'); const ids = list(definition.parent_sector_ids).filter((item): item is string => typeof item === 'string'); return (labels.length ? labels : ids.map(formatThemeTaxonomyLabel)).join(', ') || 'Cross-sector'; }
+function parentSectorIds(value: RecordValue) { const definition = isRecord(value.definition) ? value.definition : {}; return list(definition.parent_sector_ids).filter((item): item is string => typeof item === 'string'); }
+function themeAliases(value: RecordValue) { const definition = isRecord(value.definition) ? value.definition : {}; return list(definition.aliases).filter((item): item is string => typeof item === 'string'); }
 function participation(value: unknown): ThemeParticipation { return { positiveReturnMemberCount: numberAt(value, 'positive_return_member_count') ?? numberAt(value, 'positive_member_count'), negativeReturnMemberCount: numberAt(value, 'negative_return_member_count') ?? numberAt(value, 'negative_member_count'), positiveReturnParticipationPct: numberAt(value, 'positive_return_participation_pct') ?? numberAt(value, 'positive_return_participation'), positiveContributionSharePct: numberAt(value, 'positive_contribution_share_pct') ?? numberAt(value, 'positive_contribution_share'), horizon: text(isRecord(value) ? value.participation_horizon : undefined), score: numberAt(value, 'participation_score'), formulaVersion: text(isRecord(value) ? value.formula_version : undefined) }; }
 function concentration(value: unknown): ThemeConcentration { return { topOneSharePct: numberAt(value, 'top_one_absolute_contribution_share_pct') ?? numberAt(value, 'top_one_absolute_contribution_share'), topThreeSharePct: numberAt(value, 'top_three_absolute_contribution_share_pct') ?? numberAt(value, 'top_three_absolute_contribution_share'), hhi: numberAt(value, 'concentration_hhi') ?? numberAt(value, 'contribution_hhi'), classification: text(isRecord(value) ? value.classification : undefined), qualityScore: numberAt(value, 'concentration_quality_score') ?? numberAt(value, 'quality_score'), topContributors: list(isRecord(value) ? value.top_contributors : undefined).flatMap((item) => isRecord(item) && text(item.ticker) ? [{ ticker: text(item.ticker)!, sharePct: number(item.absolute_contribution_share_pct) ?? number(item.absolute_contribution_share) }] : []) }; }
 function scoreSemantics(value: unknown): ThemeScoreSemantics { return { label: text(isRecord(value) ? value.display_label : undefined), scale: text(isRecord(value) ? value.scale : undefined), relativeRankScope: text(isRecord(value) ? value.relative_rank_scope : undefined) }; }

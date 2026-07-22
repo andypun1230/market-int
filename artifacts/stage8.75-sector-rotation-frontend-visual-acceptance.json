@@ -1,0 +1,89 @@
+{
+  "artifact": "stage8.75-sector-rotation-frontend-visual-acceptance",
+  "automated_at": "2026-07-23T01:55:00+08:00",
+  "browser": "Codex in-app browser",
+  "model_version": "sector-relative-trend-momentum-v1",
+  "result": "PASS",
+  "snapshot_id": "sector-sp100-v20260718-2026-07-21-67cb07c4fe",
+  "screenshots": {
+    "web_desktop_chart": "artifacts/screenshots/stage8.75-sector-rotation-web.png"
+  },
+  "checks": {
+    "all_eligible_sectors_plotted": {
+      "result": "PASS",
+      "evidence": "Rendered footer: 11 points shown"
+    },
+    "smart_labels_preserve_points": {
+      "result": "PASS",
+      "evidence": "11 points shown / 6 labels shown"
+    },
+    "all_labels_preserve_points": {
+      "result": "PASS",
+      "evidence": "11 points shown / 11 labels shown"
+    },
+    "none_labels_preserve_points": {
+      "result": "PASS",
+      "evidence": "11 points shown / 0 labels shown"
+    },
+    "long_profile_retrieval": {
+      "result": "PASS",
+      "evidence": "Long profile rendered 11 sector endpoints with eight observations per eligible tail"
+    },
+    "long_leading_filter": {
+      "result": "PASS",
+      "evidence": "1 point shown / 1 label shown / Leading filter / 10 filtered"
+    },
+    "short_profile_retrieval": {
+      "result": "PASS",
+      "evidence": "Short profile explanation and 11 sector endpoints rendered"
+    },
+    "profile_controls_are_explicit": {
+      "result": "PASS",
+      "evidence": "Short, Medium, Long controls and not-simple-return-windows disclosure rendered"
+    },
+    "axis_names": {
+      "result": "PASS",
+      "evidence": "Relative Trend horizontal axis and Relative Momentum vertical axis rendered"
+    },
+    "indicator_explanation": {
+      "result": "PASS",
+      "evidence": "Benchmark-relative trend and momentum-of-relative-trend explanation rendered"
+    },
+    "chronological_tails": {
+      "result": "PASS",
+      "evidence": "Eight or ten fading connected observations and emphasized endpoints rendered per sector according to profile policy"
+    },
+    "current_point_inspector": {
+      "result": "PASS",
+      "evidence": "Inspector used Relative Trend, Relative Momentum, Medium profile, direction, and SPY benchmark terminology"
+    },
+    "web_render": {
+      "result": "PASS",
+      "evidence": "1280 x 720 viewport displayed chart geometry, tails, filters, axes, and counts without horizontal overflow"
+    },
+    "n_a_at_zero": {
+      "result": "PASS",
+      "evidence": "No unavailable coordinate rendered at an axis zero"
+    },
+    "proprietary_claims_absent": {
+      "result": "PASS",
+      "evidence": "No prohibited proprietary indicator name or third-party equivalence claim rendered"
+    },
+    "visible_runtime_errors": {
+      "count": 0,
+      "result": "PASS",
+      "evidence": "No loading, failed, or error state was visible across profile and filter interactions"
+    }
+  },
+  "constraints": {
+    "mobile_viewport": {
+      "result": "NOT_RUN",
+      "reason": "The managed in-app browser for this acceptance session exposed a fixed 1280 x 720 viewport and no viewport-resize control; no mobile claim is made."
+    }
+  },
+  "notes": [
+    "Visual acceptance used the live local API backed by the published immutable sector snapshot, not test-scenario fixtures.",
+    "Clockwise motion was not required or forced; the rendered real tails include reversals, stalls, and different directions.",
+    "This artifact is local visual acceptance, not production monitoring evidence or physical-device certification."
+  ]
+}

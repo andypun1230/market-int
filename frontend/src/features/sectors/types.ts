@@ -7,6 +7,11 @@ import type {
   TestThemeItem,
 } from '@/data/sectorTabTestData';
 import type { RotationLabelMode, RotationQuadrantFilter } from '@/features/sectors/analysis/rotationLabels';
+import type {
+  ThemeRotationMovementFilter,
+  ThemeRotationTailLength,
+  ThemeRotationUniverse,
+} from '@/features/themes/themeRotationView';
 
 export type SectorActiveSection =
   | 'sectorHeatmap'
@@ -42,7 +47,10 @@ export type SectorUiPreferences = {
   themeHeatmapInterval: TestHeatmapInterval;
   themeRotationInterval: TestRotationInterval;
   themeRotationLabelMode: RotationLabelMode;
+  themeRotationMovement: ThemeRotationMovementFilter;
   themeRotationQuadrant: RotationQuadrantFilter;
+  themeRotationTailLength: ThemeRotationTailLength;
+  themeRotationUniverse: ThemeRotationUniverse;
 };
 
 export type SectorThemeRepository = {

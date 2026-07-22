@@ -1,0 +1,19 @@
+{
+  "benchmark": "SPY",
+  "effective_from": "2026-07-23",
+  "entity_input": "governed adjusted canonical sector ETF close",
+  "formulas": {
+    "relative_momentum": "100 + 2 * winsor(EMA(RelativeTrend(t)-RelativeTrend(t-lag)) / robust_scale, +/-3)",
+    "relative_price": "sector_etf_adjusted_close / SPY_adjusted_close",
+    "relative_trend": "100 + 2 * winsor((EMA_fast(log_relative)-EMA_slow(log_relative))/EWMA_relative_volatility / robust_scale, +/-3)"
+  },
+  "human_specification": "docs/stage8.75-sector-rotation-model-specification.md",
+  "intellectual_property_disclaimer": "Original transparent implementation; no proprietary formula or third-party equivalence claim.",
+  "kernel_parity": "exact same causal calculation kernel as theme-relative-trend-momentum-v1",
+  "missing_data": "exact valid adjusted date intersection; no forward fill; no zero fill; continuity breaks on a missing ETF session",
+  "model_id": "sector-relative-trend-momentum",
+  "normalization": "causal zero-centered rolling robust signed scale; no cross-sectional centering; winsorization serialized per observation",
+  "normalization_version": "zero-centered-rolling-robust-scale-v1",
+  "quadrant_logic": "Leading x>=100,y>=100; Improving x<100,y>=100; Weakening x>=100,y<100; Lagging x<100,y<100",
+  "version": "sector-relative-trend-momentum-v1"
+}

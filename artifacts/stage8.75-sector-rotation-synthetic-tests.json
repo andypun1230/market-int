@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "constant_relative_performance_neutrality": "PASS",
+    "genuine_versioned_tails": "PASS",
+    "invalid_benchmark_unavailable": "PASS",
+    "missing_session_continuity_break": "PASS",
+    "momentum_leads_leadership_loss": "PASS",
+    "momentum_leads_recovery": "PASS",
+    "no_lookahead": "PASS",
+    "profile_parameter_parity": "PASS",
+    "theme_kernel_coordinate_parity": "PASS"
+  },
+  "errors": 0,
+  "failures": 0,
+  "model_calls": 0,
+  "network_calls": 0,
+  "result": "PASS",
+  "test_count": 9
+}
