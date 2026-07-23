@@ -33,7 +33,9 @@ import {
   type HomeTone,
 } from '@/features/home/homeSummary';
 import { useHomeDashboard } from '@/hooks/useHomeDashboard';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { decisionSummary } from '@/features/trust/decisionSummary';
+import { dateFreshnessLabel } from '@/features/trust/dateFreshnessPresentation';
 
 type HomeIcon = { android: string; ios: string; web: string };
 
@@ -170,19 +172,20 @@ export default function HomeScreen() {
 
 function TodaysMarketCard({ summary }: { summary: HomeSummary }) {
   const [expanded, setExpanded] = useState(false);
+  const reduceMotion = useReducedMotion();
   const [rotation] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     Animated.timing(rotation, {
-      duration: 180,
+      duration: reduceMotion ? 0 : 180,
       easing: Easing.out(Easing.cubic),
       toValue: expanded ? 1 : 0,
       useNativeDriver: true,
     }).start();
-  }, [expanded, rotation]);
+  }, [expanded, reduceMotion, rotation]);
 
   const toggle = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    if (!reduceMotion) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded((current) => !current);
   };
   const visibleEvents = expanded ? summary.marketEvents : summary.marketEvents.slice(0, 3);
@@ -333,7 +336,7 @@ function TopStockIdeasCard({
             </Pressable>
           ))}
         </View>
-      ) : <Text style={styles.emptyText}>No stocks saved yet.</Text>}
+      ) : <Text style={styles.emptyText}>No saved stocks</Text>}
     </HomeCard>
   );
 }
@@ -370,11 +373,11 @@ function HomeCard({
 }) {
   const content = (
     <View style={styles.homeCard}>
-      <View style={[styles.accentLine, { backgroundColor: accentColor }]} />
+      <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={[styles.accentLine, { backgroundColor: accentColor }]} />
       <View style={styles.sectionHeader}>
         <View style={styles.titleWithIcon}>
           <SectionIcon color={accentColor} icon={icon} />
-          <Text style={styles.sectionTitle}>{title}</Text>
+          <Text accessibilityRole="header" style={styles.sectionTitle}>{title}</Text>
         </View>
         {headerAction ?? (onPress ? <SymbolView name={ICONS.chevron as never} size={16} tintColor={Theme.colors.textMuted} weight="bold" /> : null)}
       </View>
@@ -396,7 +399,7 @@ function HomeCard({
 function SectionIcon({ color, icon, tone }: { color?: string; icon: HomeIcon; tone?: HomeTone }) {
   const tint = color ?? toneColor(tone ?? 'neutral');
   return (
-    <View style={[styles.sectionIcon, { backgroundColor: softColor(tone ?? 'neutral') }]}>
+    <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={[styles.sectionIcon, { backgroundColor: softColor(tone ?? 'neutral') }]}>
       <SymbolView name={icon as never} size={15} tintColor={tint} weight="bold" />
     </View>
   );
@@ -490,16 +493,12 @@ function formatSignedPercent(value: number) {
 }
 
 function formatUpdatedLabel(timestamp: string | null, ageSeconds?: number | null) {
-  const ageMinutes = typeof ageSeconds === 'number' && Number.isFinite(ageSeconds)
-    ? Math.max(0, Math.floor(ageSeconds / 60))
-    : timestamp
-      ? Math.max(0, Math.floor((Date.now() - new Date(timestamp).getTime()) / 60_000))
-      : 0;
-  if (ageMinutes < 1) return 'Updated just now';
-  if (ageMinutes === 1) return 'Updated 1 min ago';
-  if (ageMinutes < 60) return `Updated ${ageMinutes} min ago`;
-  const hours = Math.floor(ageMinutes / 60);
-  return `Updated ${hours}h ago`;
+  if (!timestamp && (typeof ageSeconds !== 'number' || !Number.isFinite(ageSeconds))) return 'Last update unavailable';
+  const now = new Date();
+  const resolvedTimestamp = typeof ageSeconds === 'number' && Number.isFinite(ageSeconds)
+    ? new Date(now.getTime() - Math.max(0, ageSeconds) * 1000).toISOString()
+    : timestamp;
+  return dateFreshnessLabel(resolvedTimestamp, { now });
 }
 
 function buildIndexAccessibilityLabel(index: HomeIndexSnapshot) {
@@ -563,9 +562,9 @@ const styles = StyleSheet.create({
   factorItem: { alignItems: 'center', flexBasis: 88, flexDirection: 'row', flexGrow: 1, gap: 6, minWidth: 0 },
   factorRow: { borderTopColor: Theme.colors.border, borderTopWidth: 1, flexDirection: 'row', gap: 8, paddingTop: 8 },
   factorText: { flex: 1, minWidth: 0 },
-  factorDirection: { color: Theme.colors.textMuted, fontSize: Typography.chartAxis.fontSize, fontWeight: Typography.weights.emphasis },
+  factorDirection: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis },
   factorValue: { color: Theme.colors.text, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
-  headerLink: { alignItems: 'center', flexDirection: 'row', gap: 2, minHeight: 28, paddingLeft: 8 },
+  headerLink: { alignItems: 'center', flexDirection: 'row', gap: 2, minHeight: 44, paddingLeft: 8 },
   headerLinkText: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   homeCard: { backgroundColor: Theme.colors.card, borderColor: Theme.colors.border, borderRadius: HOME_LAYOUT.cardRadius, borderWidth: 1, gap: 8, overflow: 'hidden', padding: 12 },
   indexChange: { fontSize: Typography.sectionTitle.fontSize, fontWeight: Typography.weights.strong },
@@ -609,11 +608,11 @@ const styles = StyleSheet.create({
   skeletonGrid: { flexDirection: 'row', gap: HOME_LAYOUT.gridGap },
   sparklinePlaceholder: { alignItems: 'center', borderBottomColor: Theme.colors.border, borderBottomWidth: 1, height: 26, justifyContent: 'center', minWidth: 72, width: '58%' },
   sparklineNarrow: { minWidth: 0, width: '100%' },
-  sparklineUnavailable: { color: Theme.colors.textMuted, fontSize: Typography.chartAxis.fontSize, fontWeight: Typography.weights.emphasis },
+  sparklineUnavailable: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.emphasis },
   sparklineWrap: { height: 26, minWidth: 72, width: '58%' },
   stack: { gap: HOME_LAYOUT.cardGap },
   tickerChange: { fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
-  tickerChip: { alignItems: 'center', backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', gap: 8, height: 36, paddingHorizontal: 10 },
+  tickerChip: { alignItems: 'center', backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', gap: 8, minHeight: 44, paddingHorizontal: 10 },
   tickerChipPressed: { backgroundColor: Theme.colors.cardElevated, borderColor: Theme.colors.accent, transform: [{ scale: 0.98 }] },
   tickerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   tickerText: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },

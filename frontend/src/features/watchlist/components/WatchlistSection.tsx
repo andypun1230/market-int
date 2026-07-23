@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: Spacing.two,
+    minHeight: 44,
   },
   headerText: {
     flex: 1,

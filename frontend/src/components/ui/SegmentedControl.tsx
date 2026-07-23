@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { selectedItemScrollOffset } from '@/architecture/layoutPolicy';
+import { webRovingTabProps } from '@/architecture/keyboardNavigation';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type SegmentedOption = {
@@ -51,16 +52,24 @@ export function SegmentedControl({
     return () => cancelAnimationFrame(frame);
   }, [revealSelected]);
 
-  const content = options.map((option) => {
+  const content = options.map((option, index) => {
     const selected = option.key === selectedKey;
 
     return (
       <Pressable
+        accessibilityHint={`${index + 1} of ${options.length}`}
         accessibilityLabel={option.label}
         accessibilityRole="tab"
         accessibilityState={{ selected }}
         aria-selected={selected}
         key={option.key}
+        {...webRovingTabProps({
+          count: options.length,
+          enabled: Platform.OS === 'web',
+          index,
+          onSelect: (nextIndex) => onChange(options[nextIndex].key),
+          selected,
+        })}
         onLayout={(event) => {
           const { width, x } = event.nativeEvent.layout;
           itemLayouts.current.set(option.key, { width, x });

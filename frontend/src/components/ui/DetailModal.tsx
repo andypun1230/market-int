@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { horizontalGutter, maximumContentWidth, modalBottomInset } from '@/architecture/layoutPolicy';
 import { AppButton } from '@/components/ui/AppButton';
 import { Spacing, Theme, Typography } from '@/constants/theme';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 type DetailModalProps = {
   children: ReactNode;
@@ -27,16 +28,45 @@ export function DetailModal({
   visible,
 }: DetailModalProps) {
   const hasStickyHeader = stickyHeader != null;
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const reduceMotion = useReducedMotion();
   const insets = useSafeAreaInsets();
   const { width: viewportWidth } = useWindowDimensions();
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
-    return () => subscription.remove();
-  }, []);
+  const restoreFocus = () => {
+    if (typeof document === 'undefined') return;
+    const originalTrigger = returnFocusRef.current;
+    const originalLabel = originalTrigger?.getAttribute('aria-label')?.toLocaleLowerCase() ?? '';
+    if (originalTrigger
+      && originalTrigger !== document.body
+      && originalTrigger.isConnected
+      && !originalLabel.startsWith('close ')
+      && !originalLabel.startsWith('dismiss ')) {
+      originalTrigger.focus();
+      return;
+    }
+
+    // Canonical routing can replace the launch surface (for example Search ->
+    // Stock Detail -> Watchlist). Restore to the matching visible entity
+    // control when the original search result no longer exists.
+    const titleKey = title.toLocaleLowerCase();
+    const entityControl = [...document.querySelectorAll<HTMLElement>('[aria-label]')]
+      .find((element) => {
+        const label = element.getAttribute('aria-label')?.toLocaleLowerCase() ?? '';
+        const rect = element.getBoundingClientRect();
+        return label.includes(titleKey)
+          && !label.startsWith('close ')
+          && !label.startsWith('dismiss ')
+          && rect.width > 0
+          && rect.height > 0;
+      });
+    entityControl?.focus();
+  };
+
+  const close = () => {
+    onClose();
+    if (typeof window !== 'undefined') window.setTimeout(restoreFocus, reduceMotion ? 50 : 500);
+  };
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -49,19 +79,18 @@ export function DetailModal({
       }, 50);
       return () => window.clearTimeout(focusTimer);
     }
-    returnFocusRef.current?.focus?.();
   }, [title, visible]);
 
   const contentBottom = modalBottomInset(insets.bottom);
   const sideGutter = horizontalGutter(viewportWidth);
 
   return (
-    <Modal animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onClose} transparent visible={visible}>
+    <Modal animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={close} transparent visible={visible}>
       <View style={styles.backdrop}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
           <SafeAreaView edges={['left', 'right']} style={[styles.safeArea, { paddingHorizontal: sideGutter }]}>
-          <View accessibilityViewIsModal style={styles.sheet}>
-            <View style={styles.handle} />
+          <View accessibilityLabel={title} accessibilityViewIsModal role="dialog" style={styles.sheet}>
+            <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={styles.handle} />
             <View style={styles.header}>
               <View style={styles.titleBlock}>
                 <Text style={styles.title}>{title}</Text>
@@ -70,7 +99,7 @@ export function DetailModal({
               <AppButton
                 accessibilityLabel={`Close ${title}`}
                 label="Close"
-                onPress={onClose}
+                onPress={close}
                 style={styles.closeButton}
                 variant="neutral"
               />
@@ -92,7 +121,7 @@ export function DetailModal({
         <Pressable
           accessibilityLabel={`Dismiss ${title}`}
           accessibilityRole="button"
-          onPress={onClose}
+          onPress={close}
           style={[StyleSheet.absoluteFill, styles.backdropDismissal]}
         />
       </View>

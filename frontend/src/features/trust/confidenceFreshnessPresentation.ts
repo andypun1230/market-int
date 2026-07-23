@@ -1,3 +1,6 @@
+import { availabilityTerm } from '@/architecture/terminologyRegistry';
+import { dateFreshnessLabel, formatLocalizedDateTime } from '@/features/trust/dateFreshnessPresentation';
+
 export type ConfidenceQualifier = 'confidence' | 'evidence confidence' | 'evidence quality';
 export type EvidenceFreshnessState = 'live' | 'cached' | 'stale' | 'test' | 'mock' | 'partial' | 'mixed' | 'delayed' | 'unavailable';
 
@@ -23,17 +26,26 @@ export function confidenceLabel({
 export function freshnessLabel(value?: string | null) {
   const trimmed = value?.trim();
   if (!trimmed) return 'Last update unavailable';
-  if (/^(updated|generated|evidence through|as of|freshness|displayed analysis|\d+ items? require)/i.test(trimmed)) {
+  const prefixed = trimmed.match(/^(Updated|Generated|Evidence through)\s+(.+)$/i);
+  if (prefixed) {
+    if (!/\b\d{4}\b/.test(prefixed[2])) return trimmed;
+    const kind = prefixed[1].toLowerCase() === 'generated'
+      ? 'generated'
+      : prefixed[1].toLowerCase() === 'evidence through'
+        ? 'evidence-through'
+        : 'updated';
+    return dateFreshnessLabel(prefixed[2], { kind });
+  }
+  if (/^(as of|freshness|displayed analysis|\d+ items? require)/i.test(trimmed)) {
     return formatEmbeddedTimestamp(trimmed);
   }
   const parsed = new Date(trimmed);
-  if (!Number.isNaN(parsed.getTime())) return `Updated ${formatDateTime(parsed)}`;
+  if (!Number.isNaN(parsed.getTime())) return dateFreshnessLabel(trimmed);
   return trimmed;
 }
 
 export function availabilityLabel(value?: string | null) {
-  if (!value) return 'Unavailable';
-  return titleCaseDelimited(value);
+  return availabilityTerm(value);
 }
 
 export function providerLabel(value?: string | null) {
@@ -59,14 +71,7 @@ function formatEmbeddedTimestamp(value: string) {
   const match = value.match(/^(Updated|Generated)\s+(.+)$/i);
   if (!match) return value;
   const parsed = new Date(match[2]);
-  return Number.isNaN(parsed.getTime()) ? value : `${match[1]} ${formatDateTime(parsed)}`;
-}
-
-function formatDateTime(value: Date) {
-  const includesTime = value.getUTCHours() !== 0 || value.getUTCMinutes() !== 0 || value.getUTCSeconds() !== 0;
-  return new Intl.DateTimeFormat(undefined, includesTime
-    ? { dateStyle: 'medium', timeStyle: 'short' }
-    : { dateStyle: 'medium' }).format(value);
+  return Number.isNaN(parsed.getTime()) ? value : `${match[1]} ${formatLocalizedDateTime(parsed)}`;
 }
 
 function titleCaseDelimited(value: string) {

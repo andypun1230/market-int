@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { TERMINOLOGY } from '@/architecture/terminologyRegistry';
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppIcon } from '@/components/ui/AppIcon';
@@ -8,6 +9,7 @@ import { Spacing, Theme, Typography } from '@/constants/theme';
 import { buildDailyBriefing } from '@/features/reports/dailyBriefingModel';
 import type { DailyReportRecord } from '@/features/reports/reportLibraryModel';
 import { buildResearchPreviewModel } from '@/features/reports/researchPreviewModel';
+import { formatLocalizedDate, formatLocalizedDateTime } from '@/features/trust/dateFreshnessPresentation';
 
 export function ReportLandingCard({
   generationMessage,
@@ -37,7 +39,7 @@ export function ReportLandingCard({
           <Text style={styles.eyebrow}>TODAY&apos;S INTELLIGENCE</Text>
         </View>
         <StatusBadge
-          label={latestRecord?.snapshot ? 'Ready' : 'Not generated'}
+          label={latestRecord?.snapshot ? TERMINOLOGY.availability.available : TERMINOLOGY.empty.reportNotGenerated}
           tone={latestRecord?.snapshot ? 'success' : 'muted'}
         />
       </View>
@@ -70,25 +72,25 @@ export function ReportLandingCard({
 
       <View style={styles.metrics}>
         <LandingMetric label="Report Type" value={reportDocument?.report_type ?? 'Daily Briefing'} />
-        <LandingMetric label="Market Posture" value={posture ?? 'Awaiting report'} />
-        <LandingMetric label="Market Confidence" value={confidence ?? 'Awaiting report'} />
+        <LandingMetric label="Market Posture" value={posture ?? TERMINOLOGY.empty.reportNotGenerated} />
+        <LandingMetric label="Market Confidence" value={confidence ?? TERMINOLOGY.empty.reportNotGenerated} />
         <LandingMetric label="Research Evidence" value={researchPreview.state === 'focus' && researchPreview.evidenceQuality
           ? `${researchPreview.evidenceQuality} quality · ${researchPreview.figureCount} figures`
           : reportDocument
             ? `${reportDocument.figure_count} figures · ${Math.round(reportDocument.thesis.data_completeness * 100)}% complete`
-            : (briefing?.primaryTheme ?? 'Awaiting report')} />
+            : (briefing?.primaryTheme ?? TERMINOLOGY.empty.reportNotGenerated)} />
       </View>
 
       {reportDocument ? (
         <Text style={styles.documentMeta}>
-          {reportDocument.market_date} · Generated {formatGeneratedAt(reportDocument.generated_at)} · {reportDocument.source_status} sources · {reportDocument.previous_report_available ? 'Previous comparison available' : 'Baseline report'}
+          Market date {formatLocalizedDate(reportDocument.market_date)} · Generated {formatGeneratedAt(reportDocument.generated_at)} · {reportDocument.source_status} sources · {reportDocument.previous_report_available ? 'Previous comparison available' : 'Baseline report'}
         </Text>
       ) : null}
 
       <View style={styles.actions}>
         <AppButton
-          accessibilityLabel={isGenerating ? 'Generating updated research' : 'Generate updated research'}
-          label={isGenerating ? 'Building Research…' : 'Generate Updated Research'}
+          accessibilityLabel={isGenerating ? 'Generating report' : TERMINOLOGY.actions.generateReport}
+          label={isGenerating ? 'Generating report…' : TERMINOLOGY.actions.generateReport}
           leadingIcon={<AppIcon color={Theme.colors.background} name="refresh" size={16} />}
           loading={isGenerating}
           onPress={onGenerate}
@@ -110,8 +112,7 @@ export function ReportLandingCard({
 }
 
 function formatGeneratedAt(value: string) {
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(parsed);
+  return formatLocalizedDateTime(value);
 }
 
 function LandingMetric({ label, value, warning = false }: { label: string; value: string; warning?: boolean }) {

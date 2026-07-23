@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.pill,
     height: 44,
     justifyContent: 'center',
-    width: 30,
+    width: 44,
   },
   bookmarkIcon: {
     color: Theme.colors.warning,

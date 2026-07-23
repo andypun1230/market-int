@@ -14,7 +14,7 @@ export function SectionHeader({ rightElement, subtitle, title }: SectionHeaderPr
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.copy}>
-          <Text style={styles.title}>{title}</Text>
+          <Text accessibilityRole="header" style={styles.title}>{title}</Text>
           {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
         </View>
         {rightElement ? <View style={styles.rightElement}>{rightElement}</View> : null}

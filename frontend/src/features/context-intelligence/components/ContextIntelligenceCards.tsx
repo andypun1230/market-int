@@ -25,6 +25,7 @@ import type {
   IntelligenceDisplayState,
   NewsIntelligenceModel,
 } from '@/features/context-intelligence/types';
+import { formatLocalizedDate } from '@/features/trust/dateFreshnessPresentation';
 
 export function WhatMovedMarketCard({ enabled, maxItems = HOME_MARKET_EVENT_LIMIT }: { enabled: boolean; maxItems?: number }) {
   const state = useMarketNewsIntelligence(enabled, maxItems);
@@ -277,7 +278,7 @@ function UnavailableCard({
 
 function formatPublishedDate(value: string | null): string {
   if (!value) return '';
-  return ` · ${value.slice(0, 10)}`;
+  return ` · ${formatLocalizedDate(value)}`;
 }
 
 function formatSourceQuality(value: NewsIntelligenceModel['events'][number]['sourceQuality']): string {

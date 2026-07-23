@@ -404,7 +404,7 @@ function ChartTrail<T>({
               ? 0.9
               : 0.18 + pointIndex / Math.max(item.history.length - 1, 1) * 0.36;
         const size = isLatest ? (selected ? 20 : 13) : selected ? 7 : 5;
-        const touchSize = Math.max(size + 18, 34);
+        const touchSize = Math.max(size + 18, Theme.accessibility.minimumTouchTarget);
 
         return (
           <View key={`${item.key}-${point.dateLabel}-${pointIndex}`}>
@@ -815,7 +815,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
-    minHeight: 34,
+    minHeight: 44,
     paddingHorizontal: Spacing.twoAndHalf,
     paddingVertical: Spacing.one,
   },
@@ -922,7 +922,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.accent,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
-    minHeight: 34,
+    minHeight: 44,
     paddingHorizontal: Spacing.twoAndHalf,
     paddingVertical: Spacing.one,
   },
@@ -1016,7 +1016,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
-    minHeight: 34,
+    minHeight: 44,
     paddingHorizontal: Spacing.twoAndHalf,
     paddingVertical: Spacing.one,
   },

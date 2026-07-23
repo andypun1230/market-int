@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { webRovingTabProps } from '@/architecture/keyboardNavigation';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
@@ -15,6 +16,7 @@ import {
   isRenderableFigureAnnotation,
 } from '@/features/reports/researchPreviewModel';
 import type { ReportDocument, ReportFigure, ReportResearchSecuritySignal } from '@/types/market';
+import { formatLocalizedDate } from '@/features/trust/dateFreshnessPresentation';
 
 export function ReportDocumentPreview({
   document,
@@ -92,11 +94,24 @@ export function ReportDocumentPreview({
       </View>
 
       <ScrollView contentContainerStyle={styles.contents} horizontal showsHorizontalScrollIndicator={false}>
-        {document.sections.map((item) => (
+        {document.sections.map((item, index) => (
           <Pressable
+            accessibilityHint={`${index + 1} of ${document.sections.length}`}
+            accessibilityLabel={`${String(item.number).padStart(2, '0')} ${item.title}`}
             accessibilityRole="tab"
             accessibilityState={{ selected: item.section_id === section.section_id }}
+            aria-selected={item.section_id === section.section_id}
             key={item.section_id}
+            {...webRovingTabProps({
+              count: document.sections.length,
+              enabled: Platform.OS === 'web',
+              index,
+              onSelect: (nextIndex) => setSelection({
+                key: selectionKey,
+                sectionId: document.sections[nextIndex].section_id,
+              }),
+              selected: item.section_id === section.section_id,
+            })}
             onPress={() => setSelection({ key: selectionKey, sectionId: item.section_id })}
             style={({ pressed }) => [styles.contentsButton, item.section_id === section.section_id && styles.contentsButtonActive, pressed && styles.pressed]}>
             <Text style={[styles.contentsNumber, item.section_id === section.section_id && styles.contentsTextActive]}>{String(item.number).padStart(2, '0')}</Text>
@@ -155,7 +170,7 @@ function ResearchFigure({ document, figure }: { document: ReportDocument; figure
   return (
     <View style={styles.figure}>
       <Text style={styles.figureTitle}>Figure {figure.figure_number}. {figure.title}</Text>
-      <Text style={styles.figureMeta}>{figure.subtitle} · {figure.timeframe} · As of {figure.as_of ?? 'unavailable'}</Text>
+      <Text style={styles.figureMeta}>{figure.subtitle} · {figure.timeframe} · {figure.as_of ? `Evidence through ${formatLocalizedDate(figure.as_of)}` : 'Evidence date unavailable'}</Text>
       <View style={styles.figureQuestion}><Text style={styles.label}>QUESTION ANSWERED</Text><Text style={styles.figureQuestionText}>{figure.question_answered}</Text></View>
       <FigureGraphic document={document} figure={figure} />
       <LabeledText label="Observation" value={figure.observation} />
@@ -632,7 +647,7 @@ const styles = StyleSheet.create({
   conditionText: { color: Theme.colors.text, fontSize: Typography.small.fontSize, lineHeight: 18 },
   confirmLabel: { color: Theme.colors.success, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong },
   contents: { gap: Spacing.one, paddingVertical: Spacing.one },
-  contentsButton: { alignItems: 'center', borderBottomColor: Theme.colors.border, borderBottomWidth: 2, flexDirection: 'row', gap: Spacing.one, minHeight: 42, paddingHorizontal: Spacing.two },
+  contentsButton: { alignItems: 'center', borderBottomColor: Theme.colors.border, borderBottomWidth: 2, flexDirection: 'row', gap: Spacing.one, minHeight: 44, paddingHorizontal: Spacing.two },
   contentsButtonActive: { borderBottomColor: Theme.colors.accent },
   contentsNumber: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong },
   contentsText: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, maxWidth: 150 },
@@ -702,12 +717,12 @@ const styles = StyleSheet.create({
   priorityValue: { color: Theme.colors.text, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, width: 38 },
   provenance: { borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: Spacing.one, paddingTop: Spacing.three },
   qualityDimension: { backgroundColor: Theme.colors.card, borderRadius: Theme.radii.small, gap: 2, minWidth: 92, padding: Spacing.two },
-  qualityDimensionLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartAxis.fontSize, fontWeight: Typography.weights.strong },
+  qualityDimensionLabel: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   qualityDimensionValue: { fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   relativeFlow: { gap: Spacing.two, marginTop: Spacing.two },
   relativeFlowBar: { height: 16, position: 'absolute', top: 2 },
   relativeFlowCenter: { backgroundColor: Theme.colors.textMuted, height: 20, left: '50%', position: 'absolute', top: 0, width: 1 },
-  relativeFlowKind: { color: Theme.colors.textMuted, fontSize: Typography.chartMicro.fontSize, textTransform: 'uppercase' },
+  relativeFlowKind: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, textTransform: 'uppercase' },
   relativeFlowLabel: { color: Theme.colors.text, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   relativeFlowLabelWrap: { width: 110 },
   relativeFlowRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two },
@@ -718,16 +733,16 @@ const styles = StyleSheet.create({
   researchChainBranch: { borderBottomColor: Theme.colors.border, borderBottomWidth: 1, gap: Spacing.two, paddingBottom: Spacing.two },
   researchChainEdge: { flex: 1, gap: 2, minWidth: 120 },
   researchChainEdgeLabel: { color: Theme.colors.text, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong },
-  researchChainMapping: { color: Theme.colors.textMuted, fontSize: Typography.chartMicro.fontSize, lineHeight: 12, textTransform: 'capitalize' },
+  researchChainMapping: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, lineHeight: Typography.caption.lineHeight, textTransform: 'capitalize' },
   researchChainNode: { backgroundColor: Theme.colors.cardElevated, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, gap: 2, minWidth: 115, padding: Spacing.two },
   researchChainNodeLabel: { color: Theme.colors.text, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
-  researchChainNodeType: { color: Theme.colors.accent, fontSize: Typography.chartMicro.fontSize, fontWeight: Typography.weights.strong },
+  researchChainNodeType: { color: Theme.colors.accent, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   researchChainRelationship: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two },
   researchChainSourceNode: { alignSelf: 'flex-start', borderColor: Theme.colors.accent, minWidth: 150 },
   researchChainTargets: { gap: Spacing.two, paddingLeft: Spacing.two },
   researchRow: { borderBottomColor: Theme.colors.border, borderBottomWidth: 1, gap: Spacing.two, paddingBottom: Spacing.three },
   researchTimeline: { backgroundColor: Theme.colors.background, borderRadius: Theme.radii.small, gap: Spacing.three, marginTop: Spacing.two, padding: Spacing.twoAndHalf },
-  researchTimelineLabel: { color: Theme.colors.accent, fontSize: Typography.chartAxis.fontSize, fontWeight: Typography.weights.strong },
+  researchTimelineLabel: { color: Theme.colors.accent, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   researchTimelinePhases: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   researchTimelineStep: { backgroundColor: Theme.colors.cardElevated, borderTopColor: Theme.colors.accent, borderTopWidth: 3, flex: 1, gap: Spacing.one, minWidth: 150, padding: Spacing.two },
   researchTimelineText: { color: Theme.colors.text, fontSize: Typography.caption.fontSize, lineHeight: 16 },
@@ -760,7 +775,7 @@ const styles = StyleSheet.create({
   timelineCards: { flexDirection: 'row', gap: Spacing.two, paddingVertical: Spacing.two },
   timelineDate: { color: Theme.colors.accent, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong },
   timelineMetric: { borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: 2, paddingTop: Spacing.one },
-  timelineMetricLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartMicro.fontSize, fontWeight: Typography.weights.strong, textTransform: 'uppercase' },
+  timelineMetricLabel: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, textTransform: 'uppercase' },
   timelineMetricValue: { color: Theme.colors.text, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 13 },
   timelineRegime: { color: Theme.colors.text, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, minHeight: 30 },
   timeline: { minWidth: 770 },

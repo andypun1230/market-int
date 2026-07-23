@@ -24,7 +24,7 @@ export const STATE_PRESENTATION_REGISTRY: Record<StatePresentationType, {
   failed: { accessibilityPrefix: 'Failed', icon: 'warning', tone: 'danger' },
   maintenance: { accessibilityPrefix: 'Maintenance', icon: 'info', tone: 'neutral' },
   permission_restricted: { accessibilityPrefix: 'Access restricted', icon: 'info', tone: 'neutral' },
-  not_generated: { accessibilityPrefix: 'Not generated', icon: 'pending', tone: 'accent' },
+  not_generated: { accessibilityPrefix: 'Report not generated', icon: 'pending', tone: 'accent' },
   no_saved_entities: { accessibilityPrefix: 'No saved entities', icon: 'savedOutline', tone: 'neutral' },
   no_qualifying_results: { accessibilityPrefix: 'No qualifying results', icon: 'filter', tone: 'neutral' },
 };

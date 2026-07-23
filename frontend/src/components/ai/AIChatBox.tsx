@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.pill,
     flexDirection: 'row',
     gap: Spacing.two,
-    minHeight: 42,
+    minHeight: 44,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },

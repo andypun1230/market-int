@@ -34,7 +34,7 @@ function run() {
   assert(confidenceLabel({}) === 'Confidence unavailable', 'missing confidence has canonical wording');
   assert(freshnessLabel() === 'Last update unavailable', 'missing freshness has canonical wording');
   assert(freshnessLabel('Evidence through Jul 22') === 'Evidence through Jul 22', 'domain-specific evidence-through wording is preserved');
-  assert(availabilityLabel('partial_data') === 'Partial Data', 'availability enums use display casing');
+  assert(availabilityLabel('partial_data') === 'Partial', 'partial availability uses canonical wording');
   assert(providerLabel('openai') === 'OpenAI', 'provider names use canonical casing');
   assert(evidenceFreshnessLabel('mixed') === 'Partial evidence', 'evidence freshness wording is canonical');
   assert(CONFIDENCE_FRESHNESS_CONTRACT.confidenceOwner === 'confidenceLabel', 'confidence presentation has one owner');

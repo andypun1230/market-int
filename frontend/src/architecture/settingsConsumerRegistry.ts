@@ -4,7 +4,7 @@ export type PreferencePath = 'appearance.reduceMotion' | 'appearance.theme' | 'p
 
 export const SETTINGS_CONSUMER_REGISTRY = {
   'appearance.reduceMotion': {
-    consumers: ['AppScreen transitions', 'AnimatedSplashOverlay'],
+    consumers: ['useReducedMotion', 'AppScreen transitions', 'DetailModal', 'AnimatedSplashOverlay'],
     owner: 'Appearance settings',
   },
   'appearance.theme': {

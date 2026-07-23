@@ -61,7 +61,7 @@ export function TabButton({
       accessibilityLabel={typeof children === 'string' ? children : undefined}
       style={({ pressed }) => pressed && styles.pressed}>
       <View style={[styles.tabButtonView, isFocused && styles.activeTab]}>
-        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants">
           <SymbolView tintColor={tintColor} name={{ web: icon.web, ios: icon.ios } as never} size={18} />
         </View>
         <Text style={[styles.tabLabel, isFocused && styles.activeTabLabel]}>{children}</Text>

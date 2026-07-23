@@ -11,6 +11,7 @@ import type {
   CopilotSourceState,
 } from '@/features/copilot/types';
 import { evidenceFreshnessLabel, providerLabel } from '@/features/trust/confidenceFreshnessPresentation';
+import { formatLocalizedDate, formatLocalizedDateTime } from '@/features/trust/dateFreshnessPresentation';
 
 export function CopilotStructuredResponse({
   onAction,
@@ -251,7 +252,7 @@ export function CopilotSourceList({ response }: { response: CopilotChatResponse 
         <InlineAction label={expanded ? 'Hide' : 'Details'} onPress={() => setExpanded((current) => !current)} />
       </View>
       <Text style={styles.sourceSummary}>
-        {marketDate ? `Market date ${marketDate} · ` : ''}{response.grounding.generatedAt ? `Generated ${formatTimestamp(response.grounding.generatedAt)}` : 'Timestamp unavailable'}
+        {marketDate ? `Market date ${formatLocalizedDate(marketDate)} · ` : ''}{response.grounding.generatedAt ? `Generated ${formatTimestamp(response.grounding.generatedAt)}` : 'Timestamp unavailable'}
       </Text>
       {expanded ? (
         <View style={styles.sourceDetails}>
@@ -342,8 +343,7 @@ function formatEvidenceValue(evidence: CopilotEvidenceV1) {
 }
 
 function formatTimestamp(value: string) {
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
+  return formatLocalizedDateTime(value);
 }
 
 function humanize(input: string) {
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   contradictionLabel: { color: Theme.colors.danger, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   contradictionText: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 19 },
   deepLinkArrow: { color: Theme.colors.accent, fontSize: Typography.sectionTitle.fontSize, fontWeight: Typography.weights.strong },
-  deepLinkButton: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.accent, borderRadius: Theme.radii.pill, borderWidth: 1, flexDirection: 'row', gap: Spacing.one, minHeight: 38, paddingHorizontal: Spacing.twoAndHalf, paddingVertical: Spacing.one },
+  deepLinkButton: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.accent, borderRadius: Theme.radii.pill, borderWidth: 1, flexDirection: 'row', gap: Spacing.one, minHeight: 44, paddingHorizontal: Spacing.twoAndHalf, paddingVertical: Spacing.one },
   deepLinkText: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   directAnswer: { borderLeftColor: Theme.colors.purple, borderLeftWidth: 3, gap: Spacing.one, paddingLeft: Spacing.twoAndHalf },
   directAnswerText: { color: Theme.colors.text, fontSize: Typography.supportTitle.fontSize, fontWeight: Typography.weights.strong, lineHeight: 24 },

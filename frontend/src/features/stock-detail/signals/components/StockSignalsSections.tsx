@@ -31,6 +31,7 @@ import {
   formatRelativeVolume,
   formatSourceLabel,
 } from '@/utils/formatters';
+import { formatLocalizedDateTime } from '@/features/trust/dateFreshnessPresentation';
 
 type StockSignalsSectionsProps = {
   leadershipSignal?: StockLeadershipSignal;
@@ -323,7 +324,7 @@ function SupportingSignalDetails(props: StockSignalsSectionsProps) {
           <InfoTile label="Leadership Source" value={props.leadershipSignal?.dataStatus ? formatDataStatus(props.leadershipSignal.dataStatus) : 'Unavailable'} />
           <InfoTile label="Timeframe Source" value={props.multiTimeframeSignals?.overallDataStatus ? formatDataStatus(props.multiTimeframeSignals.overallDataStatus) : 'Unavailable'} />
           <InfoTile label="Timeframe Method" value={props.multiTimeframeSignals?.methodologyVersion ?? 'N/A'} />
-          <InfoTile label="Generated" value={props.multiTimeframeSignals?.generatedAt ?? 'N/A'} />
+          <InfoTile label="Generated" value={props.multiTimeframeSignals?.generatedAt ? formatLocalizedDateTime(props.multiTimeframeSignals.generatedAt) : 'Unavailable'} />
         </DetailGrid>
       ) : null}
     </View>

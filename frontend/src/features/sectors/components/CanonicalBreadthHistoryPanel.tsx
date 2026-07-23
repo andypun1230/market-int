@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   alert: { borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: Spacing.one, paddingTop: Spacing.two },
   badges: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.one },
   body: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis },
-  chip: { borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 40, minWidth: 48, paddingHorizontal: Spacing.two, paddingVertical: 10 },
+  chip: { borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 44, minWidth: 48, paddingHorizontal: Spacing.two, paddingVertical: 10 },
   chipActive: { backgroundColor: Theme.colors.accentSoft, borderColor: Theme.colors.accent },
   chipText: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, textAlign: "center" },
   chipTextActive: { color: Theme.colors.accent },

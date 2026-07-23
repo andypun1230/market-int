@@ -26,10 +26,10 @@ export function DashboardCard({
 }: DashboardCardProps) {
   return (
     <View style={[styles.card, style]}>
-      {accentColor ? <View style={[styles.accent, { backgroundColor: accentColor }]} /> : null}
+      {accentColor ? <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={[styles.accent, { backgroundColor: accentColor }]} /> : null}
       {(title || subtitle) && (
         <View style={styles.header}>
-          {title ? <Text style={styles.title}>{title}</Text> : null}
+          {title ? <Text accessibilityRole="header" style={styles.title}>{title}</Text> : null}
           {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
         </View>
       )}

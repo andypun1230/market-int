@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { webRovingTabProps } from "@/architecture/keyboardNavigation";
 import { DashboardCard } from "@/components/cards/DashboardCard";
 import { PerformanceHeatmap } from "@/components/charts/PerformanceHeatmap";
 import { RotationQuadrantChart } from "@/components/charts/RotationQuadrantChart";
@@ -580,7 +581,7 @@ export default function SectorsScreen() {
         {activeSection === "sectorAlerts" && snapshot ? (
           testScenariosEnabled ? (
             <DashboardCard title="Rotation Alerts" accentColor={Theme.colors.warning}>
-              <AlertList alerts={presentSnapshotAlerts(snapshot.alerts, "Sector")} emptyMessage="No transition alerts yet." />
+              <AlertList alerts={presentSnapshotAlerts(snapshot.alerts, "Sector")} emptyMessage="No alerts" />
             </DashboardCard>
           ) : (
             <CanonicalSectorAlertsPanel onOpenSector={(sectorId) => setSelected({ kind: "sector", sectorId: normalizeSectorId(sectorId) ?? sectorId as SectorId })} />
@@ -817,7 +818,7 @@ export default function SectorsScreen() {
             >
               <AlertList
                 alerts={presentSnapshotAlerts(themeSnapshot?.alerts ?? [], "Theme")}
-                emptyMessage="No theme transition alerts yet. More published observations are needed for change detection."
+                emptyMessage="No alerts"
               />
             </DashboardCard>
           ) : (
@@ -978,12 +979,14 @@ function SectorNavigation({
   return (
     <View style={styles.navigation}>
       <View style={styles.navigationTopRow}>
-        <View style={styles.categorySwitch}>
-          {CATEGORY_OPTIONS.map((option) => (
+        <View accessibilityLabel="Sector content category" accessibilityRole="tablist" style={styles.categorySwitch}>
+          {CATEGORY_OPTIONS.map((option, index) => (
             <Pressable
-              accessibilityRole="button"
+              accessibilityHint={`${index + 1} of ${CATEGORY_OPTIONS.length}`}
+              accessibilityRole="tab"
               accessibilityState={{ selected: activeCategory === option.key }}
               key={option.key}
+              {...webRovingTabProps({ count: CATEGORY_OPTIONS.length, enabled: Platform.OS === "web", index, onSelect: (nextIndex) => onCategoryChange(CATEGORY_OPTIONS[nextIndex].key), selected: activeCategory === option.key })}
               onPress={() => onCategoryChange(option.key)}
               style={[
                 styles.categoryButton,
@@ -1022,12 +1025,14 @@ function SectorNavigation({
           />
         </View>
       </View>
-      <View style={styles.contentSwitch}>
-        {CONTENT_OPTIONS[activeCategory].map((option) => (
+      <View accessibilityLabel={`${activeCategory} sections`} accessibilityRole="tablist" style={styles.contentSwitch}>
+        {CONTENT_OPTIONS[activeCategory].map((option, index, options) => (
           <Pressable
-            accessibilityRole="button"
+            accessibilityHint={`${index + 1} of ${options.length}`}
+            accessibilityRole="tab"
             accessibilityState={{ selected: activeSection === option.key }}
             key={option.key}
+            {...webRovingTabProps({ count: options.length, enabled: Platform.OS === "web", index, onSelect: (nextIndex) => onSectionChange(options[nextIndex].key), selected: activeSection === option.key })}
             onPress={() => onSectionChange(option.key)}
             style={[
               styles.contentButton,
@@ -1089,10 +1094,14 @@ function IntervalTabs({
   onChange: (value: (typeof TEST_HEATMAP_INTERVALS)[number]) => void;
 }) {
   return (
-    <View style={styles.tabs}>
-      {TEST_HEATMAP_INTERVALS.map((item) => (
+    <View accessibilityLabel="Heatmap interval" accessibilityRole="tablist" style={styles.tabs}>
+      {TEST_HEATMAP_INTERVALS.map((item, index) => (
         <Pressable
+          accessibilityHint={`${index + 1} of ${TEST_HEATMAP_INTERVALS.length}`}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: value === item }}
           key={item}
+          {...webRovingTabProps({ count: TEST_HEATMAP_INTERVALS.length, enabled: Platform.OS === "web", index, onSelect: (nextIndex) => onChange(TEST_HEATMAP_INTERVALS[nextIndex]), selected: value === item })}
           onPress={() => onChange(item)}
           style={[styles.tab, value === item && styles.tabActive]}
         >
@@ -1114,10 +1123,14 @@ function RotationIntervalTabs({
   onChange: (value: (typeof TEST_ROTATION_INTERVALS)[number]) => void;
 }) {
   return (
-    <View style={styles.tabs}>
-      {TEST_ROTATION_INTERVALS.map((item) => (
+    <View accessibilityLabel="Rotation interval" accessibilityRole="tablist" style={styles.tabs}>
+      {TEST_ROTATION_INTERVALS.map((item, index) => (
         <Pressable
+          accessibilityHint={`${index + 1} of ${TEST_ROTATION_INTERVALS.length}`}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: value === item }}
           key={item}
+          {...webRovingTabProps({ count: TEST_ROTATION_INTERVALS.length, enabled: Platform.OS === "web", index, onSelect: (nextIndex) => onChange(TEST_ROTATION_INTERVALS[nextIndex]), selected: value === item })}
           onPress={() => onChange(item)}
           style={[styles.tab, value === item && styles.tabActive]}
         >
@@ -1146,13 +1159,16 @@ function SectorRotationProfileTabs({
   return (
     <View
       accessibilityLabel="Sector Rotation model profile"
+      accessibilityRole="tablist"
       style={styles.tabs}
     >
-      {options.map((item) => (
+      {options.map((item, index) => (
         <Pressable
-          accessibilityRole="button"
+          accessibilityHint={`${index + 1} of ${options.length}`}
+          accessibilityRole="tab"
           accessibilityState={{ selected: value === item.key }}
           key={item.key}
+          {...webRovingTabProps({ count: options.length, enabled: Platform.OS === "web", index, onSelect: (nextIndex) => onChange(options[nextIndex].key), selected: value === item.key })}
           onPress={() => onChange(item.key)}
           style={[styles.tab, value === item.key && styles.tabActive]}
         >
@@ -1179,12 +1195,14 @@ function ThemeRotationProfileTabs({
     { key: "3M", label: "Long" },
   ] as const;
   return (
-    <View accessibilityLabel="Theme Rotation model profile" style={styles.tabs}>
-      {options.map((item) => (
+    <View accessibilityLabel="Theme Rotation model profile" accessibilityRole="tablist" style={styles.tabs}>
+      {options.map((item, index) => (
         <Pressable
-          accessibilityRole="button"
+          accessibilityHint={`${index + 1} of ${options.length}`}
+          accessibilityRole="tab"
           accessibilityState={{ selected: value === item.key }}
           key={item.key}
+          {...webRovingTabProps({ count: options.length, enabled: Platform.OS === "web", index, onSelect: (nextIndex) => onChange(options[nextIndex].key), selected: value === item.key })}
           onPress={() => onChange(item.key)}
           style={[styles.tab, value === item.key && styles.tabActive]}
         >
@@ -1638,7 +1656,8 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.pill,
     flex: 1,
     justifyContent: "center",
-    minHeight: 36,
+    minHeight: 44,
+    minWidth: 44,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,
   },
@@ -1669,7 +1688,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     flex: 1,
     justifyContent: "center",
-    minHeight: 38,
+    minHeight: 44,
     paddingHorizontal: Spacing.one,
     paddingVertical: Spacing.one,
   },
@@ -1714,6 +1733,8 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.small,
     borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 44,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,
   },

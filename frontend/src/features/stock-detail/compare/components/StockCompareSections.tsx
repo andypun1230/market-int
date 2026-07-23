@@ -859,7 +859,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: 40,
+    minHeight: 44,
   },
   disclosureIcon: {
     color: Theme.colors.textMuted,

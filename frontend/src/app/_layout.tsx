@@ -6,18 +6,20 @@ import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { WatchlistProvider } from '@/features/watchlist/store';
 import { useAppPreferences } from '@/features/preferences/appPreferences';
 import { UserFacingDataStateProvider } from '@/features/trust/UserFacingDataStateProvider';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { preferences } = useAppPreferences();
+  const reduceMotion = useReducedMotion();
   const effectiveColorScheme = preferences.appearance.theme === 'system' ? colorScheme : 'dark';
   return (
     <ThemeProvider value={effectiveColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <UserFacingDataStateProvider>
         <WatchlistProvider>
-        <AnimatedSplashOverlay reduceMotion={preferences.appearance.reduceMotion} />
+        <AnimatedSplashOverlay reduceMotion={reduceMotion} />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="report" />

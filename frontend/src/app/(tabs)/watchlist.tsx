@@ -831,9 +831,9 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.accent,
     borderRadius: Theme.radii.small,
     borderWidth: 1,
-    height: 38,
+    height: 44,
     justifyContent: 'center',
-    width: 38,
+    width: 44,
   },
   addPickerIcon: {
     color: Theme.colors.accent,
@@ -993,7 +993,7 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.pill,
     height: 44,
     justifyContent: 'center',
-    width: 34,
+    width: 44,
   },
   savedStateIcon: {
     color: Theme.colors.warning,
@@ -1012,7 +1012,7 @@ const styles = StyleSheet.create({
   },
   summaryMetricLabel: {
     color: Theme.colors.textMuted,
-    fontSize: Typography.chartAxis.fontSize,
+    fontSize: Typography.caption.fontSize,
     fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },

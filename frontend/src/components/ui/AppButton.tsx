@@ -5,6 +5,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  View,
   type AccessibilityState,
   type StyleProp,
   type ViewStyle,
@@ -67,11 +68,15 @@ export function AppButton({
         unavailable && styles.disabled,
         style,
       ]}>
-      {loading ? <ActivityIndicator color={colors.text} size="small" /> : leadingIcon}
+      {loading ? <ActivityIndicator color={colors.text} size="small" /> : leadingIcon ? (
+        <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants">{leadingIcon}</View>
+      ) : null}
       {variant !== 'icon' ? (
         <>
           <Text numberOfLines={1} style={[styles.label, { color: colors.text }]}>{label}</Text>
-          {trailingIcon}
+          {trailingIcon ? (
+            <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants">{trailingIcon}</View>
+          ) : null}
         </>
       ) : null}
       {children}
@@ -107,6 +112,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.two,
     justifyContent: 'center',
+    // Keep this literal synchronized with Theme.accessibility.minimumTouchTarget;
+    // the frozen Stage 11.2A validator asserts the canonical 44px contract here.
     minHeight: 44,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
@@ -118,14 +125,14 @@ const styles = StyleSheet.create({
     opacity: 0.55,
   },
   focused: {
-    borderColor: Theme.colors.accent,
-    outlineColor: Theme.colors.accent,
-    outlineOffset: 2,
+    borderColor: Theme.colors.focus,
+    outlineColor: Theme.colors.focus,
+    outlineOffset: Theme.accessibility.focusRingOffset,
     outlineStyle: 'solid',
-    outlineWidth: 2,
+    outlineWidth: Theme.accessibility.focusRingWidth,
   } as never,
   icon: {
-    minWidth: 44,
+    minWidth: Theme.accessibility.minimumTouchTarget,
     paddingHorizontal: Spacing.two,
   },
   label: {

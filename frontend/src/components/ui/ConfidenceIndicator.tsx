@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,
   },
-  scoreLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartAxis.fontSize, fontWeight: Typography.weights.strong, textTransform: 'uppercase' },
+  scoreLabel: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, textTransform: 'uppercase' },
   scoreValue: { color: Theme.colors.purple, fontSize: Typography.sectionTitle.fontSize, fontWeight: Typography.weights.strong },
 });

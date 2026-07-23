@@ -25,7 +25,7 @@ export function EmptyState({ actionLabel, message, onAction, stateType = 'empty'
         : Theme.colors.textMuted;
   return (
     <View style={styles.container}>
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.iconCircle}>
+      <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={styles.iconCircle}>
         <AppIcon color={iconColor} name={presentation.icon} size={18} />
       </View>
       <Text accessibilityLabel={`${presentation.accessibilityPrefix}: ${title}`} accessibilityRole="header" style={styles.title}>{title}</Text>

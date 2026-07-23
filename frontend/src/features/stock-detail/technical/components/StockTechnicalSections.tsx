@@ -1010,7 +1010,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: 28,
+    minHeight: 44,
   },
   evidenceToggleText: {
     color: Theme.colors.text,
@@ -1028,9 +1028,9 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
-    height: 24,
+    height: 44,
     justifyContent: 'center',
-    width: 24,
+    width: 44,
   },
   infoButtonText: {
     color: Theme.colors.textMuted,
@@ -1269,7 +1269,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: 40,
+    minHeight: 44,
     paddingHorizontal: Spacing.two,
   },
   smallDisclosureText: {

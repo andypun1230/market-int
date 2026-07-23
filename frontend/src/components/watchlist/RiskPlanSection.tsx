@@ -628,7 +628,7 @@ const styles = StyleSheet.create({
   },
   segmentText: {
     color: Theme.colors.textMuted,
-    fontSize: Typography.chartAxis.fontSize,
+    fontSize: Typography.chartLabel.fontSize,
     fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
@@ -770,9 +770,9 @@ const styles = StyleSheet.create({
   },
   summaryScoreLabel: {
     color: Theme.colors.textMuted,
-    fontSize: Typography.chartAxis.fontSize,
+    fontSize: Typography.caption.fontSize,
     fontWeight: Typography.weights.strong,
-    lineHeight: 12,
+    lineHeight: Typography.caption.lineHeight,
     textAlign: 'right',
     textTransform: 'uppercase',
   },

@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.half,
   },
   statusText: {
-    fontSize: Typography.chartAxis.fontSize,
+    fontSize: Typography.caption.fontSize,
     fontWeight: Typography.weights.strong,
   },
   text: {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
-import { AccessibilityInfo, Animated, Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Animated, Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import type { RefreshControlProps, StyleProp, ViewStyle } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -19,7 +19,7 @@ import { AppIcon } from '@/components/ui/AppIcon';
 import { DataStateSummary } from '@/components/ui/DataStateSummary';
 import { UniversalCommandHeader } from '@/features/command/components/UniversalCommandHeader';
 import type { CopilotContext } from '@/features/copilot/types';
-import { useAppPreferences } from '@/features/preferences/appPreferences';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 type AppScreenProps = {
   children: ReactNode;
@@ -49,7 +49,6 @@ export function AppScreen({
   widthPolicy,
 }: AppScreenProps) {
   const router = useRouter();
-  const { preferences } = useAppPreferences();
   const pathname = usePathname();
   const { width: viewportWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -67,17 +66,10 @@ export function AppScreen({
   const showsDataState = ['/', '/market', '/sectors', '/watchlist', '/more', '/report', '/ai', '/settings', '/about', '/data-sources'].includes(pathname);
   const diagnosticDataState = ['/settings', '/about', '/data-sources'].includes(pathname);
   const [collapsed, setCollapsed] = useState(!isPrimaryTab);
-  const [systemReduceMotion, setSystemReduceMotion] = useState(false);
-  const reduceMotion = systemReduceMotion || preferences.appearance.reduceMotion;
+  const reduceMotion = useReducedMotion();
   const [collapseProgress] = useState(() => new Animated.Value(isPrimaryTab ? 0 : 1));
   const [highlightProgress] = useState(() => new Animated.Value(0));
   const scrollRef = useRef<ScrollView | null>(null);
-
-  useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setSystemReduceMotion);
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setSystemReduceMotion);
-    return () => subscription.remove();
-  }, []);
 
   useEffect(() => {
     Animated.timing(collapseProgress, {
@@ -120,7 +112,7 @@ export function AppScreen({
                 variant="icon"
               />
             ) : null}
-            {title ? <Text style={styles.title}>{title}</Text> : null}
+            {title ? <Text accessibilityRole="header" style={styles.title}>{title}</Text> : null}
           </View>
           {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
         </View>

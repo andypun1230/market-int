@@ -51,7 +51,7 @@ const ICONS: Record<AppIconName, { android: string; ios: string; web: string }> 
 
 export function AppIcon({ color = Theme.colors.textMuted, name, size = 16 }: { color?: ColorValue; name: AppIconName; size?: number }) {
   return (
-    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants">
       <SymbolView name={ICONS[name] as never} size={size} tintColor={color} weight="bold" />
     </View>
   );

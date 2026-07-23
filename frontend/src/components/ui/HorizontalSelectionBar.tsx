@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 
 import { selectedItemScrollOffset } from '@/architecture/layoutPolicy';
+import { webRovingTabProps } from '@/architecture/keyboardNavigation';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 
 export type HorizontalSelectionItem<Key extends string> = {
@@ -58,15 +59,23 @@ export function HorizontalSelectionBar<Key extends string>({
       ref={scrollRef}
       showsHorizontalScrollIndicator={false}>
       <View style={styles.content}>
-        {items.map((item) => {
+        {items.map((item, index) => {
           const selected = selectedKey === item.key;
           return (
             <Pressable
+              accessibilityHint={`${index + 1} of ${items.length}`}
               accessibilityLabel={item.label}
               accessibilityRole="tab"
               accessibilityState={{ selected }}
               aria-selected={selected}
               key={item.key}
+              {...webRovingTabProps({
+                count: items.length,
+                enabled: Platform.OS === 'web',
+                index,
+                onSelect: (nextIndex) => onChange(items[nextIndex].key),
+                selected,
+              })}
               onLayout={(event) => {
                 const { width, x } = event.nativeEvent.layout;
                 itemLayouts.current.set(item.key, { width, x });
@@ -79,7 +88,7 @@ export function HorizontalSelectionBar<Key extends string>({
                 pressed && styles.pressedItem,
               ]}>
               {item.icon ? (
-                <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants">
                   {item.icon}
                 </View>
               ) : null}

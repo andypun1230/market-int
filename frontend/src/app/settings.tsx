@@ -201,6 +201,7 @@ export default function SettingsScreen() {
             return (
               <Pressable
                 accessibilityRole="button"
+                accessibilityState={{ selected }}
                 key={scenario.id}
                 onPress={() => setSelectedScenario(scenario.id)}
                 style={({ pressed }) => [
@@ -226,7 +227,7 @@ export default function SettingsScreen() {
               refreshingProvider && styles.actionButtonDisabled,
             ]}>
             <Text style={styles.actionButtonText}>
-              {refreshingProvider ? 'Working...' : 'Refresh Status'}
+              {refreshingProvider ? 'Working…' : 'Refresh status'}
             </Text>
           </Pressable>
           <Pressable
@@ -238,7 +239,7 @@ export default function SettingsScreen() {
               pressed && styles.actionButtonPressed,
               refreshingProvider && styles.actionButtonDisabled,
             ]}>
-            <Text style={styles.actionButtonText}>Regenerate Test Data</Text>
+            <Text style={styles.actionButtonText}>Regenerate test data</Text>
           </Pressable>
         </View>
         <Text style={styles.helperText}>
@@ -389,6 +390,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
+    minHeight: 44,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
@@ -409,6 +411,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.accent,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
+    minHeight: 44,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },

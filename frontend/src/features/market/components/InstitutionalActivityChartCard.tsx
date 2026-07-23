@@ -856,7 +856,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
-    minHeight: 34,
+    minHeight: 44,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,
   },
@@ -1006,7 +1006,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     justifyContent: 'center',
-    minHeight: 34,
+    minHeight: 44,
     paddingHorizontal: Spacing.two,
   },
   selectorButtonActive: {

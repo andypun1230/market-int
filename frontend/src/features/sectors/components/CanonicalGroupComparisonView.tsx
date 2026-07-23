@@ -152,12 +152,12 @@ function MetricRow({ items, label, onOpenItem, value }: {
 }) {
   return (
     <View style={styles.row}>
-      <Text style={[styles.cell, styles.labelCell]}>{label}</Text>
+      <Text accessibilityRole="header" style={[styles.cell, styles.labelCell]}>{label}</Text>
       {items.map((item) => onOpenItem && label === "Identity" ? (
-        <Pressable accessibilityRole="button" key={item.id} onPress={() => onOpenItem(item)} style={styles.cell}>
+        <Pressable accessibilityLabel={`${label}: ${value(item)}. View details`} accessibilityRole="button" key={item.id} onPress={() => onOpenItem(item)} style={styles.cell}>
           <Text style={styles.link}>{value(item)}</Text>
         </Pressable>
-      ) : <Text key={item.id} style={styles.cell}>{value(item)}</Text>)}
+      ) : <Text accessibilityLabel={`${label}: ${value(item)}`} key={item.id} style={styles.cell}>{value(item)}</Text>)}
     </View>
   );
 }
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   candidateText: { flex: 1 },
   candidates: { maxHeight: 360 },
   cell: { color: Theme.colors.text, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, padding: Spacing.two, width: 180 },
-  chip: { borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 38, minWidth: 44, paddingHorizontal: Spacing.two, paddingVertical: 9 },
+  chip: { borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 44, minWidth: 44, paddingHorizontal: Spacing.two, paddingVertical: 9 },
   chipActive: { backgroundColor: Theme.colors.accentSoft, borderColor: Theme.colors.accent },
   chipText: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, textAlign: "center" },
   chipTextActive: { color: Theme.colors.accent },

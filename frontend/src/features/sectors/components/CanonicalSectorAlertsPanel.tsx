@@ -7,6 +7,7 @@ import { AlertList } from "@/components/ui/AlertList";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Spacing, Theme, Typography } from "@/constants/theme";
 import type { CanonicalSectorAlert } from "@/features/sectors/groupIntelligence";
+import { formatLocalizedDateTime } from "@/features/trust/dateFreshnessPresentation";
 import { useCanonicalSectorAlerts } from "@/hooks/useGroupIntelligence";
 
 const GROUPS = ["leadership", "momentum", "breadth", "risk"] as const;
@@ -30,10 +31,11 @@ export function CanonicalSectorAlertsPanel({ onOpenSector }: { onOpenSector: (se
                   id: alert.id,
                   title: `${alert.entity.name} · ${humanize(alert.type)}`,
                   message: alert.explanation,
-                  metadata: `${alert.severity} · ${alert.detected_at ?? "date unavailable"} · ${alert.confidence.label} confidence`,
+                  metadata: `${alert.detected_at ? formatLocalizedDateTime(alert.detected_at) : "date unavailable"} · ${alert.confidence.label} confidence`,
                   onPress: () => setSelected(alert),
+                  severity: alert.severity,
                 }))}
-                emptyMessage="No alerts in this group."
+                emptyMessage="No alerts"
               />
             </DashboardCard>
           );
@@ -47,7 +49,7 @@ export function CanonicalSectorAlertsPanel({ onOpenSector }: { onOpenSector: (se
       <DetailModal
         visible={Boolean(selected)}
         title={selected ? `${selected.entity.name} · ${humanize(selected.type)}` : "Sector alert"}
-        subtitle={selected ? `${selected.severity} severity · ${selected.detected_at ?? "date unavailable"}` : undefined}
+        subtitle={selected ? `${selected.severity} severity · ${selected.detected_at ? formatLocalizedDateTime(selected.detected_at) : "date unavailable"}` : undefined}
         onClose={() => setSelected(null)}>
         {selected ? (
           <View style={styles.stack}>

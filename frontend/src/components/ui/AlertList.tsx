@@ -7,6 +7,7 @@ export type PresentedAlert = {
   message: string;
   metadata?: string | null;
   onPress?: () => void;
+  severity?: string | null;
   title: string;
 };
 
@@ -18,6 +19,9 @@ export function AlertList({ alerts, emptyMessage }: { alerts: PresentedAlert[]; 
     <View>
       {alerts.map((alert) => (
         <Pressable
+          accessibilityLabel={alert.severity
+            ? `${alert.severity} severity. ${alert.title}. ${alert.message}${alert.metadata ? `. ${alert.metadata}` : ''}`
+            : `${alert.title}. ${alert.message}${alert.metadata ? `. ${alert.metadata}` : ''}`}
           accessibilityRole={alert.onPress ? 'button' : undefined}
           disabled={!alert.onPress}
           key={alert.id}

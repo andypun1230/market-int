@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   dateBlock: { flex: 1, gap: Spacing.one, minWidth: 0 },
   disabled: { opacity: 0.5 },
   emptyText: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, lineHeight: 19 },
-  iconButton: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, height: 38, justifyContent: 'center', width: 38 },
+  iconButton: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, height: 44, justifyContent: 'center', width: 44 },
   meta: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis },
   pressed: { opacity: 0.7 },
   row: { alignItems: 'center', borderBottomColor: Theme.colors.border, borderBottomWidth: 1, flexDirection: 'row', gap: Spacing.two, paddingBottom: Spacing.twoAndHalf },

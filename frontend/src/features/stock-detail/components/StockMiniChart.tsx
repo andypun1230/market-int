@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     justifyContent: 'center',
-    minHeight: 30,
+    minHeight: 44,
   },
   rangeButtonSelected: {
     backgroundColor: Theme.colors.accentSoft,

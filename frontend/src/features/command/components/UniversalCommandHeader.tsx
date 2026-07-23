@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import {
@@ -17,6 +17,7 @@ import type { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-nat
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { maximumContentWidth, modalBottomInset } from '@/architecture/layoutPolicy';
+import { TERMINOLOGY, availabilityTerm } from '@/architecture/terminologyRegistry';
 import { MaxContentWidth, Spacing, Theme, Typography } from '@/constants/theme';
 import { AppButton } from '@/components/ui/AppButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
@@ -36,6 +37,7 @@ import {
 } from '@/features/command/commandModel';
 import { useRecentSearches } from '@/features/command/recentSearches';
 import { useHomeDashboard } from '@/hooks/useHomeDashboard';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const PLACEHOLDER = 'Search stocks, ETFs, indexes or features';
 
@@ -71,7 +73,7 @@ export function UniversalCommandHeader({
   const titleOpacity = showExpandedTitle
     ? collapseProgress.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 0, 0] })
     : 0;
-  const searchHeight = collapseProgress.interpolate({ inputRange: [0, 1], outputRange: [48, 42] });
+  const searchHeight = collapseProgress.interpolate({ inputRange: [0, 1], outputRange: [48, 44] });
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -159,6 +161,8 @@ function GlobalSearchOverlay({ context, onClose, visible }: {
   visible: boolean;
 }) {
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -198,6 +202,15 @@ function GlobalSearchOverlay({ context, onClose, visible }: {
   const groups = query.trim() ? groupCommands(queryResults) : [];
   const keyboardItems = query.trim() ? groups.flatMap((group) => group.items) : [...recentItems, ...mostActive, ...explore];
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (visible) {
+      returnFocusRef.current = document.activeElement as HTMLElement | null;
+      return;
+    }
+    returnFocusRef.current?.focus?.();
+  }, [visible]);
+
   const close = () => {
     setQuery('');
     setSelectedIndex(0);
@@ -228,10 +241,10 @@ function GlobalSearchOverlay({ context, onClose, visible }: {
   };
 
   return (
-    <Modal animationType="fade" onRequestClose={close} presentationStyle="fullScreen" visible={visible}>
+    <Modal animationType={reduceMotion ? 'none' : 'fade'} onRequestClose={close} presentationStyle="fullScreen" visible={visible}>
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.overlay}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.overlayKeyboard}>
-        <View style={styles.overlayInner}>
+        <View accessibilityLabel="Search" accessibilityViewIsModal role="dialog" style={styles.overlayInner}>
           <View style={styles.overlaySearchRow}>
             <Pressable accessibilityLabel="Close search" accessibilityRole="button" onPress={close} style={({ pressed }) => [styles.overlayBack, pressed && styles.pressed]}>
               <SymbolView name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' } as never} size={19} tintColor={Theme.colors.text} weight="bold" />
@@ -272,7 +285,7 @@ function GlobalSearchOverlay({ context, onClose, visible }: {
                   selectedId={keyboardItems[selectedIndex]?.id}
                   title={group.category}
                 />
-              )) : <Text style={styles.emptyText}>No matching destinations.</Text>
+              )) : <Text style={styles.emptyText}>{TERMINOLOGY.empty.noMatchingResults}</Text>
             ) : (
               <>
                 <CommandSection
@@ -320,7 +333,7 @@ function CommandSection({ actionLabel, emptyLabel, items, onAction, onPress, sel
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        {actionLabel && onAction ? <Pressable accessibilityRole="button" onPress={onAction}><Text style={styles.sectionAction}>{actionLabel}</Text></Pressable> : null}
+        {actionLabel && onAction ? <Pressable accessibilityLabel={actionLabel} accessibilityRole="button" onPress={onAction} style={styles.sectionActionButton}><Text style={styles.sectionAction}>{actionLabel}</Text></Pressable> : null}
       </View>
       {items.length ? items.map((item) => (
         <CommandRow isSelected={selectedId === item.id} item={item} key={item.id} onPress={() => onPress(item)} />
@@ -351,7 +364,8 @@ function CommandRow({ isSelected, item, onPress }: { isSelected: boolean; item: 
 
 function SourceBadge({ state }: { state: CommandSourceState }) {
   const color = state === 'live' ? Theme.colors.success : state === 'test' ? Theme.colors.warning : state === 'unavailable' ? Theme.colors.textMuted : Theme.colors.accent;
-  return <View style={[styles.sourceBadge, { borderColor: color }]}><View style={[styles.sourceDot, { backgroundColor: color }]} /><Text style={[styles.sourceText, { color }]}>{state}</Text></View>;
+  const label = availabilityTerm(state);
+  return <View accessibilityLabel={`Availability: ${label}`} accessible style={[styles.sourceBadge, { borderColor: color }]}><View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={[styles.sourceDot, { backgroundColor: color }]} /><Text style={[styles.sourceText, { color }]}>{label}</Text></View>;
 }
 
 function iconForCategory(category: CommandCategory) {
@@ -374,7 +388,7 @@ function iconColor(category: CommandCategory) {
 }
 
 const styles = StyleSheet.create({
-  clearQuery: { alignItems: 'center', height: 36, justifyContent: 'center', width: 36 },
+  clearQuery: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 },
   commandRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two },
   emptyText: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, lineHeight: 20, paddingVertical: Spacing.two },
   headerAction: { borderRadius: Theme.radii.small },
@@ -399,6 +413,7 @@ const styles = StyleSheet.create({
   searchWrap: { flex: 1, minWidth: 0 },
   section: { gap: Spacing.one },
   sectionAction: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, padding: Spacing.two },
+  sectionActionButton: { alignItems: 'center', justifyContent: 'center', minHeight: 44, minWidth: 44 },
   sectionHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', minHeight: 30 },
   sectionTitle: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, textTransform: 'uppercase' },
   shell: { backgroundColor: Theme.colors.background, borderBottomColor: Theme.colors.border, borderBottomWidth: 1, zIndex: 20 },

@@ -116,11 +116,11 @@ export default function ReportScreen() {
 
       {!loading && records.length === 0 ? (
         <EmptyState
-          actionLabel="Generate today's report"
+          actionLabel="Generate report"
           onAction={() => void generateTodayReport()}
           stateType="not_generated"
           title="Your first briefing is ready to be built"
-          message="Generate today's report to establish the baseline for future change analysis."
+          message="Generate a report to establish the baseline for future change analysis."
         />
       ) : null}
 

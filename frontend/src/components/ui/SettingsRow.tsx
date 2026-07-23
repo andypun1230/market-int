@@ -43,6 +43,7 @@ export function SettingsRow({
           onValueChange={onValueChange}
           thumbColor={switchValue ? Theme.colors.accent : Theme.colors.textMuted}
           trackColor={{ false: Theme.colors.cardMuted, true: Theme.colors.accentSoft }}
+          style={styles.switchControl}
           value={switchValue}
         />
       ) : (
@@ -87,6 +88,10 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.78,
+  },
+  switchControl: {
+    minHeight: Theme.accessibility.minimumTouchTarget,
+    minWidth: Theme.accessibility.minimumTouchTarget,
   },
   row: {
     alignItems: 'center',
