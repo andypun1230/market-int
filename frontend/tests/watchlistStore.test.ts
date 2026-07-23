@@ -4,7 +4,7 @@ import {
   migrateWatchlistData,
   normalizeWatchlistId,
   normalizeWatchlistItemType,
-} from '../src/features/watchlist/store';
+} from '../src/features/watchlist/domain';
 
 function assert(condition: unknown, message: string) {
   if (!condition) {

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "stage": "9.2B",
+  "baseline_commit": "1c0082bd5e54dd9e374a31a41b17ace6ac3eadb4",
+  "classification": "PASS",
+  "baseline": {
+    "git_status": "clean",
+    "typescript": "PASS",
+    "lint": "PASS",
+    "data_ui_contract": {"result": "PASS", "screens": 28},
+    "web_export": {"result": "PASS", "static_routes": 25, "product_routes": 18},
+    "backend_tests": {"result": "PASS", "passed": 624, "failed": 0},
+    "frontend_standalone": {"result": "FAIL", "passed_files": 48, "failed_files": 5}
+  },
+  "focused_validation": {
+    "group_intelligence_backend": {"result": "PASS", "tests": 7},
+    "group_intelligence_frontend": "PASS",
+    "known_failure_disposition": {"result": "PASS", "resolved": 5, "remaining": 0},
+    "browser_interactions": "PASS",
+    "visual_acceptance": {"result": "PASS", "passed": 10, "failed": 0}
+  },
+  "final": {
+    "typescript": "PASS",
+    "lint": "PASS",
+    "data_ui_contract": "PASS",
+    "web_export": "PASS",
+    "backend_regression": {"result": "PASS", "passed": 631, "failed": 0},
+    "frontend_standalone": {"result": "PASS", "passed_files": 54, "failed_files": 0},
+    "route_validation": {"result": "PASS", "product_routes": 18, "changed_routes": 0},
+    "architecture_validation": "PASS"
+  },
+  "canonical_evidence": {
+    "sector_snapshot_id": "sector-sp100-v20260718-2026-07-21-67cb07c4fe",
+    "theme_snapshot_id": "theme-2026-07-22-c8d9a44cdd",
+    "contract_version": "group-intelligence-v1"
+  },
+  "failed_checks": [],
+  "commit_created": false,
+  "tag_created": false,
+  "freeze_ready": true
+}

@@ -77,6 +77,16 @@ import type {
 } from "@/features/context-intelligence/types";
 import { themeRotationCacheKey } from "@/features/themes/themeRotation";
 import type { ThemeRotationInterval } from "@/features/themes/themeSnapshot";
+import type {
+  BreadthHistoryTimeframe,
+  CanonicalBreadthHistory,
+  CanonicalDivergenceResponse,
+  CanonicalGroupComparison,
+  CanonicalGroupRegistry,
+  CanonicalGroupTimeframe,
+  CanonicalGroupType,
+  CanonicalSectorAlerts,
+} from "@/features/sectors/groupIntelligence";
 
 type RequestOptions = {
   timeoutMs?: number;
@@ -400,6 +410,65 @@ export function getSectorSnapshot() {
   return cachedRequest(
     "sector-snapshot:latest",
     () => request<unknown>("/market/sectors/snapshot/latest"),
+    60_000,
+  );
+}
+
+export function getCanonicalGroupRegistry(entityType: CanonicalGroupType) {
+  return cachedRequest(
+    `group-registry:${entityType}:v1`,
+    () => request<CanonicalGroupRegistry>(`/market/groups/registry?entity_type=${entityType}`),
+    60_000,
+  );
+}
+
+export function getCanonicalGroupComparison(
+  entityType: CanonicalGroupType,
+  ids: string[],
+  timeframe: CanonicalGroupTimeframe,
+) {
+  const stableIds = [...new Set(ids)].sort();
+  return cachedRequest(
+    `group-comparison:${entityType}:${stableIds.join(",")}:${timeframe}:v1`,
+    () => request<CanonicalGroupComparison>(
+      `/market/groups/compare?entity_type=${entityType}&ids=${encodeURIComponent(stableIds.join(","))}&timeframe=${timeframe}`,
+    ),
+    60_000,
+  );
+}
+
+export function getCanonicalBreadthHistory(
+  entityType: CanonicalGroupType,
+  entityId: string,
+  timeframe: BreadthHistoryTimeframe,
+) {
+  return cachedRequest(
+    `group-breadth-history:${entityType}:${entityId}:${timeframe}:v1`,
+    () => request<CanonicalBreadthHistory>(
+      `/market/groups/breadth-history?entity_type=${entityType}&entity_id=${encodeURIComponent(entityId)}&timeframe=${timeframe}`,
+    ),
+    60_000,
+  );
+}
+
+export function getCanonicalDivergences(
+  entityType: CanonicalGroupType,
+  entityId: string,
+  timeframe: BreadthHistoryTimeframe,
+) {
+  return cachedRequest(
+    `group-divergences:${entityType}:${entityId}:${timeframe}:v1`,
+    () => request<CanonicalDivergenceResponse>(
+      `/market/groups/divergences?entity_type=${entityType}&entity_id=${encodeURIComponent(entityId)}&timeframe=${timeframe}`,
+    ),
+    60_000,
+  );
+}
+
+export function getCanonicalSectorAlerts() {
+  return cachedRequest(
+    "sector-alerts:typed:v1",
+    () => request<CanonicalSectorAlerts>("/market/groups/sector-alerts"),
     60_000,
   );
 }

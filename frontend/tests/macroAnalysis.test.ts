@@ -276,7 +276,11 @@ function runTests() {
 
   const inflation = buildMacroDashboardViewModel(histories({ SPY: 0, IEF: -2, TLT: -4, GLD: 2, USO: 6 }), '3M', 'Asia/Hong_Kong', buildMacroMockScenario('inflation_reacceleration'));
   assert(inflation.overview.regime === 'inflationary', 'inflation scenario derives inflationary regime');
-  assert(inflation.interpretation.mainRisk.toLowerCase().includes('inflation'), 'inflation scenario exposes inflation risk');
+  assert(
+    inflation.interpretation.implication.toLowerCase().includes('inflation') &&
+      inflation.overview.currentRisks.some((risk) => risk.toLowerCase().includes('inflation')),
+    'inflation scenario exposes inflation risk without assuming it must replace the leading cross-asset risk',
+  );
 
   const growthSlowdown = buildMacroDashboardViewModel(histories({ SPY: -3, IEF: 3, TLT: 5, GLD: 2, USO: -4 }), '3M', 'Asia/Hong_Kong', buildMacroMockScenario('growth_slowdown'));
   assert(growthSlowdown.overview.regime === 'growth_slowdown', 'growth slowdown derives defensive economic regime');

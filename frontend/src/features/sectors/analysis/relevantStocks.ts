@@ -2,7 +2,7 @@ import type {
   ConstituentTestItem,
   TestHeatmapInterval,
 } from '@/data/sectorTabTestData';
-import { buildWatchlistKey } from '@/features/watchlist/store';
+import { buildWatchlistKey } from '@/features/watchlist/domain';
 
 export type RelevantStockPerformanceFilter = 'all' | 'positive' | 'negative' | 'nearZero';
 export type RelevantStockTrendFilter = 'all' | 'above20' | 'below20' | 'above50' | 'below50';

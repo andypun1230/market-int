@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
@@ -109,8 +109,116 @@ from app.snapshots.readers import (
 from app.snapshots.service import get_market_snapshot_service
 from app.stock_snapshots.readers import snapshot_response
 from app.stock_snapshots.service import get_stock_snapshot_service
+from app.group_intelligence import (
+    GroupSources,
+    build_breadth_history,
+    build_sector_alerts,
+    compare_groups,
+    detect_divergences,
+    filter_groups,
+    normalize_group_registry,
+)
 
 router = APIRouter()
+
+
+def _group_sources(entity_type: str, days: int = 260) -> GroupSources:
+    if entity_type == "sector":
+        service = get_sector_snapshot_service()
+        current = service.latest()
+        return GroupSources(current.model_dump() if current else None, service.history(days))
+    if entity_type == "theme":
+        service = get_theme_snapshot_service()
+        current = service.latest()
+        return GroupSources(current.model_dump() if current else None, service.history(days))
+    raise HTTPException(status_code=422, detail="entity_type must be sector or theme")
+
+
+@router.get("/market/groups/registry")
+async def get_group_registry(
+    entity_type: str = Query(description="Canonical sector or theme entity type."),
+    state: str | None = Query(default=None),
+    quadrant: str | None = Query(default=None),
+    rank_max: int | None = Query(default=None, ge=1),
+    breadth_min: float | None = Query(default=None, ge=0, le=100),
+    momentum_min: float | None = Query(default=None),
+    availability: str | None = Query(default=None),
+    movement: str | None = Query(default=None),
+    recent_transition: bool = Query(default=False),
+    strong_movement: bool = Query(default=False),
+    saved_only: bool = Query(default=False),
+    saved_ids: str = Query(default=""),
+    sort: str = Query(default="rank"),
+    timeframe: str = Query(default="1M"),
+) -> dict:
+    sources = _group_sources(entity_type)
+    registry = normalize_group_registry(entity_type, sources)  # type: ignore[arg-type]
+    return filter_groups(registry, {
+        "state": state, "quadrant": quadrant, "rank_max": rank_max,
+        "breadth_min": breadth_min, "momentum_min": momentum_min,
+        "availability": availability, "movement": movement,
+        "recent_transition": recent_transition, "saved_only": saved_only,
+        "strong_movement": strong_movement,
+        "saved_ids": [value for value in saved_ids.split(",") if value],
+        "sort": sort, "timeframe": timeframe,
+    })
+
+
+@router.get("/market/groups/compare")
+async def get_group_comparison(
+    entity_type: str = Query(description="Comparisons are same-type only: sector or theme."),
+    ids: str = Query(description="Comma-separated canonical entity IDs."),
+    timeframe: str = Query(default="1M"),
+) -> dict:
+    sources = _group_sources(entity_type)
+    registry = normalize_group_registry(entity_type, sources)  # type: ignore[arg-type]
+    try:
+        return compare_groups(registry, ids.split(","), timeframe)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@router.get("/market/groups/breadth-history")
+async def get_group_breadth_history(
+    entity_type: str = Query(description="Canonical sector or theme entity type."),
+    entity_id: str = Query(min_length=1),
+    timeframe: str = Query(default="3M"),
+) -> dict:
+    sources = _group_sources(entity_type)
+    try:
+        return build_breadth_history(entity_type, entity_id, sources, timeframe)  # type: ignore[arg-type]
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@router.get("/market/groups/divergences")
+async def get_group_divergences(
+    entity_type: str = Query(description="Canonical sector or theme entity type."),
+    entity_id: str = Query(min_length=1),
+    timeframe: str = Query(default="3M"),
+) -> dict:
+    sources = _group_sources(entity_type)
+    registry = normalize_group_registry(entity_type, sources)  # type: ignore[arg-type]
+    item = next((value for value in registry["items"] if value["id"] == entity_id), None)
+    if item is None:
+        raise HTTPException(status_code=404, detail="canonical entity not found")
+    try:
+        history = build_breadth_history(entity_type, entity_id, sources, timeframe)  # type: ignore[arg-type]
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    alerts = detect_divergences(item, history["observations"])
+    return {
+        "contract_version": "group-divergence-v1", "entity_type": entity_type,
+        "entity_id": entity_id, "snapshot_id": registry.get("snapshot_id"),
+        "timeframe": timeframe.upper(), "status": "available" if alerts else "empty",
+        "items": alerts, "count": len(alerts),
+    }
+
+
+@router.get("/market/groups/sector-alerts")
+async def get_typed_sector_alerts() -> dict:
+    sources = _group_sources("sector")
+    return build_sector_alerts(normalize_group_registry("sector", sources), sources)
 
 
 class LiveQuotesRequest(BaseModel):

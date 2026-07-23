@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "stage": "9.2B",
+  "captured_at": "2026-07-23T09:29:00Z",
+  "baseline_commit": "1c0082bd5e54dd9e374a31a41b17ace6ac3eadb4",
+  "result": "PASS",
+  "canonical_evidence": {
+    "sector_snapshot_id": "sector-sp100-v20260718-2026-07-21-67cb07c4fe",
+    "sector_market_date": "2026-07-21",
+    "theme_snapshot_id": "theme-2026-07-22-c8d9a44cdd",
+    "theme_market_date": "2026-07-22",
+    "contract_version": "group-intelligence-v1",
+    "sector_snapshot_schema": 5,
+    "theme_snapshot_schema": 3,
+    "sector_formula_version": "sector-composite-v1",
+    "theme_formula_version": "theme-intelligence-composite-v1",
+    "sector_rotation_model_version": "sector-relative-trend-momentum-v1",
+    "theme_rotation_model_version": "theme-relative-trend-momentum-v1"
+  },
+  "required_checks": [
+    "desktop_sector_compare",
+    "mobile_sector_compare",
+    "combined_filters",
+    "empty_filter_result",
+    "breadth_history",
+    "negative_divergence",
+    "positive_divergence",
+    "sector_alerts",
+    "alert_drilldown",
+    "unavailable_comparison"
+  ],
+  "failed_checks": [],
+  "checks": [
+    {"id": "desktop_sector_compare", "result": "PASS", "viewport": "1440x1000", "path": "artifacts/stage9.2b-screenshots/desktop-sector-compare.png", "sha256": "8b75e1090138ce0614bddaa20d695c4a0ad1c3a1e575464cb46683457bc5ad84", "assertions": ["same-type Sector comparison", "3 of 5 selected", "backend-owned fields", "normalized table"]},
+    {"id": "mobile_sector_compare", "result": "PASS", "viewport": "390x844", "path": "artifacts/stage9.2b-screenshots/mobile-sector-compare.png", "sha256": "f4d2f72a52574072b2c5a41a8ee984fee3c846fa67690b5cacc2eb9ca965e302", "assertions": ["mobile maximum 3", "selected state visible", "comparison remains scrollable"]},
+    {"id": "combined_filters", "result": "PASS", "viewport": "1280x900", "path": "artifacts/stage9.2b-screenshots/combined-canonical-filters.png", "sha256": "7a42a41bbd6305c5b2fa0cdf02b4b25cd48e7fd06a0f6b8e1a0e7a36c6e95bc0", "assertions": ["three filters combined", "1 of 11 result count", "canonical Energy result"]},
+    {"id": "empty_filter_result", "result": "PASS", "viewport": "1280x900", "path": "artifacts/stage9.2b-screenshots/empty-filter-state.png", "sha256": "e0aa335f8cf3d9a9fcae4852c6a473eadd87fd78cebccf11b7f4f3460ad40a39", "assertions": ["0 of 11 result count", "explicit empty result", "reset action available"]},
+    {"id": "breadth_history", "result": "PASS", "viewport": "1280x900", "path": "artifacts/stage9.2b-screenshots/breadth-history.png", "sha256": "8423b8ae41d79aa8f965e75435e543539bad669d0e87f3ef944be068d5357764", "assertions": ["7 immutable snapshots", "20/50/200 EMA", "A/D and highs-lows", "authoritative interpretation", "confidence and freshness"]},
+    {"id": "negative_divergence", "result": "PASS", "viewport": "1280x900", "path": "artifacts/stage9.2b-screenshots/negative-divergence.png", "sha256": "24aba17db85a63c55fec00f6d7cefff425df2bd906a1ccc61a8e12d45acbdcce", "assertions": ["negative direction", "severity", "explanation", "confirmation and invalidation"]},
+    {"id": "positive_divergence", "result": "PASS", "viewport": "1280x900", "path": "artifacts/stage9.2b-screenshots/positive-divergence.png", "sha256": "8423b8ae41d79aa8f965e75435e543539bad669d0e87f3ef944be068d5357764", "assertions": ["positive direction", "price/breadth evidence", "confirmation and invalidation"]},
+    {"id": "sector_alerts", "result": "PASS", "viewport": "1280x900", "path": "artifacts/stage9.2b-screenshots/sector-alerts.png", "sha256": "6f11d963cb3a48190337c1afaac55ce8437615a6a9121fdcf3c07220f7cb6604", "assertions": ["typed cards", "meaningful grouping", "severity prioritization", "no raw JSON"]},
+    {"id": "alert_drilldown", "result": "PASS", "viewport": "1280x900", "path": "artifacts/stage9.2b-screenshots/alert-drilldown.png", "sha256": "a9b09ac15546baf0bad9cd9e990b27ae81935cef27409fa85d33b78eb4f8a0b0", "assertions": ["evidence summary", "why it matters", "confirmation", "invalidation", "canonical detail action"]},
+    {"id": "unavailable_comparison", "result": "PASS", "viewport": "1280x900", "path": "artifacts/stage9.2b-screenshots/unavailable-comparison.png", "sha256": "3d66d81a67dc9767963ac67ca79e148e82aeabe8c674d3a6e06e8ee416804028", "assertions": ["unknown URL IDs are not fabricated", "0 selected", "explicit unavailable explanation"]}
+  ],
+  "runtime_checks": {
+    "deterministic_url": "PASS",
+    "alert_to_canonical_detail": "PASS",
+    "browser_console_errors": 0,
+    "stale_snapshot_rejected": true
+  }
+}
+

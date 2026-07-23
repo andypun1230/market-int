@@ -17,11 +17,11 @@ export const ROTATION_INTERVALS: RotationInterval[] = ['1W', '1M', '3M'];
 
 export function normalizeSectorDashboardResponse(raw: unknown): SectorDashboardResponse {
   const payload = firstRecord(
-    raw,
     getPath(raw, ['data']),
     getPath(raw, ['payload']),
     getPath(raw, ['result']),
     getPath(raw, ['market']),
+    raw,
   );
   const sectors = firstArray(
     getPath(payload, ['sectors']),

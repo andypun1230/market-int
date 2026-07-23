@@ -27,6 +27,10 @@ import {
 import { SectorDetailContent } from "@/features/sectors/components/SectorDetailContent";
 import { SectorThemeComparisonView } from "@/features/sectors/components/SectorThemeComparisonView";
 import { SectorThemeFilterPanel } from "@/features/sectors/components/SectorThemeFilterPanel";
+import { CanonicalGroupComparisonView } from "@/features/sectors/components/CanonicalGroupComparisonView";
+import { CanonicalGroupFilterPanel } from "@/features/sectors/components/CanonicalGroupFilterPanel";
+import { CanonicalBreadthHistoryPanel } from "@/features/sectors/components/CanonicalBreadthHistoryPanel";
+import { CanonicalSectorAlertsPanel } from "@/features/sectors/components/CanonicalSectorAlertsPanel";
 import { SectorThemeSearchModal } from "@/features/sectors/components/SectorThemeSearchModal";
 import { ThemeRotationExperience } from "@/features/themes/components/ThemeRotationExperience";
 import {
@@ -73,7 +77,17 @@ import {
 import { useThemeSnapshot } from "@/hooks/useThemeSnapshot";
 import { useThemeRotation } from "@/hooks/useThemeRotation";
 import { useThemeStatus } from "@/hooks/useThemeStatus";
+import { useCanonicalGroupRegistry } from "@/hooks/useGroupIntelligence";
 import { areTestScenariosEnabled } from "@/services/runtimeConfig";
+import {
+  DEFAULT_CANONICAL_GROUP_FILTERS,
+  countCanonicalGroupFilters,
+  filterCanonicalGroups,
+  type CanonicalGroupFilters,
+  type CanonicalGroupItem,
+  type CanonicalGroupTimeframe,
+  type CanonicalGroupType,
+} from "@/features/sectors/groupIntelligence";
 
 type ActiveCategory = "sectors" | "themes" | "signals";
 type ActiveSection =
@@ -123,17 +137,25 @@ export default function SectorsScreen() {
     entityKind: entityKindParam,
     entityName: entityNameParam,
     section: sectionParam,
+    compareIds: compareIdsParam,
+    compareTimeframe: compareTimeframeParam,
+    compareType: compareTypeParam,
   } = useLocalSearchParams<{
     actionNonce?: string | string[];
     entityId?: string | string[];
     entityKind?: string | string[];
     entityName?: string | string[];
     section?: string | string[];
+    compareIds?: string | string[];
+    compareTimeframe?: string | string[];
+    compareType?: string | string[];
   }>();
   const { snapshot, loading, error, refetch } = useSectorSnapshot();
   const testScenariosEnabled = areTestScenariosEnabled();
   const { status: themeStatus } = useThemeStatus(!testScenariosEnabled);
   const { snapshot: themeSnapshot } = useThemeSnapshot(!testScenariosEnabled);
+  const sectorRegistry = useCanonicalGroupRegistry("sector", !testScenariosEnabled);
+  const themeRegistry = useCanonicalGroupRegistry("theme", !testScenariosEnabled);
   const [preferences, updatePreferences] = useSectorUiPreferences();
   const requestedSection = firstActiveSection(sectionParam);
   const activeSection =
@@ -161,10 +183,15 @@ export default function SectorsScreen() {
   const [dismissedDeepLinkKey, setDismissedDeepLinkKey] = useState<
     string | null
   >(null);
-  const [comparisonVisible, setComparisonVisible] = useState(false);
+  const [comparisonVisible, setComparisonVisible] = useState(
+    () => firstParam(compareTypeParam) === "sector" || firstParam(compareTypeParam) === "theme",
+  );
   const [filterVisible, setFilterVisible] = useState(false);
   const [filtersBySection, setFiltersBySection] = useState<
     Partial<Record<ActiveSection, SectorThemeFilters>>
+  >({});
+  const [canonicalFiltersBySection, setCanonicalFiltersBySection] = useState<
+    Partial<Record<ActiveSection, CanonicalGroupFilters>>
   >({});
   const [searchVisible, setSearchVisible] = useState(false);
   const [comparisonItems, setComparisonItems] = useState<SectorThemeTestItem[]>(
@@ -188,6 +215,8 @@ export default function SectorsScreen() {
   );
   const activeFilters =
     filtersBySection[activeSection] ?? DEFAULT_SECTOR_THEME_FILTERS;
+  const canonicalFilters =
+    canonicalFiltersBySection[activeSection] ?? DEFAULT_CANONICAL_GROUP_FILTERS;
   const watchlistKeys = useMemo(
     () =>
       new Set(
@@ -224,6 +253,20 @@ export default function SectorsScreen() {
     [preferences.themeRotationInterval, themes],
   );
   const liveThemes = useMemo(() => themeSnapshot?.items ?? [], [themeSnapshot]);
+  const activeRegistry = activeCategory === "themes" ? themeRegistry.data : sectorRegistry.data;
+  const filteredCanonicalItems = useMemo(
+    () => filterCanonicalGroups(activeRegistry?.items ?? [], canonicalFilters, watchlistKeys),
+    [activeRegistry, canonicalFilters, watchlistKeys],
+  );
+  const filteredCanonicalIds = useMemo(() => new Set(filteredCanonicalItems.map((item) => item.id)), [filteredCanonicalItems]);
+  const filteredRows = useMemo(
+    () => testScenariosEnabled || !sectorRegistry.data ? rows : rows.filter((row) => filteredCanonicalIds.has(row.sectorId)),
+    [filteredCanonicalIds, rows, sectorRegistry.data, testScenariosEnabled],
+  );
+  const filteredLiveThemes = useMemo(
+    () => testScenariosEnabled || !themeRegistry.data ? liveThemes : liveThemes.filter((theme) => filteredCanonicalIds.has(theme.id)),
+    [filteredCanonicalIds, liveThemes, testScenariosEnabled, themeRegistry.data],
+  );
   const searchItems = useMemo(
     () =>
       buildSectorThemeSearchItems({
@@ -238,6 +281,15 @@ export default function SectorsScreen() {
     [themeRotation],
   );
   const themeProvenance = themeTabProvenance(themeSnapshot);
+  const comparisonType: CanonicalGroupType =
+    firstParam(compareTypeParam) === "theme" || activeCategory === "themes" ? "theme" : "sector";
+  const comparisonRegistry = comparisonType === "theme" ? themeRegistry.data : sectorRegistry.data;
+  const comparisonInitialIds = firstParam(compareIdsParam).split(",").filter(Boolean);
+  const requestedComparisonTimeframe = firstParam(compareTimeframeParam).toUpperCase();
+  const comparisonInitialTimeframe: CanonicalGroupTimeframe =
+    (["1D", "1W", "1M", "3M", "6M", "1Y"] as const).includes(requestedComparisonTimeframe as CanonicalGroupTimeframe)
+      ? requestedComparisonTimeframe as CanonicalGroupTimeframe
+      : "1M";
   const title =
     activeCategory === "themes"
       ? "Themes"
@@ -352,9 +404,9 @@ export default function SectorsScreen() {
         <SectorNavigation
           activeCategory={activeCategory}
           activeSection={activeSection}
-          activeFilterCount={countActiveFilters(activeFilters)}
-          comparisonEnabled={testScenariosEnabled}
-          filterEnabled={testScenariosEnabled}
+          activeFilterCount={testScenariosEnabled ? countActiveFilters(activeFilters) : countCanonicalGroupFilters(canonicalFilters)}
+          comparisonEnabled={testScenariosEnabled || (activeCategory !== "signals" && (activeRegistry?.items.length ?? 0) >= 2)}
+          filterEnabled={testScenariosEnabled || (activeCategory !== "signals" && Boolean(activeRegistry))}
           onCategoryChange={(category) => {
             router.setParams({ commandTarget: undefined, section: undefined });
             updatePreferences({
@@ -371,15 +423,19 @@ export default function SectorsScreen() {
         />
 
         {filterVisible ? (
-          <SectorThemeFilterPanel
-            filters={activeFilters}
-            onChange={(filters) =>
-              setFiltersBySection((current) => ({
-                ...current,
-                [activeSection]: filters,
-              }))
-            }
-          />
+          testScenariosEnabled ? (
+            <SectorThemeFilterPanel
+              filters={activeFilters}
+              onChange={(filters) => setFiltersBySection((current) => ({ ...current, [activeSection]: filters }))}
+            />
+          ) : (
+            <CanonicalGroupFilterPanel
+              filters={canonicalFilters}
+              onChange={(filters) => setCanonicalFiltersBySection((current) => ({ ...current, [activeSection]: filters }))}
+              resultCount={filteredCanonicalItems.length}
+              totalCount={activeRegistry?.items.length ?? 0}
+            />
+          )
         ) : null}
 
         {!snapshot &&
@@ -416,7 +472,7 @@ export default function SectorsScreen() {
                 `${row.etfSymbol} · #${row.rank} · ${formatClassification(row.classification)}`
               }
               getValue={(row) => row.returns[preferences.sectorHeatmapInterval]}
-              items={rows}
+              items={filteredRows}
               onPressItem={(row) =>
                 setSelected({ kind: "sector", sectorId: row.sectorId })
               }
@@ -516,15 +572,13 @@ export default function SectorsScreen() {
         ) : null}
 
         {activeSection === "sectorAlerts" && snapshot ? (
-          <DashboardCard
-            title="Rotation Alerts"
-            accentColor={Theme.colors.warning}
-          >
-            <AlertList
-              alerts={presentSnapshotAlerts(snapshot.alerts, "Sector")}
-              emptyMessage="No transition alerts yet."
-            />
-          </DashboardCard>
+          testScenariosEnabled ? (
+            <DashboardCard title="Rotation Alerts" accentColor={Theme.colors.warning}>
+              <AlertList alerts={presentSnapshotAlerts(snapshot.alerts, "Sector")} emptyMessage="No transition alerts yet." />
+            </DashboardCard>
+          ) : (
+            <CanonicalSectorAlertsPanel onOpenSector={(sectorId) => setSelected({ kind: "sector", sectorId: normalizeSectorId(sectorId) ?? sectorId as SectorId })} />
+          )
         ) : null}
 
         {activeSection === "themesHeatmap" ? (
@@ -578,7 +632,7 @@ export default function SectorsScreen() {
                 getValue={(item) =>
                   item.returns[preferences.themeHeatmapInterval]
                 }
-                items={liveThemes}
+                items={filteredLiveThemes}
                 onPressItem={(item) => setSelected({ item, kind: "theme" })}
               />
               <Text style={styles.note}>
@@ -802,16 +856,16 @@ export default function SectorsScreen() {
         }}
       >
         {selected?.kind === "sector" ? (
-          <SectorDetailContent
-            key={selected.sectorId}
-            sectorId={selected.sectorId}
-          />
+          <View style={styles.detailStack}>
+            <SectorDetailContent key={selected.sectorId} sectorId={selected.sectorId} />
+            {!testScenariosEnabled ? <CanonicalBreadthHistoryPanel entityId={selected.sectorId} entityType="sector" /> : null}
+          </View>
         ) : null}
         {selected?.kind === "theme" ? (
-          <ThemeDetailContent
-            theme={selected.item}
-            overlap={themeSnapshot?.overlap ?? []}
-          />
+          <View style={styles.detailStack}>
+            <ThemeDetailContent theme={selected.item} overlap={themeSnapshot?.overlap ?? []} />
+            {!testScenariosEnabled ? <CanonicalBreadthHistoryPanel entityId={selected.item.id} entityType="theme" /> : null}
+          </View>
         ) : null}
       </DetailModal>
       <SectorThemeSearchModal
@@ -846,23 +900,40 @@ export default function SectorsScreen() {
       />
       <DetailModal
         visible={comparisonVisible}
-        title="Compare Sectors & Themes"
-        subtitle="Restored comparison configuration"
-        onClose={() => setComparisonVisible(false)}
+        title={`Compare ${comparisonType === "sector" ? "Sectors" : "Themes"}`}
+        subtitle="Canonical same-type comparison"
+        onClose={() => {
+          setComparisonVisible(false);
+          router.setParams({ compareIds: undefined, compareTimeframe: undefined, compareType: undefined });
+        }}
       >
-        <SectorThemeComparisonView
-          favourites={watchlistKeys}
-          items={modelItems}
-          onToggleFavourite={(item) =>
-            watchlist.toggleWatchlistItem({
-              id: item.id,
-              name: item.name,
-              type: item.type,
-            })
-          }
-          selectedItems={comparisonItems}
-          setSelectedItems={setComparisonItems}
-        />
+        {testScenariosEnabled ? (
+          <SectorThemeComparisonView
+            favourites={watchlistKeys}
+            items={modelItems}
+            onToggleFavourite={(item) => watchlist.toggleWatchlistItem({ id: item.id, name: item.name, type: item.type })}
+            selectedItems={comparisonItems}
+            setSelectedItems={setComparisonItems}
+          />
+        ) : (
+          <CanonicalGroupComparisonView
+            entityType={comparisonType}
+            initialIds={comparisonInitialIds}
+            initialTimeframe={comparisonInitialTimeframe}
+            items={comparisonRegistry?.items ?? []}
+            onOpenItem={(item: CanonicalGroupItem) => {
+              setComparisonVisible(false);
+              if (item.type === "sector") {
+                const sectorId = normalizeSectorId(item.id);
+                if (sectorId) setSelected({ kind: "sector", sectorId });
+              } else {
+                const theme = liveThemes.find((candidate) => candidate.id === item.id);
+                if (theme) setSelected({ item: theme, kind: "theme" });
+              }
+            }}
+            onSelectionChange={(ids, timeframe) => router.setParams({ compareIds: ids.join(",") || undefined, compareTimeframe: timeframe, compareType: comparisonType })}
+          />
+        )}
       </DetailModal>
     </AppScreen>
   );

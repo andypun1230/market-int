@@ -41,7 +41,7 @@ class BreadthSnapshotBuilder:
             result.core["signal_confidence"], source_snapshot_id=snapshot_id, calculated_at=now
         )
         core = {**result.core, "data_confidence": data_confidence, "signal_confidence": signal_confidence}
-        snapshot = BreadthSnapshot(snapshot_id=snapshot_id, universe_id=universe.universe_id, universe_version=universe.version, market_date=market_date, created_at=now, published_at=now, status=result.coverage["coverage_status"], score=result.score, classification=result.classification, trend=result.trend, confidence=result.confidence, coverage=result.coverage, advance_decline={key: core[key] for key in ("advancing_count", "declining_count", "unchanged_count", "net_advances", "advance_decline_ratio", "advance_decline_ratio_display", "advance_decline_ratio_smoothed", "ratio_method", "percent_advancing", "percent_declining")}, moving_average_breadth={key: core[key] for key in ("percent_above_20ema", "percent_above_50ema", "percent_above_200ema")}, highs_lows={key: core[key] for key in ("new_52_week_highs", "new_52_week_lows", "highs_minus_lows", "high_low_ratio")}, sector_breadth=result.sectors, divergences=detect_divergence(benchmark, self.storage.history(universe.universe_id, "breadth_score", 30)), source_state=source_state(), providers=["polygon"], latest_input_timestamp=max(timestamps) if timestamps else None, oldest_input_timestamp=min(timestamps) if timestamps else None, timestamp_skew=None, warnings=result.warnings, missing_dependencies=result.coverage["members_missing"], calculation_version=BreadthPolicy.from_environment().calculation_version, input_hash=result.input_hash, sections={"core": section(result.coverage, core), "sectors": section(result.coverage, result.sectors), "divergence": section(result.coverage, [])}, semantics_version=SEMANTICS_VERSION, data_confidence=data_confidence, signal_confidence=signal_confidence)
+        snapshot = BreadthSnapshot(snapshot_id=snapshot_id, universe_id=universe.universe_id, universe_version=universe.version, market_date=market_date, created_at=now, published_at=now, status=result.coverage["coverage_status"], score=result.score, classification=result.classification, trend=result.trend, confidence=result.confidence, coverage=result.coverage, advance_decline={key: core[key] for key in ("advancing_count", "declining_count", "unchanged_count", "net_advances", "advance_decline_ratio", "advance_decline_ratio_display", "advance_decline_ratio_smoothed", "ratio_method", "percent_advancing", "percent_declining")}, moving_average_breadth={key: core[key] for key in ("percent_above_20ema", "percent_above_50ema", "percent_above_200ema")}, highs_lows={key: core[key] for key in ("new_52_week_highs", "new_52_week_lows", "highs_minus_lows", "high_low_ratio")}, sector_breadth=result.sectors, divergences=detect_divergence(benchmark, self.storage.history(universe.universe_id, "breadth_score", 30), self.storage.history(universe.universe_id, "highs_minus_lows", 30)), source_state=source_state(), providers=["polygon"], latest_input_timestamp=max(timestamps) if timestamps else None, oldest_input_timestamp=min(timestamps) if timestamps else None, timestamp_skew=None, warnings=result.warnings, missing_dependencies=result.coverage["members_missing"], calculation_version=BreadthPolicy.from_environment().calculation_version, input_hash=result.input_hash, sections={"core": section(result.coverage, core), "sectors": section(result.coverage, result.sectors), "divergence": section(result.coverage, [])}, semantics_version=SEMANTICS_VERSION, data_confidence=data_confidence, signal_confidence=signal_confidence)
         namespace = breadth_namespace()
         if snapshot.status == "unavailable":
             self.storage.set_state(namespace, "last_error", "minimum_breadth_coverage_not_met", now)
@@ -54,15 +54,47 @@ def section(coverage: dict, payload: object) -> dict[str, object]:
     return {"status": coverage["coverage_status"], "coverage": coverage["coverage_ratio"], "calculated_at": datetime.now(timezone.utc).isoformat(), "payload": payload, "warnings": coverage["coverage_warnings"]}
 
 
-def detect_divergence(benchmark: tuple, history: list[dict]) -> list[dict]:
+def detect_divergence(benchmark: tuple, history: list[dict], highs_lows_history: list[dict] | None = None) -> list[dict]:
     # Conservative: no signal until sufficient persisted breadth history exists.
     if len(benchmark) < 10 or len(history) < 10: return []
     prices = [bar.close for bar in benchmark[-10:]]; scores = [row["value"] for row in history[-10:] if isinstance(row.get("value"), (int, float))]
     if len(scores) < 10: return []
     price_change = (prices[-1] / prices[0] - 1) * 100; score_change = scores[-1] - scores[0]
-    if price_change >= 3 and score_change <= -8: return [{"type": "bearish", "active": True, "detected_at": benchmark[-1].session_date, "lookback": 10, "benchmark_change": round(price_change, 2), "breadth_change": round(score_change, 2), "confidence": "moderate", "explanation": "Benchmark advanced while breadth weakened over ten completed sessions.", "invalidation_condition": "Breadth score recovers above its ten-session starting level."}]
-    if price_change <= -3 and score_change >= 8: return [{"type": "bullish", "active": True, "detected_at": benchmark[-1].session_date, "lookback": 10, "benchmark_change": round(price_change, 2), "breadth_change": round(score_change, 2), "confidence": "moderate", "explanation": "Benchmark declined while breadth improved over ten completed sessions.", "invalidation_condition": "Breadth score falls below its ten-session starting level."}]
-    return []
+    detected_at = benchmark[-1].session_date
+    alerts: list[dict] = []
+    if price_change >= 3 and score_change <= -8:
+        alerts.append(_market_divergence("index_rising_breadth_falling", "bearish", "negative", detected_at, {"benchmark_change": round(price_change, 2), "breadth_change": round(score_change, 2)}, "Benchmark advanced while breadth weakened over ten completed sessions.", "Breadth score recovers above its ten-session starting level."))
+    if price_change <= -3 and score_change >= 8:
+        alerts.append(_market_divergence("index_falling_breadth_improving", "bullish", "positive", detected_at, {"benchmark_change": round(price_change, 2), "breadth_change": round(score_change, 2)}, "Benchmark declined while breadth improved over ten completed sessions.", "Breadth score falls below its ten-session starting level."))
+    high_low_values = [row["value"] for row in (highs_lows_history or [])[-10:] if isinstance(row.get("value"), (int, float))]
+    if len(benchmark) >= 20 and len(high_low_values) >= 10 and prices[-1] >= max(bar.close for bar in benchmark[-20:]) and high_low_values[-1] - high_low_values[0] <= -5:
+        alerts.append(_market_divergence("index_high_not_confirmed_by_new_highs", "bearish", "negative", detected_at, {"index_at_20_session_high": True, "highs_minus_lows_change": round(high_low_values[-1] - high_low_values[0], 2)}, "The benchmark reached a 20-session high while new-high participation deteriorated.", "Highs minus lows recovers to its ten-session starting level."))
+    return alerts
+
+
+def _market_divergence(rule_id: str, legacy_type: str, direction: str, detected_at: str, evidence: dict, explanation: str, invalidation: str) -> dict:
+    stable = f"SPY:{rule_id}:{detected_at}"
+    return {
+        "id": hashlib.sha256(stable.encode()).hexdigest()[:20],
+        "rule_id": rule_id,
+        "type": legacy_type,
+        "active": True,
+        "entity": {"id": "SPY", "type": "index", "name": "S&P 500 ETF"},
+        "direction": direction,
+        "severity": "medium",
+        "detected_at": detected_at,
+        "lookback": 10,
+        **evidence,
+        "evidence": evidence,
+        "explanation": explanation,
+        "why_it_matters": "Index direction is less reliable when internal participation does not confirm it.",
+        "confirmation_condition": "The condition persists through the next completed BreadthSnapshot.",
+        "invalidation_condition": invalidation,
+        "confidence": "moderate",
+        "freshness": {"state": "current", "as_of": detected_at},
+        "availability": {"state": "available", "reason": None},
+        "canonical_destination": {"route": "/market", "params": {"section": "breadth"}},
+    }
 
 
 def breadth_namespace() -> str:
