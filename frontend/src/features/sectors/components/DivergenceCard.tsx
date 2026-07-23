@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
 import { TestDataBadge } from '@/components/ui/TestDataBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   buildDivergenceAccessibilitySummary,
   buildDivergenceEvidenceRows,
@@ -124,18 +124,18 @@ const styles = StyleSheet.create({
   },
   empty: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   evidenceLabel: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   evidencePrimary: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   evidenceRow: {
@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
   },
   evidenceSecondary: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   evidenceStack: {
@@ -176,14 +176,14 @@ const styles = StyleSheet.create({
   },
   implicationLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   implicationText: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   signal: {
@@ -205,14 +205,14 @@ const styles = StyleSheet.create({
   },
   summary: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 18,
   },
   title: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

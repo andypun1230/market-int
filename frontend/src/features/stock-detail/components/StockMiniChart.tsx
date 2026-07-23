@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   buildStockMiniChartModel,
   formatCurrency,
@@ -515,8 +515,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(15, 23, 42, 0.78)',
     borderRadius: Theme.radii.small,
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     paddingHorizontal: Spacing.one,
     paddingVertical: Spacing.half,
     position: 'absolute',
@@ -535,13 +535,13 @@ const styles = StyleSheet.create({
   },
   chartSubtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   chartTitle: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   container: {
     gap: Spacing.two,
@@ -555,8 +555,8 @@ const styles = StyleSheet.create({
   },
   directionText: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   emptyChart: {
     alignItems: 'center',
@@ -566,14 +566,14 @@ const styles = StyleSheet.create({
   },
   emptySubtext: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.emphasis,
     textAlign: 'center',
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
   gridLine: {
@@ -592,8 +592,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   periodChange: {
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   pointMarker: {
     backgroundColor: Theme.colors.background,
@@ -621,8 +621,8 @@ const styles = StyleSheet.create({
   },
   rangeText: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   rangeTextSelected: {
     color: Theme.colors.accent,
@@ -633,14 +633,14 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   statValue: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   statsRow: {
@@ -672,13 +672,13 @@ const styles = StyleSheet.create({
   },
   tooltipText: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   tooltipTitle: {
     color: Theme.colors.text,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   volumeBar: {
     backgroundColor: 'rgba(148, 163, 184, 0.36)',
@@ -696,22 +696,22 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: Theme.colors.warning,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 16,
   },
   xAxisLabel: {
     bottom: VOLUME_AREA_HEIGHT + 1,
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     position: 'absolute',
   },
   yAxisLabel: {
     backgroundColor: 'rgba(15, 23, 42, 0.72)',
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     paddingLeft: Spacing.one,
     position: 'absolute',
     right: 3,

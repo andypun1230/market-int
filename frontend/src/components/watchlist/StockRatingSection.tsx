@@ -12,7 +12,7 @@ import {
   WarningCard,
   WatchlistSectionHeader,
 } from '@/components/watchlist/WatchlistPrimitives';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { StockRatingItem } from '@/types/market';
 import { getRatingColor } from '@/utils/colors';
 import { formatNullableNumber } from '@/utils/formatters';
@@ -152,27 +152,27 @@ const styles = StyleSheet.create({
   },
   rankLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   rankValue: {
     color: Theme.colors.text,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   titleBlock: {
     flex: 1,
   },
   symbol: {
     color: Theme.colors.text,
-    fontSize: 22,
-    fontWeight: '900',
+    fontSize: Typography.sectionHero.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sector: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.one,
   },
   scoreRow: {
@@ -187,8 +187,8 @@ const styles = StyleSheet.create({
   },
   riskText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   narrativeGrid: {
@@ -197,8 +197,8 @@ const styles = StyleSheet.create({
   },
   explanation: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 20,
     marginTop: Spacing.twoAndHalf,
   },

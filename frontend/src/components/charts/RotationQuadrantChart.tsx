@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
 import { TestDataBadge } from '@/components/ui/TestDataBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   buildRotationTrailSummary,
   calculateRotationDomain,
@@ -775,8 +775,8 @@ function formatSigned(value: number) {
 
 const styles = StyleSheet.create({
   arrow: {
-    fontSize: 22,
-    fontWeight: '900',
+    fontSize: Typography.sectionHero.fontSize,
+    fontWeight: Typography.weights.strong,
     position: 'absolute',
     zIndex: 4,
   },
@@ -800,14 +800,14 @@ const styles = StyleSheet.create({
   description: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   expandButton: {
     alignItems: 'center',
@@ -821,13 +821,13 @@ const styles = StyleSheet.create({
   },
   expandText: {
     color: Theme.colors.accent,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   helperText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   horizontalAxis: {
     backgroundColor: Theme.colors.border,
@@ -880,15 +880,15 @@ const styles = StyleSheet.create({
   },
   inspectorText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 16,
   },
   inspectorTitle: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   labelConnector: {
     height: 1,
@@ -910,8 +910,8 @@ const styles = StyleSheet.create({
   },
   neutralLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     opacity: 0.75,
     position: 'absolute',
   },
@@ -928,8 +928,8 @@ const styles = StyleSheet.create({
   },
   openDetailsText: {
     color: Theme.colors.accent,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   pointLabel: {
     backgroundColor: Theme.colors.card,
@@ -943,8 +943,8 @@ const styles = StyleSheet.create({
   },
   pointLabelText: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
   pressed: {
@@ -952,8 +952,8 @@ const styles = StyleSheet.create({
   },
   quadrantLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     letterSpacing: 0,
     position: 'absolute',
     textTransform: 'uppercase',
@@ -969,7 +969,7 @@ const styles = StyleSheet.create({
   },
   selectedLabelText: {
     color: Theme.colors.text,
-    fontSize: 11,
+    fontSize: Typography.caption.fontSize,
   },
   summaryCard: {
     backgroundColor: Theme.colors.cardMuted,
@@ -981,14 +981,14 @@ const styles = StyleSheet.create({
   },
   summaryText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
   summaryTitle: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   trailDot: {
     borderRadius: 99,
@@ -1022,8 +1022,8 @@ const styles = StyleSheet.create({
   },
   watchlistButtonText: {
     color: Theme.colors.text,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   weakening: {
     bottom: Spacing.two,
@@ -1035,8 +1035,8 @@ const styles = StyleSheet.create({
   xAxisLabel: {
     bottom: Spacing.one,
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     left: 0,
     position: 'absolute',
     right: 0,
@@ -1044,8 +1044,8 @@ const styles = StyleSheet.create({
   },
   yAxisLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     left: -28,
     position: 'absolute',
     top: '46%',

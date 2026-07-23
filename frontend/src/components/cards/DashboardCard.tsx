@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { ColorValue, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type DashboardCardProps = PropsWithChildren<{
   title?: string;
@@ -9,6 +9,13 @@ type DashboardCardProps = PropsWithChildren<{
   accentColor?: ColorValue;
   style?: ViewStyle;
 }>;
+
+export const CARD_SURFACE: ViewStyle = {
+  backgroundColor: Theme.colors.card,
+  borderColor: Theme.colors.border,
+  borderRadius: Theme.radii.card,
+  borderWidth: 1,
+};
 
 export function DashboardCard({
   accentColor,
@@ -33,10 +40,7 @@ export function DashboardCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Theme.colors.card,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.card,
-    borderWidth: 1,
+    ...CARD_SURFACE,
     overflow: 'hidden',
     padding: Spacing.three,
   },
@@ -53,12 +57,12 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 18,
   },
 });

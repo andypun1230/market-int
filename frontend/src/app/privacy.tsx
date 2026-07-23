@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 const PRIVACY_ITEMS = [
   {
@@ -44,7 +44,7 @@ export default function PrivacyScreen() {
 const styles = StyleSheet.create({
   body: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 22,
   },
   stack: {

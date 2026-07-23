@@ -7,7 +7,7 @@ import { DetailModal } from '@/components/ui/DetailModal';
 import { DecisionSummaryCard } from '@/components/ui/DecisionSummaryCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { DailyBriefingPreview } from '@/features/reports/components/DailyBriefingPreview';
 import { ReportHistorySection } from '@/features/reports/components/ReportHistorySection';
@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.twoAndHalf,
   },
-  errorText: { color: Theme.colors.danger, fontSize: 13, fontWeight: '800' },
+  errorText: { color: Theme.colors.danger, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   historyStack: { gap: Spacing.twoAndHalf },
-  sectionLabel: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '900', marginTop: Spacing.two },
+  sectionLabel: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, marginTop: Spacing.two },
   skeletonStack: { gap: Spacing.three },
 });

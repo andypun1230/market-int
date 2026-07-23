@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 interface SummaryTileProps {
   label: string;
@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
   label: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   icon: {
@@ -53,8 +53,8 @@ const styles = StyleSheet.create({
   },
   value: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 20,
   },
 });

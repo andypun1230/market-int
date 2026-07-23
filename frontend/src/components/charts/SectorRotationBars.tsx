@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { SectorLeader } from '@/types/market';
 
 type SectorRotationBarsProps = {
@@ -137,18 +137,18 @@ const styles = StyleSheet.create({
   },
   rank: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   name: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   change: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   barRow: {
     gap: Spacing.one,
@@ -160,18 +160,18 @@ const styles = StyleSheet.create({
   },
   barLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   barValue: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
 });

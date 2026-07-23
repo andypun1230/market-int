@@ -3,7 +3,7 @@ import type { GestureResponderEvent } from 'react-native';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   buildInstitutionalActivityChartViewModel,
   institutionalChartHistoryDays,
@@ -730,14 +730,14 @@ const styles = StyleSheet.create({
   axisDateLabel: {
     bottom: 2,
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     position: 'absolute',
   },
   bodyText: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 18,
   },
   candleBody: {
@@ -763,8 +763,8 @@ const styles = StyleSheet.create({
   },
   chevron: {
     color: Theme.colors.textMuted,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   crosshair: {
     backgroundColor: 'rgba(148, 163, 184, 0.28)',
@@ -787,8 +787,8 @@ const styles = StyleSheet.create({
   },
   disclosureTitle: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   emaSegment: {
     borderRadius: Theme.radii.pill,
@@ -805,8 +805,8 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   eventMarker: {
     alignItems: 'center',
@@ -825,8 +825,8 @@ const styles = StyleSheet.create({
   },
   eventMarkerText: {
     color: Theme.colors.text,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   eventLegendMarker: {
     alignItems: 'center',
@@ -839,8 +839,8 @@ const styles = StyleSheet.create({
   },
   eventLegendMarkerText: {
     color: Theme.colors.text,
-    fontSize: 8,
-    fontWeight: '900',
+    fontSize: Typography.chartMicro.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   eventLegendRow: {
     bottom: 1,
@@ -870,8 +870,8 @@ const styles = StyleSheet.create({
   },
   filterText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   filterTextActive: {
     color: Theme.colors.accent,
@@ -891,8 +891,8 @@ const styles = StyleSheet.create({
   },
   helperText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 16,
   },
   legendDot: {
@@ -916,8 +916,8 @@ const styles = StyleSheet.create({
   },
   legendText: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   markerAccumulation: {
     backgroundColor: 'rgba(34, 197, 94, 0.24)',
@@ -951,14 +951,14 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   metricValue: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   netGaugeBlock: {
     gap: Spacing.one,
@@ -1019,16 +1019,16 @@ const styles = StyleSheet.create({
   },
   selectorText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   selectorTextActive: {
     color: Theme.colors.accent,
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   summaryBox: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -1050,13 +1050,13 @@ const styles = StyleSheet.create({
   },
   summaryTitle: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   titleBlock: {
     flex: 1,
@@ -1074,25 +1074,25 @@ const styles = StyleSheet.create({
   },
   tooltipEvent: {
     color: Theme.colors.warning,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 14,
   },
   tooltipPrimary: {
     color: Theme.colors.text,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     paddingTop: 2,
   },
   tooltipLine: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   tooltipTitle: {
     color: Theme.colors.text,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   volumeBar: {
     backgroundColor: 'rgba(148, 163, 184, 0.34)',
@@ -1111,8 +1111,8 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: Theme.colors.warning,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   wick: {
     position: 'absolute',
@@ -1120,8 +1120,8 @@ const styles = StyleSheet.create({
   },
   yAxisLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     position: 'absolute',
     right: -CHART_RIGHT + 4,
     top: -7,

@@ -46,6 +46,51 @@ export const Theme = {
   },
 } as const;
 
+/**
+ * Semantic typography roles used across product UI.
+ *
+ * `chartMicro` and `chartAxis` are the only approved sub-caption exceptions;
+ * they are reserved for non-interactive chart annotations that have an
+ * equivalent accessibility summary. Product copy and controls start at
+ * `caption` and `small`, respectively.
+ */
+export const Typography = {
+  chartMicro: { fontSize: 8, lineHeight: 11 },
+  chartAxis: { fontSize: 9, lineHeight: 12 },
+  chartLabel: { fontSize: Theme.fontSizes.caption, lineHeight: 14 },
+  caption: { fontSize: Theme.fontSizes.caption, lineHeight: 16 },
+  small: { fontSize: Theme.fontSizes.small, lineHeight: 18 },
+  control: { fontSize: 13, lineHeight: 18 },
+  body: { fontSize: Theme.fontSizes.body, lineHeight: 20 },
+  bodyLarge: { fontSize: Theme.fontSizes.bodyLarge, lineHeight: 22 },
+  supportTitle: { fontSize: 16, lineHeight: 21 },
+  cardTitle: { fontSize: 17, lineHeight: 22 },
+  sectionTitle: { fontSize: Theme.fontSizes.sectionTitle, lineHeight: 24 },
+  toolbarTitle: { fontSize: 19, lineHeight: 24 },
+  detailTitle: { fontSize: 20, lineHeight: 26 },
+  scoreTitle: { fontSize: 21, lineHeight: 27 },
+  sectionHero: { fontSize: 22, lineHeight: 28 },
+  decisionState: { fontSize: 23, lineHeight: 29 },
+  decisionHero: { fontSize: 24, lineHeight: 30 },
+  reportTitle: { fontSize: 25, lineHeight: 31 },
+  entityHero: { fontSize: 26, lineHeight: 32 },
+  screenTitleSmall: { fontSize: 27, lineHeight: 33 },
+  entityTitle: { fontSize: 28, lineHeight: 34 },
+  screenTitle: { fontSize: Theme.fontSizes.screenTitle, lineHeight: 35 },
+  screenTitleLarge: { fontSize: 30, lineHeight: 36 },
+  hero: { fontSize: Theme.fontSizes.hero, lineHeight: 38 },
+  heroValue: { fontSize: 32, lineHeight: 39 },
+  display: { fontSize: 34, lineHeight: 41 },
+  displayLarge: { fontSize: 40, lineHeight: 48 },
+  displayHero: { fontSize: 48, lineHeight: 56 },
+  weights: {
+    medium: '600',
+    emphasis: '700',
+    strong: '800',
+    heavy: '900',
+  },
+} as const;
+
 export const Colors = {
   light: {
     text: Theme.colors.text,

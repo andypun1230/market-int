@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 export type PresentedAlert = {
   id: string;
@@ -39,9 +39,9 @@ const styles = StyleSheet.create({
     gap: Spacing.half,
     paddingVertical: Spacing.two,
   },
-  empty: { color: Theme.colors.textMuted, fontSize: 13, fontWeight: '700' },
-  message: { color: Theme.colors.textMuted, fontSize: 13, fontWeight: '700' },
-  metadata: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '700' },
+  empty: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis },
+  message: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis },
+  metadata: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis },
   pressed: { opacity: 0.76 },
-  title: { color: Theme.colors.text, fontSize: 14, fontWeight: '900' },
+  title: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
 });

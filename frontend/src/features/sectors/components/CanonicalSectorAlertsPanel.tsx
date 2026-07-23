@@ -5,7 +5,7 @@ import { DashboardCard } from "@/components/cards/DashboardCard";
 import { DetailModal } from "@/components/ui/DetailModal";
 import { AlertList } from "@/components/ui/AlertList";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import type { CanonicalSectorAlert } from "@/features/sectors/groupIntelligence";
 import { useCanonicalSectorAlerts } from "@/hooks/useGroupIntelligence";
 
@@ -93,12 +93,12 @@ function humanize(value: string) {
 
 const styles = StyleSheet.create({
   badges: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.one },
-  body: { color: Theme.colors.text, fontSize: 13, fontWeight: "700" },
+  body: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis },
   evidence: { backgroundColor: Theme.colors.cardMuted, borderRadius: Theme.radii.small, gap: Spacing.one, padding: Spacing.two },
-  heading: { color: Theme.colors.text, fontSize: 13, fontWeight: "900" },
-  note: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: "700" },
+  heading: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
+  note: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.emphasis },
   openButton: { alignItems: "center", backgroundColor: Theme.colors.accent, borderRadius: Theme.radii.small, minHeight: 44, padding: Spacing.two },
-  openText: { color: Theme.colors.background, fontSize: 13, fontWeight: "900" },
+  openText: { color: Theme.colors.background, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   pressed: { opacity: 0.78 },
   section: { gap: Spacing.one },
   stack: { gap: Spacing.three },

@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { QuickActionChip } from '@/components/ui/QuickActionChip';
 import { ScoreGauge } from '@/components/ui/ScoreGauge';
 import { StatusBadge, getToneColors, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type HeroDecisionCardProps = {
   actionLabel?: string;
@@ -102,14 +102,14 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.heavy,
     textTransform: 'uppercase',
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   mainRow: {
     alignItems: 'center',
@@ -121,14 +121,14 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   headline: {
-    fontSize: 28,
-    fontWeight: '900',
+    fontSize: Typography.entityTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 33,
   },
   subheadline: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 21,
   },
   badges: {
@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     maxWidth: '100%',
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,

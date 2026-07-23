@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 export function WatchlistSectionHeader({
   subtitle,
@@ -107,23 +107,23 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: Theme.colors.text,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectionSubtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 20,
   },
   warningTitle: {
     color: Theme.colors.warning,
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     marginBottom: Spacing.one,
   },
   errorText: {
     color: Theme.colors.text,
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 20,
   },
   detailGrid: {
@@ -140,15 +140,15 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginBottom: Spacing.one,
     textTransform: 'uppercase',
   },
   infoValue: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 21,
   },
   zoneSection: {
@@ -165,13 +165,13 @@ const styles = StyleSheet.create({
   },
   zoneSectionTitle: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectionSummary: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 20,
     marginTop: Spacing.two,
   },
@@ -184,14 +184,14 @@ const styles = StyleSheet.create({
     padding: Spacing.twoAndHalf,
   },
   narrativeTitle: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   narrativeItem: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 19,
   },
 });

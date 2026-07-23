@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { AppIcon } from '@/components/ui/AppIcon';
 import { TEST_HEATMAP_INTERVALS, type TestHeatmapInterval } from '@/data/sectorTabTestData';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   getSectorThemeSortLabel,
   SECTOR_THEME_SORT_OPTIONS,
@@ -120,7 +121,7 @@ function MenuButton({
       onPress={() => setOpenMenu(open ? null : menuKey)}
       style={({ pressed }) => [styles.controlButton, pressed && styles.pressed]}>
       <Text numberOfLines={1} style={styles.controlText}>{label}</Text>
-      <Text style={styles.chevron}>{open ? '⌃' : '⌄'}</Text>
+      <AppIcon name={open ? 'chevronUp' : 'chevronDown'} size={17} />
     </Pressable>
   );
 }
@@ -151,7 +152,7 @@ function OptionMenu({
               pressed && styles.pressed,
             ]}>
             <Text style={[styles.optionText, selected && styles.optionTextSelected]}>{option.label}</Text>
-            {selected ? <Text style={styles.check}>✓</Text> : null}
+            {selected ? <AppIcon color={Theme.colors.accent} name="check" size={15} /> : null}
           </Pressable>
         );
       })}
@@ -171,16 +172,6 @@ function getTypeLabel(typeFilter: SectorThemeTypeFilter) {
 }
 
 const styles = StyleSheet.create({
-  check: {
-    color: Theme.colors.accent,
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  chevron: {
-    color: Theme.colors.textMuted,
-    fontSize: 15,
-    fontWeight: '900',
-  },
   container: {
     gap: Spacing.two,
   },
@@ -193,7 +184,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     gap: Spacing.one,
-    minHeight: 42,
+    minHeight: 44,
     minWidth: 0,
     paddingHorizontal: Spacing.two,
   },
@@ -205,8 +196,8 @@ const styles = StyleSheet.create({
   controlText: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   optionMenu: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -222,7 +213,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.two,
     justifyContent: 'space-between',
-    minHeight: 40,
+    minHeight: 44,
     paddingHorizontal: Spacing.twoAndHalf,
   },
   optionRowSelected: {
@@ -231,8 +222,8 @@ const styles = StyleSheet.create({
   optionText: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   optionTextSelected: {
     color: Theme.colors.text,
@@ -250,8 +241,8 @@ const styles = StyleSheet.create({
   },
   sourceText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   summaryRow: {
     alignItems: 'center',

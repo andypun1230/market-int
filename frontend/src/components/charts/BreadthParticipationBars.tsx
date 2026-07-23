@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { SectorBreadthSnapshot } from '@/data/sectorTabTestData';
 
 export function BreadthParticipationBars({ breadth }: { breadth: SectorBreadthSnapshot }) {
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

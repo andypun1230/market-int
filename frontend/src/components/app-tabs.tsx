@@ -1,6 +1,6 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
-import { Theme } from '@/constants/theme';
+import { Theme, Typography } from '@/constants/theme';
 
 export default function AppTabs() {
   return (
@@ -9,8 +9,8 @@ export default function AppTabs() {
       iconColor={Theme.colors.tabInactive}
       indicatorColor="#14385D"
       labelStyle={{
-        default: { color: Theme.colors.tabInactive, fontSize: 11, fontWeight: '600' },
-        selected: { color: Theme.colors.textInverse, fontSize: 11, fontWeight: '700' },
+        default: { color: Theme.colors.tabInactive, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.medium },
+        selected: { color: Theme.colors.textInverse, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis },
       }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { getToneColors, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type Signal = {
   label: string;
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

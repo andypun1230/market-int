@@ -4,7 +4,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { MetricTile } from "@/components/ui/MetricTile";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { DecisionSummaryCard } from "@/components/ui/DecisionSummaryCard";
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import { AskCopilotButton } from "@/features/copilot/components/AskCopilotButton";
 import { createCopilotContext } from "@/features/copilot/context/buildScreenContext";
 import { EntityCatalystsCard } from "@/features/context-intelligence/components/ContextIntelligenceCards";
@@ -353,21 +353,21 @@ function leadershipConclusion(
 const styles = StyleSheet.create({
   stack: { gap: Spacing.three, paddingBottom: Spacing.four },
   badges: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.two },
-  context: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: "700" },
+  context: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.emphasis },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.two },
-  body: { color: Theme.colors.text, fontSize: 14, lineHeight: 20 },
+  body: { color: Theme.colors.text, fontSize: Typography.body.fontSize, lineHeight: 20 },
   sectionLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: "900",
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.one,
   },
-  warning: { color: Theme.colors.warning, fontSize: 12, fontWeight: "700" },
-  muted: { color: Theme.colors.textMuted, fontSize: 13, fontWeight: "700" },
+  warning: { color: Theme.colors.warning, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.emphasis },
+  muted: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis },
   relevance: {
     color: Theme.colors.success,
-    fontSize: 12,
-    fontWeight: "800",
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: 2,
   },
   stock: {
@@ -379,6 +379,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
   },
   stockActions: { alignItems: "flex-end", gap: Spacing.one },
-  ticker: { color: Theme.colors.text, fontSize: 14, fontWeight: "900" },
-  stockReturn: { color: Theme.colors.text, fontSize: 14, fontWeight: "900" },
+  ticker: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
+  stockReturn: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
 });

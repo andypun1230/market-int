@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   getRiskTone,
   stockToneToBadgeTone,
@@ -95,14 +95,14 @@ const styles = StyleSheet.create({
   },
   symbol: {
     color: Theme.colors.text,
-    fontSize: 28,
-    fontWeight: '900',
+    fontSize: Typography.entityTitle.fontSize,
+    fontWeight: Typography.weights.heavy,
     lineHeight: 34,
   },
   status: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   priceBlock: {
@@ -111,12 +111,12 @@ const styles = StyleSheet.create({
   },
   price: {
     color: Theme.colors.text,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   change: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
     textAlign: 'right',
   },

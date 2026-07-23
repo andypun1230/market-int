@@ -1,6 +1,6 @@
 import { ScrollView, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type SegmentedOption = {
   key: string;
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
-    minHeight: 38,
+    minHeight: 44,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
@@ -101,13 +101,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.one,
   },
   compactLabel: {
-    fontSize: 12,
+    fontSize: Typography.small.fontSize,
   },
   denseChip: {
     paddingHorizontal: Spacing.half,
   },
   denseLabel: {
-    fontSize: 11,
+    fontSize: Typography.caption.fontSize,
   },
   selectedChip: {
     backgroundColor: Theme.colors.accentSoft,
@@ -132,13 +132,13 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   controlLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   selectedLabel: {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   switchChip: {
     backgroundColor: 'transparent',
     borderColor: 'transparent',
-    minHeight: 34,
+    minHeight: 44,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.one,
   },

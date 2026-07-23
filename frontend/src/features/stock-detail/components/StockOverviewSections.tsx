@@ -2,9 +2,10 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { DecisionSummaryCard } from '@/components/ui/DecisionSummaryCard';
 import { DetailGrid, InfoTile } from '@/components/watchlist/WatchlistPrimitives';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { stockToneColor } from '@/features/stock-detail/stockDetailSemanticColors';
 import type { StockDetailOverviewModel, StockDetailTone } from '@/features/stock-detail/stockDetailPresenter';
 import { decisionSummary } from '@/features/trust/decisionSummary';
@@ -137,7 +138,7 @@ function AccordionRow({
       onPress={onPress}
       style={styles.accordionRow}>
       <Text style={styles.accordionText}>{expanded ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}</Text>
-      <Text style={styles.accordionIcon}>{expanded ? '⌄' : '›'}</Text>
+      <AppIcon name={expanded ? 'chevronDown' : 'chevronRight'} size={17} />
     </Pressable>
   );
 }
@@ -154,8 +155,8 @@ function shortenText(value: string, maxWords: number): string {
 const styles = StyleSheet.create({
   accordionIcon: {
     color: Theme.colors.textMuted,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   accordionRow: {
     alignItems: 'center',
@@ -165,17 +166,17 @@ const styles = StyleSheet.create({
   },
   accordionText: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   assessmentStage: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   assessmentStatus: {
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   assessmentStatusBlock: {
     flex: 1,
@@ -202,8 +203,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.one,
   },
   evidenceIcon: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 18,
   },
   evidenceRow: {
@@ -217,8 +218,8 @@ const styles = StyleSheet.create({
   evidenceText: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
   factorFill: {
@@ -227,13 +228,13 @@ const styles = StyleSheet.create({
   },
   factorInterpretation: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   factorLabel: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   factorLabelBlock: {
     flex: 1,
@@ -244,8 +245,8 @@ const styles = StyleSheet.create({
     gap: Spacing.one,
   },
   factorScore: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   factorStack: {
     gap: Spacing.twoAndHalf,
@@ -264,8 +265,8 @@ const styles = StyleSheet.create({
   },
   methodText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 20,
   },
   planMetric: {
@@ -284,8 +285,8 @@ const styles = StyleSheet.create({
   },
   scoreLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   scoreMeterFill: {
     borderRadius: Theme.radii.pill,
@@ -299,8 +300,8 @@ const styles = StyleSheet.create({
   },
   scoreValue: {
     color: Theme.colors.text,
-    fontSize: 32,
-    fontWeight: '900',
+    fontSize: Typography.heroValue.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectionHeaderRow: {
     alignItems: 'center',
@@ -310,35 +311,35 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sections: {
     gap: Spacing.three,
   },
   sourceLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   subsectionLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     paddingTop: Spacing.one,
     textTransform: 'uppercase',
   },
   summaryBody: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 20,
   },
   summaryHeadline: {
     color: Theme.colors.text,
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 22,
   },
   surface: {
@@ -363,8 +364,8 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   takeawayIcon: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 16,
   },
   takeawayRow: {
@@ -375,13 +376,13 @@ const styles = StyleSheet.create({
   takeawayText: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
   takeawayTitle: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   tradeLevelGrid: {
@@ -401,8 +402,8 @@ const styles = StyleSheet.create({
   },
   watchLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     marginBottom: Spacing.half,
     textTransform: 'uppercase',
   },
@@ -413,7 +414,7 @@ const styles = StyleSheet.create({
     padding: Spacing.two,
   },
   watchValue: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

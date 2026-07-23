@@ -6,10 +6,11 @@ import { DashboardCard } from '@/components/cards/DashboardCard';
 import { TimeIntervalSelector } from '@/components/charts/TimeIntervalSelector';
 import { DetailModal } from '@/components/ui/DetailModal';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { AppIcon } from '@/components/ui/AppIcon';
 import { MetricTile } from '@/components/ui/MetricTile';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TestDataBadge } from '@/components/ui/TestDataBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { ConstituentTestItem, SectorThemeTestItem, TestHeatmapInterval } from '@/data/sectorTabTestData';
 import {
   DEFAULT_RELEVANT_STOCK_FILTERS,
@@ -307,7 +308,7 @@ function RelevantStockControlBar({
           weight="bold"
         />
         <Text numberOfLines={1} style={styles.toolbarButtonText}>Sort: {sortLabel}</Text>
-        <Text style={styles.toolbarChevron}>▾</Text>
+        <AppIcon name="chevronDown" size={17} />
       </Pressable>
       <Pressable
         accessibilityLabel={`Open advanced filters, ${activeFilterCount} active`}
@@ -364,7 +365,8 @@ function ActiveRelevantStockFilters({
             key={chip.key}
             onPress={() => onRemove(chip.key)}
             style={({ pressed }) => [styles.activeFilterChip, pressed && styles.pressed]}>
-            <Text style={styles.activeFilterChipText}>{chip.label} ×</Text>
+            <Text style={styles.activeFilterChipText}>{chip.label}</Text>
+            <AppIcon color={Theme.colors.warning} name="close" size={12} />
           </Pressable>
         ))}
       </View>
@@ -409,7 +411,7 @@ function RelevantStockSortSheet({
             onPress={() => onSelect(option.key)}
             style={({ pressed }) => [styles.sheetOption, active && styles.sheetOptionActive, pressed && styles.pressed]}>
             <Text style={[styles.sheetOptionText, active && styles.sheetOptionTextActive]}>{option.label}</Text>
-            <Text style={[styles.radioMark, active && styles.radioMarkActive]}>{active ? '●' : '○'}</Text>
+            <AppIcon color={active ? Theme.colors.accent : Theme.colors.textMuted} name={active ? 'neutralDot' : 'pending'} size={14} />
           </Pressable>
         );
       })}
@@ -652,14 +654,16 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.warning,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
+    flexDirection: 'row',
+    gap: Spacing.one,
     minHeight: 30,
     paddingHorizontal: Spacing.two,
     justifyContent: 'center',
   },
   activeFilterChipText: {
     color: Theme.colors.warning,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   activeFilterHeader: {
     alignItems: 'center',
@@ -668,14 +672,14 @@ const styles = StyleSheet.create({
   },
   activeFilterTitle: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   company: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   clearButton: {
     alignItems: 'center',
@@ -699,8 +703,8 @@ const styles = StyleSheet.create({
   },
   filterCountText: {
     color: Theme.colors.background,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   filterGroup: {
     gap: Spacing.two,
@@ -712,8 +716,8 @@ const styles = StyleSheet.create({
   },
   filterGroupTitle: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   filterToolbarButton: {
     flex: 0.72,
@@ -726,8 +730,8 @@ const styles = StyleSheet.create({
   },
   metaText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   pressed: {
@@ -744,8 +748,8 @@ const styles = StyleSheet.create({
   },
   primaryActionText: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   quickFilterChip: {
     alignItems: 'center',
@@ -769,24 +773,16 @@ const styles = StyleSheet.create({
   },
   quickFilterText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   quickFilterTextActive: {
     color: Theme.colors.accent,
   },
-  radioMark: {
-    color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  radioMarkActive: {
-    color: Theme.colors.accent,
-  },
   resetFiltersText: {
     color: Theme.colors.warning,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   resultsSummary: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -798,17 +794,17 @@ const styles = StyleSheet.create({
   },
   resultsSummaryText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   resultsSummaryTitle: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   returnText: {
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   saveButton: {
@@ -826,8 +822,8 @@ const styles = StyleSheet.create({
   },
   saveText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   saveTextActive: {
     color: Theme.colors.warning,
@@ -835,8 +831,8 @@ const styles = StyleSheet.create({
   searchInput: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
     minHeight: 42,
     padding: 0,
   },
@@ -867,8 +863,8 @@ const styles = StyleSheet.create({
   },
   sheetChipText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sheetChipTextActive: {
     color: Theme.colors.accent,
@@ -882,8 +878,8 @@ const styles = StyleSheet.create({
   sheetIntro: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   sheetOption: {
@@ -903,8 +899,8 @@ const styles = StyleSheet.create({
   },
   sheetOptionText: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sheetOptionTextActive: {
     color: Theme.colors.accent,
@@ -956,17 +952,17 @@ const styles = StyleSheet.create({
   toolbarButtonText: {
     color: Theme.colors.text,
     flexShrink: 1,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   toolbarChevron: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   ticker: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { getSectorThemeStatusLabel } from '@/features/watchlist/sectorThemeClassifier';
 import type { ClassifiedSectorThemeItem } from '@/features/watchlist/sectorThemeSort';
 
@@ -48,9 +49,9 @@ export function SectorThemeRow({ entry, onOpen, onRemove }: SectorThemeRowProps)
           onRemove();
         }}
         style={({ pressed }) => [styles.bookmarkButton, pressed && styles.pressed]}>
-        <Text style={styles.bookmarkIcon}>★</Text>
+        <AppIcon color={Theme.colors.warning} name="saved" size={17} />
       </Pressable>
-      <Text style={styles.chevron}>›</Text>
+      <AppIcon name="chevronRight" size={17} />
     </Pressable>
   );
 }
@@ -102,13 +103,13 @@ const styles = StyleSheet.create({
   },
   bookmarkIcon: {
     color: Theme.colors.warning,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   chevron: {
     color: Theme.colors.textMuted,
-    fontSize: 26,
-    fontWeight: '700',
+    fontSize: Typography.entityHero.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   disabled: {
     opacity: 0.55,
@@ -119,23 +120,23 @@ const styles = StyleSheet.create({
   },
   meta: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
     marginTop: Spacing.half,
   },
   name: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   pressed: {
     opacity: 0.78,
   },
   returnText: {
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   row: {

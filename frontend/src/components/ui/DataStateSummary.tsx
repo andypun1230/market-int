@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
+import { FreshnessText } from '@/components/ui/ConfidenceFreshness';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { useUserFacingDataState } from '@/features/trust/UserFacingDataStateProvider';
 import type { UserFacingDataStateKey } from '@/features/trust/userFacingDataState';
 
@@ -13,7 +14,7 @@ export function DataStateSummary({ diagnostic = false }: { diagnostic?: boolean 
       <View accessibilityLabel={`Data status: ${dataState.headline}. ${dataState.explanation}`} style={styles.stack}>
         <View style={styles.header}>
           <StatusBadge label={dataState.headline} tone={tone(dataState.state)} />
-          <Text style={styles.freshness}>{dataState.freshness}</Text>
+          <FreshnessText value={dataState.freshness} />
         </View>
         <Text style={styles.explanation}>{dataState.explanation}</Text>
         <Text style={styles.detail}>{dataState.providerSummary}</Text>
@@ -44,12 +45,11 @@ function toneColor(state: UserFacingDataStateKey) {
 }
 
 const styles = StyleSheet.create({
-  action: { color: Theme.colors.warning, fontSize: 12, fontWeight: '800', lineHeight: 18 },
-  detail: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '700', lineHeight: 17 },
+  action: { color: Theme.colors.warning, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, lineHeight: 18 },
+  detail: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 17 },
   diagnostics: { borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: Spacing.half, paddingTop: Spacing.one },
-  diagnosticTitle: { color: Theme.colors.text, fontSize: 11, fontWeight: '900', textTransform: 'uppercase' },
-  explanation: { color: Theme.colors.text, fontSize: 13, fontWeight: '700', lineHeight: 20 },
-  freshness: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '800' },
+  diagnosticTitle: { color: Theme.colors.text, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, textTransform: 'uppercase' },
+  explanation: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 20 },
   header: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one, justifyContent: 'space-between' },
   stack: { gap: Spacing.one },
 });

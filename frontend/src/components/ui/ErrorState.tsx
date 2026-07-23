@@ -1,6 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { CARD_SURFACE } from '@/components/cards/DashboardCard';
+import { AppButton } from '@/components/ui/AppButton';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type ErrorStateProps = {
   message: string;
@@ -23,9 +25,7 @@ export function ErrorState({
       </View>
       <Text style={styles.message}>{message}</Text>
       {onRetry ? (
-        <Pressable accessibilityRole="button" onPress={onRetry} style={styles.retryButton}>
-          <Text style={styles.retryText}>{retryLabel}</Text>
-        </Pressable>
+        <AppButton label={retryLabel} onPress={onRetry} style={styles.retryButton} variant="danger" />
       ) : null}
     </View>
   );
@@ -33,10 +33,8 @@ export function ErrorState({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Theme.colors.card,
+    ...CARD_SURFACE,
     borderColor: 'rgba(239, 68, 68, 0.58)',
-    borderRadius: Theme.radii.card,
-    borderWidth: 1,
     gap: Spacing.two,
     padding: Spacing.three,
   },
@@ -53,27 +51,15 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.danger,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   message: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 20,
   },
   retryButton: {
-    alignSelf: 'flex-start',
-    backgroundColor: Theme.colors.dangerSoft,
-    borderColor: Theme.colors.danger,
-    borderRadius: Theme.radii.small,
-    borderWidth: 1,
     marginTop: Spacing.two,
-    paddingHorizontal: Spacing.twoAndHalf,
-    paddingVertical: Spacing.two,
-  },
-  retryText: {
-    color: Theme.colors.danger,
-    fontSize: 13,
-    fontWeight: '900',
   },
 });

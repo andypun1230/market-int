@@ -5,7 +5,7 @@ import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { clearMarketDataCache, getMarketDataCacheStatus } from '@/services/api';
 import type { ProviderCacheStatus } from '@/types/market';
 
@@ -82,7 +82,7 @@ function formatCacheSize(status: ProviderCacheStatus | null): string {
 const styles = StyleSheet.create({
   note: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 20,
   },
   stack: {

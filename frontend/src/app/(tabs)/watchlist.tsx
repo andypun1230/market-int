@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
-import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { buildEntityDestination } from '@/architecture/entityRoutingRegistry';
 import { DashboardCard } from '@/components/cards/DashboardCard';
+import { AppButton } from '@/components/ui/AppButton';
+import { AppIcon } from '@/components/ui/AppIcon';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { DetailModal } from '@/components/ui/DetailModal';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -12,7 +13,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { StockCard } from '@/components/watchlist/StockCard';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { WatchlistCatalystsCard } from '@/features/context-intelligence/components/ContextIntelligenceCards';
 import { shouldRequestWatchlistCatalysts } from '@/features/context-intelligence/consumerPolicy';
@@ -583,7 +584,6 @@ function AddHeaderAction({
         accessibilityLabel={activeCategory === 'stocks'
           ? 'Open add ticker panel'
           : `Open add ${activeCategory === 'sectors' ? 'sector' : 'theme'} panel`}
-        icon={{ android: 'add', ios: 'plus', web: 'plus' }}
         onPress={onToggle}
       />
     </View>
@@ -616,7 +616,7 @@ function GroupAddPicker({
             <Text numberOfLines={1} style={styles.addPickerMeta}>{item.meta}</Text>
           </View>
           <View style={styles.addPickerButton}>
-            <Text style={styles.addPickerIcon}>+</Text>
+            <AppIcon name="add" size={17} />
           </View>
         </Pressable>
       ))}
@@ -627,32 +627,22 @@ function GroupAddPicker({
 function IconButton({
   accessibilityLabel,
   active,
-  icon,
   onPress,
 }: {
   accessibilityLabel: string;
   active: boolean;
-  icon: { android: string; ios: string; web: string };
   onPress: () => void;
 }) {
   return (
-    <Pressable
+    <AppButton
       accessibilityLabel={accessibilityLabel}
-      accessibilityRole="button"
       accessibilityState={{ selected: active }}
+      label={accessibilityLabel}
+      leadingIcon={<AppIcon color={active ? Theme.colors.accent : Theme.colors.textMuted} name="add" size={17} />}
       onPress={onPress}
-      style={({ pressed }) => [styles.iconButton, active && styles.iconButtonActive, pressed && styles.pressedButton]}>
-      {Platform.OS === 'web' ? (
-        <Text style={[styles.webToolbarIcon, active && styles.webToolbarIconActive]}>+</Text>
-      ) : (
-        <SymbolView
-          name={icon as never}
-          size={17}
-          tintColor={active ? Theme.colors.accent : Theme.colors.textMuted}
-          weight="bold"
-        />
-      )}
-    </Pressable>
+      style={[styles.iconButton, active && styles.iconButtonActive]}
+      variant="icon"
+    />
   );
 }
 
@@ -684,14 +674,15 @@ function StockAddPanel({
           style={styles.searchInput}
           value={query}
         />
-        <Pressable
+        <AppButton
           accessibilityLabel="Add ticker to stock watchlist"
-          accessibilityRole="button"
           disabled={!canAdd}
+          label="Add ticker"
+          leadingIcon={<AppIcon name="add" size={18} />}
           onPress={onAdd}
-          style={({ pressed }) => [styles.addTickerButton, !canAdd && styles.disabledButton, pressed && styles.pressedButton]}>
-          <Text style={styles.addTickerText}>+</Text>
-        </Pressable>
+          style={styles.addTickerButton}
+          variant="icon"
+        />
       </View>
       {inputError ? <Text style={styles.errorText}>{inputError}</Text> : null}
     </View>
@@ -723,10 +714,10 @@ function SavedGroupCard({
           <Text numberOfLines={compact ? 1 : 2} style={styles.summarySubtitle}>{compact ? compactGroupSubtitle(subtitle) : subtitle}</Text>
         </View>
         <Text style={styles.summaryCount}>{value}</Text>
-        <Text style={styles.groupChevron}>›</Text>
+        <AppIcon name="chevronRight" size={17} />
       </Pressable>
       <Pressable accessibilityLabel={`Remove ${title} from watchlist`} accessibilityRole="button" hitSlop={8} onPress={onRemove} style={styles.savedStateButton}>
-        <Text style={styles.savedStateIcon}>★</Text>
+        <AppIcon color={Theme.colors.warning} name="saved" size={17} />
       </Pressable>
       </View>
     </DashboardCard>
@@ -836,8 +827,8 @@ const styles = StyleSheet.create({
   },
   addPickerIcon: {
     color: Theme.colors.accent,
-    fontSize: 21,
-    fontWeight: '900',
+    fontSize: Typography.scoreTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 22,
   },
   addPickerList: {
@@ -845,13 +836,13 @@ const styles = StyleSheet.create({
   },
   addPickerMeta: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   addPickerName: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   addPickerRow: {
     alignItems: 'center',
@@ -880,8 +871,8 @@ const styles = StyleSheet.create({
   },
   addTickerText: {
     color: Theme.colors.text,
-    fontSize: 23,
-    fontWeight: '900',
+    fontSize: Typography.decisionState.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 24,
   },
   compactControlCard: {
@@ -893,13 +884,13 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: Theme.colors.warning,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   flatDescriptor: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 16,
     marginBottom: Spacing.half,
   },
@@ -908,8 +899,8 @@ const styles = StyleSheet.create({
   },
   groupChevron: {
     color: Theme.colors.textMuted,
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: Typography.decisionHero.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   iconButton: {
     alignItems: 'center',
@@ -917,9 +908,9 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.small,
     borderWidth: 1,
-    height: 42,
+    height: 44,
     justifyContent: 'center',
-    width: 42,
+    width: 44,
   },
   iconButtonActive: {
     backgroundColor: Theme.colors.accentSoft,
@@ -938,8 +929,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     minHeight: 44,
     paddingHorizontal: Spacing.twoAndHalf,
   },
@@ -972,8 +963,8 @@ const styles = StyleSheet.create({
   },
   summaryCount: {
     color: Theme.colors.accent,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   summaryHeaderRow: {
     alignItems: 'flex-start',
@@ -996,8 +987,8 @@ const styles = StyleSheet.create({
   },
   savedStateIcon: {
     color: Theme.colors.warning,
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   summaryMetric: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -1011,8 +1002,8 @@ const styles = StyleSheet.create({
   },
   summaryMetricLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   summaryMetricRow: {
@@ -1020,20 +1011,20 @@ const styles = StyleSheet.create({
     gap: Spacing.one,
   },
   summaryMetricValue: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   summarySubtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 15,
   },
   summaryTitle: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   stockActionRow: {
     alignItems: 'center',
@@ -1051,8 +1042,8 @@ const styles = StyleSheet.create({
   },
   webToolbarIcon: {
     color: Theme.colors.textMuted,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   webToolbarIconActive: {
     color: Theme.colors.accent,

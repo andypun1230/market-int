@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type {
   CopilotActionV1,
   CopilotChatResponse,
   CopilotEvidenceV1,
   CopilotSourceState,
 } from '@/features/copilot/types';
+import { evidenceFreshnessLabel, providerLabel } from '@/features/trust/confidenceFreshnessPresentation';
 
 export function CopilotStructuredResponse({
   onAction,
@@ -121,7 +123,7 @@ export function CopilotConfidence({ response }: { response: CopilotChatResponse 
 }
 
 export function CopilotFreshnessBadge({ sourceState }: { sourceState: CopilotSourceState }) {
-  return <StatusBadge label={freshnessLabel(sourceState)} tone={freshnessTone(sourceState)} />;
+  return <StatusBadge label={evidenceFreshnessLabel(sourceState)} tone={freshnessTone(sourceState)} />;
 }
 
 export function CopilotPartialDataNotice({
@@ -221,7 +223,7 @@ export function CopilotDeepLinkActions({
             onPress={() => onAction(action)}
             style={({ pressed }) => [styles.deepLinkButton, pressed && styles.pressed]}>
             <Text style={styles.deepLinkText}>{action.entity ? `${action.label} · ${action.entity}` : action.label}</Text>
-            <Text style={styles.deepLinkArrow}>›</Text>
+            <AppIcon name="chevronRight" size={16} />
           </Pressable>
         ))}
       </View>
@@ -312,17 +314,8 @@ function confidenceLevel(confidence: number) {
 
 function sourceLabel(evidence: CopilotEvidenceV1) {
   const { dataset, provider } = evidence.source;
-  return dataset && dataset !== 'app-engine' ? `${provider} / ${dataset}` : provider;
-}
-
-function freshnessLabel(state: CopilotSourceState) {
-  if (state === 'live') return 'Live evidence';
-  if (state === 'cached') return 'Cached evidence';
-  if (state === 'stale') return 'Stale evidence';
-  if (state === 'test' || state === 'mock') return 'Test evidence';
-  if (state === 'partial' || state === 'mixed') return 'Partial evidence';
-  if (state === 'delayed') return 'Delayed evidence';
-  return 'Evidence unavailable';
+  const displayProvider = providerLabel(provider);
+  return dataset && dataset !== 'app-engine' ? `${displayProvider} / ${dataset}` : displayProvider;
 }
 
 function freshnessTone(state: CopilotSourceState): Tone {
@@ -364,56 +357,56 @@ function unique(items: string[]) {
 const styles = StyleSheet.create({
   actionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
   badgeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
-  challengeEyebrow: { color: Theme.colors.warning, fontSize: 11, fontWeight: '900', letterSpacing: 0.7 },
+  challengeEyebrow: { color: Theme.colors.warning, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, letterSpacing: 0.7 },
   challengePanel: { backgroundColor: Theme.colors.warningSoft, borderColor: Theme.colors.warning, borderRadius: Theme.radii.small, borderWidth: 1, gap: Spacing.two, padding: Spacing.twoAndHalf },
   conditionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   conditionPanel: { borderRadius: Theme.radii.small, borderWidth: 1, flexBasis: 260, flexGrow: 1, gap: Spacing.one, padding: Spacing.twoAndHalf },
-  conditionText: { color: Theme.colors.text, fontSize: 13, fontWeight: '700', lineHeight: 19 },
-  confirmLabel: { color: Theme.colors.success, fontSize: 11, fontWeight: '900' },
+  conditionText: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 19 },
+  confirmLabel: { color: Theme.colors.success, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   confirmPanel: { backgroundColor: Theme.colors.successSoft, borderColor: Theme.colors.success },
   contradiction: { backgroundColor: Theme.colors.dangerSoft, borderLeftColor: Theme.colors.danger, borderLeftWidth: 3, borderRadius: Theme.radii.small, gap: Spacing.one, padding: Spacing.two },
-  contradictionLabel: { color: Theme.colors.danger, fontSize: 11, fontWeight: '900' },
-  contradictionText: { color: Theme.colors.text, fontSize: 13, fontWeight: '700', lineHeight: 19 },
-  deepLinkArrow: { color: Theme.colors.accent, fontSize: 18, fontWeight: '900' },
+  contradictionLabel: { color: Theme.colors.danger, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
+  contradictionText: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 19 },
+  deepLinkArrow: { color: Theme.colors.accent, fontSize: Typography.sectionTitle.fontSize, fontWeight: Typography.weights.strong },
   deepLinkButton: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.accent, borderRadius: Theme.radii.pill, borderWidth: 1, flexDirection: 'row', gap: Spacing.one, minHeight: 38, paddingHorizontal: Spacing.twoAndHalf, paddingVertical: Spacing.one },
-  deepLinkText: { color: Theme.colors.accent, fontSize: 12, fontWeight: '900' },
+  deepLinkText: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   directAnswer: { borderLeftColor: Theme.colors.purple, borderLeftWidth: 3, gap: Spacing.one, paddingLeft: Spacing.twoAndHalf },
-  directAnswerText: { color: Theme.colors.text, fontSize: 16, fontWeight: '800', lineHeight: 24 },
+  directAnswerText: { color: Theme.colors.text, fontSize: Typography.supportTitle.fontSize, fontWeight: Typography.weights.strong, lineHeight: 24 },
   evidenceCard: { borderRadius: Theme.radii.small, borderWidth: 1, gap: Spacing.one, padding: Spacing.two },
-  evidenceEntity: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '800' },
+  evidenceEntity: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   evidenceHeading: { flex: 1, gap: 2, minWidth: 0 },
   evidenceHeader: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between' },
-  evidenceInterpretation: { color: Theme.colors.text, fontSize: 13, fontWeight: '700', lineHeight: 19 },
-  evidenceMeta: { color: Theme.colors.textMuted, flex: 1, fontSize: 10, fontWeight: '700' },
+  evidenceInterpretation: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 19 },
+  evidenceMeta: { color: Theme.colors.textMuted, flex: 1, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.emphasis },
   evidenceMetaRow: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
-  evidenceMetric: { color: Theme.colors.text, fontSize: 13, fontWeight: '900' },
+  evidenceMetric: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   evidenceOppose: { backgroundColor: Theme.colors.dangerSoft, borderColor: Theme.colors.danger },
-  evidenceState: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: '800' },
+  evidenceState: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   evidenceSupport: { backgroundColor: Theme.colors.successSoft, borderColor: Theme.colors.success },
-  evidenceValue: { color: Theme.colors.text, fontSize: 14, fontWeight: '900' },
-  eyebrow: { color: Theme.colors.purple, fontSize: 11, fontWeight: '900', letterSpacing: 0.7 },
+  evidenceValue: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
+  eyebrow: { color: Theme.colors.purple, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, letterSpacing: 0.7 },
   factorMarker: { borderRadius: 3, height: 6, marginTop: 7, width: 6 },
   factorRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Spacing.one },
-  factorText: { color: Theme.colors.text, flex: 1, fontSize: 13, fontWeight: '700', lineHeight: 19 },
-  inlineAction: { color: Theme.colors.accent, fontSize: 11, fontWeight: '900' },
-  intentLabel: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: '900' },
-  invalidateLabel: { color: Theme.colors.danger, fontSize: 11, fontWeight: '900' },
+  factorText: { color: Theme.colors.text, flex: 1, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 19 },
+  inlineAction: { color: Theme.colors.accent, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
+  intentLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong },
+  invalidateLabel: { color: Theme.colors.danger, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   invalidatePanel: { backgroundColor: Theme.colors.dangerSoft, borderColor: Theme.colors.danger },
-  muted: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: '700', lineHeight: 18 },
+  muted: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 18 },
   neutralMarker: { backgroundColor: Theme.colors.textMuted },
   opposeMarker: { backgroundColor: Theme.colors.danger },
-  partialLabel: { color: Theme.colors.warning, fontSize: 11, fontWeight: '900' },
+  partialLabel: { color: Theme.colors.warning, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   partialNotice: { backgroundColor: Theme.colors.warningSoft, borderColor: Theme.colors.warning, borderRadius: Theme.radii.small, borderWidth: 1, gap: 4, padding: Spacing.two },
-  partialText: { color: Theme.colors.text, fontSize: 12, fontWeight: '700', lineHeight: 18 },
+  partialText: { color: Theme.colors.text, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 18 },
   pressed: { opacity: 0.74 },
   responseCard: { backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.card, borderWidth: 1, gap: Spacing.three, padding: Spacing.three },
   responseTopline: { alignItems: 'flex-start', flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, justifyContent: 'space-between' },
   section: { gap: Spacing.two },
   sectionHeader: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between' },
-  sectionTitle: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '900', letterSpacing: 0.5 },
+  sectionTitle: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, letterSpacing: 0.5 },
   sourceDetails: { gap: Spacing.one },
-  sourceSummary: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '700' },
-  sourceText: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '700', lineHeight: 16 },
+  sourceSummary: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis },
+  sourceText: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 16 },
   sources: { borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: Spacing.one, paddingTop: Spacing.two },
   supportMarker: { backgroundColor: Theme.colors.success },
   warningMarker: { backgroundColor: Theme.colors.warning },

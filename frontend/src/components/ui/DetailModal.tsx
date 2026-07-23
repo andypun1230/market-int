@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Modal, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { AppButton } from '@/components/ui/AppButton';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type DetailModalProps = {
   children: ReactNode;
@@ -43,14 +44,13 @@ export function DetailModal({
                 <Text style={styles.title}>{title}</Text>
                 {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
               </View>
-              <Pressable
+              <AppButton
                 accessibilityLabel={`Close ${title}`}
-                accessibilityRole="button"
-                hitSlop={8}
+                label="Close"
                 onPress={onClose}
-                style={styles.closeButton}>
-                <Text style={styles.closeText}>Close</Text>
-              </Pressable>
+                style={styles.closeButton}
+                variant="neutral"
+              />
             </View>
 
             <ScrollView
@@ -113,30 +113,17 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 26,
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 19,
   },
   closeButton: {
-    alignItems: 'center',
-    backgroundColor: Theme.colors.cardMuted,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.small,
-    borderWidth: 1,
-    justifyContent: 'center',
-    minHeight: 44,
     paddingHorizontal: Spacing.twoAndHalf,
-    paddingVertical: Spacing.one,
-  },
-  closeText: {
-    color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
   },
   content: {
     gap: Spacing.three,

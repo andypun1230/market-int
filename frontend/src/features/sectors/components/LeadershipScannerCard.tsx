@@ -1,9 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
+import { AppIcon } from '@/components/ui/AppIcon';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TestDataBadge } from '@/components/ui/TestDataBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { ScannerResult } from '@/features/sectors/analysis/scanners';
 import { SectionEmptyState } from '@/features/sectors/components/SectionState';
 
@@ -57,9 +58,11 @@ export function LeadershipScannerCard({
                     event.stopPropagation();
                     onToggleFavourite(result.item);
                   }}>
-                  <Text style={[styles.star, isFavourite(result.item) && styles.starActive]}>
-                    {isFavourite(result.item) ? '★' : '☆'}
-                  </Text>
+                  <AppIcon
+                    color={isFavourite(result.item) ? Theme.colors.warning : Theme.colors.textMuted}
+                    name={isFavourite(result.item) ? 'saved' : 'savedOutline'}
+                    size={18}
+                  />
                 </Pressable>
               </View>
             </Pressable>
@@ -81,14 +84,14 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   name: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   nameRow: {
     alignItems: 'center',
@@ -100,8 +103,8 @@ const styles = StyleSheet.create({
   },
   reasons: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   row: {
     backgroundColor: Theme.colors.cardMuted,
@@ -118,8 +121,8 @@ const styles = StyleSheet.create({
   },
   score: {
     color: Theme.colors.accent,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
   scoreBlock: {
@@ -130,19 +133,11 @@ const styles = StyleSheet.create({
   },
   scoreLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   stack: {
     gap: Spacing.two,
-  },
-  star: {
-    color: Theme.colors.textMuted,
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  starActive: {
-    color: Theme.colors.warning,
   },
 });

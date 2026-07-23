@@ -2,9 +2,10 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
+import { AppIcon } from '@/components/ui/AppIcon';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TestDataBadge } from '@/components/ui/TestDataBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { SectorThemeTestItem, TestHeatmapInterval } from '@/data/sectorTabTestData';
 import {
   addComparisonItem,
@@ -88,7 +89,8 @@ export function SectorThemeComparisonView({
         <View style={styles.selectedRow}>
           {selectedItems.length ? selectedItems.map((item) => (
             <Pressable key={`${item.type}-${item.id}`} onPress={() => setSelectedItems(removeComparisonItem(selectedItems, item))} style={styles.selectedChip}>
-              <Text style={styles.selectedChipText}>{item.name} ×</Text>
+              <Text style={styles.selectedChipText}>{item.name}</Text>
+              <AppIcon color={Theme.colors.accent} name="close" size={12} />
             </Pressable>
           )) : <Text style={styles.emptyText}>Select at least two items.</Text>}
         </View>
@@ -115,9 +117,11 @@ export function SectorThemeComparisonView({
                     event.stopPropagation();
                     onToggleFavourite(item);
                   }}>
-                  <Text style={[styles.star, favourites.has(buildWatchlistKey(item.type, item.id)) && styles.starActive]}>
-                    {favourites.has(buildWatchlistKey(item.type, item.id)) ? '★' : '☆'}
-                  </Text>
+                  <AppIcon
+                    color={favourites.has(buildWatchlistKey(item.type, item.id)) ? Theme.colors.warning : Theme.colors.textMuted}
+                    name={favourites.has(buildWatchlistKey(item.type, item.id)) ? 'saved' : 'savedOutline'}
+                    size={20}
+                  />
                 </Pressable>
               </Pressable>
             );
@@ -187,13 +191,13 @@ const styles = StyleSheet.create({
   },
   candidateMeta: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   candidateName: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   candidateRow: {
     alignItems: 'center',
@@ -211,8 +215,8 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   filterRow: {
     flexDirection: 'row',
@@ -247,14 +251,14 @@ const styles = StyleSheet.create({
   },
   scoreLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   scoreValue: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   search: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -262,23 +266,26 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.small,
     borderWidth: 1,
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
     minHeight: 44,
     paddingHorizontal: Spacing.two,
   },
   selectedChip: {
+    alignItems: 'center',
     backgroundColor: Theme.colors.accentSoft,
     borderColor: Theme.colors.accent,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
+    flexDirection: 'row',
+    gap: Spacing.one,
     paddingHorizontal: Spacing.two,
     paddingVertical: 6,
   },
   selectedChipText: {
     color: Theme.colors.accent,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   selectedRow: {
     flexDirection: 'row',
@@ -295,24 +302,16 @@ const styles = StyleSheet.create({
   },
   smallButtonText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   stack: {
     gap: Spacing.three,
   },
-  star: {
-    color: Theme.colors.textMuted,
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  starActive: {
-    color: Theme.colors.warning,
-  },
   tableCell: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     padding: Spacing.two,
     width: 124,
   },
@@ -335,8 +334,8 @@ const styles = StyleSheet.create({
   },
   typeChipText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'capitalize',
   },
   typeChipTextActive: {

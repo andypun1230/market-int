@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type AIHeadlineProps = {
   headline?: string;
@@ -24,19 +24,19 @@ const styles = StyleSheet.create({
   },
   headline: {
     color: Theme.colors.text,
-    fontSize: 19,
-    fontWeight: '900',
+    fontSize: Typography.toolbarTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 25,
   },
   label: {
     color: Theme.colors.purple,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   summary: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 21,
   },
 });

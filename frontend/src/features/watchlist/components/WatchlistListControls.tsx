@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
-import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SymbolView } from 'expo-symbols';
+import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { DetailModal } from '@/components/ui/DetailModal';
-import { Spacing, Theme } from '@/constants/theme';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   getSortLabel,
   type ListControlOption,
@@ -87,25 +87,14 @@ export function WatchlistListControls({
                 </View>
               ) : null}
             </View>
-            <Text style={styles.disclosure}>⌄</Text>
+            <AppIcon name="chevronDown" size={17} />
           </Pressable>
           <Pressable
             accessibilityLabel={`Switch to ${viewMode === 'detailed' ? 'compact' : 'detailed'} view`}
             accessibilityRole="button"
             onPress={() => onApply({ filters: activeFilters, sort: currentSort, viewMode: viewMode === 'detailed' ? 'compact' : 'detailed' })}
             style={({ pressed }) => [styles.viewButton, pressed && styles.pressed]}>
-            {Platform.OS === 'web' ? (
-              <Text style={styles.viewIcon}>{viewMode === 'compact' ? '☷' : '≡'}</Text>
-            ) : (
-              <SymbolView
-                name={(viewMode === 'compact'
-                  ? { android: 'view_agenda', ios: 'rectangle.grid.1x2', web: 'rectangle.grid.1x2' }
-                  : { android: 'view_headline', ios: 'list.bullet', web: 'list.bullet' }) as never}
-                size={18}
-                tintColor={Theme.colors.textMuted}
-                weight="bold"
-              />
-            )}
+            <AppIcon name="compactList" size={18} />
           </Pressable>
         </View>
         <View style={styles.contextRow}>
@@ -206,7 +195,11 @@ function SelectionRow({ label, onPress, selected, type }: { label: string; onPre
       onPress={onPress}
       style={({ pressed }) => [styles.selectionRow, pressed && styles.pressed]}>
       <View style={[type === 'radio' ? styles.radio : styles.checkbox, selected && styles.selectionSelected]}>
-        {selected ? <View style={type === 'radio' ? styles.radioDot : styles.checkMark}><Text style={styles.checkText}>{type === 'checkbox' ? '✓' : ''}</Text></View> : null}
+        {selected ? (
+          <View style={type === 'radio' ? styles.radioDot : styles.checkMark}>
+            {type === 'checkbox' ? <AppIcon color={Theme.colors.background} name="check" size={13} /> : null}
+          </View>
+        ) : null}
       </View>
       <Text style={[styles.selectionLabel, selected && styles.activeText]}>{label}</Text>
     </Pressable>
@@ -241,40 +234,39 @@ const styles = StyleSheet.create({
   activeButton: { backgroundColor: Theme.colors.accentSoft, borderColor: Theme.colors.accent },
   activeText: { color: Theme.colors.accent },
   applyButton: { alignItems: 'center', backgroundColor: Theme.colors.accent, borderRadius: Theme.radii.small, flex: 1, justifyContent: 'center', minHeight: 48, paddingHorizontal: Spacing.three },
-  applyText: { color: Theme.colors.background, fontSize: 14, fontWeight: '900' },
+  applyText: { color: Theme.colors.background, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
   checkbox: { alignItems: 'center', borderColor: Theme.colors.border, borderRadius: 5, borderWidth: 1, height: 20, justifyContent: 'center', width: 20 },
   checkMark: { alignItems: 'center', justifyContent: 'center' },
-  checkText: { color: Theme.colors.background, fontSize: 13, fontWeight: '900', lineHeight: 14 },
-  clearText: { color: Theme.colors.accent, fontSize: 11, fontWeight: '900' },
+  clearText: { color: Theme.colors.accent, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   combinedButton: { flex: 1, justifyContent: 'center', minWidth: 0, position: 'relative' },
   combinedButtonContent: { alignItems: 'center', flexDirection: 'row', gap: Spacing.one, justifyContent: 'center', minWidth: 0 },
   contextRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', minHeight: 18 },
-  controlButton: { alignItems: 'center', backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', gap: Spacing.one, justifyContent: 'center', minHeight: 42, paddingHorizontal: Spacing.two },
+  controlButton: { alignItems: 'center', backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', gap: Spacing.one, justifyContent: 'center', minHeight: 44, paddingHorizontal: Spacing.two },
   controlRow: { flexDirection: 'row', gap: Spacing.one },
-  controlText: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: '900' },
-  disclosure: { color: Theme.colors.textMuted, fontSize: 16, fontWeight: '900', position: 'absolute', right: Spacing.two },
+  controlText: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
+  disclosure: { color: Theme.colors.textMuted, fontSize: Typography.supportTitle.fontSize, fontWeight: Typography.weights.strong, position: 'absolute', right: Spacing.two },
   filterGroup: { gap: Spacing.half },
-  filterGroupLabel: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: '900', marginTop: Spacing.one, textTransform: 'uppercase' },
+  filterGroupLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong, marginTop: Spacing.one, textTransform: 'uppercase' },
   filterCount: { alignItems: 'center', backgroundColor: Theme.colors.accent, borderRadius: Theme.radii.pill, height: 20, justifyContent: 'center', minWidth: 20, paddingHorizontal: Spacing.one },
-  filterCountText: { color: Theme.colors.background, fontSize: 10, fontWeight: '900' },
+  filterCountText: { color: Theme.colors.background, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong },
   footer: { flexDirection: 'row', gap: Spacing.two },
   pressed: { opacity: 0.72 },
   radio: { alignItems: 'center', borderColor: Theme.colors.border, borderRadius: 10, borderWidth: 1, height: 20, justifyContent: 'center', width: 20 },
   radioDot: { backgroundColor: Theme.colors.background, borderRadius: 4, height: 8, width: 8 },
   resetButton: { alignItems: 'center', borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, justifyContent: 'center', minHeight: 48, paddingHorizontal: Spacing.three },
-  resetText: { color: Theme.colors.text, fontSize: 14, fontWeight: '900' },
-  resultText: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '800' },
+  resetText: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
+  resultText: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   section: { gap: Spacing.one },
-  sectionTitle: { color: Theme.colors.text, fontSize: 15, fontWeight: '900', marginBottom: Spacing.one },
-  selectionLabel: { color: Theme.colors.text, flex: 1, fontSize: 13, fontWeight: '800' },
+  sectionTitle: { color: Theme.colors.text, fontSize: Typography.bodyLarge.fontSize, fontWeight: Typography.weights.strong, marginBottom: Spacing.one },
+  selectionLabel: { color: Theme.colors.text, flex: 1, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   selectionRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, minHeight: 44 },
   selectionSelected: { backgroundColor: Theme.colors.accent, borderColor: Theme.colors.accent },
-  sortSummary: { color: Theme.colors.textMuted, flexShrink: 1, fontSize: 11, fontWeight: '800', minWidth: 0 },
-  viewButton: { alignItems: 'center', backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, height: 42, justifyContent: 'center', width: 42 },
-  viewIcon: { color: Theme.colors.textMuted, fontSize: 19, fontWeight: '900' },
+  sortSummary: { color: Theme.colors.textMuted, flexShrink: 1, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, minWidth: 0 },
+  viewButton: { alignItems: 'center', backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, height: 44, justifyContent: 'center', width: 44 },
+  viewIcon: { color: Theme.colors.textMuted, fontSize: Typography.toolbarTitle.fontSize, fontWeight: Typography.weights.strong },
   viewModeButton: { alignItems: 'center', backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flex: 1, justifyContent: 'center', minHeight: 44 },
   viewModeRow: { flexDirection: 'row', gap: Spacing.one },
   viewModeSelected: { backgroundColor: Theme.colors.accentSoft, borderColor: Theme.colors.accent },
-  viewModeText: { color: Theme.colors.textMuted, fontSize: 13, fontWeight: '900' },
+  viewModeText: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   wrapper: { gap: Spacing.half },
 });

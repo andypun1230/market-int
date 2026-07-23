@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type SectionEmptyStateProps = {
   actionLabel?: string;
@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
   },
   partialText: {
     color: Theme.colors.warning,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
 });

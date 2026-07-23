@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getToneColors, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type MetricCardProps = {
   change?: string;
@@ -72,21 +72,21 @@ const styles = StyleSheet.create({
   title: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   change: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   value: {
-    fontSize: 25,
-    fontWeight: '900',
+    fontSize: Typography.reportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
 });

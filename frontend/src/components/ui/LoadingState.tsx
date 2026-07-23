@@ -1,6 +1,7 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { CARD_SURFACE } from '@/components/cards/DashboardCard';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type LoadingStateProps = {
   inverse?: boolean;
@@ -44,10 +45,7 @@ export function LoadingState({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Theme.colors.card,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.card,
-    borderWidth: 1,
+    ...CARD_SURFACE,
     gap: Spacing.three,
     justifyContent: 'center',
     padding: Spacing.three,
@@ -76,13 +74,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   label: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   inverseLabel: {
     color: Theme.colors.textInverseMuted,

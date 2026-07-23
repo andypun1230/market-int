@@ -6,7 +6,7 @@ import { DetailModal } from '@/components/ui/DetailModal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TestDataBadge } from '@/components/ui/TestDataBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { TestHeatmapInterval } from '@/data/sectorTabTestData';
 import { searchSectorThemeItems } from '@/features/sectors/analysis/search';
 import type { SectorThemeSearchItem } from '@/features/sectors/sectorThemeSearchModel';
@@ -154,8 +154,8 @@ const styles = StyleSheet.create({
   },
   clearText: {
     color: Theme.colors.accent,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   pressed: {
     opacity: 0.78,
@@ -171,14 +171,14 @@ const styles = StyleSheet.create({
   },
   resultMeta: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   resultName: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   resultRow: {
     alignItems: 'center',
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
   },
   saveText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   saveTextActive: {
     color: Theme.colors.warning,
@@ -217,8 +217,8 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.small,
     borderWidth: 1,
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     minHeight: 48,
     paddingHorizontal: Spacing.twoAndHalf,
   },

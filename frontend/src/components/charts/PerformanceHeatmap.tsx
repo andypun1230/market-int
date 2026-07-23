@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type PerformanceHeatmapProps<T> = {
   emptyLabel?: string;
@@ -63,9 +64,7 @@ export function PerformanceHeatmap<T>({
                   onToggleFavourite(item);
                 }}
                 style={styles.favouriteButton}>
-                <Text style={[styles.favouriteText, favourite && styles.favouriteTextActive]}>
-                  {favourite ? '★' : '☆'}
-                </Text>
+                <AppIcon color={favourite ? Theme.colors.warning : Theme.colors.textMuted} name={favourite ? 'saved' : 'savedOutline'} size={17} />
               </Pressable>
             ) : null}
             <View style={styles.labelStack}>
@@ -133,13 +132,13 @@ function formatPercent(value: number | null) {
 const styles = StyleSheet.create({
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   badgeLabel: {
     color: Theme.colors.warning,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   favouriteButton: {
     alignItems: 'center',
@@ -155,8 +154,8 @@ const styles = StyleSheet.create({
   },
   favouriteText: {
     color: Theme.colors.textMuted,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   favouriteTextActive: {
     color: Theme.colors.warning,
@@ -171,8 +170,8 @@ const styles = StyleSheet.create({
   },
   name: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
   tile: {
@@ -185,12 +184,12 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 13,
   },
   value: {
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

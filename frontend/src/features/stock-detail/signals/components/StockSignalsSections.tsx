@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
 import { DetailGrid, InfoTile } from '@/components/watchlist/WatchlistPrimitives';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { MultiTimeframeTrend } from '@/features/stock-detail/technical/components/StockTechnicalSections';
 import {
   buildSignalSummary,
@@ -335,8 +336,8 @@ function SignalDivider() {
 
 function EvidenceList({ limiting, positive }: { limiting: string[]; positive: string[] }) {
   const rows = [
-    ...positive.slice(0, 2).map((item) => ({ item, tone: 'success' as Tone, prefix: '✓' })),
-    ...limiting.slice(0, 2).map((item) => ({ item, tone: 'warning' as Tone, prefix: '○' })),
+    ...positive.slice(0, 2).map((item) => ({ icon: 'check' as const, item, tone: 'success' as Tone })),
+    ...limiting.slice(0, 2).map((item) => ({ icon: 'pending' as const, item, tone: 'warning' as Tone })),
   ];
   if (!rows.length) {
     return <Text style={styles.emptyText}>No leadership evidence is available.</Text>;
@@ -344,9 +345,10 @@ function EvidenceList({ limiting, positive }: { limiting: string[]; positive: st
   return (
     <View style={styles.evidenceStack}>
       {rows.map((row) => (
-        <Text key={`${row.prefix}-${row.item}`} style={[styles.evidenceText, { color: row.tone === 'success' ? Theme.colors.success : Theme.colors.warning }]}>
-          {row.prefix} {row.item}
-        </Text>
+        <View key={`${row.icon}-${row.item}`} style={styles.evidenceRow}>
+          <AppIcon color={row.tone === 'success' ? Theme.colors.success : Theme.colors.warning} name={row.icon} size={13} />
+          <Text style={[styles.evidenceText, { color: row.tone === 'success' ? Theme.colors.success : Theme.colors.warning }]}>{row.item}</Text>
+        </View>
       ))}
     </View>
   );
@@ -378,7 +380,7 @@ function DiagnosticsRow({
         <Text style={styles.diagnosticsLabel}>{label}</Text>
         <Text style={styles.diagnosticsPreview}>{preview}</Text>
       </View>
-      <Text style={styles.chevron}>{expanded ? '⌄' : '›'}</Text>
+      <AppIcon name={expanded ? 'chevronDown' : 'chevronRight'} size={17} />
     </Pressable>
   );
 }
@@ -531,18 +533,18 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 18,
   },
   chevron: {
     color: Theme.colors.textMuted,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   comparisonLabel: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   comparisonRow: {
     gap: Spacing.one,
@@ -557,17 +559,17 @@ const styles = StyleSheet.create({
   },
   comparisonValue: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   diagnosticsLabel: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   diagnosticsPreview: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
+    fontSize: Typography.small.fontSize,
     lineHeight: 17,
   },
   diagnosticsRow: {
@@ -593,21 +595,26 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
+    fontSize: Typography.small.fontSize,
     fontStyle: 'italic',
   },
   evidenceStack: {
     gap: Spacing.one,
   },
+  evidenceRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.one,
+  },
   evidenceText: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 18,
   },
   heroLabel: {
     color: Theme.colors.text,
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   heroCopy: {
     flex: 1,
@@ -632,8 +639,8 @@ const styles = StyleSheet.create({
   },
   heroScore: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
   neutralMarker: {
@@ -657,8 +664,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   signalDivider: {
     backgroundColor: Theme.colors.border,
@@ -672,8 +679,8 @@ const styles = StyleSheet.create({
   },
   segmentLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   segmentLabelRow: {
     flexDirection: 'row',
@@ -693,8 +700,8 @@ const styles = StyleSheet.create({
   },
   summaryHeadline: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 20,
   },
   surface: {

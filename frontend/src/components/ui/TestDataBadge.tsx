@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 export function TestDataBadge({ label = 'Test Data' }: { label?: string }) {
   return (
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Theme.colors.warning,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

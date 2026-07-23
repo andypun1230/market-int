@@ -6,7 +6,7 @@ import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { MetricTile } from '@/components/ui/MetricTile';
 import { SettingsRow } from '@/components/ui/SettingsRow';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   API_URL,
   getIntelligenceStatus,
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   },
   helperText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 19,
     marginTop: Spacing.three,
   },
@@ -398,8 +398,8 @@ const styles = StyleSheet.create({
   },
   scenarioChipText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   scenarioChipTextSelected: {
     color: Theme.colors.accent,
@@ -424,12 +424,12 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   errorText: {
     color: Theme.colors.danger,
-    fontSize: 12,
+    fontSize: Typography.small.fontSize,
     lineHeight: 18,
     marginTop: Spacing.two,
   },
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   },
   disclaimer: {
     color: Theme.colors.text,
-    fontSize: 15,
+    fontSize: Typography.bodyLarge.fontSize,
     lineHeight: 23,
   },
 });

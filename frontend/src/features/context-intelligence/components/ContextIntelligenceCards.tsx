@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   buildNewsConsumerPresentation,
   intelligenceStateLabel,
@@ -305,12 +305,12 @@ function accentForState(state: IntelligenceDisplayState): string {
 const styles = StyleSheet.create({
   body: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 19,
   },
   disclosure: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
+    fontSize: Typography.caption.fontSize,
     fontStyle: 'italic',
     lineHeight: 16,
   },
@@ -322,14 +322,14 @@ const styles = StyleSheet.create({
   },
   headline: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 20,
   },
   metadata: {
     color: Theme.colors.textMuted,
     flexShrink: 1,
-    fontSize: 11,
+    fontSize: Typography.caption.fontSize,
     lineHeight: 15,
   },
   metadataRow: {
@@ -340,13 +340,13 @@ const styles = StyleSheet.create({
   },
   reaction: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
+    fontSize: Typography.small.fontSize,
     lineHeight: 17,
   },
   score: {
     color: Theme.colors.accent,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   stack: {
     gap: Spacing.two,

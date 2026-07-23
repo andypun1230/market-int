@@ -4,7 +4,7 @@ import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 export default function LanguageRegionScreen() {
   return (
     <AppScreen showBackButton title="Language & Region" subtitle="Supported display locale.">
@@ -26,7 +26,7 @@ export default function LanguageRegionScreen() {
 const styles = StyleSheet.create({
   note: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 19,
     marginTop: Spacing.two,
   },

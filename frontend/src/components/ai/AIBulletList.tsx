@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type AIBulletListProps = {
   emptyText?: string;
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   text: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 20,
   },
 });

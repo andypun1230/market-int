@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   DEFAULT_SECTOR_THEME_FILTERS,
   type SectorThemeFilters,
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
   },
   groupLabel: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   option: {
     backgroundColor: Theme.colors.cardMuted,
@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
   },
   optionText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   optionTextActive: {
     color: Theme.colors.accent,
@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
   },
   resetText: {
     color: Theme.colors.warning,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   stack: {
     gap: Spacing.three,

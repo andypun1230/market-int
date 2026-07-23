@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ScoreGauge } from '@/components/ui/ScoreGauge';
 import { SignalDots } from '@/components/ui/SignalDots';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type DecisionTag = string;
 
@@ -128,18 +128,18 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   decision: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 20,
   },
   metaRow: {
@@ -158,8 +158,8 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     maxWidth: '100%',
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,

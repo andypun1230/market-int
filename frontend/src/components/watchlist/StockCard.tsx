@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { DetailModal } from '@/components/ui/DetailModal';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import {
   SectionSummary,
 } from '@/components/watchlist/WatchlistPrimitives';
 import { RiskPlanSection } from '@/components/watchlist/RiskPlanSection';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { AskCopilotButton } from '@/features/copilot/components/AskCopilotButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { MaterialEventsCard } from '@/features/context-intelligence/components/ContextIntelligenceCards';
@@ -264,7 +265,7 @@ export function StockCard({
               </Text>
               <Text numberOfLines={1} style={styles.compactDecision}>{compactDecisionLabel}</Text>
               {classification ? <DataStatusDot primarySignal={classification.primarySignal} status={classification.dataStatus} /> : null}
-              <Text style={styles.compactChevron}>›</Text>
+              <AppIcon name="chevronRight" size={14} />
             </View>
           ) : (
             <>
@@ -273,7 +274,7 @@ export function StockCard({
                 <Text style={[styles.changeValue, { color: changeTone }]}>
                   {formatNullablePercent(stock.change_percent)}
                 </Text>
-                <Text style={styles.chevron}>›</Text>
+                <AppIcon name="chevronRight" size={16} />
               </View>
               <View style={styles.decisionRow}>
                 <Text numberOfLines={1} style={styles.decisionStatus}>{decisionStatus}</Text>
@@ -294,7 +295,7 @@ export function StockCard({
             hitSlop={8}
             onPress={() => onRemove(stock.ticker)}
             style={styles.removeButton}>
-            <Text style={styles.removeText}>★</Text>
+            <AppIcon color={Theme.colors.warning} name="saved" size={17} />
           </Pressable>
         ) : null}
       </View>
@@ -387,12 +388,12 @@ const styles = StyleSheet.create({
   tickerSymbol: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   changeValue: {
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     minWidth: 66,
     textAlign: 'right',
   },
@@ -401,13 +402,13 @@ const styles = StyleSheet.create({
   },
   compactChevron: {
     color: Theme.colors.textMuted,
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: Typography.sectionHero.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   compactDecision: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     minWidth: 54,
     textAlign: 'right',
   },
@@ -425,8 +426,8 @@ const styles = StyleSheet.create({
   decisionStatus: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     minWidth: 0,
   },
   removeButton: {
@@ -438,13 +439,13 @@ const styles = StyleSheet.create({
   },
   removeText: {
     color: Theme.colors.warning,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   chevron: {
     color: Theme.colors.textMuted,
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: Typography.entityTitle.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   signalBlock: {
     alignItems: 'center',

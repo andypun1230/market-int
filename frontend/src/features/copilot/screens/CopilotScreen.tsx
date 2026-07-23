@@ -13,8 +13,9 @@ import {
 } from 'react-native';
 
 import { AppScreen } from '@/components/ui/AppScreen';
+import { AppButton } from '@/components/ui/AppButton';
 import { QuickActionChip } from '@/components/ui/QuickActionChip';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { CopilotSourceBadge } from '@/features/copilot/components/CopilotSourceBadge';
 import { CopilotStructuredResponse } from '@/features/copilot/components/CopilotStructuredResponse';
 import { buildStarterPrompts } from '@/features/copilot/context/contextRegistry';
@@ -270,14 +271,15 @@ export function CopilotScreen() {
                 <Text style={styles.cancelText}>Cancel</Text>
               </Pressable>
             ) : (
-              <Pressable
+              <AppButton
                 accessibilityLabel="Send question to Institutional Copilot"
-                accessibilityRole="button"
                 disabled={!input.trim()}
+                label="Send"
                 onPress={() => void send()}
-                style={({ pressed }) => [styles.sendButton, !input.trim() && styles.disabled, pressed && styles.pressed]}>
-                <Text style={styles.sendText}>Send</Text>
-              </Pressable>
+                style={styles.sendButton}
+                tone="copilot"
+                variant="primary"
+              />
             )}
           </View>
         </View>
@@ -350,11 +352,7 @@ function CopilotTurn({
 }
 
 function SmallAction({ label, onPress }: { label: string; onPress: () => void }) {
-  return (
-    <Pressable accessibilityLabel={label} accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.smallAction, pressed && styles.pressed]}>
-      <Text style={styles.smallActionText}>{label}</Text>
-    </Pressable>
-  );
+  return <AppButton label={label} onPress={onPress} style={styles.smallAction} variant="compact" />;
 }
 
 function createRequestId() {
@@ -364,37 +362,34 @@ function createRequestId() {
 const styles = StyleSheet.create({
   appContent: { padding: 0 },
   assistantTurn: { gap: Spacing.two },
-  cancelButton: { alignItems: 'center', borderColor: Theme.colors.warning, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 40, justifyContent: 'center', paddingHorizontal: Spacing.three },
-  cancelText: { color: Theme.colors.warning, fontSize: 13, fontWeight: '900' },
+  cancelButton: { alignItems: 'center', borderColor: Theme.colors.warning, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 44, justifyContent: 'center', paddingHorizontal: Spacing.three },
+  cancelText: { color: Theme.colors.warning, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   composerActions: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, justifyContent: 'space-between' },
-  composerHint: { color: Theme.colors.textMuted, flex: 1, fontSize: 10, fontWeight: '700' },
+  composerHint: { color: Theme.colors.textMuted, flex: 1, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.emphasis },
   composerShell: { backgroundColor: Theme.colors.background, borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: Spacing.two, padding: Spacing.three },
   contextActions: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one, justifyContent: 'flex-end' },
   contextBar: { alignItems: 'flex-start', backgroundColor: Theme.colors.card, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, justifyContent: 'space-between', padding: Spacing.twoAndHalf },
   contextCopy: { flex: 1, gap: 2, minWidth: 190 },
-  contextEyebrow: { color: Theme.colors.purple, fontSize: 10, fontWeight: '900', letterSpacing: 0.6 },
-  contextMeta: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '700', textTransform: 'capitalize' },
-  contextTitle: { color: Theme.colors.text, fontSize: 14, fontWeight: '900' },
+  contextEyebrow: { color: Theme.colors.purple, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong, letterSpacing: 0.6 },
+  contextMeta: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis, textTransform: 'capitalize' },
+  contextTitle: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
   conversationContent: { gap: Spacing.three, padding: Spacing.three, paddingBottom: Spacing.four },
-  disabled: { opacity: 0.45 },
   errorPanel: { alignItems: 'flex-start', backgroundColor: Theme.colors.dangerSoft, borderColor: Theme.colors.danger, borderRadius: Theme.radii.small, borderWidth: 1, gap: Spacing.one, padding: Spacing.twoAndHalf },
-  errorText: { color: Theme.colors.text, fontSize: 12, fontWeight: '700', lineHeight: 18 },
-  errorTitle: { color: Theme.colors.danger, fontSize: 12, fontWeight: '900' },
+  errorText: { color: Theme.colors.text, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 18 },
+  errorTitle: { color: Theme.colors.danger, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   followUpBlock: { gap: Spacing.one },
-  input: { backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, color: Theme.colors.text, fontSize: 14, fontWeight: '700', lineHeight: 20, maxHeight: 130, minHeight: 56, padding: Spacing.twoAndHalf, textAlignVertical: 'top' },
+  input: { backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 20, maxHeight: 130, minHeight: 56, padding: Spacing.twoAndHalf, textAlignVertical: 'top' },
   keyboardView: { flex: 1 },
   messageStack: { gap: Spacing.four },
   pressed: { opacity: 0.74 },
   promptRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  sendButton: { alignItems: 'center', backgroundColor: Theme.colors.purple, borderRadius: Theme.radii.pill, justifyContent: 'center', minHeight: 40, paddingHorizontal: Spacing.four },
-  sendText: { color: Theme.colors.background, fontSize: 13, fontWeight: '900' },
-  smallAction: { backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, paddingHorizontal: Spacing.two, paddingVertical: Spacing.one },
-  smallActionText: { color: Theme.colors.text, fontSize: 10, fontWeight: '900' },
+  sendButton: { alignItems: 'center', backgroundColor: Theme.colors.purple, borderRadius: Theme.radii.pill, justifyContent: 'center', minHeight: 44, paddingHorizontal: Spacing.four },
+  smallAction: { borderRadius: Theme.radii.pill },
   starterBlock: { gap: Spacing.two },
-  starterLabel: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: '900', letterSpacing: 0.6 },
+  starterLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong, letterSpacing: 0.6 },
   streamStatus: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two, paddingHorizontal: Spacing.one },
-  streamStatusText: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: '800' },
-  turnLabel: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: '900', letterSpacing: 0.6 },
-  userText: { color: Theme.colors.text, fontSize: 14, fontWeight: '700', lineHeight: 21 },
+  streamStatusText: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
+  turnLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong, letterSpacing: 0.6 },
+  userText: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.emphasis, lineHeight: 21 },
   userTurn: { alignSelf: 'flex-end', backgroundColor: Theme.colors.purpleSoft, borderColor: Theme.colors.purple, borderRadius: Theme.radii.small, borderWidth: 1, gap: Spacing.one, maxWidth: '88%', padding: Spacing.twoAndHalf },
 });

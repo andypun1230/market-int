@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { WatchlistDecisionGroup } from '@/features/watchlist/watchlistDecision';
 import type { ClassifiedWatchlistItem } from '@/features/watchlist/types';
 
@@ -54,7 +55,7 @@ export function WatchlistSection({ children, collapsed, group, items, onToggleCo
         <View style={[styles.countPill, { borderColor: meta.accent }]}>
           <Text style={[styles.countText, { color: meta.accent }]}>{items.length}</Text>
         </View>
-        <Text style={styles.chevron}>{collapsed ? '›' : '⌄'}</Text>
+        <AppIcon name={collapsed ? 'chevronRight' : 'chevronDown'} size={17} />
       </Pressable>
       {!collapsed ? <View style={styles.list}>{children}</View> : null}
     </View>
@@ -64,8 +65,8 @@ export function WatchlistSection({ children, collapsed, group, items, onToggleCo
 const styles = StyleSheet.create({
   chevron: {
     color: Theme.colors.textMuted,
-    fontSize: 22,
-    fontWeight: '900',
+    fontSize: Typography.sectionHero.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 20,
   },
   countPill: {
@@ -78,8 +79,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
   },
   countText: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   header: {
     alignItems: 'center',
@@ -103,13 +104,13 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 15,
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

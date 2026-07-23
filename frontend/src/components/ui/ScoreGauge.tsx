@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type ScoreGaugeProps = {
   label?: string;
@@ -111,20 +111,20 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   value: {
-    fontWeight: '900',
+    fontWeight: Typography.weights.strong,
   },
   smallValue: {
-    fontSize: 20,
+    fontSize: Typography.detailTitle.fontSize,
   },
   mediumValue: {
-    fontSize: 28,
+    fontSize: Typography.entityTitle.fontSize,
   },
   largeValue: {
-    fontSize: 34,
+    fontSize: Typography.display.fontSize,
   },
 });

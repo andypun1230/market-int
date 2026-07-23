@@ -9,7 +9,7 @@ import {
 import { SymbolView } from 'expo-symbols';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { MaxContentWidth, Spacing, Theme } from '@/constants/theme';
+import { MaxContentWidth, Spacing, Theme, Typography } from '@/constants/theme';
 
 type TabIcon = {
   ios: string;
@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     color: Theme.colors.tabInactive,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   activeTabLabel: {
     color: Theme.colors.textInverse,

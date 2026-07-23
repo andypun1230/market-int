@@ -14,7 +14,8 @@ import {
 } from 'react-native';
 import type { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 
-import { MaxContentWidth, Spacing, Theme } from '@/constants/theme';
+import { MaxContentWidth, Spacing, Theme, Typography } from '@/constants/theme';
+import { AppButton } from '@/components/ui/AppButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { setCopilotLaunchContext } from '@/features/copilot/state/copilotStore';
 import type { CopilotContext } from '@/features/copilot/types';
@@ -138,14 +139,14 @@ function HeaderAction({ accessibilityLabel, icon, onPress, tintColor }: {
   tintColor: string;
 }) {
   return (
-    <Pressable
+    <AppButton
       accessibilityLabel={accessibilityLabel}
-      accessibilityRole="button"
-      hitSlop={4}
+      label={accessibilityLabel}
+      leadingIcon={<SymbolView name={icon as never} size={19} tintColor={tintColor} weight="bold" />}
       onPress={onPress}
-      style={({ pressed }) => [styles.headerAction, pressed && styles.pressed]}>
-      <SymbolView name={icon as never} size={19} tintColor={tintColor} weight="bold" />
-    </Pressable>
+      style={styles.headerAction}
+      variant="icon"
+    />
   );
 }
 
@@ -369,37 +370,37 @@ function iconColor(category: CommandCategory) {
 const styles = StyleSheet.create({
   clearQuery: { alignItems: 'center', height: 36, justifyContent: 'center', width: 36 },
   commandRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.two },
-  emptyText: { color: Theme.colors.textMuted, fontSize: 13, lineHeight: 20, paddingVertical: Spacing.two },
-  headerAction: { alignItems: 'center', backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, height: 42, justifyContent: 'center', width: 42 },
+  emptyText: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, lineHeight: 20, paddingVertical: Spacing.two },
+  headerAction: { borderRadius: Theme.radii.small },
   headerInner: { alignSelf: 'center', maxWidth: MaxContentWidth + Spacing.six, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two, width: '100%' },
   overlay: { backgroundColor: Theme.colors.background, flex: 1 },
   overlayBack: { alignItems: 'center', backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, height: 46, justifyContent: 'center', width: 46 },
   overlayInner: { alignSelf: 'center', flex: 1, maxWidth: 760, width: '100%' },
-  overlayInput: { color: Theme.colors.text, flex: 1, fontSize: 13, fontWeight: '700', minWidth: 0, outlineStyle: 'none' } as never,
+  overlayInput: { color: Theme.colors.text, flex: 1, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, minWidth: 0, outlineStyle: 'none' } as never,
   overlayInputWrap: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.accent, borderRadius: Theme.radii.card, borderWidth: 1, flex: 1, flexDirection: 'row', gap: Spacing.two, minHeight: 46, paddingHorizontal: Spacing.three },
   overlaySearchRow: { alignItems: 'center', borderBottomColor: Theme.colors.border, borderBottomWidth: 1, flexDirection: 'row', gap: Spacing.two, padding: Spacing.three },
   pressed: { opacity: 0.72 },
   resultCopy: { flex: 1, gap: 3, minWidth: 0 },
   resultIcon: { alignItems: 'center', borderRadius: Theme.radii.small, height: 34, justifyContent: 'center', width: 34 },
-  resultMetadata: { color: Theme.colors.textMuted, fontSize: 12 },
+  resultMetadata: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize },
   resultRow: { alignItems: 'center', borderColor: 'transparent', borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', gap: Spacing.two, minHeight: 54, paddingHorizontal: Spacing.two, paddingVertical: Spacing.two },
   resultRowSelected: { backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.accent },
-  resultTitle: { color: Theme.colors.text, fontSize: 14, fontWeight: '800' },
+  resultTitle: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
   resultsContent: { gap: Spacing.four, padding: Spacing.three, paddingBottom: Spacing.six },
   searchButton: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.border, borderRadius: Theme.radii.card, borderWidth: 1, flex: 1, flexDirection: 'row', gap: Spacing.two, minWidth: 0, paddingHorizontal: Spacing.three },
-  searchPlaceholder: { color: Theme.colors.textMuted, flex: 1, fontSize: 13, fontWeight: '700', minWidth: 0 },
+  searchPlaceholder: { color: Theme.colors.textMuted, flex: 1, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, minWidth: 0 },
   searchWrap: { flex: 1, minWidth: 0 },
   section: { gap: Spacing.one },
-  sectionAction: { color: Theme.colors.accent, fontSize: 12, fontWeight: '800', padding: Spacing.two },
+  sectionAction: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, padding: Spacing.two },
   sectionHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', minHeight: 30 },
-  sectionTitle: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: '900', textTransform: 'uppercase' },
+  sectionTitle: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, textTransform: 'uppercase' },
   shell: { backgroundColor: Theme.colors.background, borderBottomColor: Theme.colors.border, borderBottomWidth: 1, zIndex: 20 },
   shortcutBadge: { alignItems: 'center', backgroundColor: Theme.colors.cardElevated, borderColor: Theme.colors.border, borderRadius: 5, borderWidth: 1, height: 22, justifyContent: 'center', width: 22 },
-  shortcutText: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: '900' },
+  shortcutText: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   sourceBadge: { alignItems: 'center', borderRadius: Theme.radii.pill, borderWidth: 1, flexDirection: 'row', gap: 4, paddingHorizontal: 7, paddingVertical: 4 },
   sourceDot: { borderRadius: Theme.radii.pill, height: 5, width: 5 },
-  sourceText: { fontSize: 10, fontWeight: '900', textTransform: 'capitalize' },
-  subtitle: { color: Theme.colors.textInverseMuted, fontSize: 14, lineHeight: 20 },
-  title: { color: Theme.colors.textInverse, fontSize: 27, fontWeight: '900' },
+  sourceText: { fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong, textTransform: 'capitalize' },
+  subtitle: { color: Theme.colors.textInverseMuted, fontSize: Typography.body.fontSize, lineHeight: 20 },
+  title: { color: Theme.colors.textInverse, fontSize: Typography.screenTitleSmall.fontSize, fontWeight: Typography.weights.heavy },
   titleBlock: { gap: 2, overflow: 'hidden' },
 });

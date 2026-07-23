@@ -1,7 +1,7 @@
 import { Fragment, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { Candle, PatternKeyLevels, PatternMarker } from '@/types/market';
 
 type MiniCandlestickChartProps = {
@@ -402,8 +402,8 @@ const styles = StyleSheet.create({
   },
   priceLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     position: 'absolute',
     right: Spacing.two,
   },
@@ -414,8 +414,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   legendText: {
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     position: 'absolute',
     top: Spacing.two,
   },
@@ -434,8 +434,8 @@ const styles = StyleSheet.create({
     right: Spacing.one,
   },
   levelTagText: {
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   wick: {
     borderRadius: 1,
@@ -473,8 +473,8 @@ const styles = StyleSheet.create({
   },
   chartMarkerText: {
     color: Theme.colors.text,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   markerList: {
     flexDirection: 'row',
@@ -491,8 +491,8 @@ const styles = StyleSheet.create({
   },
   markerText: {
     color: Theme.colors.text,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   emptyChart: {
     alignItems: 'center',
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
 });

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { TestDataBadge } from '@/components/ui/TestDataBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { RotationAlert } from '@/data/sectorTabTestData';
 import { SectionEmptyState } from '@/features/sectors/components/SectionState';
 
@@ -43,18 +43,18 @@ export function RotationAlertsCard({ alerts, title }: RotationAlertsCardProps) {
 const styles = StyleSheet.create({
   alertMessage: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   alertMeta: {
     color: Theme.colors.warning,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   alertName: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   alertRow: {
     alignItems: 'flex-start',
@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
   subtitle: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
 });

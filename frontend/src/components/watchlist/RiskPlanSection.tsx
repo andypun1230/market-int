@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import {
   DetailGrid,
@@ -8,7 +9,7 @@ import {
   SectionSummary,
   ZoneSection,
 } from '@/components/watchlist/WatchlistPrimitives';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   buildRiskDashboard,
   type PositionGuidance,
@@ -245,9 +246,13 @@ function RiskFactorGroup({ items, title }: { items: RiskFactor[]; title: string 
       <Text style={styles.factorGroupTitle}>{title}</Text>
       {items.map((factor) => (
         <View key={factor.key} style={styles.factorRow}>
-          <Text style={[styles.factorIcon, { color: factorToneColor(factor.tone) }]}>
-            {factor.tone === 'success' ? '✓' : factor.tone === 'neutral' ? '•' : '!'}
-          </Text>
+          <View style={styles.factorIcon}>
+            <AppIcon
+              color={factorToneColor(factor.tone)}
+              name={factor.tone === 'success' ? 'check' : factor.tone === 'neutral' ? 'neutralDot' : 'warning'}
+              size={14}
+            />
+          </View>
           <View style={styles.factorTextBlock}>
             <Text style={styles.factorLabel}>{factor.label}</Text>
             {factor.detail ? <Text style={styles.factorDetail}>{factor.detail}</Text> : null}
@@ -480,14 +485,14 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 19,
   },
   collapseChevron: {
     color: Theme.colors.accent,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   collapseHeader: {
     alignItems: 'center',
@@ -500,8 +505,8 @@ const styles = StyleSheet.create({
   },
   basisText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 16,
   },
   currentLevelRow: {
@@ -517,14 +522,13 @@ const styles = StyleSheet.create({
   },
   factorDetail: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   factorIcon: {
-    fontSize: 14,
-    fontWeight: '900',
-    lineHeight: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 1,
     width: 14,
   },
@@ -533,14 +537,14 @@ const styles = StyleSheet.create({
   },
   factorGroupTitle: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   factorLabel: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   factorRow: {
     flexDirection: 'row',
@@ -561,25 +565,25 @@ const styles = StyleSheet.create({
   },
   kicker: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   legendText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   levelDescription: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   levelLabel: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   levelRow: {
     alignItems: 'center',
@@ -600,12 +604,12 @@ const styles = StyleSheet.create({
   },
   levelValue: {
     minWidth: 76,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   meterLabel: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   meterSupportRows: {
     flexDirection: 'row',
@@ -624,8 +628,8 @@ const styles = StyleSheet.create({
   },
   segmentText: {
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
   segmentTextActive: {
@@ -645,15 +649,15 @@ const styles = StyleSheet.create({
   },
   noteLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     marginBottom: Spacing.one,
     textTransform: 'uppercase',
   },
   noteText: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 19,
   },
   overviewDivider: {
@@ -665,13 +669,13 @@ const styles = StyleSheet.create({
   },
   rewardDetail: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   rewardInterpretation: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
   rewardMain: {
@@ -684,18 +688,18 @@ const styles = StyleSheet.create({
   },
   rewardPrice: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   rewardQuality: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   rewardRatio: {
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   rewardRow: {
     alignItems: 'center',
@@ -710,8 +714,8 @@ const styles = StyleSheet.create({
   },
   rewardTitle: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   rewardTitleRow: {
     alignItems: 'center',
@@ -720,8 +724,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   riskLevelBadge: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectionCard: {
     backgroundColor: Theme.colors.card,
@@ -733,13 +737,13 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   summaryBody: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 20,
   },
   summaryCard: {
@@ -757,8 +761,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   summaryScore: {
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   summaryScoreBlock: {
     alignItems: 'flex-end',
@@ -766,16 +770,16 @@ const styles = StyleSheet.create({
   },
   summaryScoreLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 12,
     textAlign: 'right',
     textTransform: 'uppercase',
   },
   summaryTitle: {
     color: Theme.colors.text,
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   summaryTitleBlock: {
     flex: 1,
@@ -790,8 +794,8 @@ const styles = StyleSheet.create({
   },
   trustNoticeText: {
     color: Theme.colors.warning,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
   testScenarioBadge: {
@@ -803,7 +807,7 @@ const styles = StyleSheet.create({
   },
   testScenarioText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

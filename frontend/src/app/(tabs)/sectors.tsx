@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { DashboardCard } from "@/components/cards/DashboardCard";
 import { PerformanceHeatmap } from "@/components/charts/PerformanceHeatmap";
 import { RotationQuadrantChart } from "@/components/charts/RotationQuadrantChart";
+import { AppButton } from "@/components/ui/AppButton";
+import { AppIcon, type AppIconName } from "@/components/ui/AppIcon";
 import { AppScreen } from "@/components/ui/AppScreen";
 import { DetailModal } from "@/components/ui/DetailModal";
 import { DecisionSummaryCard } from "@/components/ui/DecisionSummaryCard";
@@ -14,7 +15,7 @@ import { MetricTile } from "@/components/ui/MetricTile";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AlertList } from "@/components/ui/AlertList";
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import { AskCopilotButton } from "@/features/copilot/components/AskCopilotButton";
 import { createCopilotContext } from "@/features/copilot/context/buildScreenContext";
 import { EntityCatalystsCard } from "@/features/context-intelligence/components/ContextIntelligenceCards";
@@ -1002,24 +1003,20 @@ function SectorNavigation({
         </View>
         <View style={styles.utilityToolbar}>
           <UtilityButton
-            icon={{ android: "search", ios: "magnifyingglass", web: "search" }}
+            icon="search"
             label="Search"
             onPress={onSearch}
           />
           <UtilityButton
             disabled={!comparisonEnabled}
-            icon={{
-              android: "compare_arrows",
-              ios: "rectangle.2.swap",
-              web: "compare_arrows",
-            }}
+            icon="compare"
             label="Compare"
             onPress={onCompare}
           />
           <UtilityButton
             badge={activeFilterCount}
             disabled={!filterEnabled}
-            icon={{ android: "tune", ios: "slider.horizontal.3", web: "tune" }}
+            icon="filter"
             label="Filter and sort"
             onPress={onFilter}
           />
@@ -1061,31 +1058,26 @@ function UtilityButton({
 }: {
   badge?: number;
   disabled?: boolean;
-  icon: { android: string; ios: string; web: string };
+  icon: AppIconName;
   label: string;
   onPress: () => void;
 }) {
   return (
-    <Pressable
+    <AppButton
       accessibilityLabel={badge ? `${label}, ${badge} active filters` : label}
-      accessibilityRole="button"
       accessibilityState={{ disabled }}
       disabled={disabled}
+      label={label}
+      leadingIcon={<AppIcon color={Theme.colors.accent} name={icon} size={17} />}
       onPress={onPress}
-      style={({ pressed }) => [styles.utilityButton, disabled && styles.utilityButtonDisabled, pressed && styles.pressed]}
-    >
-      <SymbolView
-        name={icon as never}
-        size={17}
-        tintColor={Theme.colors.accent}
-        weight="bold"
-      />
+      style={[styles.utilityButton, disabled && styles.utilityButtonDisabled]}
+      variant="icon">
       {badge ? (
         <View style={styles.filterBadge}>
           <Text style={styles.filterBadgeText}>{badge}</Text>
         </View>
       ) : null}
-    </Pressable>
+    </AppButton>
   );
 }
 
@@ -1640,7 +1632,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
   },
   badges: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.two },
-  body: { color: Theme.colors.text, fontSize: 13 },
+  body: { color: Theme.colors.text, fontSize: Typography.control.fontSize },
   categoryButton: {
     alignItems: "center",
     borderRadius: Theme.radii.pill,
@@ -1666,8 +1658,8 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: "900",
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: "center",
   },
   categoryTextActive: { color: Theme.colors.accent },
@@ -1692,14 +1684,14 @@ const styles = StyleSheet.create({
   },
   contentText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: "900",
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: "center",
   },
   contentTextActive: { color: Theme.colors.accent },
   detailStack: { gap: Spacing.three },
   metricGrid: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.two },
-  name: { color: Theme.colors.text, fontSize: 14, fontWeight: "900" },
+  name: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
   navigation: { gap: Spacing.two },
   navigationTopRow: {
     alignItems: "center",
@@ -1707,7 +1699,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: Spacing.two,
   },
-  note: { color: Theme.colors.textMuted, fontSize: 13, fontWeight: "700" },
+  note: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis },
   row: {
     alignItems: "center",
     borderTopColor: Theme.colors.border,
@@ -1730,7 +1722,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.accent,
   },
   tabs: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.one },
-  tabText: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: "800" },
+  tabText: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   tabTextActive: { color: Theme.colors.accent },
   themeSource: { gap: Spacing.one, marginBottom: Spacing.two },
   utilityButton: {
@@ -1739,9 +1731,9 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
     borderRadius: Theme.radii.pill,
     borderWidth: 1,
-    height: 40,
+    height: 44,
     justifyContent: "center",
-    width: 40,
+    width: 44,
   },
   utilityButtonDisabled: { opacity: 0.45 },
   utilityToolbar: {
@@ -1765,8 +1757,8 @@ const styles = StyleSheet.create({
   },
   filterBadgeText: {
     color: Theme.colors.background,
-    fontSize: 10,
-    fontWeight: "900",
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   flow: {
     borderTopColor: Theme.colors.border,
@@ -1774,6 +1766,6 @@ const styles = StyleSheet.create({
     gap: Spacing.half,
     paddingTop: Spacing.two,
   },
-  flowTitle: { color: Theme.colors.text, fontSize: 13, fontWeight: "900" },
-  value: { color: Theme.colors.accent, fontSize: 16, fontWeight: "900" },
+  flowTitle: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
+  value: { color: Theme.colors.accent, fontSize: Typography.supportTitle.fontSize, fontWeight: Typography.weights.strong },
 });

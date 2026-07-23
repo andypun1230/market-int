@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { DashboardCard } from "@/components/cards/DashboardCard";
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import {
   DEFAULT_CANONICAL_GROUP_FILTERS,
   type CanonicalGroupFilters,
@@ -129,14 +129,14 @@ function defaultFormat(value: string | number | null) {
 
 const styles = StyleSheet.create({
   group: { gap: Spacing.one },
-  label: { color: Theme.colors.text, fontSize: 13, fontWeight: "900" },
+  label: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   option: { backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, paddingHorizontal: Spacing.two, paddingVertical: 7 },
   optionActive: { backgroundColor: Theme.colors.accentSoft, borderColor: Theme.colors.accent },
-  optionText: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: "900" },
+  optionText: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong },
   optionTextActive: { color: Theme.colors.accent },
   options: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.one },
   pressed: { opacity: 0.78 },
   reset: { alignItems: "center", alignSelf: "flex-start", borderColor: Theme.colors.warning, borderRadius: Theme.radii.small, borderWidth: 1, minHeight: 44, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two },
-  resetText: { color: Theme.colors.warning, fontSize: 12, fontWeight: "900" },
+  resetText: { color: Theme.colors.warning, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   stack: { gap: Spacing.three },
 });

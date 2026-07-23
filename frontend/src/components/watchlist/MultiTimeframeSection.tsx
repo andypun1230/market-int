@@ -7,7 +7,7 @@ import {
   ZoneSection,
 } from '@/components/watchlist/WatchlistPrimitives';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { MultiTimeframeItem } from '@/types/market';
 import { getAlignmentColor } from '@/utils/colors';
 import { formatNullableNumber, formatTimeframeTile } from '@/utils/formatters';
@@ -72,8 +72,8 @@ export function MultiTimeframeSection({
 
 const styles = StyleSheet.create({
   scoreBadge: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   badgeStack: {
     alignItems: 'flex-end',
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     padding: Spacing.twoAndHalf,
   },
   alignmentText: {
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 export default function NotificationsScreen() {
   return (
     <AppScreen showBackButton title="Notifications" subtitle="Notification delivery status.">
@@ -22,7 +22,7 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   note: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 20,
   },
   stack: {

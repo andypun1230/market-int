@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { useAppPreferences, type LocalProfilePreferences } from '@/features/preferences/appPreferences';
 
 export default function ProfileScreen() {
@@ -40,8 +40,8 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   input: {
     color: Theme.colors.text,
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     minHeight: 44,
   },
   inputBox: {
@@ -54,13 +54,13 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   note: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 19,
   },
   stack: {

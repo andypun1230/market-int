@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { getToneColors, type Tone } from '@/components/ui/StatusBadge';
 
 type CompactMetric = {
@@ -50,7 +51,7 @@ export function CompactSummaryCard({
       {onPress ? (
       <View style={styles.actionRow}>
           <Text numberOfLines={1} style={styles.actionText}>{actionLabel}</Text>
-          <Text style={styles.actionChevron}>▸</Text>
+          <AppIcon color={Theme.colors.accent} name="chevronRight" size={16} />
         </View>
       ) : null}
     </>
@@ -116,13 +117,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 19,
-    fontWeight: '900',
+    fontSize: Typography.toolbarTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 18,
   },
   metrics: {
@@ -135,20 +136,20 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   metricValue: {
     color: Theme.colors.text,
-    fontSize: 22,
-    fontWeight: '900',
+    fontSize: Typography.sectionHero.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   metricValueCompact: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   badges: {
@@ -174,12 +175,7 @@ const styles = StyleSheet.create({
   actionText: {
     color: Theme.colors.accent,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '900',
-  },
-  actionChevron: {
-    color: Theme.colors.accent,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

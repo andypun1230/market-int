@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { AppButton } from '@/components/ui/AppButton';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { getSortLabel, WATCHLIST_SORT_OPTIONS } from '@/features/watchlist/watchlistSort';
 import type { WatchlistSortMode } from '@/features/watchlist/types';
 
@@ -50,23 +52,24 @@ export function WatchlistToolbar({
           style={styles.searchInput}
           value={query}
         />
-        <Pressable
+        <AppButton
           accessibilityLabel="Add ticker to stock watchlist"
-          accessibilityRole="button"
           disabled={!canAdd}
+          label="Add ticker"
+          leadingIcon={<AppIcon color={Theme.colors.background} name="add" size={20} />}
           onPress={onAdd}
-          style={({ pressed }) => [styles.iconButton, !canAdd && styles.disabledButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.iconButtonText}>+</Text>
-        </Pressable>
-        <Pressable
+          style={styles.iconButton}
+          variant="primary"
+        />
+        <AppButton
           accessibilityLabel="Refresh watchlist"
-          accessibilityRole="button"
+          label="Refresh watchlist"
+          leadingIcon={<AppIcon color={Theme.colors.text} name="refresh" size={19} />}
+          loading={refreshing}
           onPress={onRefresh}
-          style={({ pressed }) => [styles.refreshButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.refreshText}>{refreshing ? '...' : '↻'}</Text>
-        </Pressable>
+          style={styles.refreshButton}
+          variant="icon"
+        />
       </View>
       {inputError ? <Text style={styles.errorText}>{inputError}</Text> : null}
       <View style={styles.toolbarRow}>
@@ -77,7 +80,7 @@ export function WatchlistToolbar({
           onPress={() => setSortMenuOpen((current) => !current)}
           style={({ pressed }) => [styles.sortButton, pressed && styles.pressed]}>
           <Text numberOfLines={1} style={styles.sortLabel}>Sort: {getSortLabel(sortMode)}</Text>
-          <Text style={styles.sortChevron}>{sortMenuOpen ? '⌃' : '⌄'}</Text>
+          <AppIcon name={sortMenuOpen ? 'chevronUp' : 'chevronDown'} size={18} />
         </Pressable>
       </View>
       {sortMenuOpen ? (
@@ -97,7 +100,7 @@ export function WatchlistToolbar({
                   pressed && styles.pressed,
                 ]}>
                 <Text style={[styles.sortMenuText, selected && styles.sortMenuTextSelected]}>{option.label}</Text>
-                {selected ? <Text style={styles.sortCheck}>✓</Text> : null}
+                {selected ? <AppIcon color={Theme.colors.accent} name="check" size={15} /> : null}
               </Pressable>
             );
           })}
@@ -111,13 +114,10 @@ const styles = StyleSheet.create({
   container: {
     gap: Spacing.two,
   },
-  disabledButton: {
-    backgroundColor: Theme.colors.cardMuted,
-  },
   errorText: {
     color: Theme.colors.warning,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   iconButton: {
     alignItems: 'center',
@@ -126,12 +126,6 @@ const styles = StyleSheet.create({
     height: 48,
     justifyContent: 'center',
     width: 48,
-  },
-  iconButtonText: {
-    color: Theme.colors.text,
-    fontSize: 24,
-    fontWeight: '900',
-    lineHeight: 26,
   },
   pressed: {
     opacity: 0.78,
@@ -146,11 +140,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 48,
   },
-  refreshText: {
-    color: Theme.colors.text,
-    fontSize: 19,
-    fontWeight: '900',
-  },
   searchInput: {
     backgroundColor: Theme.colors.backgroundMuted,
     borderColor: Theme.colors.border,
@@ -158,8 +147,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     minHeight: 48,
     paddingHorizontal: Spacing.twoAndHalf,
   },
@@ -179,21 +168,11 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: Spacing.twoAndHalf,
   },
-  sortCheck: {
-    color: Theme.colors.accent,
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  sortChevron: {
-    color: Theme.colors.textMuted,
-    fontSize: 18,
-    fontWeight: '900',
-  },
   sortLabel: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sortMenu: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -209,7 +188,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.two,
     justifyContent: 'space-between',
-    minHeight: 42,
+    minHeight: 44,
     paddingHorizontal: Spacing.twoAndHalf,
   },
   sortMenuItemSelected: {
@@ -218,8 +197,8 @@ const styles = StyleSheet.create({
   sortMenuText: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sortMenuTextSelected: {
     color: Theme.colors.text,

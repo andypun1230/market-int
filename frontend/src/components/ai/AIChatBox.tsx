@@ -14,7 +14,7 @@ import { AISection } from '@/components/ai/AISection';
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { QuickActionChip } from '@/components/ui/QuickActionChip';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { askAIChat } from '@/services/api';
 import type { AIChatResponse } from '@/types/market';
 
@@ -158,8 +158,8 @@ function AIChatResponseCard({ response }: { response: AIChatResponse }) {
 const styles = StyleSheet.create({
   answer: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 22,
   },
   container: {
@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
   },
   disclaimer: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 16,
   },
   errorBox: {
@@ -180,8 +180,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: Theme.colors.danger,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 18,
   },
   input: {
@@ -190,8 +190,8 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.small,
     borderWidth: 1,
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 20,
     minHeight: 92,
     padding: Spacing.twoAndHalf,
@@ -222,8 +222,8 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: Theme.colors.background,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   suggestedPrompts: {
     flexDirection: 'row',

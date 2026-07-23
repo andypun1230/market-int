@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { getToneColors, type Tone } from '@/components/ui/StatusBadge';
 
 type MetricTileProps = {
@@ -34,21 +34,21 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     marginBottom: Spacing.one,
     textTransform: 'uppercase',
   },
   value: {
     color: Theme.colors.text,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 22,
   },
   subvalue: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     marginTop: Spacing.one,
   },
 });

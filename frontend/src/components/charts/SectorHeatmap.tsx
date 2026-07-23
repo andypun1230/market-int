@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { SectorLeader } from '@/types/market';
 
 type SectorHeatmapProps = {
@@ -117,15 +117,15 @@ const styles = StyleSheet.create({
   },
   statusText: {
     flexShrink: 1,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
     maxWidth: '58%',
   },
   sectorName: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 19,
   },
   tileFooter: {
@@ -135,12 +135,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   returnValue: {
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
 });

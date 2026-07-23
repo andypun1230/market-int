@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 import { AIConfidenceBadge } from './AIConfidenceBadge';
 import { AIHeadline } from './AIHeadline';
@@ -84,8 +84,8 @@ export function AIInsightCard({
 const styles = StyleSheet.create({
   disclaimer: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 16,
   },
   stack: {

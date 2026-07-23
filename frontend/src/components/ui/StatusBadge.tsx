@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 export type Tone = 'success' | 'warning' | 'danger' | 'info' | 'muted' | 'purple';
 
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   label: {
     flexShrink: 1,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

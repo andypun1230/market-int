@@ -2,7 +2,8 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type ExpandableSectionProps = {
   children: ReactNode;
@@ -32,7 +33,7 @@ export function ExpandableSection({
           <Text style={styles.title}>{title}</Text>
           {safeSummary ? <Text style={styles.summary}>{safeSummary}</Text> : null}
         </View>
-        <Text style={styles.chevron}>{expanded ? '▾' : '▸'}</Text>
+        <AppIcon name={expanded ? 'chevronDown' : 'chevronRight'} size={18} />
       </Pressable>
 
       {expanded ? <View style={styles.content}>{children}</View> : null}
@@ -63,19 +64,14 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   summary: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
-  },
-  chevron: {
-    color: Theme.colors.textMuted,
-    fontSize: 18,
-    fontWeight: '900',
   },
   content: {
     borderColor: Theme.colors.border,

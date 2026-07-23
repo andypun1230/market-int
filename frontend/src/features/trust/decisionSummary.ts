@@ -1,4 +1,5 @@
 import type { EvidenceClassSummary } from './evidenceClasses';
+import { confidenceLabel, freshnessLabel } from './confidenceFreshnessPresentation';
 import type { UserFacingDataStateKey } from './userFacingDataState';
 
 export type DecisionSummary = {
@@ -23,8 +24,8 @@ export function decisionSummary(input: DecisionSummary): DecisionSummary {
   return {
     ...input,
     currentState: nonEmpty(input.currentState, 'Current conclusion unavailable'),
-    freshness: nonEmpty(input.freshness, 'Last update unavailable'),
-    confidenceLabel: nonEmpty(input.confidenceLabel, input.confidence === null ? 'Confidence unavailable' : `${Math.round(input.confidence)}/100 confidence`),
+    freshness: freshnessLabel(input.freshness),
+    confidenceLabel: confidenceLabel({ confidence: input.confidence, fallback: input.confidenceLabel }),
   };
 }
 

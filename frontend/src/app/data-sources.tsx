@@ -5,7 +5,7 @@ import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { formatProviderName } from '@/features/more/appInfo';
 import { getProviderStatus, getTestDataStatus } from '@/services/api';
 import { areTestScenariosEnabled } from '@/services/runtimeConfig';
@@ -107,7 +107,7 @@ function InfoCard({ children, title }: { children: string; title: string }) {
 const styles = StyleSheet.create({
   body: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 21,
   },
   stack: {

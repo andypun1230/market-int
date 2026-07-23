@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { DashboardCard } from '@/components/cards/DashboardCard';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { getSectorThemeGroupLabel } from '@/features/watchlist/sectorThemeClassifier';
 import type { ClassifiedSectorThemeItem } from '@/features/watchlist/sectorThemeSort';
 import type { SectorThemeGroup } from '@/features/watchlist/types';
@@ -51,7 +52,7 @@ export function SectorThemeSection({
         <View style={styles.countPill}>
           <Text style={styles.countText}>{items.length}</Text>
         </View>
-        <Text style={styles.chevron}>{collapsed ? '›' : '⌄'}</Text>
+        <AppIcon name={collapsed ? 'chevronRight' : 'chevronDown'} size={17} />
       </Pressable>
       {!collapsed ? <View style={styles.list}>{children}</View> : null}
     </DashboardCard>
@@ -61,8 +62,8 @@ export function SectorThemeSection({
 const styles = StyleSheet.create({
   chevron: {
     color: Theme.colors.textMuted,
-    fontSize: 22,
-    fontWeight: '900',
+    fontSize: Typography.sectionHero.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 22,
   },
   countPill: {
@@ -77,8 +78,8 @@ const styles = StyleSheet.create({
   },
   countText: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   header: {
     alignItems: 'center',
@@ -99,13 +100,13 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

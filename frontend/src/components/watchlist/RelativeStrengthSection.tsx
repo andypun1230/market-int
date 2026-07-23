@@ -9,7 +9,7 @@ import {
   WarningCard,
   WatchlistSectionHeader,
 } from '@/components/watchlist/WatchlistPrimitives';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { RelativeStrengthItem } from '@/types/market';
 import { getRelativeStrengthColor, getRelativeStrengthSoftColor } from '@/utils/colors';
 import { formatNullableNumber, formatNullablePercent } from '@/utils/formatters';
@@ -111,27 +111,27 @@ const styles = StyleSheet.create({
   },
   rankLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   rankValue: {
     color: Theme.colors.text,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   titleBlock: {
     flex: 1,
   },
   symbol: {
     color: Theme.colors.text,
-    fontSize: 22,
-    fontWeight: '900',
+    fontSize: Typography.sectionHero.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sector: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.one,
   },
   statusBadge: {
@@ -140,8 +140,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
   },
   statusText: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   scoreRow: {
     alignItems: 'baseline',
@@ -151,13 +151,13 @@ const styles = StyleSheet.create({
   },
   scoreValue: {
     color: Theme.colors.text,
-    fontSize: 30,
-    fontWeight: '900',
+    fontSize: Typography.screenTitleLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   scoreLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
 });

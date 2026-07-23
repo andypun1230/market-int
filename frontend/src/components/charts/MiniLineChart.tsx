@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { Candle, PatternMarker } from '@/types/market';
 
 type MiniLineChartProps = {
@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
   },
   markerText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   emptyChart: {
     alignItems: 'center',
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
 });

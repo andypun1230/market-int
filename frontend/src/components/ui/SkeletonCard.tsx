@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
+import { CARD_SURFACE } from '@/components/cards/DashboardCard';
 import { Spacing, Theme } from '@/constants/theme';
 
 type SkeletonCardProps = {
@@ -35,10 +36,7 @@ export function SkeletonCard({ compact = false, rows = 3, title = true }: Skelet
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Theme.colors.card,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.card,
-    borderWidth: 1,
+    ...CARD_SURFACE,
     gap: Spacing.three,
     padding: Spacing.three,
   },

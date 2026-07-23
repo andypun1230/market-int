@@ -2,10 +2,11 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { MiniCandlestickChart } from '@/components/charts/MiniCandlestickChart';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { DetailGrid, InfoTile } from '@/components/watchlist/WatchlistPrimitives';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   stockToneColor,
   stockToneSoftColor,
@@ -214,7 +215,7 @@ function TimeframeSignalRow({
             onPress={() => setExpanded((current) => !current)}
             style={styles.evidenceToggle}>
             <Text style={styles.evidenceToggleText}>{expanded ? 'Hide why' : 'Why this signal'}</Text>
-            <Text style={styles.accordionIcon}>{expanded ? '⌄' : '›'}</Text>
+            <AppIcon name={expanded ? 'chevronDown' : 'chevronRight'} size={17} />
           </Pressable>
           {expanded ? (
             <View style={styles.evidenceGrid}>
@@ -387,7 +388,7 @@ function PatternAnalysis({ model, pattern }: { model: StockTechnicalViewModel; p
               onPress={() => setExpanded((current) => !current)}
               style={styles.smallDisclosure}>
               <Text style={styles.smallDisclosureText}>{expanded ? 'Hide pattern chart' : 'Show pattern chart'}</Text>
-              <Text style={styles.accordionIcon}>{expanded ? '⌄' : '›'}</Text>
+              <AppIcon name={expanded ? 'chevronDown' : 'chevronRight'} size={17} />
             </Pressable>
           ) : null}
           <Text style={styles.bodyText}>
@@ -582,7 +583,9 @@ function ChecklistRow({ item }: { item: TechnicalChecklistItem }) {
   const tone = checklistTone(item.status);
   return (
     <View accessibilityLabel={`${item.status}: ${item.label}`} style={styles.checkRow}>
-      <Text style={[styles.checkIcon, { color: stockToneColor(tone) }]}>{checkIcon(item.status)}</Text>
+      <View style={styles.checkIcon}>
+        <AppIcon color={stockToneColor(tone)} name={checkIcon(item.status)} size={14} />
+      </View>
       <View style={styles.checkCopy}>
         <Text style={styles.checkLabel}>{item.label}</Text>
         {item.explanation ? <Text style={styles.checkExplanation}>{item.explanation}</Text> : null}
@@ -612,7 +615,7 @@ function AccordionRow({ expanded, label, onPress, preview }: { expanded: boolean
         <Text style={styles.accordionText}>{label}</Text>
         {preview ? <Text style={styles.accordionPreview}>{preview}</Text> : null}
       </View>
-      <Text style={styles.accordionIcon}>{expanded ? '⌄' : '›'}</Text>
+      <AppIcon name={expanded ? 'chevronDown' : 'chevronRight'} size={17} />
     </Pressable>
   );
 }
@@ -762,18 +765,18 @@ function checklistTone(status: TechnicalChecklistItem['status']) {
 
 function checkIcon(status: TechnicalChecklistItem['status']) {
   if (status === 'met') {
-    return '✓';
+    return 'check' as const;
   }
   if (status === 'failed') {
-    return '×';
+    return 'close' as const;
   }
   if (status === 'watch') {
-    return '!';
+    return 'warning' as const;
   }
   if (status === 'pending') {
-    return '○';
+    return 'pending' as const;
   }
-  return '–';
+  return 'remove' as const;
 }
 
 function invalidationToChecklist(status: TechnicalInvalidationItem['status']): TechnicalChecklistItem['status'] {
@@ -879,8 +882,8 @@ function formatShortDate(value: string): string {
 const styles = StyleSheet.create({
   accordionIcon: {
     color: Theme.colors.textMuted,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   accordionRow: {
     alignItems: 'center',
@@ -895,19 +898,19 @@ const styles = StyleSheet.create({
   },
   accordionPreview: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   accordionText: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   bodyText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 19,
   },
   checkCopy: {
@@ -916,21 +919,21 @@ const styles = StyleSheet.create({
   },
   checkExplanation: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   checkGroup: {
     gap: Spacing.one,
   },
   checkIcon: {
-    fontSize: 13,
-    fontWeight: '900',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 18,
   },
   checkLabel: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
   checkRow: {
@@ -940,8 +943,8 @@ const styles = StyleSheet.create({
   },
   compactLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   compactRow: {
@@ -956,8 +959,8 @@ const styles = StyleSheet.create({
   compactValue: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   divider: {
@@ -976,16 +979,16 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   evidenceGrid: {
     gap: Spacing.one,
   },
   evidenceExplanation: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   evidenceGroup: {
@@ -993,14 +996,14 @@ const styles = StyleSheet.create({
   },
   evidenceItem: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   evidenceTitle: {
     color: Theme.colors.text,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   evidenceToggle: {
@@ -1011,8 +1014,8 @@ const styles = StyleSheet.create({
   },
   evidenceToggleText: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   infoBox: {
     backgroundColor: stockToneSoftColor('warning'),
@@ -1031,8 +1034,8 @@ const styles = StyleSheet.create({
   },
   infoButtonText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   ladder: {
     gap: Spacing.one,
@@ -1043,8 +1046,8 @@ const styles = StyleSheet.create({
   },
   levelLabel: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   levelLine: {
     borderRadius: Theme.radii.pill,
@@ -1052,8 +1055,8 @@ const styles = StyleSheet.create({
     width: 3,
   },
   levelPrice: {
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 82,
   },
   levelRow: {
@@ -1067,18 +1070,18 @@ const styles = StyleSheet.create({
   },
   levelSource: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   patternMeta: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   patternName: {
     color: Theme.colors.text,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   patternScore: {
     alignItems: 'baseline',
@@ -1089,13 +1092,13 @@ const styles = StyleSheet.create({
   },
   patternScoreLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   patternScoreValue: {
     color: Theme.colors.text,
-    fontSize: 25,
-    fontWeight: '900',
+    fontSize: Typography.reportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   patternTitleBlock: {
     flex: 1,
@@ -1113,8 +1116,8 @@ const styles = StyleSheet.create({
   },
   secondaryMeta: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 16,
   },
   scoreFill: {
@@ -1135,8 +1138,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectionTitleBlock: {
     flex: 1,
@@ -1148,8 +1151,8 @@ const styles = StyleSheet.create({
   },
   segmentEndpoint: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   segmentLabelRow: {
     flexDirection: 'row',
@@ -1158,8 +1161,8 @@ const styles = StyleSheet.create({
   },
   segmentMidpoint: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   segmentRow: {
     flexDirection: 'row',
@@ -1176,12 +1179,12 @@ const styles = StyleSheet.create({
   },
   signalHorizon: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   signalLabel: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   signalMarker: {
@@ -1202,8 +1205,8 @@ const styles = StyleSheet.create({
   },
   signalScore: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   signalSegment: {
@@ -1226,13 +1229,13 @@ const styles = StyleSheet.create({
   },
   signalStatusText: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   signalTitle: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   signalTitleBlock: {
     flex: 1,
@@ -1247,8 +1250,8 @@ const styles = StyleSheet.create({
   },
   timeframeInfoText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   timeframeTitleRow: {
@@ -1271,13 +1274,13 @@ const styles = StyleSheet.create({
   },
   smallDisclosureText: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   subsectionTitle: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   subsectionDivider: {
@@ -1287,14 +1290,14 @@ const styles = StyleSheet.create({
   },
   summaryHeadline: {
     color: Theme.colors.text,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 23,
   },
   summarySubtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   surface: {
     backgroundColor: Theme.colors.card,
@@ -1321,13 +1324,13 @@ const styles = StyleSheet.create({
     height: 8,
   },
   volumeQuality: {
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   volumeRelative: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   warningBox: {
     backgroundColor: stockToneSoftColor('warning'),
@@ -1336,8 +1339,8 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: stockToneColor('warning'),
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
   },
 });

@@ -1,7 +1,7 @@
 import type { DimensionValue } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { getToneColors, type Tone } from '@/components/ui/StatusBadge';
 
 type ProgressBarProps = {
@@ -43,15 +43,15 @@ const styles = StyleSheet.create({
   },
   label: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     flex: 1,
     textTransform: 'uppercase',
   },
   value: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   track: {
     backgroundColor: Theme.colors.backgroundMuted,

@@ -3,7 +3,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ExpandableSection } from '@/components/ui/ExpandableSection';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { DailyReportRecord, ReportSourceState, ReportStatus } from '@/features/reports/reportLibraryModel';
 
 export function ReportHistorySection({
@@ -152,12 +152,12 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: Spacing.one },
   badges: { alignItems: 'flex-end', gap: Spacing.one },
   dangerButton: { backgroundColor: Theme.colors.dangerSoft },
-  date: { color: Theme.colors.text, fontSize: 14, fontWeight: '900' },
+  date: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
   dateBlock: { flex: 1, gap: Spacing.one, minWidth: 0 },
   disabled: { opacity: 0.5 },
-  emptyText: { color: Theme.colors.textMuted, fontSize: 13, lineHeight: 19 },
+  emptyText: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, lineHeight: 19 },
   iconButton: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, height: 38, justifyContent: 'center', width: 38 },
-  meta: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: '700' },
+  meta: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis },
   pressed: { opacity: 0.7 },
   row: { alignItems: 'center', borderBottomColor: Theme.colors.border, borderBottomWidth: 1, flexDirection: 'row', gap: Spacing.two, paddingBottom: Spacing.twoAndHalf },
   rowMain: { alignItems: 'center', flex: 1, flexDirection: 'row', gap: Spacing.two, minWidth: 0 },

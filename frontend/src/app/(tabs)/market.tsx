@@ -11,7 +11,7 @@ import { ExpandableSection } from '@/components/ui/ExpandableSection';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import {
   MarketSessionContextCard,
@@ -4307,29 +4307,29 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.textInverse,
-    fontSize: 29,
-    fontWeight: '900',
+    fontSize: Typography.screenTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   subtitle: {
     color: Theme.colors.textInverseMuted,
-    fontSize: 15,
+    fontSize: Typography.bodyLarge.fontSize,
     lineHeight: 22,
   },
   helperText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
+    fontSize: Typography.small.fontSize,
     lineHeight: 18,
     marginTop: Spacing.two,
   },
   helperInline: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   warningInline: {
     color: Theme.colors.warning,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   marketTabs: {
     gap: Spacing.one,
@@ -4357,8 +4357,8 @@ const styles = StyleSheet.create({
   },
   marketTabText: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   marketTabTextActive: {
     color: Theme.colors.accent,
@@ -4386,8 +4386,8 @@ const styles = StyleSheet.create({
   },
   compactTimeframeText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   compactTimeframeTextActive: {
     color: Theme.colors.accent,
@@ -4412,25 +4412,25 @@ const styles = StyleSheet.create({
   },
   heroKicker: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   regimeTitle: {
     color: Theme.colors.text,
-    fontSize: 30,
-    fontWeight: '900',
+    fontSize: Typography.screenTitleLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 34,
   },
   regimeScore: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   regimeExplanation: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 21,
   },
   insightCard: {
@@ -4449,19 +4449,19 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   insightHeadline: {
     color: Theme.colors.text,
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 22,
   },
   insightSummary: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 21,
   },
   insightFooter: {
@@ -4471,8 +4471,8 @@ const styles = StyleSheet.create({
   },
   insightMeta: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   signalCard: {
     backgroundColor: Theme.colors.card,
@@ -4498,8 +4498,8 @@ const styles = StyleSheet.create({
   keySignalText: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 18,
   },
   overviewSnapshotGrid: {
@@ -4540,8 +4540,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
   },
   overviewChipText: {
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   statusCard: {
     backgroundColor: Theme.colors.cardElevated,
@@ -4554,8 +4554,8 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: Theme.colors.textInverseMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     letterSpacing: 0,
     textTransform: 'uppercase',
   },
@@ -4567,13 +4567,13 @@ const styles = StyleSheet.create({
   },
   statusText: {
     color: Theme.colors.textInverse,
-    fontSize: 30,
-    fontWeight: '900',
+    fontSize: Typography.screenTitleLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.three,
   },
   errorTextInverse: {
     color: '#FECACA',
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 20,
     marginTop: Spacing.two,
   },
@@ -4624,14 +4624,14 @@ const styles = StyleSheet.create({
   },
   economicActualLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   economicActualValue: {
     color: Theme.colors.text,
-    fontSize: 25,
-    fontWeight: '900',
+    fontSize: Typography.reportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 30,
   },
   economicFieldRow: {
@@ -4644,19 +4644,19 @@ const styles = StyleSheet.create({
   },
   economicFieldLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   economicFieldValue: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   economicRevisionText: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.emphasis,
   },
   economicSurpriseRow: {
     alignItems: 'center',
@@ -4665,38 +4665,38 @@ const styles = StyleSheet.create({
   },
   economicSurpriseValue: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   economicConsensusText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   economicComment: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   economicReleaseDate: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   metricLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginBottom: Spacing.one,
     textTransform: 'uppercase',
   },
   metricValue: {
     color: Theme.colors.text,
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   metricSubvalue: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
+    fontSize: Typography.caption.fontSize,
     lineHeight: 16,
     marginTop: Spacing.one,
   },
@@ -4721,8 +4721,8 @@ const styles = StyleSheet.create({
   },
   decisionHeroTitle: {
     color: Theme.colors.text,
-    fontSize: 24,
-    fontWeight: '900',
+    fontSize: Typography.decisionHero.fontSize,
+    fontWeight: Typography.weights.strong,
     letterSpacing: 0,
   },
   decisionMetricRow: {
@@ -4748,8 +4748,8 @@ const styles = StyleSheet.create({
   },
   decisionFieldValue: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 18,
   },
   decisionChipsRow: {
@@ -4767,8 +4767,8 @@ const styles = StyleSheet.create({
   },
   decisionChipText: {
     color: Theme.colors.accent,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   decisionPanel: {
     backgroundColor: Theme.colors.cardMuted,
@@ -4796,8 +4796,8 @@ const styles = StyleSheet.create({
   },
   institutionalBarLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 104,
   },
   institutionalBarTrack: {
@@ -4816,8 +4816,8 @@ const styles = StyleSheet.create({
   },
   institutionalBarValue: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
     width: 56,
   },
@@ -4830,8 +4830,8 @@ const styles = StyleSheet.create({
   },
   institutionalEventLine: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 21,
   },
   decisionList: {
@@ -4850,8 +4850,8 @@ const styles = StyleSheet.create({
   },
   decisionRank: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 20,
   },
   decisionSetupBody: {
@@ -4881,8 +4881,8 @@ const styles = StyleSheet.create({
   },
   decisionChecklistLabel: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   decisionInvalidationBox: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -4894,8 +4894,8 @@ const styles = StyleSheet.create({
   },
   decisionGaugeScore: {
     color: Theme.colors.text,
-    fontSize: 30,
-    fontWeight: '900',
+    fontSize: Typography.screenTitleLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   fearGreedGaugeTrack: {
     borderRadius: Theme.radii.pill,
@@ -4941,8 +4941,8 @@ const styles = StyleSheet.create({
   },
   weightPairText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   weightPairTextActive: {
     color: Theme.colors.accent,
@@ -4973,8 +4973,8 @@ const styles = StyleSheet.create({
   },
   weightSummaryValue: {
     color: Theme.colors.text,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   decisionChangeGrid: {
     gap: Spacing.two,
@@ -5001,13 +5001,13 @@ const styles = StyleSheet.create({
   },
   compactDisclosureTitle: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   compactDisclosureChevron: {
     color: Theme.colors.textMuted,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   compactDisclosureBody: {
     gap: Spacing.one,
@@ -5022,8 +5022,8 @@ const styles = StyleSheet.create({
   },
   breadthHeroStatus: {
     color: Theme.colors.text,
-    fontSize: 24,
-    fontWeight: '900',
+    fontSize: Typography.decisionHero.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   breadthHeroMetrics: {
@@ -5075,8 +5075,8 @@ const styles = StyleSheet.create({
   },
   breadthMockChipText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   breadthMockChipTextActive: {
     color: Theme.colors.warning,
@@ -5104,8 +5104,8 @@ const styles = StyleSheet.create({
   },
   breadthProfileSummary: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   breadthProfileMetricRow: {
     alignItems: 'center',
@@ -5118,13 +5118,13 @@ const styles = StyleSheet.create({
   },
   breadthProfileMetricLabel: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   breadthProfileMetricStatus: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   breadthProfileMetricTrack: {
@@ -5150,8 +5150,8 @@ const styles = StyleSheet.create({
   },
   breadthProfileMetricValue: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
     width: 42,
   },
@@ -5171,8 +5171,8 @@ const styles = StyleSheet.create({
   },
   splitBarLabel: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   splitBarTrack: {
     backgroundColor: Theme.colors.background,
@@ -5222,8 +5222,8 @@ const styles = StyleSheet.create({
   },
   qualityBarLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 112,
   },
   qualityBarTrack: {
@@ -5239,8 +5239,8 @@ const styles = StyleSheet.create({
   },
   qualityBarValue: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
     width: 42,
   },
@@ -5264,13 +5264,13 @@ const styles = StyleSheet.create({
   sectorBreadthName: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectorBreadthPercent: {
     color: Theme.colors.success,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectorBreadthStats: {
     flexDirection: 'row',
@@ -5279,8 +5279,8 @@ const styles = StyleSheet.create({
   },
   sectorBreadthStat: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectionHeaderRow: {
     alignItems: 'center',
@@ -5332,8 +5332,8 @@ const styles = StyleSheet.create({
   },
   legendText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   indexChartBox: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -5355,8 +5355,8 @@ const styles = StyleSheet.create({
   indexChartYAxisLabel: {
     backgroundColor: 'rgba(15, 23, 42, 0.7)',
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     left: Spacing.one,
     paddingHorizontal: Spacing.one,
     position: 'absolute',
@@ -5392,8 +5392,8 @@ const styles = StyleSheet.create({
   },
   endpointLabel: {
     backgroundColor: 'rgba(15, 23, 42, 0.8)',
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     paddingHorizontal: Spacing.half,
     position: 'absolute',
   },
@@ -5428,34 +5428,34 @@ const styles = StyleSheet.create({
   },
   tooltipTitle: {
     color: Theme.colors.text,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   tooltipText: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 24,
   },
   tooltipValue: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
   },
   indexXAxisLabel: {
     bottom: 5,
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     position: 'absolute',
     width: 42,
   },
   emptyText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
   macroLeadLagGrid: {
@@ -5480,8 +5480,8 @@ const styles = StyleSheet.create({
   },
   macroRotationLabel: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 76,
   },
   macroRotationTrack: {
@@ -5512,8 +5512,8 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.danger,
   },
   macroRotationValue: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
     width: 58,
   },
@@ -5581,17 +5581,17 @@ const styles = StyleSheet.create({
   },
   indexSummarySymbol: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   indexSummaryReturn: {
-    fontSize: 17,
-    fontWeight: '900',
+    fontSize: Typography.cardTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   indexSummaryMeta: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sparklineBox: {
     height: 34,
@@ -5619,8 +5619,8 @@ const styles = StyleSheet.create({
   },
   indexChange: {
     color: Theme.colors.success,
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.one,
   },
   indexChangeNegative: {
@@ -5651,13 +5651,13 @@ const styles = StyleSheet.create({
   },
   volumeSymbol: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   volumeLabel: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 16,
   },
   signalPill: {
@@ -5666,8 +5666,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.half,
   },
   signalPillText: {
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   volumeUnavailableBar: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -5702,8 +5702,8 @@ const styles = StyleSheet.create({
   },
   volumeAverageLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 8,
-    fontWeight: '900',
+    fontSize: Typography.chartMicro.fontSize,
+    fontWeight: Typography.weights.strong,
     left: '50%',
     marginLeft: 3,
     position: 'absolute',
@@ -5725,25 +5725,25 @@ const styles = StyleSheet.create({
   },
   indexSetupSymbol: {
     color: Theme.colors.text,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   indexSetupPrice: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   indexSetupLabel: {
     color: Theme.colors.accent,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.one,
   },
   returnLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
     textTransform: 'uppercase',
   },
@@ -5758,15 +5758,15 @@ const styles = StyleSheet.create({
   },
   setupLineLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   setupLineValue: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 17,
     textAlign: 'right',
   },
@@ -5784,14 +5784,14 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   statValue: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   healthComponentList: {
@@ -5807,8 +5807,8 @@ const styles = StyleSheet.create({
   },
   healthExplanation: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 18,
   },
   healthDashboardSection: {
@@ -5819,8 +5819,8 @@ const styles = StyleSheet.create({
   },
   healthSectionSubtitle: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthOverviewCard: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -5841,14 +5841,14 @@ const styles = StyleSheet.create({
   },
   healthScoreValue: {
     color: Theme.colors.text,
-    fontSize: 40,
-    fontWeight: '900',
+    fontSize: Typography.displayLarge.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 44,
   },
   healthScoreCaption: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   healthStatusStack: {
@@ -5857,8 +5857,8 @@ const styles = StyleSheet.create({
   },
   healthOverviewSummary: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 21,
   },
   healthOverviewMeta: {
@@ -5876,14 +5876,14 @@ const styles = StyleSheet.create({
   },
   healthMiniMetricLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   healthMiniMetricValue: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 18,
   },
   healthProfileCard: {
@@ -5901,8 +5901,8 @@ const styles = StyleSheet.create({
   },
   healthProfileLabel: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     width: 104,
   },
   healthProfileTrack: {
@@ -5918,8 +5918,8 @@ const styles = StyleSheet.create({
   },
   healthProfileScore: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'right',
     width: 42,
   },
@@ -5954,16 +5954,16 @@ const styles = StyleSheet.create({
   },
   healthRadarLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     position: 'absolute',
     textAlign: 'center',
     width: 92,
   },
   healthRadarRingLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
     opacity: 0.82,
     position: 'absolute',
   },
@@ -5999,13 +5999,13 @@ const styles = StyleSheet.create({
   healthRadarLegendLabel: {
     color: Theme.colors.textMuted,
     flex: 1,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthRadarLegendScore: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthComponentGrid: {
     flexDirection: 'row',
@@ -6031,8 +6031,8 @@ const styles = StyleSheet.create({
   healthComponentName: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthScorePill: {
     borderRadius: Theme.radii.pill,
@@ -6041,19 +6041,19 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
   },
   healthScorePillText: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
   healthComponentStatus: {
     color: Theme.colors.accent,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthComponentMeaning: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   healthDisclosure: {
@@ -6069,13 +6069,13 @@ const styles = StyleSheet.create({
   },
   healthDisclosureText: {
     color: Theme.colors.accent,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthDisclosureIcon: {
     color: Theme.colors.accent,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthDisclosureBody: {
     gap: Spacing.one,
@@ -6083,8 +6083,8 @@ const styles = StyleSheet.create({
   },
   healthComponentRationale: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 16,
     marginTop: Spacing.one,
   },
@@ -6110,8 +6110,8 @@ const styles = StyleSheet.create({
   },
   healthUnavailableText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 18,
   },
   healthDriverColumns: {
@@ -6131,8 +6131,8 @@ const styles = StyleSheet.create({
   },
   healthDriverTitle: {
     color: Theme.colors.text,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthDriverList: {
     gap: Spacing.two,
@@ -6151,8 +6151,8 @@ const styles = StyleSheet.create({
   healthDriverText: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   healthContributionCard: {
@@ -6170,14 +6170,14 @@ const styles = StyleSheet.create({
   },
   healthContributionTotalLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   healthContributionTotalValue: {
     color: Theme.colors.text,
-    fontSize: 22,
-    fontWeight: '900',
+    fontSize: Typography.sectionHero.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthContributionRow: {
     gap: Spacing.one,
@@ -6189,13 +6189,13 @@ const styles = StyleSheet.create({
   },
   healthContributionName: {
     color: Theme.colors.text,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthContributionValue: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   healthContributionTrack: {
     backgroundColor: Theme.colors.background,
@@ -6223,14 +6223,14 @@ const styles = StyleSheet.create({
   },
   healthDecisionLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   healthDecisionStance: {
     color: Theme.colors.text,
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: Typography.detailTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     marginTop: Spacing.half,
   },
   healthFillStrong: {
@@ -6295,8 +6295,8 @@ const styles = StyleSheet.create({
   },
   detailSectionTitle: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   vixRow: {
     alignItems: 'center',
@@ -6305,8 +6305,8 @@ const styles = StyleSheet.create({
   },
   vixValue: {
     color: Theme.colors.text,
-    fontSize: 34,
-    fontWeight: '900',
+    fontSize: Typography.display.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   normalBadge: {
     backgroundColor: Theme.colors.successSoft,
@@ -6316,8 +6316,8 @@ const styles = StyleSheet.create({
   },
   normalBadgeText: {
     color: Theme.colors.success,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   followThroughBox: {
     backgroundColor: Theme.colors.accentSoft,
@@ -6327,8 +6327,8 @@ const styles = StyleSheet.create({
   },
   followThroughText: {
     color: Theme.colors.primary,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   biasPanel: {
     backgroundColor: Theme.colors.backgroundMuted,
@@ -6347,8 +6347,8 @@ const styles = StyleSheet.create({
   },
   biasLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   biasBadge: {
@@ -6357,13 +6357,13 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
   },
   biasBadgeText: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   biasSummary: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 21,
   },
   institutionalIndexList: {
@@ -6385,8 +6385,8 @@ const styles = StyleSheet.create({
   },
   institutionalIndexSymbol: {
     color: Theme.colors.text,
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: Typography.sectionTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   followBadge: {
     backgroundColor: Theme.colors.card,
@@ -6402,15 +6402,15 @@ const styles = StyleSheet.create({
   },
   followBadgeText: {
     color: Theme.colors.textMuted,
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   followBadgeTextTriggered: {
     color: Theme.colors.success,
   },
   bodyText: {
     color: Theme.colors.text,
-    fontSize: 15,
+    fontSize: Typography.bodyLarge.fontSize,
     lineHeight: 23,
   },
 });

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import { getSignalLabel, shouldShowWatchlistStatusDot } from '@/features/watchlist/watchlistClassifier';
 import type { WatchlistClassification, WatchlistDataStatus, WatchlistSignalType } from '@/features/watchlist/types';
 
@@ -129,11 +129,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.half,
   },
   statusText: {
-    fontSize: 9,
-    fontWeight: '900',
+    fontSize: Typography.chartAxis.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   text: {
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

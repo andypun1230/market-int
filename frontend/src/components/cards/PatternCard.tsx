@@ -2,11 +2,12 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/ui/AppIcon';
 import { MiniCandlestickChart } from '@/components/charts/MiniCandlestickChart';
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { ScoreGauge } from '@/components/ui/ScoreGauge';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { DetectedPattern, PatternKeyLevels } from '@/types/market';
 
 type PatternCardProps = {
@@ -58,7 +59,7 @@ export function PatternCard({
         <Text style={styles.detailsButtonText}>
           {expanded ? 'Hide Pattern Details' : 'View Pattern Details'}
         </Text>
-        <Text style={styles.detailsChevron}>{expanded ? '▾' : '▸'}</Text>
+        <AppIcon name={expanded ? 'chevronDown' : 'chevronRight'} size={17} />
       </Pressable>
 
       {expanded ? (
@@ -275,15 +276,15 @@ const styles = StyleSheet.create({
   },
   symbol: {
     color: Theme.colors.accent,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
     letterSpacing: 0,
     marginBottom: Spacing.one,
   },
   patternName: {
     color: Theme.colors.text,
-    fontSize: 21,
-    fontWeight: '900',
+    fontSize: Typography.scoreTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 26,
   },
   metaRow: {
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
   },
   description: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 21,
     marginTop: Spacing.three,
     marginBottom: Spacing.three,
@@ -312,26 +313,26 @@ const styles = StyleSheet.create({
   },
   detailsButtonText: {
     color: Theme.colors.accent,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   detailsChevron: {
     color: Theme.colors.accent,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectionHeader: {
     marginBottom: Spacing.two,
   },
   sectionTitle: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   sectionHint: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     marginTop: Spacing.half,
   },
   analysisSection: {
@@ -340,8 +341,8 @@ const styles = StyleSheet.create({
   },
   analysisTitle: {
     color: Theme.colors.text,
-    fontSize: 15,
-    fontWeight: '900',
+    fontSize: Typography.bodyLarge.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   levelGrid: {
     flexDirection: 'row',
@@ -369,15 +370,15 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: Typography.chartLabel.fontSize,
+    fontWeight: Typography.weights.strong,
     marginBottom: Spacing.one,
     textTransform: 'uppercase',
   },
   metricValue: {
     color: Theme.colors.text,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
     lineHeight: 20,
   },
   riskRewardBox: {
@@ -391,14 +392,14 @@ const styles = StyleSheet.create({
   },
   riskRewardLabel: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     textTransform: 'uppercase',
   },
   riskRewardValue: {
     color: Theme.colors.warning,
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: Typography.control.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   disclaimer: {
     borderColor: Theme.colors.border,
@@ -409,8 +410,8 @@ const styles = StyleSheet.create({
   },
   disclaimerText: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 18,
   },
 });

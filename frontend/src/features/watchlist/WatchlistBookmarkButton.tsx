@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import {
   normalizeWatchlistId,
   useWatchlist,
@@ -47,7 +48,7 @@ export function WatchlistBookmarkButton({ id, name, type }: WatchlistBookmarkBut
           disabled && styles.disabled,
           pressed && styles.pressed,
         ]}>
-        <Text style={[styles.icon, saved && styles.activeText]}>{saved ? '★' : '☆'}</Text>
+        <AppIcon color={saved ? Theme.colors.warning : Theme.colors.textMuted} name={saved ? 'saved' : 'savedOutline'} size={17} />
         <Text style={[styles.text, saved && styles.activeText]}>{saving ? 'Saving...' : saved ? 'Saved' : 'Save'}</Text>
       </Pressable>
       {watchlist.storageError ? <Text style={styles.errorText}>{watchlist.storageError}</Text> : null}
@@ -83,21 +84,21 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: Theme.colors.warning,
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: Typography.caption.fontSize,
+    fontWeight: Typography.weights.strong,
     maxWidth: 220,
   },
   icon: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   pressed: {
     opacity: 0.78,
   },
   text: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
   },
 });

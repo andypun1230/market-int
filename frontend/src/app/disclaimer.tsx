@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 const DISCLAIMERS = [
   'Market Intelligence is provided for informational and educational purposes only. It does not provide personalized investment, financial, legal, or tax advice.',
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   text: {
     color: Theme.colors.text,
     flex: 1,
-    fontSize: 14,
+    fontSize: Typography.body.fontSize,
     lineHeight: 22,
   },
 });

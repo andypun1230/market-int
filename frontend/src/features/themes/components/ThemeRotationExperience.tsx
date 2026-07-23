@@ -10,11 +10,12 @@ import {
 
 import { RotationQuadrantChart } from '@/components/charts/RotationQuadrantChart';
 import { DashboardCard } from '@/components/cards/DashboardCard';
+import { AppIcon } from '@/components/ui/AppIcon';
 import { DetailModal } from '@/components/ui/DetailModal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { RotationLabelMode } from '@/features/sectors/analysis/rotationLabels';
 import type { CanonicalThemeRotationPoint, ThemeRotationModel } from '@/features/themes/themeRotation';
 import type { LiveThemeItem, ThemeOverlap } from '@/features/themes/themeSnapshot';
@@ -395,7 +396,10 @@ export function ThemeRotationExperience({
                   accessibilityState={{ checked: selected }}
                   onPress={() => updateState({ selectedThemeIds: toggleThemeSelection(viewState.selectedThemeIds, item.id) })}
                   style={styles.resultMain}>
-                  <Text style={styles.resultName}>{selected ? '✓ ' : ''}{item.name}</Text>
+                  <View style={styles.resultTitleRow}>
+                    {selected ? <AppIcon color={Theme.colors.accent} name="check" size={14} /> : null}
+                    <Text style={styles.resultName}>{item.name}</Text>
+                  </View>
                   <Text style={styles.resultMeta}>{available ? `${item.parentSectorIds.map(title).join(', ') || 'Cross-sector'} · ${item.rank ? `#${item.rank}` : 'Unranked'}` : `${item.status} · will not plot invalid coordinates`}</Text>
                 </Pressable>
                 {available ? <Pressable accessibilityLabel={`Focus ${item.name}`} accessibilityRole="button" onPress={() => { enterFocus(item.id); setSelectorVisible(false); }} style={styles.focusButton}><Text style={styles.focusButtonText}>Focus</Text></Pressable> : null}
@@ -530,36 +534,37 @@ const styles = StyleSheet.create({
   actionWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, marginTop: Spacing.three },
   badges: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, marginBottom: Spacing.two },
   compareRow: { alignItems: 'center', borderTopColor: Theme.colors.border, borderTopWidth: 1, flexDirection: 'row', gap: Spacing.two, paddingVertical: Spacing.two },
-  counts: { color: Theme.colors.text, fontSize: 12, fontWeight: '900' },
+  counts: { color: Theme.colors.text, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   detailGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  detailLabel: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: '900', textTransform: 'uppercase' },
-  detailText: { color: Theme.colors.text, fontSize: 13, fontWeight: '900' },
+  detailLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong, textTransform: 'uppercase' },
+  detailText: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   detailValue: { backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flexBasis: 140, flexGrow: 1, gap: Spacing.one, padding: Spacing.two },
-  disclosure: { color: Theme.colors.textMuted, fontSize: 12, lineHeight: 18 },
+  disclosure: { color: Theme.colors.textMuted, fontSize: Typography.small.fontSize, lineHeight: 18 },
   focusButton: { alignItems: 'center', borderColor: Theme.colors.accent, borderRadius: Theme.radii.small, borderWidth: 1, justifyContent: 'center', minHeight: 44, paddingHorizontal: Spacing.two },
-  focusButtonText: { color: Theme.colors.accent, fontSize: 12, fontWeight: '900' },
+  focusButtonText: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   linkButton: { justifyContent: 'center', minHeight: 44, paddingHorizontal: Spacing.two },
-  linkText: { color: Theme.colors.accent, fontSize: 12, fontWeight: '900' },
+  linkText: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
   notice: { alignItems: 'center', backgroundColor: Theme.colors.accentSoft, borderColor: Theme.colors.accent, borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, justifyContent: 'space-between', padding: Spacing.two },
   noticeAction: { alignItems: 'center', minHeight: 44, justifyContent: 'center', paddingHorizontal: Spacing.two },
-  noticeActionText: { color: Theme.colors.accent, fontSize: 12, fontWeight: '900' },
-  noticeText: { color: Theme.colors.text, flex: 1, fontSize: 12, lineHeight: 18, minWidth: 180 },
+  noticeActionText: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
+  noticeText: { color: Theme.colors.text, flex: 1, fontSize: Typography.small.fontSize, lineHeight: 18, minWidth: 180 },
   primaryButton: { alignItems: 'center', backgroundColor: Theme.colors.accent, borderRadius: Theme.radii.small, justifyContent: 'center', minHeight: 48, paddingHorizontal: Spacing.three },
-  primaryButtonText: { color: Theme.colors.background, fontSize: 13, fontWeight: '900' },
-  relatedText: { color: Theme.colors.text, fontSize: 12, lineHeight: 18, marginTop: Spacing.two },
+  primaryButtonText: { color: Theme.colors.background, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
+  relatedText: { color: Theme.colors.text, fontSize: Typography.small.fontSize, lineHeight: 18, marginTop: Spacing.two },
   resultMain: { flex: 1, gap: Spacing.one, minWidth: 0 },
-  resultMeta: { color: Theme.colors.textMuted, fontSize: 11, lineHeight: 16 },
-  resultName: { color: Theme.colors.text, fontSize: 13, fontWeight: '900' },
+  resultTitleRow: { alignItems: 'center', flexDirection: 'row', gap: Spacing.one },
+  resultMeta: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, lineHeight: 16 },
+  resultName: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.strong },
   resultRow: { alignItems: 'center', backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, flexDirection: 'row', gap: Spacing.two, minHeight: 52, padding: Spacing.two },
   results: { gap: Spacing.two },
-  searchInput: { backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, color: Theme.colors.text, fontSize: 15, minHeight: 48, paddingHorizontal: Spacing.three },
+  searchInput: { backgroundColor: Theme.colors.backgroundMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, color: Theme.colors.text, fontSize: Typography.bodyLarge.fontSize, minHeight: 48, paddingHorizontal: Spacing.three },
   selectorActions: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   stack: { gap: Spacing.three },
   summaryChip: { backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, paddingHorizontal: Spacing.two, paddingVertical: Spacing.one },
   summaryChips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
-  summaryChipText: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: '900' },
+  summaryChipText: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong },
   toolbar: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   toolbarButton: { alignItems: 'center', backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, justifyContent: 'center', minHeight: 44, paddingHorizontal: Spacing.two },
-  toolbarButtonText: { color: Theme.colors.text, fontSize: 12, fontWeight: '900' },
-  warning: { color: Theme.colors.warning, fontSize: 12, lineHeight: 18 },
+  toolbarButtonText: { color: Theme.colors.text, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
+  warning: { color: Theme.colors.warning, fontSize: Typography.small.fontSize, lineHeight: 18 },
 });

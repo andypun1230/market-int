@@ -1,6 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { CARD_SURFACE } from '@/components/cards/DashboardCard';
+import { AppButton } from '@/components/ui/AppButton';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type EmptyStateProps = {
   actionLabel?: string;
@@ -18,9 +20,7 @@ export function EmptyState({ actionLabel, message, onAction, title }: EmptyState
       <Text style={styles.title}>{title}</Text>
       {message ? <Text style={styles.message}>{message}</Text> : null}
       {actionLabel && onAction ? (
-        <Pressable accessibilityRole="button" onPress={onAction} style={styles.actionButton}>
-          <Text style={styles.actionText}>{actionLabel}</Text>
-        </Pressable>
+        <AppButton label={actionLabel} onPress={onAction} style={styles.actionButton} variant="primary" />
       ) : null}
     </View>
   );
@@ -29,10 +29,7 @@ export function EmptyState({ actionLabel, message, onAction, title }: EmptyState
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: Theme.colors.card,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.card,
-    borderWidth: 1,
+    ...CARD_SURFACE,
     gap: Spacing.two,
     padding: Spacing.four,
   },
@@ -55,26 +52,17 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Theme.colors.text,
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: Typography.supportTitle.fontSize,
+    fontWeight: Typography.weights.strong,
     textAlign: 'center',
   },
   message: {
     color: Theme.colors.textMuted,
-    fontSize: 13,
+    fontSize: Typography.control.fontSize,
     lineHeight: 19,
     textAlign: 'center',
   },
   actionButton: {
-    backgroundColor: Theme.colors.accent,
-    borderRadius: Theme.radii.small,
     marginTop: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-  },
-  actionText: {
-    color: Theme.colors.background,
-    fontSize: 13,
-    fontWeight: '900',
   },
 });

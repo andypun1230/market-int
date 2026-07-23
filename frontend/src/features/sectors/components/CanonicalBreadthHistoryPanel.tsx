@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { DashboardCard } from "@/components/cards/DashboardCard";
 import { ConfidenceIndicator } from "@/components/ui/ConfidenceIndicator";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import {
   formatNullableMetric,
   type BreadthHistoryTimeframe,
@@ -110,18 +110,18 @@ function confidenceScore(value: string) {
 const styles = StyleSheet.create({
   alert: { borderTopColor: Theme.colors.border, borderTopWidth: 1, gap: Spacing.one, paddingTop: Spacing.two },
   badges: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.one },
-  body: { color: Theme.colors.text, fontSize: 13, fontWeight: "700" },
+  body: { color: Theme.colors.text, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis },
   chip: { borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 40, minWidth: 48, paddingHorizontal: Spacing.two, paddingVertical: 10 },
   chipActive: { backgroundColor: Theme.colors.accentSoft, borderColor: Theme.colors.accent },
-  chipText: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: "900", textAlign: "center" },
+  chipText: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, textAlign: "center" },
   chipTextActive: { color: Theme.colors.accent },
-  heading: { color: Theme.colors.text, fontSize: 14, fontWeight: "900" },
+  heading: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
   interpretation: { backgroundColor: Theme.colors.cardMuted, borderRadius: Theme.radii.small, gap: Spacing.one, padding: Spacing.two },
   metric: { backgroundColor: Theme.colors.cardMuted, borderRadius: Theme.radii.small, flexBasis: "46%", flexGrow: 1, gap: 3, padding: Spacing.two },
-  metricLabel: { color: Theme.colors.textMuted, fontSize: 10, fontWeight: "900", textTransform: "uppercase" },
-  metricValue: { color: Theme.colors.text, fontSize: 16, fontWeight: "900" },
+  metricLabel: { color: Theme.colors.textMuted, fontSize: Typography.chartLabel.fontSize, fontWeight: Typography.weights.strong, textTransform: "uppercase" },
+  metricValue: { color: Theme.colors.text, fontSize: Typography.supportTitle.fontSize, fontWeight: Typography.weights.strong },
   metrics: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.two },
-  note: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: "700" },
+  note: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis },
   options: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.one },
   stack: { gap: Spacing.three },
 });

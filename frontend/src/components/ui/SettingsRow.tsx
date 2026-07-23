@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { AppIcon } from '@/components/ui/AppIcon';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type SettingsRowProps = {
   badge?: ReactNode;
@@ -49,7 +50,7 @@ export function SettingsRow({
           {typeof value === 'string' || typeof value === 'number' ? (
             <Text numberOfLines={1} style={styles.value}>{value}</Text>
           ) : value}
-          {onPress ? <Text style={styles.chevron}>›</Text> : null}
+          {onPress ? <AppIcon name="chevronRight" size={18} /> : null}
         </View>
       )}
     </View>
@@ -71,20 +72,14 @@ export function SettingsRow({
 }
 
 const styles = StyleSheet.create({
-  chevron: {
-    color: Theme.colors.textMuted,
-    fontSize: 24,
-    fontWeight: '900',
-    lineHeight: 26,
-  },
   copy: {
     flex: 1,
     gap: Spacing.half,
   },
   description: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.emphasis,
     lineHeight: 17,
   },
   disabled: {
@@ -108,8 +103,8 @@ const styles = StyleSheet.create({
   title: {
     color: Theme.colors.text,
     flexShrink: 1,
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: Typography.body.fontSize,
+    fontWeight: Typography.weights.strong,
   },
   titleRow: {
     alignItems: 'center',
@@ -119,8 +114,8 @@ const styles = StyleSheet.create({
   },
   value: {
     color: Theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: Typography.small.fontSize,
+    fontWeight: Typography.weights.strong,
     maxWidth: 112,
   },
   valueRow: {

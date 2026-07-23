@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
-import { AccessibilityInfo, Animated, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Animated, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { RefreshControlProps, StyleProp, ViewStyle } from 'react-native';
 
-import { Spacing, Theme } from '@/constants/theme';
+import { Spacing, Theme, Typography } from '@/constants/theme';
+import { AppButton } from '@/components/ui/AppButton';
+import { AppIcon } from '@/components/ui/AppIcon';
 import { DataStateSummary } from '@/components/ui/DataStateSummary';
 import { UniversalCommandHeader } from '@/features/command/components/UniversalCommandHeader';
 import type { CopilotContext } from '@/features/copilot/types';
@@ -89,19 +90,14 @@ export function AppScreen({
         <View style={styles.header}>
           <View style={styles.titleRow}>
             {showBackButton ? (
-              <Pressable
+              <AppButton
                 accessibilityLabel="Go back"
-                accessibilityRole="button"
-                hitSlop={8}
+                label="Go back"
+                leadingIcon={<AppIcon color={Theme.colors.text} name="back" size={17} />}
                 onPress={handleBack}
-                style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}>
-                <SymbolView
-                  name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' } as never}
-                  size={17}
-                  tintColor={Theme.colors.text}
-                  weight="bold"
-                />
-              </Pressable>
+                style={styles.backButton}
+                variant="icon"
+              />
             ) : null}
             {title ? <Text style={styles.title}>{title}</Text> : null}
           </View>
@@ -203,27 +199,17 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   backButton: {
-    alignItems: 'center',
-    backgroundColor: Theme.colors.cardMuted,
-    borderColor: Theme.colors.border,
     borderRadius: Theme.radii.pill,
-    borderWidth: 1,
-    height: 36,
-    justifyContent: 'center',
-    width: 36,
-  },
-  backButtonPressed: {
-    opacity: 0.72,
   },
   title: {
     color: Theme.colors.textInverse,
     flex: 1,
-    fontSize: 29,
-    fontWeight: '900',
+    fontSize: Typography.screenTitle.fontSize,
+    fontWeight: Typography.weights.heavy,
   },
   subtitle: {
     color: Theme.colors.textInverseMuted,
-    fontSize: 15,
+    fontSize: Typography.bodyLarge.fontSize,
     lineHeight: 22,
   },
 });

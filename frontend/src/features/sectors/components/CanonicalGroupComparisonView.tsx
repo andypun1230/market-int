@@ -2,8 +2,9 @@ import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 import { DashboardCard } from "@/components/cards/DashboardCard";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import {
   comparisonSelectionLimit,
   formatNullableMetric,
@@ -94,7 +95,9 @@ export function CanonicalGroupComparisonView({
                     <Text style={styles.name}>{item.name}</Text>
                     <Text style={styles.meta}>#{item.rank ?? "N/A"} · {item.state} · {item.availability.state}</Text>
                   </View>
-                  <Text style={[styles.selectMark, active && styles.selectMarkActive]}>{active ? "✓" : "+"}</Text>
+                  <View style={styles.selectMark}>
+                    <AppIcon color={active ? Theme.colors.accent : Theme.colors.textMuted} name={active ? "check" : "add"} size={18} />
+                  </View>
                 </Pressable>
               );
             })}
@@ -165,21 +168,20 @@ const styles = StyleSheet.create({
   candidateActive: { backgroundColor: Theme.colors.accentSoft },
   candidateText: { flex: 1 },
   candidates: { maxHeight: 360 },
-  cell: { color: Theme.colors.text, fontSize: 12, fontWeight: "800", padding: Spacing.two, width: 180 },
+  cell: { color: Theme.colors.text, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong, padding: Spacing.two, width: 180 },
   chip: { borderColor: Theme.colors.border, borderRadius: Theme.radii.pill, borderWidth: 1, minHeight: 38, minWidth: 44, paddingHorizontal: Spacing.two, paddingVertical: 9 },
   chipActive: { backgroundColor: Theme.colors.accentSoft, borderColor: Theme.colors.accent },
-  chipText: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: "900", textAlign: "center" },
+  chipText: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.strong, textAlign: "center" },
   chipTextActive: { color: Theme.colors.accent },
   disabled: { opacity: 0.42 },
   labelCell: { color: Theme.colors.textMuted, width: 165 },
-  link: { color: Theme.colors.accent, fontSize: 12, fontWeight: "900" },
-  meta: { color: Theme.colors.textMuted, fontSize: 11, fontWeight: "700" },
-  name: { color: Theme.colors.text, fontSize: 14, fontWeight: "900" },
-  note: { color: Theme.colors.textMuted, fontSize: 13, fontWeight: "700" },
+  link: { color: Theme.colors.accent, fontSize: Typography.small.fontSize, fontWeight: Typography.weights.strong },
+  meta: { color: Theme.colors.textMuted, fontSize: Typography.caption.fontSize, fontWeight: Typography.weights.emphasis },
+  name: { color: Theme.colors.text, fontSize: Typography.body.fontSize, fontWeight: Typography.weights.strong },
+  note: { color: Theme.colors.textMuted, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis },
   options: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.one, marginBottom: Spacing.two },
   row: { borderBottomColor: Theme.colors.border, borderBottomWidth: 1, flexDirection: "row" },
-  selectMark: { color: Theme.colors.textMuted, fontSize: 18, fontWeight: "900", width: 30 },
-  selectMarkActive: { color: Theme.colors.accent },
+  selectMark: { alignItems: "center", justifyContent: "center", width: 30 },
   stack: { gap: Spacing.three },
   table: { minWidth: 525 },
   tableWide: { flex: 1 },
