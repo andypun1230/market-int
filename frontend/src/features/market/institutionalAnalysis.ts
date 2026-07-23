@@ -3,6 +3,8 @@ import type {
   InstitutionalActivityResponse,
   InstitutionalIntelligenceResponse,
 } from '@/types/market';
+import { buildEvidenceClassSummary, evidenceClass, type EvidenceClassSummary } from '@/features/trust/evidenceClasses';
+import { decisionSummary, type DecisionSummary } from '@/features/trust/decisionSummary';
 
 export type InstitutionalTone = 'positive' | 'warning' | 'negative' | 'neutral';
 export type InstitutionalConfidence = 'high' | 'moderate' | 'low' | 'unavailable';
@@ -17,6 +19,8 @@ export type InstitutionalMetric = {
 export type InstitutionalSourceLabel = 'live' | 'cached' | 'proxy' | 'fallback' | 'mixed' | 'mock' | 'unavailable';
 
 export type InstitutionalDashboardViewModel = {
+  evidence: EvidenceClassSummary;
+  decisionSummary: DecisionSummary;
   overview: {
     bias: string;
     confidence: InstitutionalConfidence;
@@ -123,9 +127,37 @@ export function buildInstitutionalDashboardViewModel(
     ?? averageValid([moneyFlow.buyingPressure, options.callActivity, liquidity.score]);
   const direction = deriveDirectionalBias(score, activity?.bias?.bias);
   const bias = buildBias(score, accumulationDistribution, activity?.bias?.bias, activity?.bias?.follow_through_day ?? null);
+  const evidence = buildInstitutionalEvidence({ accumulationDistribution, largePrints, liquidity, moneyFlow, options });
+  const directEvidenceLimitations = evidence.classes.filter((item) => item.id !== 'price_volume' && item.availability !== 'available').length;
+  const overviewHeadline = evidence.state === 'unavailable'
+    ? 'Institutional evidence unavailable'
+    : evidence.state === 'available' && !evidence.contradiction
+      ? 'Institutional evidence available'
+      : 'Partial institutional evidence';
+  const overviewSummary = evidence.state === 'unavailable'
+    ? 'No supported institutional evidence class is currently available.'
+    : `${evidence.availableCount} of ${evidence.totalCount} institutional evidence classes are usable. ${evidence.contradiction ?? 'Each class is reported independently.'}`;
   return {
     accumulationDistribution,
     bias,
+    evidence,
+    decisionSummary: decisionSummary({
+      id: 'market.institutions',
+      title: 'Institutional decision summary',
+      currentState: overviewHeadline,
+      whatChanged: activity?.bias?.follow_through_day?.triggered ? `${activity.bias.follow_through_day.index ?? 'Index'} follow-through detected` : null,
+      preferredAction: evidence.state === 'available' ? 'Use the class-level evidence; require direct confirmation before increasing conviction.' : 'Treat price-volume inference as context until direct evidence improves.',
+      mainRisk: evidence.state === 'unavailable' ? 'No current institutional confirmation.' : `${directEvidenceLimitations} direct evidence classes are proxy-limited or unavailable.`,
+      invalidation: 'A conflicting or newly available direct evidence class should change this view.',
+      freshness: 'Freshness is reported by evidence class',
+      confidence: evidence.confidence,
+      confidenceLabel: evidence.confidence === null ? 'Confidence unavailable' : `${evidence.confidence}/100 evidence confidence`,
+      evidence,
+      availability: evidence.state,
+      contradiction: evidence.contradiction,
+      whatWouldChange: 'Direct money flow, options, large-print, or liquidity confirmation.',
+      methodology: ['Price-volume evidence does not imply direct institutional confirmation.', 'Class completeness adjusts summary confidence.'],
+    }),
     dataQuality: {
       confidence,
       limitations: buildLimitations(intelligence),
@@ -138,14 +170,14 @@ export function buildInstitutionalDashboardViewModel(
     moneyFlow,
     options,
     overview: {
-      bias: direction.label,
+      bias: overviewHeadline,
       confidence,
       directionalBiasScore: score,
       score,
       source,
       subtitle: 'Current institutional activity',
-      summary: buildOverviewSummary(moneyFlow.state, options.state, source),
-      tone: direction.tone,
+      summary: overviewSummary,
+      tone: evidence.state === 'available' ? direction.tone : evidence.state === 'unavailable' ? 'neutral' : 'warning',
       supportMetrics: [
         { label: 'Money Flow', tone: moneyFlow.tone, value: moneyFlow.buyingPressure },
         { label: 'Options', tone: options.tone, value: options.callActivity },
@@ -157,6 +189,44 @@ export function buildInstitutionalDashboardViewModel(
       summary: 'Historical institutional signals will appear when real snapshots are available.',
     },
   };
+}
+
+export function buildInstitutionalEvidence({
+  accumulationDistribution,
+  largePrints,
+  liquidity,
+  moneyFlow,
+  options,
+}: Pick<InstitutionalDashboardViewModel, 'accumulationDistribution' | 'largePrints' | 'liquidity' | 'moneyFlow' | 'options'>) {
+  return buildEvidenceClassSummary([
+    evidenceClass({
+      id: 'price_volume', label: 'Price-volume evidence',
+      availability: accumulationDistribution.state === 'Unavailable' ? 'unavailable' : 'available', freshness: null,
+      confidence: accumulationDistribution.state === 'Unavailable' ? null : 70, provenance: ['Index accumulation/distribution activity'],
+      conclusion: accumulationDistribution.state === 'Unavailable' ? null : `Price-volume ${accumulationDistribution.state.toLowerCase()}`,
+      direction: toneDirection(accumulationDistribution.tone), limitations: ['Inference from price and volume; institutional identity is not confirmed.'], evidenceIds: [],
+    }),
+    evidenceClass({ id: 'money_flow', availability: moneyFlow.state === 'Unavailable' ? 'unavailable' : 'partial', freshness: null,
+      confidence: moneyFlow.state === 'Unavailable' ? null : 60, provenance: [moneyFlow.sourceLabel], conclusion: moneyFlow.state === 'Unavailable' ? null : moneyFlow.state,
+      direction: toneDirection(moneyFlow.tone), limitations: ['Market-derived proxy; buyer identity is not inferred.'], evidenceIds: [] }),
+    evidenceClass({ id: 'options', availability: options.state === 'Unavailable' ? 'unavailable' : 'partial', freshness: null,
+      confidence: confidenceNumber(options.confidence), provenance: [options.sourceLabel], conclusion: options.state === 'Unavailable' ? null : options.state,
+      direction: toneDirection(options.tone), limitations: ['Options coverage may use proxy or fallback inputs.'], evidenceIds: [] }),
+    evidenceClass({ id: 'large_prints', label: 'Large prints', availability: largePrints.hasSignal ? 'partial' : 'unavailable', freshness: null,
+      confidence: confidenceNumber(largePrints.confidence), provenance: [largePrints.sourceLabel], conclusion: largePrints.hasSignal ? largePrints.state : null,
+      direction: toneDirection(largePrints.tone), limitations: ['Candidate prints do not confirm buyer or seller identity.'], evidenceIds: [] }),
+    evidenceClass({ id: 'liquidity', availability: liquidity.state === 'Unavailable' ? 'unavailable' : 'partial', freshness: null,
+      confidence: liquidity.score, provenance: [liquidity.sourceLabel], conclusion: liquidity.state === 'Unavailable' ? null : liquidity.state,
+      direction: toneDirection(liquidity.tone), limitations: ['Displayed depth may be estimated; hidden order-book depth is not measured.'], evidenceIds: [] }),
+  ], 'institutional evidence');
+}
+
+function toneDirection(tone: InstitutionalTone) {
+  return tone === 'positive' ? 'positive' as const : tone === 'negative' ? 'negative' as const : 'neutral' as const;
+}
+
+function confidenceNumber(value: InstitutionalConfidence) {
+  return value === 'high' ? 90 : value === 'moderate' ? 70 : value === 'low' ? 40 : null;
 }
 
 function deriveDirectionalBias(score: number | null, rawBias?: string | null) {
@@ -446,17 +516,6 @@ function buildFollowThrough(event: FollowThroughDay | null, bias: string): Insti
     state: 'Detected',
     tone: 'positive',
   };
-}
-
-function buildOverviewSummary(
-  moneyFlow: string,
-  options: string,
-  source: InstitutionalSourceKind,
-) {
-  const sourceContext = source === 'mixed' || source === 'proxy' || source === 'fallback' || source === 'mock'
-    ? ', while source quality remains mixed'
-    : '';
-  return `Money flow is ${moneyFlow.toLowerCase()} and options tone is ${options.toLowerCase()}${sourceContext}.`;
 }
 
 function buildLimitations(intelligence: InstitutionalIntelligenceResponse | null) {

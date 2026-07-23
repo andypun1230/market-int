@@ -45,26 +45,26 @@ function run() {
     entry('MOM', 'momentum', 'strong_momentum'),
     entry('LOAD', 'watching', 'partial', 'partial'),
     entry('WAIT', 'watching', 'watching'),
-    entry('STALE', 'needs_attention', 'stale_data', 'stale'),
+    entry('STALE', 'watching', 'stale_data', 'stale'),
   ];
 
-  assert(getWatchlistDecisionGroup(items[0]) === 'action_required', 'deteriorating setups require action');
-  assert(getWatchlistDecisionGroup(items[1]) === 'action_required', 'near-term opportunities require action');
-  assert(getWatchlistDecisionGroup(items[2]) === 'watching_closely', 'improving momentum is watched closely');
-  assert(getWatchlistDecisionGroup(items[3]) === 'watching_closely', 'partial analysis is watched closely');
-  assert(getWatchlistDecisionGroup(items[4]) === 'stable_waiting', 'neutral setups remain stable and waiting');
+  assert(getWatchlistDecisionGroup(items[0]) === 'weakening', 'deteriorating setups remain a trading weakening state');
+  assert(getWatchlistDecisionGroup(items[1]) === 'action_now', 'near-term opportunities require action');
+  assert(getWatchlistDecisionGroup(items[2]) === 'improving', 'improving momentum is explicit');
+  assert(getWatchlistDecisionGroup(items[3]) === 'monitor', 'partial analysis remains a maintenance issue, not a trading conclusion');
+  assert(getWatchlistDecisionGroup(items[4]) === 'monitor', 'neutral setups remain monitor-only');
 
   const groups = groupWatchlistDecisionItems(items);
-  assert(groups.action_required.map((item) => item.item.ticker).join(',') === 'LOW,BRK,STALE', 'action group preserves sorted input order');
-  assert(groups.watching_closely.length === 2, 'watching closely combines improving and loading setups');
-  assert(groups.stable_waiting.length === 1, 'stable section contains quiet setups');
+  assert(groups.action_now.map((item) => item.item.ticker).join(',') === 'BRK', 'action group contains trading triggers only');
+  assert(groups.improving.length === 1 && groups.weakening.length === 1, 'improving and weakening remain separate');
+  assert(groups.monitor.length === 3, 'partial, quiet, and stale-only items remain monitor trading states');
 
   const brief = buildWatchlistDecisionBrief(items);
-  assert(brief.immediateCount === 3, 'brief counts immediate attention stocks');
+  assert(brief.immediateCount === 1, 'brief counts trading action stocks only');
   assert(brief.improvingCount === 2, 'brief counts improving setups');
   assert(brief.deterioratingCount === 1, 'brief does not mislabel stale data as setup deterioration');
   assert(brief.staleCount === 1, 'brief exposes stale data warning');
-  assert(brief.immediateSymbols.join(',') === 'LOW,BRK,STALE', 'brief names the highest-priority symbols');
+  assert(brief.immediateSymbols.join(',') === 'BRK', 'brief names only current trading triggers');
 
   assert(getWatchlistDecisionStatus(items[0].classification) === 'Price is below support.', 'lost support has concise decision copy');
   assert(getWatchlistDecisionStatus(items[1].classification).includes('breakout'), 'near breakout has concise decision copy');

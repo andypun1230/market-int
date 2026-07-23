@@ -21,7 +21,7 @@ export function CanonicalGroupFilterPanel({
   return (
     <DashboardCard
       title="Canonical Filters"
-      subtitle={`${resultCount} of ${totalCount} entities match. Filters apply to canonical snapshot fields.`}
+      subtitle={`${resultCount} of ${totalCount} entities match. Filters use published snapshot fields.`}
       accentColor={Theme.colors.accent}>
       <View style={styles.stack}>
         <Options

@@ -285,9 +285,7 @@ function getWarningSignals(item: WatchlistSummaryItem, dataStatus: WatchlistData
   const risk = normalizeText(item.risk_flag);
   const setup = normalizeText(`${item.setup ?? ''} ${item.support_zone ?? ''}`);
 
-  if (dataStatus === 'stale') {
-    signals.push('stale_data');
-  }
+  // Freshness is a maintenance dimension. It must never replace the trading signal.
   if (setup.includes('lost support') || setup.includes('break support')) {
     signals.push('lost_support');
   }

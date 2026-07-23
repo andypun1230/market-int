@@ -42,7 +42,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "validate:data-ui": "node ./scripts/validate-data-ui.js"
+    "validate:data-ui": "node ./scripts/validate-data-ui.js",
+    "validate:stage10-visual": "node ./scripts/validate-stage10-visual.js"
   },
   "private": true
 }

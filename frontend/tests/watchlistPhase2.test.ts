@@ -100,9 +100,9 @@ function run() {
   assert(!hasRefreshingWatchlistItems([item({ overall_status: 'partial', refreshing: false })]), 'stable partial analysis does not poll the summary endpoint');
 
   const staleBreakout = classifyWatchlistItem(item({ is_stale: true, setup: 'Confirmed breakout', ticker: 'STALE' }));
-  assert(staleBreakout.group === 'needs_attention', 'warning precedence beats high-priority setup');
-  assert(staleBreakout.primarySignal === 'stale_data', 'stale data is primary warning');
-  assert(!shouldShowWatchlistStatusDot('stale', 'stale_data'), 'stale signal suppresses a duplicate stale data badge');
+  assert(staleBreakout.group === 'high_priority', 'stale maintenance does not replace an actionable trading setup');
+  assert(staleBreakout.primarySignal === 'breakout', 'trading signal remains primary while freshness is separate');
+  assert(shouldShowWatchlistStatusDot('stale', 'breakout'), 'stale maintenance remains visible beside the trading signal');
 
   const duplicateScore = calculateWatchlistScore(['breakout', 'breakout'], ['lost_support', 'lost_support']);
   assert(duplicateScore === 0, 'duplicate signals are not double-counted');

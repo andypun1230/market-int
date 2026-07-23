@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { isRequestCancelled } from '@/services/requestCache';
+import { initialAtomicScreenState, reduceAtomicScreenState } from '@/features/trust/atomicScreenState';
 
 type UseAsyncDataOptions = {
   enabled?: boolean;
@@ -13,9 +14,7 @@ export function useAsyncData<T>(
   const { enabled = true } = options;
   const mountedRef = useRef(false);
   const requestSequenceRef = useRef(0);
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(enabled);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState(() => initialAtomicScreenState<T>(enabled));
 
   const refetch = useCallback(async () => {
     if (!enabled) {
@@ -23,14 +22,13 @@ export function useAsyncData<T>(
     }
 
     const requestSequence = ++requestSequenceRef.current;
-    setLoading(true);
-    setError(null);
+    setState((current) => reduceAtomicScreenState(current, { type: 'request', requestId: requestSequence }));
 
     try {
       const nextData = await asyncFunction();
 
       if (mountedRef.current && isLatestAsyncDataRequest(requestSequence, requestSequenceRef.current)) {
-        setData(nextData);
+        setState((current) => reduceAtomicScreenState(current, { type: 'success', requestId: requestSequence, data: nextData }));
       }
 
       return nextData;
@@ -39,14 +37,10 @@ export function useAsyncData<T>(
         return null;
       }
       if (mountedRef.current && isLatestAsyncDataRequest(requestSequence, requestSequenceRef.current)) {
-        setError(getErrorMessage(asyncError));
+        setState((current) => reduceAtomicScreenState(current, { type: 'failure', requestId: requestSequence, error: getErrorMessage(asyncError) }));
       }
 
       return null;
-    } finally {
-      if (mountedRef.current && isLatestAsyncDataRequest(requestSequence, requestSequenceRef.current)) {
-        setLoading(false);
-      }
     }
   }, [asyncFunction, enabled]);
 
@@ -56,7 +50,7 @@ export function useAsyncData<T>(
       if (enabled) {
         refetch();
       } else if (mountedRef.current) {
-        setLoading(false);
+        setState((current) => reduceAtomicScreenState(current, { type: 'disable' }));
       }
     }, 0);
 
@@ -66,7 +60,15 @@ export function useAsyncData<T>(
     };
   }, [enabled, refetch]);
 
-  return { data, loading, error, refetch };
+  return {
+    data: state.data,
+    loading: state.phase === 'loading',
+    error: state.error,
+    refetch,
+    refreshing: state.refreshing,
+    screenState: state.phase,
+    retainedData: state.retained,
+  };
 }
 
 export function isLatestAsyncDataRequest(requestSequence: number, latestRequestSequence: number) {

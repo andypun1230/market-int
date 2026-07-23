@@ -20,6 +20,7 @@ export function CanonicalGroupComparisonView({
   initialIds = [],
   initialTimeframe = "1M",
   items,
+  registryLoading = false,
   onOpenItem,
   onSelectionChange,
 }: {
@@ -27,6 +28,7 @@ export function CanonicalGroupComparisonView({
   initialIds?: string[];
   initialTimeframe?: CanonicalGroupTimeframe;
   items: CanonicalGroupItem[];
+  registryLoading?: boolean;
   onOpenItem: (item: CanonicalGroupItem) => void;
   onSelectionChange?: (ids: string[], timeframe: CanonicalGroupTimeframe) => void;
 }) {
@@ -45,6 +47,10 @@ export function CanonicalGroupComparisonView({
     onSelectionChange?.(next, timeframe);
   }
 
+  if (registryLoading && !items.length) {
+    return <DashboardCard title="Loading comparison"><Text style={styles.note}>Loading available entities…</Text></DashboardCard>;
+  }
+
   return (
     <View style={styles.stack}>
       <DashboardCard
@@ -52,7 +58,7 @@ export function CanonicalGroupComparisonView({
         subtitle={`Same-type comparison · select 2–${maximum} on this screen size.`}
         accentColor={Theme.colors.accent}>
         <View style={styles.badges}>
-          <StatusBadge label="Backend-owned fields" tone="info" />
+          <StatusBadge label="Published data" tone="info" />
           <StatusBadge label={`${activeSelectedIds.length}/${maximum} selected`} tone={activeSelectedIds.length >= 2 ? "success" : "muted"} />
         </View>
         <View accessibilityLabel="Comparison timeframe" style={styles.options}>
@@ -94,22 +100,20 @@ export function CanonicalGroupComparisonView({
             })}
           </View>
         ) : (
-          <Text style={styles.note}>Canonical {entityType} comparison is unavailable because no snapshot entities were published.</Text>
+          <Text style={styles.note}>No published {entityType} entities are available for comparison.</Text>
         )}
       </DashboardCard>
 
       {activeSelectedIds.length < 2 ? (
-        <DashboardCard title="Comparison unavailable" subtitle="Select at least two entities from the same canonical type.">
+        <DashboardCard title="Select entities" subtitle="Choose at least two entities of the same type.">
           <Text style={styles.note}>No metrics are inferred while the comparison is incomplete.</Text>
         </DashboardCard>
       ) : loading && !data ? (
-        <DashboardCard title="Loading comparison"><Text style={styles.note}>Loading normalized canonical output…</Text></DashboardCard>
-      ) : error ? (
-        <DashboardCard title="Comparison failed"><Text style={styles.note}>{error}</Text></DashboardCard>
+        <DashboardCard title="Loading comparison"><Text style={styles.note}>Loading comparison data…</Text></DashboardCard>
       ) : data ? (
         <DashboardCard
-          title={`${data.timeframe} normalized comparison`}
-          subtitle={`${data.snapshot_id ?? "No snapshot"} · ${data.status}`}
+          title={`${data.timeframe} comparison`}
+          subtitle={`${data.items.length} entities · ${error ? 'Cached after refresh failure' : data.status}`}
           accentColor={data.status === "available" ? Theme.colors.success : Theme.colors.warning}>
           <ScrollView horizontal={width < 900} showsHorizontalScrollIndicator={false}>
             <View style={[styles.table, width >= 900 && styles.tableWide]}>
@@ -130,6 +134,8 @@ export function CanonicalGroupComparisonView({
             </View>
           </ScrollView>
         </DashboardCard>
+      ) : error ? (
+        <DashboardCard title="Comparison failed"><Text style={styles.note}>{error}</Text></DashboardCard>
       ) : null}
     </View>
   );

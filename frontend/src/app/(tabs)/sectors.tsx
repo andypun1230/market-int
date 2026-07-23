@@ -8,8 +8,10 @@ import { PerformanceHeatmap } from "@/components/charts/PerformanceHeatmap";
 import { RotationQuadrantChart } from "@/components/charts/RotationQuadrantChart";
 import { AppScreen } from "@/components/ui/AppScreen";
 import { DetailModal } from "@/components/ui/DetailModal";
+import { DecisionSummaryCard } from "@/components/ui/DecisionSummaryCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MetricTile } from "@/components/ui/MetricTile";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AlertList } from "@/components/ui/AlertList";
 import { Spacing, Theme } from "@/constants/theme";
@@ -79,6 +81,7 @@ import { useThemeRotation } from "@/hooks/useThemeRotation";
 import { useThemeStatus } from "@/hooks/useThemeStatus";
 import { useCanonicalGroupRegistry } from "@/hooks/useGroupIntelligence";
 import { areTestScenariosEnabled } from "@/services/runtimeConfig";
+import { decisionSummary } from "@/features/trust/decisionSummary";
 import {
   DEFAULT_CANONICAL_GROUP_FILTERS,
   countCanonicalGroupFilters,
@@ -152,8 +155,8 @@ export default function SectorsScreen() {
   }>();
   const { snapshot, loading, error, refetch } = useSectorSnapshot();
   const testScenariosEnabled = areTestScenariosEnabled();
-  const { status: themeStatus } = useThemeStatus(!testScenariosEnabled);
-  const { snapshot: themeSnapshot } = useThemeSnapshot(!testScenariosEnabled);
+  const { status: themeStatus, loading: themeStatusLoading } = useThemeStatus(!testScenariosEnabled);
+  const { snapshot: themeSnapshot, loading: themeSnapshotLoading } = useThemeSnapshot(!testScenariosEnabled);
   const sectorRegistry = useCanonicalGroupRegistry("sector", !testScenariosEnabled);
   const themeRegistry = useCanonicalGroupRegistry("theme", !testScenariosEnabled);
   const [preferences, updatePreferences] = useSectorUiPreferences();
@@ -298,12 +301,14 @@ export default function SectorsScreen() {
         : "Sectors";
   const subtitle =
     activeCategory === "themes"
-      ? themeProvenance.subtitle
+      ? themeSnapshotLoading || themeStatusLoading
+        ? "Loading published theme data."
+        : themeProvenance.subtitle
       : snapshot
         ? `S&P 100 sector snapshot · ${snapshot.marketDate}`
         : loading
-          ? "Loading durable sector snapshot."
-          : "Sector snapshot unavailable.";
+          ? "Loading published sector data."
+          : "Published sector data unavailable.";
 
   const deepLinkKey = `${firstParam(entityKindParam)}:${firstParam(entityIdParam)}:${firstParam(entityNameParam)}:${firstParam(actionNonceParam)}`;
   const deepLinkedSelection = useMemo<SelectedDetail>(() => {
@@ -611,10 +616,12 @@ export default function SectorsScreen() {
                 onPressItem={(item) => setSelected({ item, kind: "theme" })}
               />
             </DashboardCard>
+          ) : themeSnapshotLoading || themeStatusLoading ? (
+            <SkeletonCard compact rows={3} title />
           ) : liveThemes.length ? (
             <DashboardCard
               title="Theme Directory"
-              subtitle="Canonical launch taxonomy with governed available, partial, and unavailable states."
+              subtitle="Published theme coverage with available, partial, and unavailable states."
               accentColor={Theme.colors.purple}
             >
               <IntervalTabs
@@ -697,6 +704,8 @@ export default function SectorsScreen() {
                 trailLength={10}
               />
             </DashboardCard>
+          ) : themeSnapshotLoading || themeStatusLoading ? (
+            <SkeletonCard compact rows={3} title />
           ) : themeSnapshot ? (
             <DashboardCard
               title="Theme Rotation Map"
@@ -715,7 +724,7 @@ export default function SectorsScreen() {
               </Text>
               {themeRotationLoading && !themeRotation ? (
                 <Text style={styles.note}>
-                  Loading canonical Theme Rotation.
+                  Loading Theme Rotation.
                 </Text>
               ) : null}
               {themeRotationError ? (
@@ -797,15 +806,17 @@ export default function SectorsScreen() {
                 <Text style={styles.note}>No theme rotation alerts.</Text>
               )}
             </DashboardCard>
+          ) : themeSnapshotLoading || themeStatusLoading ? (
+            <SkeletonCard compact rows={3} title />
           ) : liveThemes.length ? (
             <DashboardCard
               title="Theme Rotation Alerts"
-              subtitle="Changes between immutable ThemeSnapshots."
+              subtitle="Changes between published theme snapshots."
               accentColor={Theme.colors.warning}
             >
               <AlertList
                 alerts={presentSnapshotAlerts(themeSnapshot?.alerts ?? [], "Theme")}
-                emptyMessage="No theme transition alerts yet. Further immutable snapshots are needed for change detection."
+                emptyMessage="No theme transition alerts yet. More published observations are needed for change detection."
               />
             </DashboardCard>
           ) : (
@@ -816,7 +827,7 @@ export default function SectorsScreen() {
         {activeSection === "emergingLeadership" && snapshot ? (
           <Scanner
             title="Emerging Sectors"
-            subtitle="Improving is the canonical classification; this list is not an overall ranking."
+            subtitle="Improving is the published classification; this list is not an overall ranking."
             rows={emerging}
             onOpen={(sectorId) => setSelected({ kind: "sector", sectorId })}
           />
@@ -901,7 +912,7 @@ export default function SectorsScreen() {
       <DetailModal
         visible={comparisonVisible}
         title={`Compare ${comparisonType === "sector" ? "Sectors" : "Themes"}`}
-        subtitle="Canonical same-type comparison"
+        subtitle="Same-type published comparison"
         onClose={() => {
           setComparisonVisible(false);
           router.setParams({ compareIds: undefined, compareTimeframe: undefined, compareType: undefined });
@@ -921,6 +932,7 @@ export default function SectorsScreen() {
             initialIds={comparisonInitialIds}
             initialTimeframe={comparisonInitialTimeframe}
             items={comparisonRegistry?.items ?? []}
+            registryLoading={comparisonType === "theme" ? themeRegistry.loading : sectorRegistry.loading}
             onOpenItem={(item: CanonicalGroupItem) => {
               setComparisonVisible(false);
               if (item.type === "sector") {
@@ -1259,6 +1271,15 @@ function ThemeDetailContent({
   if ("sourceState" in theme)
     return (
       <View style={styles.detailStack}>
+        <DecisionSummaryCard summary={decisionSummary({
+          id: `theme.${theme.id}`, title: `${theme.name} decision summary`, currentState: `${theme.classification}${theme.rank ? ` · rank #${theme.rank}` : ''}`,
+          whatChanged: theme.returns['1M'] === null ? null : `One-month return ${formatNullablePercent(theme.returns['1M'])}`,
+          preferredAction: theme.participation.positiveReturnParticipationPct === null ? null : `Review ${theme.participation.positiveReturnParticipationPct.toFixed(1)}% positive-return participation.`,
+          mainRisk: theme.warnings[0] ?? theme.concentration.classification ?? null, invalidation: theme.historicalDisclosure,
+          freshness: theme.sourceState, confidence: theme.concentration.qualityScore, confidenceLabel: theme.concentration.qualityScore === null ? 'Confidence unavailable' : `${Math.round(theme.concentration.qualityScore)}/100 evidence quality`,
+          evidence: null, availability: theme.status === 'available' ? 'available' : theme.status === 'partial' ? 'partial' : 'unavailable', contradiction: null,
+          whatWouldChange: theme.warnings[0] ?? null, methodology: [theme.scoreSemantics.label, theme.basketMethodology, theme.weightingPolicy].filter((item): item is string => Boolean(item)),
+        })} />
         <View style={styles.badges}>
           <StatusBadge
             label={

@@ -18,6 +18,7 @@ import Svg, { Polyline } from 'react-native-svg';
 import { buildEntityDestination } from '@/architecture/entityRoutingRegistry';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { DecisionSummaryCard } from '@/components/ui/DecisionSummaryCard';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Theme } from '@/constants/theme';
@@ -32,6 +33,7 @@ import {
   type HomeTone,
 } from '@/features/home/homeSummary';
 import { useHomeDashboard } from '@/hooks/useHomeDashboard';
+import { decisionSummary } from '@/features/trust/decisionSummary';
 
 type HomeIcon = { android: string; ios: string; web: string };
 
@@ -133,10 +135,16 @@ export default function HomeScreen() {
         <HomeSkeleton />
       ) : (
         <View style={styles.stack}>
-          <MarketPulseCard
+          <DecisionSummaryCard
             onPress={() => router.push('/market')}
-            summary={summary}
-            updatedLabel={updatedLabel}
+            summary={decisionSummary({
+              id: 'home.market', title: 'Today’s market decision summary', currentState: summary.marketPulse.label,
+              whatChanged: summary.todaysBias, preferredAction: summary.recommendation, mainRisk: summary.riskDrivers[0] ?? summary.riskLabel,
+              invalidation: summary.riskDrivers[1] ?? null, freshness: updatedLabel, confidence: null, confidenceLabel: 'See evidence confidence',
+              evidence: null, availability: summary.sourceState === 'live' ? 'live' : summary.sourceState === 'cached' ? 'live_cached' : summary.sourceState === 'mock' ? 'test' : 'unavailable',
+              contradiction: null, whatWouldChange: summary.riskDrivers[0] ?? null,
+              methodology: summary.marketPulse.factors.map((factor) => `${factor.label}: ${factor.value}${factor.direction ? ` · ${factor.direction}` : ''}`),
+            })}
           />
           <TodaysMarketCard summary={summary} />
           <WhatMovedMarketCard enabled={isFocused} maxItems={3} />
@@ -157,50 +165,6 @@ export default function HomeScreen() {
         </View>
       )}
     </AppScreen>
-  );
-}
-
-function MarketPulseCard({
-  onPress,
-  summary,
-  updatedLabel,
-}: {
-  onPress: () => void;
-  summary: HomeSummary;
-  updatedLabel: string;
-}) {
-  const pulseColor = toneColor(summary.marketPulse.tone);
-  return (
-    <Pressable
-      accessibilityLabel={`Open market overview. Market pulse is ${summary.marketPulse.label}`}
-      accessibilityRole="button"
-      onPress={onPress}
-      style={({ pressed }) => [styles.pulseCard, pressed && styles.pressed]}>
-      <View style={[styles.accentLine, { backgroundColor: pulseColor }]} />
-      <View style={styles.pulseTopRow}>
-        <View style={styles.titleWithIcon}>
-          <SectionIcon icon={ICONS.pulse} tone={summary.marketPulse.tone} />
-          <Text style={styles.eyebrow}>MARKET PULSE</Text>
-        </View>
-        <Text style={styles.updatedText}>{updatedLabel}</Text>
-      </View>
-      <View style={styles.pulseHeadlineRow}>
-        <Text style={[styles.pulseHeadline, { color: pulseColor }]}>{summary.marketPulse.label}</Text>
-        <SymbolView name={ICONS.chevron as never} size={17} tintColor={Theme.colors.textMuted} weight="bold" />
-      </View>
-      <View style={styles.factorRow}>
-        {summary.marketPulse.factors.map((factor) => (
-          <View key={factor.label} style={styles.factorItem}>
-            <View style={[styles.factorDot, { backgroundColor: toneColor(factor.tone) }]} />
-            <View style={styles.factorText}>
-              <Text style={styles.microLabel}>{factor.label}</Text>
-              <Text numberOfLines={1} style={styles.factorValue}>{factor.value}</Text>
-              {factor.direction ? <Text numberOfLines={1} style={styles.factorDirection}>{factor.direction}</Text> : null}
-            </View>
-          </View>
-        ))}
-      </View>
-    </Pressable>
   );
 }
 

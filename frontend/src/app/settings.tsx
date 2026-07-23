@@ -18,6 +18,7 @@ import {
   regenerateTestData,
 } from '@/services/api';
 import { clearRequestCache } from '@/services/requestCache';
+import { useUserFacingDataState } from '@/features/trust/UserFacingDataStateProvider';
 import {
   IntelligenceStatus,
   ProviderCacheStatus,
@@ -35,6 +36,7 @@ const settings = [
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { dataState, refresh: refreshSharedDataState } = useUserFacingDataState();
   const [providerStatus, setProviderStatus] = useState<ProviderStatus | null>(null);
   const [cacheStatus, setCacheStatus] = useState<ProviderCacheStatus | null>(null);
   const [universeStatus, setUniverseStatus] = useState<UniverseStatus | null>(null);
@@ -78,7 +80,6 @@ export default function SettingsScreen() {
     };
   }, []);
 
-  const currentProvider = formatProviderName(providerStatus?.active_provider ?? providerStatus?.market_data_provider);
   const visibleCacheStatus = cacheStatus ?? providerStatus?.cache_status ?? null;
 
   const handleRefreshProvider = async () => {
@@ -93,6 +94,7 @@ export default function SettingsScreen() {
       setTestDataScenarios(diagnostics.scenarios);
       setSelectedScenario(diagnostics.testData.scenario);
       setProviderError(null);
+      await refreshSharedDataState();
     } catch (error) {
       setProviderError(getErrorMessage(error));
     } finally {
@@ -113,6 +115,7 @@ export default function SettingsScreen() {
       setIntelligenceStatus(diagnostics.intelligence);
       setTestDataScenarios(diagnostics.scenarios);
       setProviderError(null);
+      await refreshSharedDataState();
     } catch (error) {
       setProviderError(getErrorMessage(error));
     } finally {
@@ -159,8 +162,8 @@ export default function SettingsScreen() {
       </DashboardCard>
 
       <DashboardCard
-        title="Universe Diagnostics"
-        subtitle="Generated breadth coverage"
+        title="Breadth Coverage Diagnostics"
+        subtitle="Coverage for the breadth evidence class"
         accentColor={Theme.colors.accent}
       >
         <View style={styles.settingGrid}>
@@ -168,25 +171,25 @@ export default function SettingsScreen() {
           <MetricTile label="Universe size" value={universeStatus?.configured_symbols ?? 'N/A'} />
           <MetricTile label="Coverage" value={formatPercent(universeStatus?.coverage_percent)} />
           <MetricTile label="Successful symbols" value={universeStatus?.last_successful_symbols ?? 'N/A'} />
-          <MetricTile label="Test-data symbols" value={universeStatus?.last_successful_symbols ?? 'N/A'} />
+          <MetricTile label="Analyzed symbols" value={universeStatus?.last_successful_symbols ?? 'N/A'} />
           <MetricTile label="Fallback symbols" value="0" />
           <MetricTile label="Failed symbols" value={universeStatus?.failed_symbols_count ?? 'N/A'} />
-          <MetricTile label="Breadth mode" value="Test Data" />
+          <MetricTile label="Breadth evidence" value={formatProviderName(universeStatus?.breadth_universe)} />
           <MetricTile label="Last update" value={formatDateTime(universeStatus?.as_of)} />
         </View>
         <Text style={styles.helperText}>
-          Breadth is generated from the local test-data universe and is not current exchange-wide breadth.
+          Breadth coverage is a separate evidence domain. Its source can differ from the live quote and history providers shown in Data status.
         </Text>
       </DashboardCard>
 
       <DashboardCard
-        title="Generated Test Data"
-        subtitle="Local market-data mode"
+        title="Scenario Controls"
+        subtitle="Development scenarios are separate from the current provider state"
         accentColor={Theme.colors.accent}
       >
         <View style={styles.settingGrid}>
-          <MetricTile label="Data mode" value="Test Data" />
-          <MetricTile label="Source" value={currentProvider} />
+          <MetricTile label="Current provider state" value={dataState.headline} />
+          <MetricTile label="Scenario source" value={formatProviderName(testDataStatus?.source)} />
           <MetricTile label="Scenario" value={formatProviderName(testDataStatus?.scenario)} />
           <MetricTile label="Seed" value={testDataStatus?.seed ?? 'N/A'} />
           <MetricTile label="Last regenerated" value={formatDateTime(testDataStatus?.last_regenerated ?? testDataStatus?.generated_at)} />
@@ -239,14 +242,14 @@ export default function SettingsScreen() {
           </Pressable>
         </View>
         <Text style={styles.helperText}>
-          Market quotes, histories, sectors, themes, signals, and intelligence are generated locally for interface development.
+          Regenerating a scenario updates deterministic development fixtures. It does not change a configured live provider unless the provider mode itself is set to test.
         </Text>
         {providerError ? <Text style={styles.errorText}>{truncateText(providerError, 120)}</Text> : null}
       </DashboardCard>
 
       <DashboardCard
         title="Intelligence Data Diagnostics"
-        subtitle="Generated sentiment, options, trade-flow, and liquidity"
+        subtitle="Evidence-class provider coverage"
         accentColor={Theme.colors.accent}
       >
         <View style={styles.settingGrid}>
@@ -254,7 +257,7 @@ export default function SettingsScreen() {
           <MetricTile label="Options provider" value={formatProviderName(intelligenceStatus?.options_provider ?? undefined)} />
           <MetricTile label="Trade-flow provider" value={formatProviderName(intelligenceStatus?.trade_flow_provider ?? undefined)} />
           <MetricTile label="Liquidity provider" value={formatProviderName(intelligenceStatus?.liquidity_provider ?? undefined)} />
-          <MetricTile label="Data mode" value="Test Data" />
+          <MetricTile label="Evidence mode" value={formatProviderName(intelligenceStatus?.overall_mode ?? intelligenceStatus?.data_status ?? undefined)} />
           <MetricTile label="Sentiment available" value={formatBoolean(intelligenceStatus?.sentiment_health?.reachable)} />
           <MetricTile label="Options available" value={formatBoolean(intelligenceStatus?.options_health?.reachable)} />
           <MetricTile label="Trade-flow available" value={formatBoolean(intelligenceStatus?.trade_flow_health?.reachable)} />
@@ -272,7 +275,7 @@ export default function SettingsScreen() {
           />
         </View>
         <Text style={styles.helperText}>
-          These are deterministic test scenarios. They are not live options, liquidity, news, or institutional feeds.
+          Each evidence class reports its own availability. Generated or proxy evidence never upgrades the live market-data state above.
         </Text>
       </DashboardCard>
 
@@ -290,7 +293,7 @@ export default function SettingsScreen() {
 
 function formatProviderName(provider?: string) {
   if (!provider) {
-    return 'Test Data';
+    return 'N/A';
   }
 
   return provider

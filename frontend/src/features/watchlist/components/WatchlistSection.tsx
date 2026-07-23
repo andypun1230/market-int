@@ -14,20 +14,25 @@ type WatchlistSectionProps = {
 };
 
 const SECTION_META: Record<WatchlistDecisionGroup, { accent: string; subtitle: string; title: string }> = {
-  action_required: {
+  action_now: {
     accent: Theme.colors.danger,
-    subtitle: 'Breakouts, warnings, and data issues that need a decision.',
-    title: '🔥 Action Required',
+    subtitle: 'Fresh trading setups with an active trigger.',
+    title: 'Action Now',
   },
-  watching_closely: {
+  improving: {
     accent: Theme.colors.accent,
-    subtitle: 'Improving or developing setups worth monitoring closely.',
-    title: '👀 Watching Closely',
+    subtitle: 'Momentum and relative strength are improving.',
+    title: 'Improving',
   },
-  stable_waiting: {
+  weakening: {
+    accent: Theme.colors.warning,
+    subtitle: 'Trading evidence is deteriorating or support has weakened.',
+    title: 'Weakening',
+  },
+  monitor: {
     accent: Theme.colors.textMuted,
-    subtitle: 'Quiet setups waiting for a clearer trigger.',
-    title: '⏸ Stable / Waiting',
+    subtitle: 'No current trading trigger; continue monitoring.',
+    title: 'Monitor',
   },
 };
 

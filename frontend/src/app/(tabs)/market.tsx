@@ -5,6 +5,7 @@ import { SymbolView } from 'expo-symbols';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { AppScreen } from '@/components/ui/AppScreen';
+import { DecisionSummaryCard } from '@/components/ui/DecisionSummaryCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { ExpandableSection } from '@/components/ui/ExpandableSection';
 import { ProgressBar } from '@/components/ui/ProgressBar';
@@ -46,7 +47,6 @@ import {
   buildDecisionLayerSummary,
   buildHealthComponents,
   buildHealthContributions,
-  buildHealthOverviewSummary,
   buildHealthRadarData,
   calculateRadarGridPoints,
   calculateRadarPoints,
@@ -117,6 +117,8 @@ import {
 import { useMarketDashboard } from '@/hooks/useMarketDashboard';
 import { getLiveHistory, getMarketMacro } from '@/services/api';
 import { areTestScenariosEnabled } from '@/services/runtimeConfig';
+import { decisionSummary } from '@/features/trust/decisionSummary';
+import { formatFreshness } from '@/features/trust/userFacingDataState';
 import type {
   HistoryData,
   DecisionDashboardResponse,
@@ -521,13 +523,32 @@ function OverviewTab({
 
   return (
     <View style={styles.sectionStack}>
-      <MarketRegimeHero core={core} marketHealth={marketHealth} overview={overview} regime={regime} />
+      <DecisionSummaryCard summary={decisionSummary({
+        id: 'market.overview',
+        title: 'Market decision summary',
+        currentState: overview.regime.label ?? marketHealth?.status ?? regime?.status ?? 'Current conclusion unavailable',
+        whatChanged: overview.regime.summary,
+        preferredAction: overview.decisionPosture.implication,
+        mainRisk: overview.decisionPosture.avoid,
+        invalidation: overview.decisionPosture.monitor,
+        freshness: core?.refreshing
+          ? 'Live source unavailable; showing cached data'
+          : core?.generated_at || core?.as_of
+            ? formatFreshness(core.generated_at ?? core.as_of)
+            : 'Last update unavailable',
+        confidence: overview.decisionPosture.confidence,
+        confidenceLabel: overview.decisionPosture.confidence === null ? 'Confidence unavailable' : `${Math.round(overview.decisionPosture.confidence)}/100 confidence`,
+        evidence: null,
+        availability: core?.refreshing ? 'live_cached' : marketHealth ? 'available' : 'partial',
+        contradiction: null,
+        whatWouldChange: overview.decisionPosture.monitor,
+        methodology: overview.keySignals.slice(0, 4).map((item) => `${item.label} · ${item.sourceTab}`),
+      })} />
       <MarketSessionContextCard enabled={intelligenceEnabled} />
       <WhatMovedMarketCard enabled={intelligenceEnabled} maxItems={3} />
       <MarketSnapshotGrid overview={overview} />
       <SignalAlignmentCard overview={overview} />
       <MarketInsightPanel aiSummary={aiSummary} overview={overview} />
-      <MarketDecisionPostureCard overview={overview} />
       <KeySignals overview={overview} />
       {overview.dataQuality.label ? <MarketOverviewDataQuality overview={overview} /> : null}
     </View>
@@ -809,25 +830,16 @@ function MacroTimeframeSelector({
 }
 
 function MacroOverviewCard({ model }: { model: MacroDashboardViewModel }) {
-  return (
-    <View style={styles.regimeHero}>
-      <View style={styles.regimeHeader}>
-        <View style={styles.regimeTitleBlock}>
-          <Text style={styles.heroKicker}>Macro Overview</Text>
-          <Text style={styles.regimeTitle}>{formatRiskState(model.overview.regime)}</Text>
-          <Text style={styles.regimeScore}>Confidence · {capitalize(model.overview.confidence)}</Text>
-        </View>
-        <StatusBadge label={model.dataQuality.sourceLabel} tone={macroSourceTone(model.dataQuality.sourceKind)} />
-      </View>
-      <Text style={styles.regimeExplanation}>{model.overview.summary}</Text>
-      <View style={styles.macroLeadLagGrid}>
-        <MetricTile label="Leading" value={model.overview.leading.join(' · ') || 'N/A'} />
-        <MetricTile label="Lagging" value={model.overview.lagging.join(' · ') || 'N/A'} />
-      </View>
-      <Text style={styles.warningInline}>Current risk: {model.overview.keyRisk}</Text>
-      <Text style={styles.helperText}>What would weaken this: {model.overview.invalidationConditions}</Text>
-    </View>
-  );
+  const confidence = model.overview.confidence === 'high' ? 90 : model.overview.confidence === 'moderate' ? 70 : model.overview.confidence === 'low' ? 40 : null;
+  return <DecisionSummaryCard summary={decisionSummary({
+    id: 'market.macro', title: 'Macro decision summary', currentState: formatRiskState(model.overview.regime),
+    whatChanged: model.overview.summary, preferredAction: model.interpretation.stance, mainRisk: model.overview.keyRisk,
+    invalidation: model.overview.invalidationConditions, freshness: model.dataQuality.sourceLabel, confidence,
+    confidenceLabel: confidence === null ? 'Confidence unavailable' : `${capitalize(model.overview.confidence)} confidence`, evidence: null,
+    availability: model.dataQuality.sourceKind === 'unavailable' ? 'unavailable' : model.dataQuality.missingAssets.length ? 'partial' : model.dataQuality.sourceKind === 'cached' ? 'live_cached' : 'available',
+    contradiction: null, whatWouldChange: model.interpretation.invalidationConditions,
+    methodology: [`Leading: ${model.overview.leading.join(' · ') || 'N/A'}`, `Lagging: ${model.overview.lagging.join(' · ') || 'N/A'}`],
+  })} />;
 }
 
 function MacroCrossAssetCard({ model }: { model: MacroDashboardViewModel }) {
@@ -2187,48 +2199,6 @@ function returnColor(value: number | null) {
   return value > 0 ? Theme.colors.success : Theme.colors.danger;
 }
 
-function MarketRegimeHero({
-  core,
-  marketHealth,
-  overview,
-  regime,
-}: {
-  core: MarketCoreSnapshot | null;
-  marketHealth: MarketHealthResponse | null;
-  overview: MarketOverviewDashboardViewModel;
-  regime: MarketRegime | null;
-}) {
-  const score = overview.regime.healthScore ?? marketHealth?.overall_score ?? regime?.breadth.stocks_above_50ma ?? null;
-  const status = overview.regime.label ?? marketHealth?.status ?? regime?.status ?? 'Unavailable';
-  const freshness = core?.refreshing
-    ? 'Cached · updating'
-    : core?.cache_status
-      ? capitalize(String(core.cache_status))
-      : overview.regime.sourceLabel;
-
-  return (
-    <View style={styles.regimeHero}>
-      <View style={styles.regimeHeader}>
-        <View style={styles.regimeTitleBlock}>
-          <Text style={styles.heroKicker}>Market Regime</Text>
-          <Text style={styles.regimeTitle}>{status}</Text>
-          <Text style={styles.regimeScore}>
-            Health Score · {typeof score === 'number' ? `${Math.round(score)} / 100` : 'N/A'}
-          </Text>
-          <Text style={styles.regimeScore}>Conviction · {overview.regime.confidence}</Text>
-        </View>
-        {freshness ? <StatusBadge label={freshness} tone={core?.refreshing ? 'warning' : 'muted'} /> : null}
-      </View>
-      {typeof score === 'number' ? (
-        <ProgressBar showValue={false} tone={getScoreTone(score)} value={score} />
-      ) : null}
-      <Text style={styles.regimeExplanation}>
-        {overview.regime.summary}
-      </Text>
-    </View>
-  );
-}
-
 function MarketSnapshotGrid({ overview }: { overview: MarketOverviewDashboardViewModel }) {
   return (
     <View style={styles.indexPanel}>
@@ -2306,27 +2276,6 @@ function MarketInsightPanel({
   );
 }
 
-function MarketDecisionPostureCard({ overview }: { overview: MarketOverviewDashboardViewModel }) {
-  const posture = overview.decisionPosture;
-  return (
-    <View style={styles.indexPanel}>
-      <View style={styles.sectionHeaderRow}>
-        <View style={styles.summaryTitleBlock}>
-          <Text style={styles.detailSectionTitle}>Decision Posture</Text>
-          <Text style={styles.helperInline}>Confidence · {posture.confidence === null ? 'Unavailable' : `${posture.confidenceLabel ?? 'Mixed'} · ${Math.round(posture.confidence)}/100`}</Text>
-        </View>
-        <StatusBadge label={posture.posture} tone={overviewStatusTone(posture.tone)} />
-      </View>
-      <Text style={styles.bodyText}>{posture.implication}</Text>
-      <View style={styles.macroLeadLagGrid}>
-        <MetricTile label="Prefer" value={posture.prefer ?? 'N/A'} />
-        <MetricTile label="Avoid" value={posture.avoid ?? 'N/A'} />
-        <MetricTile label="Monitor" value={posture.monitor ?? 'N/A'} />
-      </View>
-    </View>
-  );
-}
-
 function KeySignals({ overview }: { overview: MarketOverviewDashboardViewModel }) {
   return (
     <View style={styles.signalCard}>
@@ -2369,21 +2318,6 @@ function overviewToneColor(tone: MarketOverviewTone) {
       return Theme.colors.accent;
     default:
       return Theme.colors.textMuted;
-  }
-}
-
-function overviewStatusTone(tone: MarketOverviewTone): Tone {
-  switch (tone) {
-    case 'positive':
-      return 'success';
-    case 'warning':
-      return 'warning';
-    case 'negative':
-      return 'danger';
-    case 'neutral':
-      return 'info';
-    default:
-      return 'muted';
   }
 }
 
@@ -2444,7 +2378,6 @@ function BreadthDetails({
       <BreadthSnapshotSource market={activeBreadth?.market ?? null} />
       <SectorBreadthCard sectors={activeBreadth?.sectors ?? []} />
       <BreadthTrendCard />
-      <BreadthTakeawayCard dashboard={dashboard} />
     </View>
   );
 }
@@ -2551,26 +2484,16 @@ function BreadthMockScenarioSwitcher({
 
 function BreadthOverviewCard({ dashboard }: { dashboard: BreadthDashboardViewModel }) {
   const { overview, advanceDecline, quality } = dashboard;
-  return (
-    <View style={styles.breadthHeroCard}>
-      <View style={styles.biasHeader}>
-        <View>
-          <Text style={styles.biasLabel}>Breadth Overview</Text>
-          <Text style={styles.breadthHeroStatus}>{overview.status}</Text>
-        </View>
-        <StatusBadge label={quality.confidenceLabel} tone={getBreadthConfidenceTone(quality.confidence)} />
-      </View>
-      <View style={styles.breadthHeroMetrics}>
-        <MiniDecisionMetric label="Composite" value={formatNullableNumber(overview.score)} />
-        <MiniDecisionMetric label="A/D Ratio" value={advanceDecline.ratioDisplay} />
-        <MiniDecisionMetric
-          label="Participation"
-          value={`${formatNullableNumber(advanceDecline.advancing)} advancing · ${formatNullableNumber(advanceDecline.declining)} declining`}
-        />
-      </View>
-      <Text style={styles.biasSummary}>{overview.interpretation}</Text>
-    </View>
-  );
+  const confidence = quality.confidence === 'high' ? 90 : quality.confidence === 'moderate' ? 70 : quality.confidence === 'low' ? 40 : null;
+  return <DecisionSummaryCard summary={decisionSummary({
+    id: 'market.breadth', title: 'Breadth decision summary', currentState: overview.status,
+    whatChanged: overview.interpretation, preferredAction: dashboard.takeaway.conclusion, mainRisk: dashboard.takeaway.risk,
+    invalidation: dashboard.takeaway.confirmation, freshness: quality.sourceLabel, confidence, confidenceLabel: quality.confidenceLabel,
+    evidence: null, availability: overview.state === 'unavailable' ? 'unavailable' : quality.confidence === 'low' ? 'partial' : 'available',
+    contradiction: dashboard.divergence.state === 'mixed' ? dashboard.divergence.explanation : null,
+    whatWouldChange: dashboard.takeaway.monitor,
+    methodology: [`Composite: ${formatNullableNumber(overview.score)}`, `A/D ratio: ${advanceDecline.ratioDisplay}`, `${formatNullableNumber(advanceDecline.advancing)} advancing · ${formatNullableNumber(advanceDecline.declining)} declining`],
+  })} />;
 }
 
 function BreadthProfileCard({ metrics }: { metrics: BreadthProfileMetric[] }) {
@@ -2822,19 +2745,6 @@ function BreadthTrendCard() {
   );
 }
 
-function BreadthTakeawayCard({ dashboard }: { dashboard: BreadthDashboardViewModel }) {
-  const { takeaway } = dashboard;
-  return (
-    <View style={styles.breadthHeroCard}>
-      <View style={styles.sectionHeaderRow}>
-        <Text style={styles.detailSectionTitle}>Key Takeaway</Text>
-        <StatusBadge label={`Risk: ${takeaway.risk}`} tone={getBreadthTone(getRiskLabelTone(takeaway.risk))} />
-      </View>
-      <Text style={styles.biasSummary}>{takeaway.conclusion}</Text>
-    </View>
-  );
-}
-
 function SplitBar({
   leftLabel,
   leftPercent,
@@ -2921,39 +2831,15 @@ function DecisionThemeSnapshotCard({ themeIntelligence }: { themeIntelligence?: 
 
 function DecisionOverviewCard({ dashboard }: { dashboard: DecisionViewModel }) {
   const { posture } = dashboard;
-  return (
-    <View style={styles.decisionHeroCard}>
-      <View style={styles.decisionHeroHeader}>
-        <View style={styles.decisionHeroTitleBlock}>
-          <Text style={styles.biasLabel}>Decision Overview</Text>
-          <Text style={styles.decisionHeroTitle}>{posture.postureLabel}</Text>
-        </View>
-        {posture.riskBadgeLabel ? <StatusBadge label={posture.riskBadgeLabel} tone={getDecisionTone(posture.tone)} /> : null}
-      </View>
-      <Text style={styles.biasSummary}>{posture.actionFramework}</Text>
-      <View style={styles.decisionMetricRow}>
-        <MiniDecisionMetric label="Confidence" value={formatNullablePercent(posture.confidence)} />
-        <MiniDecisionMetric label="Exposure Stance" value={formatNullableNumber(posture.aggressivenessScore)} />
-        <MiniDecisionMetric label="Risk" value={`${formatNullableNumber(posture.riskScore)} / 100`} />
-      </View>
-      <View style={styles.decisionFieldGrid}>
-        {posture.focus && !dashboard.leadershipFocus.length ? <DecisionField label="Focus" value={posture.focus} /> : null}
-        {posture.prefer ? <DecisionField label="Prefer" value={posture.prefer} /> : null}
-        {posture.mainRisk ? <DecisionField label="Avoid" value={posture.mainRisk} tone="warning" /> : null}
-        {posture.monitor ? <DecisionField label="Monitor" value={posture.monitor} tone="warning" /> : null}
-      </View>
-      {dashboard.leadershipFocus.length ? (
-        <View style={styles.decisionChipsRow}>
-          {dashboard.leadershipFocus.map((item) => (
-            <View key={item} style={styles.decisionChip}>
-              <Text style={styles.decisionChipText}>{item}</Text>
-            </View>
-          ))}
-        </View>
-      ) : null}
-      <CompactDisclosure title="Why this playbook?" items={posture.why} />
-    </View>
-  );
+  return <DecisionSummaryCard summary={decisionSummary({
+    id: 'market.decision', title: 'Decision summary', currentState: posture.postureLabel,
+    whatChanged: dashboard.changes.implication, preferredAction: posture.actionFramework, mainRisk: posture.mainRisk,
+    invalidation: dashboard.scenarios.invalidation, freshness: dashboard.sentiment.updatedLabel ?? dashboard.sentiment.sourceLabel,
+    confidence: posture.confidence, confidenceLabel: posture.confidenceLabel ?? 'Confidence unavailable', evidence: null,
+    availability: posture.posture === 'unavailable' ? 'unavailable' : posture.confidence === null ? 'partial' : 'available',
+    contradiction: dashboard.checklist.fail > 0 && dashboard.checklist.pass > 0 ? dashboard.checklist.summary : null,
+    whatWouldChange: posture.monitor, methodology: posture.why,
+  })} />;
 }
 
 function DecisionField({ label, tone = 'default', value }: { label: string; tone?: 'default' | 'warning'; value: string }) {
@@ -3189,53 +3075,29 @@ function InstitutionsDashboardDetails({
     );
   }
 
+  const directEvidenceLimitations = dashboard.evidence.classes.filter(
+    (item) => item.id !== 'price_volume' && item.availability !== 'available',
+  );
+
   return (
     <View style={styles.sectionStack}>
-      <InstitutionalOverviewCard dashboard={dashboard} />
+      <DecisionSummaryCard summary={dashboard.decisionSummary} />
       <InstitutionalBiasCard data={dashboard.bias} />
       <InstitutionalActivityChartCard followThroughDay={institutionalActivity?.bias?.follow_through_day ?? null} />
-      <InstitutionalMoneyFlowCard data={dashboard.moneyFlow} />
-      <InstitutionalLargePrintsCard data={dashboard.largePrints} />
-      <OptionsPositioningCard data={dashboard.options} />
-      <InstitutionalLiquidityCard data={dashboard.liquidity} />
       <AccumulationDistributionCard data={dashboard.accumulationDistribution} />
       <FollowThroughDayCard data={dashboard.followThroughDay} />
+      {dashboard.evidence.classes.find((item) => item.id === 'money_flow')?.availability === 'available' ? <InstitutionalMoneyFlowCard data={dashboard.moneyFlow} /> : null}
+      {dashboard.evidence.classes.find((item) => item.id === 'large_prints')?.availability === 'available' ? <InstitutionalLargePrintsCard data={dashboard.largePrints} /> : null}
+      {dashboard.evidence.classes.find((item) => item.id === 'options')?.availability === 'available' ? <OptionsPositioningCard data={dashboard.options} /> : null}
+      {dashboard.evidence.classes.find((item) => item.id === 'liquidity')?.availability === 'available' ? <InstitutionalLiquidityCard data={dashboard.liquidity} /> : null}
+      {directEvidenceLimitations.length ? (
+        <CompactDisclosure
+          title="Unavailable direct evidence"
+          items={directEvidenceLimitations.map((item) => `${item.label}: direct confirmation unavailable${item.conclusion ? '; proxy inference is available' : ''}.`)}
+        />
+      ) : null}
       <SmartMoneyTrendCard data={dashboard.trend} />
       <InstitutionalDataQualityCard data={dashboard.dataQuality} />
-    </View>
-  );
-}
-
-function InstitutionalOverviewCard({ dashboard }: { dashboard: InstitutionalDashboardViewModel }) {
-  const { overview } = dashboard;
-  return (
-    <View style={styles.decisionHeroCard}>
-      <View style={styles.decisionHeroHeader}>
-        <View style={styles.decisionHeroTitleBlock}>
-          <Text style={styles.biasLabel}>Institutional Overview</Text>
-          <Text style={styles.decisionHeroTitle}>{overview.bias}</Text>
-          <Text style={styles.helperInline}>{overview.subtitle}</Text>
-        </View>
-        <View style={styles.institutionalBadgeColumn}>
-          <StatusBadge label={formatInstitutionalConfidence(overview.confidence)} tone={getInstitutionalConfidenceTone(overview.confidence)} />
-          <StatusBadge label={formatInstitutionalSource(overview.source)} tone={getInstitutionalSourceTone(overview.source)} />
-        </View>
-      </View>
-      <Text style={styles.biasSummary}>{overview.summary}</Text>
-      <View style={styles.decisionMetricRow}>
-        <MiniDecisionMetric label="Directional Bias" value={formatNullableNumber(overview.directionalBiasScore)} />
-        <MiniDecisionMetric label="Signal Quality" value={formatInstitutionalConfidence(overview.confidence)} />
-      </View>
-      <View style={styles.healthComponentList}>
-        {overview.supportMetrics.map((metric) => (
-          <InstitutionalProgressMetric
-            key={metric.label}
-            label={metric.label}
-            tone={metric.tone}
-            value={metric.value}
-          />
-        ))}
-      </View>
     </View>
   );
 }
@@ -3245,7 +3107,7 @@ function InstitutionalBiasCard({ data }: { data: InstitutionalDashboardViewModel
     <View style={styles.decisionPanel}>
       <View style={styles.sectionHeaderRow}>
         <View>
-          <Text style={styles.detailSectionTitle}>Institutional Bias</Text>
+          <Text style={styles.detailSectionTitle}>Price-Volume Evidence</Text>
           <Text style={styles.helperInline}>{data.followThrough}</Text>
         </View>
         <StatusBadge label={data.bias} tone={getInstitutionalTone(data.tone)} />
@@ -3566,11 +3428,7 @@ function MarketHealthDetails({
 
   return (
     <View style={styles.sectionStack}>
-      <HealthOverviewCard
-        components={components}
-        direction={direction}
-        marketHealth={marketHealth}
-      />
+      <DecisionSummaryCard summary={buildHealthDecisionSummary(components, direction, marketHealth)} />
       <HealthBreakdownChart components={components} radarData={radarData} />
       <HealthComponentGrid components={components} />
       <HealthTrendCard
@@ -3580,7 +3438,6 @@ function MarketHealthDetails({
       />
       <HealthDriversCard drivers={drivers} />
       <ScoreContributionCard contributions={contributions} total={Math.round(marketHealth.overall_score)} />
-      <DecisionLayerCard components={components} marketHealth={marketHealth} />
     </View>
   );
 }
@@ -3594,53 +3451,30 @@ function SectionTitle({ subtitle, title }: { subtitle?: string; title: string })
   );
 }
 
-function HealthOverviewCard({
-  components,
-  direction,
-  marketHealth,
-}: {
-  components: HealthComponentViewModel[];
-  direction: HealthDirection;
-  marketHealth: MarketHealthResponse;
-}) {
-  const confidence = marketHealth.decision_confidence;
-  const dataMode = marketHealth.data_quality?.overall_mode;
-  const sourceLabel = getHealthSourceBadgeLabel(dataMode);
-  return (
-    <View style={styles.healthDashboardSection}>
-      <SectionTitle title="Health Overview" />
-      <View style={styles.healthOverviewCard}>
-        <View style={styles.healthOverviewTop}>
-          <View style={styles.healthScoreBlock}>
-            <Text style={styles.healthScoreValue}>{formatHealthScore(marketHealth.overall_score)}</Text>
-            <Text style={styles.healthScoreCaption}>Market Health</Text>
-          </View>
-          <View style={styles.healthStatusStack}>
-            <StatusBadge label={marketHealth.status} tone={getHealthTone(marketHealth.status)} />
-            {direction === 'unavailable' ? (
-              <StatusBadge label={getHealthHistoryBadgeLabel('unavailable')} tone="muted" />
-            ) : (
-              <StatusBadge label={formatHealthDirection(direction)} tone={getDirectionTone(direction)} />
-            )}
-            {sourceLabel ? <StatusBadge label={sourceLabel} tone={getSourceTone({ overall_mode: dataMode })} /> : null}
-          </View>
-        </View>
-        <Text style={styles.healthOverviewSummary}>
-          {buildHealthOverviewSummary(components, marketHealth)}
-        </Text>
-        <View style={styles.healthOverviewMeta}>
-          <MiniDecisionMetric
-            label="Decision confidence"
-            value={confidence ? `${confidence.score} · ${confidence.status}` : 'Unavailable'}
-          />
-          <MiniDecisionMetric
-            label="Component profile"
-            value={summarizeComponentProfile(components)}
-          />
-        </View>
-      </View>
-    </View>
-  );
+function buildHealthDecisionSummary(
+  components: HealthComponentViewModel[],
+  direction: HealthDirection,
+  marketHealth: MarketHealthResponse,
+) {
+  const summary = buildDecisionLayerSummary(marketHealth.decision_confidence, components, marketHealth);
+  const sourceLabel = getHealthSourceBadgeLabel(marketHealth.data_quality?.overall_mode);
+  return decisionSummary({
+    id: 'market.health',
+    title: 'Market health decision summary',
+    currentState: `${marketHealth.status} · ${formatHealthScore(marketHealth.overall_score)}/100`,
+    whatChanged: direction === 'unavailable' ? null : formatHealthDirection(direction),
+    preferredAction: summary.implication,
+    mainRisk: summary.monitor,
+    invalidation: null,
+    freshness: sourceLabel ?? 'Last update unavailable',
+    confidence: marketHealth.decision_confidence?.score ?? null,
+    confidenceLabel: marketHealth.decision_confidence?.status ?? 'Confidence unavailable',
+    evidence: null,
+    availability: marketHealth.overall_score === null || marketHealth.overall_score === undefined ? 'partial' : 'available',
+    contradiction: null,
+    whatWouldChange: summary.monitor,
+    methodology: [`Supports: ${summary.supports}`, `Component profile: ${summarizeComponentProfile(components)}`],
+  });
 }
 
 function HealthBreakdownChart({
@@ -4068,40 +3902,6 @@ function ScoreContributionCard({
   );
 }
 
-function DecisionLayerCard({
-  components,
-  marketHealth,
-}: {
-  components: HealthComponentViewModel[];
-  marketHealth: MarketHealthResponse;
-}) {
-  const summary = buildDecisionLayerSummary(marketHealth.decision_confidence, components, marketHealth);
-  return (
-    <View style={styles.healthDashboardSection}>
-      <SectionTitle title="Decision Layer" />
-      <View style={styles.healthDecisionCard}>
-        <View style={styles.healthDecisionHeader}>
-          <View>
-            <Text style={styles.healthDecisionLabel}>Market posture</Text>
-            <Text style={styles.healthDecisionStance}>{summary.stance}</Text>
-          </View>
-          {marketHealth.decision_confidence ? (
-            <HealthScorePill
-              score={marketHealth.decision_confidence.score}
-              tone={classifyHealthScore(marketHealth.decision_confidence.score).tone}
-            />
-          ) : null}
-        </View>
-        <Text style={styles.healthOverviewSummary}>{summary.implication}</Text>
-        <View style={styles.healthOverviewMeta}>
-          <MiniDecisionMetric label="Supports" value={summary.supports} />
-          <MiniDecisionMetric label="Monitor" value={summary.monitor} />
-        </View>
-      </View>
-    </View>
-  );
-}
-
 function HealthScorePill({
   score,
   tone,
@@ -4231,21 +4031,6 @@ function healthDriverDotStyle(tone: HealthDriver['tone']) {
   }
 }
 
-function getHealthTone(status?: string): Tone {
-  switch (status) {
-    case 'Very Healthy':
-    case 'Healthy':
-      return 'success';
-    case 'Mixed':
-      return 'warning';
-    case 'Weak':
-    case 'Risk-Off':
-      return 'danger';
-    default:
-      return 'muted';
-  }
-}
-
 function getScoreTone(score: number): Tone {
   if (score >= 85) {
     return 'success';
@@ -4298,35 +4083,6 @@ function getInstitutionalTone(tone: InstitutionalTone): Tone {
   }
 }
 
-function getInstitutionalConfidenceTone(confidence: InstitutionalDashboardViewModel['overview']['confidence']): Tone {
-  switch (confidence) {
-    case 'high':
-      return 'success';
-    case 'moderate':
-      return 'warning';
-    case 'low':
-      return 'danger';
-    default:
-      return 'muted';
-  }
-}
-
-function getInstitutionalSourceTone(source: InstitutionalDashboardViewModel['overview']['source']): Tone {
-  switch (source) {
-    case 'live':
-      return 'success';
-    case 'cached':
-    case 'mixed':
-      return 'info';
-    case 'mock':
-    case 'proxy':
-    case 'fallback':
-      return 'warning';
-    default:
-      return 'muted';
-  }
-}
-
 function institutionalFillStyle(tone: InstitutionalTone) {
   switch (tone) {
     case 'positive':
@@ -4353,25 +4109,6 @@ function formatInstitutionalConfidence(confidence: InstitutionalDashboardViewMod
   }
 }
 
-function formatInstitutionalSource(source: InstitutionalDashboardViewModel['overview']['source']) {
-  switch (source) {
-    case 'live':
-      return 'Live';
-    case 'cached':
-      return 'Cached';
-    case 'mock':
-      return 'Mock Data';
-    case 'proxy':
-      return 'Proxy';
-    case 'fallback':
-      return 'Fallback';
-    case 'mixed':
-      return 'Mixed Sources';
-    default:
-      return 'Unavailable';
-  }
-}
-
 function getConcentrationTone(state: string): Tone {
   switch (state) {
     case 'broad_participation':
@@ -4382,19 +4119,6 @@ function getConcentrationTone(state: string): Tone {
       return 'warning';
     case 'mega_cap_concentration':
       return 'purple';
-    default:
-      return 'muted';
-  }
-}
-
-function getBreadthConfidenceTone(confidence: 'high' | 'moderate' | 'low' | 'unavailable'): Tone {
-  switch (confidence) {
-    case 'high':
-      return 'success';
-    case 'moderate':
-      return 'warning';
-    case 'low':
-      return 'danger';
     default:
       return 'muted';
   }
@@ -4411,17 +4135,6 @@ function toneForNumericScore(score: number): BreadthSignalTone {
     return 'neutral';
   }
   return 'negative';
-}
-
-function getRiskLabelTone(label: string): BreadthSignalTone {
-  const normalized = label.toLowerCase();
-  if (normalized.includes('elevated') || normalized.includes('high')) {
-    return 'warning';
-  }
-  if (normalized.includes('low') || normalized.includes('stable')) {
-    return 'positive';
-  }
-  return 'neutral';
 }
 
 function breadthFillStyle(tone: BreadthSignalTone) {

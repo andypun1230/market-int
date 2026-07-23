@@ -66,7 +66,6 @@ const ABOUT: MoreRow[] = [
 ];
 
 const COMING_NEXT = [
-  { status: 'In Development', title: 'Live market data', tone: 'info' as Tone },
   { status: 'Planned', title: 'Push alerts', tone: 'muted' as Tone },
   { status: 'Planned', title: 'User accounts', tone: 'muted' as Tone },
   { status: 'Later', title: 'Premium subscription', tone: 'purple' as Tone },

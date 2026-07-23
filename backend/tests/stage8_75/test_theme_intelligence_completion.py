@@ -5,8 +5,9 @@ import os
 import tempfile
 import unittest
 from dataclasses import replace
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -38,6 +39,15 @@ def series(rate: float, days: int = 260, start: float = 100.0) -> list[float]:
     for _ in range(days - 1):
         values.append(values[-1] * (1 + rate))
     return values
+
+
+def frozen_datetime(now: datetime) -> type[datetime]:
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return now.replace(tzinfo=None) if tz is None else now.astimezone(tz)
+
+    return FrozenDateTime
 
 
 class EmptySnapshots:
@@ -143,6 +153,13 @@ class ThemeAnalyticsTests(unittest.TestCase):
     def histories(self, rate: float = 0.001) -> dict[str, list[float]]:
         return {symbol: series(rate + index * 0.00002) for index, symbol in enumerate(self.symbols)}
 
+    def optional_benchmark_result(self, now: datetime) -> dict:
+        with patch("app.analysis_engines.freshness.engine.datetime", frozen_datetime(now)):
+            return self.engine.compute(
+                self.theme_id, self.histories(), {"SPY": self.benchmarks["SPY"], "XLK": series(0.0001)},
+                as_of="2026-07-22", source_state="live", required_benchmark_symbols=("SPY", "XLK"),
+            )
+
     def test_broad_leading_theme(self) -> None:
         result = self.engine.compute(self.theme_id, self.histories(), self.benchmarks, as_of="2026-07-22", source_state="live")
         self.assertEqual(result["status"], "available")
@@ -170,12 +187,19 @@ class ThemeAnalyticsTests(unittest.TestCase):
         self.assertTrue(any(item["dimension"] == "benchmarks" for item in result["missing_data"]))
 
     def test_optional_benchmark_is_disclosed_without_weakening_required_gate(self) -> None:
-        result = self.engine.compute(
-            self.theme_id, self.histories(), {"SPY": self.benchmarks["SPY"], "XLK": series(0.0001)},
-            as_of="2026-07-22", source_state="live", required_benchmark_symbols=("SPY", "XLK"),
-        )
+        result = self.optional_benchmark_result(datetime(2026, 7, 22, 12, tzinfo=timezone.utc))
         self.assertEqual(result["confidence"]["label"], "moderate")
         self.assertTrue(any(item["dimension"] == "optional_benchmarks" and item["symbols"] == ["QQQ", "CIBR"] for item in result["missing_data"]))
+
+    def test_optional_benchmark_confidence_preserves_freshness_boundary(self) -> None:
+        fixture_time = datetime(2026, 7, 22, tzinfo=timezone.utc)
+        at_boundary = self.optional_benchmark_result(fixture_time + timedelta(seconds=129_600))
+        beyond_boundary = self.optional_benchmark_result(fixture_time + timedelta(seconds=129_601))
+
+        self.assertEqual(at_boundary["freshness"]["state"], "live")
+        self.assertEqual(at_boundary["confidence"]["label"], "moderate")
+        self.assertEqual(beyond_boundary["freshness"]["state"], "stale")
+        self.assertEqual(beyond_boundary["confidence"]["label"], "limited")
 
     def test_missing_history_is_partial_or_unavailable(self) -> None:
         histories = {symbol: series(0.001, days=10) for symbol in self.symbols[:3]}

@@ -110,13 +110,13 @@ function run() {
     stock({ change: 1, dataStatus: 'partial', group: 'watching', score: 30, signal: 'partial', ticker: 'PART' }),
   ];
 
-  assert(tickers(filterAndSortStocks(stocks, preferences('priority'))) === 'LOSS,MOM,PART,GAIN,STALE', 'priority keeps decision order and uses deterministic score/ticker fallbacks');
+  assert(tickers(filterAndSortStocks(stocks, preferences('priority'))) === 'MOM,LOSS,PART,GAIN,STALE', 'priority keeps trading groups separate and uses deterministic score/ticker fallbacks');
   assert(tickers(filterAndSortStocks(stocks, preferences('biggest_gain'))) === 'GAIN,PART,MOM,LOSS,STALE', 'biggest gain sorts descending and puts unknown values last');
   assert(tickers(filterAndSortStocks(stocks, preferences('biggest_loss'))) === 'LOSS,MOM,PART,GAIN,STALE', 'biggest loss sorts ascending and puts unknown values last');
   assert(tickers(filterAndSortStocks(stocks, preferences('alphabetical'))) === 'GAIN,LOSS,MOM,PART,STALE', 'alphabetical sorts ticker A-Z');
-  assert(tickers(filterAndSortStocks(stocks, preferences('priority', ['decision_action']))) === 'LOSS', 'single decision filter works');
-  assert(tickers(filterAndSortStocks(stocks, preferences('priority', ['decision_action', 'decision_watching']))) === 'LOSS,MOM,PART', 'same-dimension decision filters use OR');
-  assert(tickers(filterAndSortStocks(stocks, preferences('priority', ['decision_action', 'risk_high']))) === 'LOSS', 'different dimensions use AND');
+  assert(tickers(filterAndSortStocks(stocks, preferences('priority', ['decision_action']))) === '', 'Action Now excludes weakening and maintenance-only items');
+  assert(tickers(filterAndSortStocks(stocks, preferences('priority', ['decision_action', 'decision_watching']))) === 'MOM,LOSS', 'same-dimension trading filters use OR');
+  assert(tickers(filterAndSortStocks(stocks, preferences('priority', ['decision_action', 'risk_high']))) === '', 'different dimensions use AND');
   assert(tickers(filterAndSortStocks(stocks, preferences('priority', ['data_stale']))) === 'STALE', 'stale data remains explicitly filterable');
   assert(tickers(filterAndSortStocks(stocks, preferences('priority', ['setup_partial']))) === 'PART', 'partial analysis remains explicitly filterable');
   assert(filterAndSortStocks(stocks, preferences('priority', ['decision_stable', 'risk_high'])).length === 0, 'no-match filters return an honest empty result');

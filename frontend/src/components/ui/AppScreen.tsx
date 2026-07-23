@@ -6,6 +6,7 @@ import { AccessibilityInfo, Animated, Pressable, SafeAreaView, ScrollView, Style
 import type { RefreshControlProps, StyleProp, ViewStyle } from 'react-native';
 
 import { Spacing, Theme } from '@/constants/theme';
+import { DataStateSummary } from '@/components/ui/DataStateSummary';
 import { UniversalCommandHeader } from '@/features/command/components/UniversalCommandHeader';
 import type { CopilotContext } from '@/features/copilot/types';
 import { useAppPreferences } from '@/features/preferences/appPreferences';
@@ -41,6 +42,8 @@ export function AppScreen({
   const { commandTarget } = useLocalSearchParams<{ commandTarget?: string | string[] }>();
   const target = Array.isArray(commandTarget) ? commandTarget[0] : commandTarget;
   const isPrimaryTab = ['/', '/market', '/sectors', '/watchlist', '/more'].includes(pathname);
+  const showsDataState = ['/', '/market', '/sectors', '/watchlist', '/more', '/report', '/ai', '/settings', '/about', '/data-sources'].includes(pathname);
+  const diagnosticDataState = ['/settings', '/about', '/data-sources'].includes(pathname);
   const [collapsed, setCollapsed] = useState(!isPrimaryTab);
   const [systemReduceMotion, setSystemReduceMotion] = useState(false);
   const reduceMotion = systemReduceMotion || preferences.appearance.reduceMotion;
@@ -118,9 +121,10 @@ export function AppScreen({
         },
       ]}>
       {pageHeader}
+      {showsDataState ? <DataStateSummary diagnostic={diagnosticDataState} /> : null}
       {children}
     </Animated.View>
-  ) : <>{pageHeader}{children}</>;
+  ) : <>{pageHeader}{showsDataState ? <DataStateSummary diagnostic={diagnosticDataState} /> : null}{children}</>;
 
   return (
     <SafeAreaView style={styles.container}>

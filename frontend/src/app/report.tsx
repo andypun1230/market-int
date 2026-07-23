@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { AppScreen } from '@/components/ui/AppScreen';
 import { DetailModal } from '@/components/ui/DetailModal';
+import { DecisionSummaryCard } from '@/components/ui/DecisionSummaryCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { Spacing, Theme } from '@/constants/theme';
@@ -13,6 +14,7 @@ import { ReportHistorySection } from '@/features/reports/components/ReportHistor
 import { ReportLandingCard } from '@/features/reports/components/ReportLandingCard';
 import { compareReportRecords, type DailyReportRecord } from '@/features/reports/reportLibraryModel';
 import { useDailyReportLibrary } from '@/features/reports/useDailyReportLibrary';
+import { decisionSummary } from '@/features/trust/decisionSummary';
 
 export default function ReportScreen() {
   const {
@@ -82,6 +84,9 @@ export default function ReportScreen() {
       showBackButton
       title="Daily Market Intelligence"
       subtitle="A decision-ready briefing built from market structure, leadership, risk, and your watchlist.">
+      {latestRecord?.snapshot?.report_document ? (
+        <DecisionSummaryCard summary={buildReportDecisionSummary(latestRecord)} />
+      ) : null}
       <ReportLandingCard
         generationMessage={generationMessage}
         isGenerating={workingId === 'generate'}
@@ -128,6 +133,22 @@ export default function ReportScreen() {
       </DetailModal>
     </AppScreen>
   );
+}
+
+function buildReportDecisionSummary(record: DailyReportRecord) {
+  const thesis = record.snapshot!.report_document!.thesis;
+  const completeness = thesis.data_completeness <= 1 ? thesis.data_completeness * 100 : thesis.data_completeness;
+  const sourceState = record.metadata.sourceState;
+  return decisionSummary({
+    id: `report.${record.id}`, title: 'Report decision summary', currentState: thesis.posture,
+    whatChanged: thesis.thesis_change, preferredAction: thesis.concise_thesis, mainRisk: thesis.invalidation_conditions[0] ?? null,
+    invalidation: thesis.invalidation_conditions.join(' · ') || null,
+    freshness: record.metadata.sourceUpdatedAt ? `Updated ${record.metadata.sourceUpdatedAt}` : `Generated ${record.metadata.generatedAt}`,
+    confidence: completeness, confidenceLabel: thesis.confidence_label, evidence: null,
+    availability: sourceState === 'live' ? 'live' : sourceState === 'cached' ? 'live_cached' : sourceState === 'stale' ? 'stale' : sourceState === 'mock' ? 'test' : sourceState === 'unavailable' ? 'unavailable' : 'partial',
+    contradiction: null, whatWouldChange: thesis.confirmation_conditions[0] ?? null,
+    methodology: [`Report ${record.id}`, `${Math.round(completeness)}% data completeness`],
+  });
 }
 
 function firstParam(value: string | string[] | undefined) {

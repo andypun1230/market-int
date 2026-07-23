@@ -143,9 +143,11 @@ export function MaterialEventsCard({
 
 export function WatchlistCatalystsCard({
   enabled,
+  scopeExplanation,
   symbols,
 }: {
   enabled: boolean;
+  scopeExplanation?: string;
   symbols: string[];
 }) {
   const limitation = watchlistBatchLimitation(symbols);
@@ -169,7 +171,7 @@ export function WatchlistCatalystsCard({
       maxItems={5}
       model={state.data}
       scoreKind="user"
-      subtitle={watchlistSavedSymbolsLabel(symbols.length)}
+      subtitle={scopeExplanation ?? watchlistSavedSymbolsLabel(symbols.length)}
       title="Watchlist Catalysts"
     />
   );

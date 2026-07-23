@@ -60,9 +60,9 @@ export const STOCK_SORT_OPTIONS: ListControlOption[] = [
 ];
 
 export const STOCK_FILTER_OPTIONS: ListControlOption[] = [
-  { dimension: 'decision', key: 'decision_action', label: 'Action Required' },
-  { dimension: 'decision', key: 'decision_watching', label: 'Watching Closely' },
-  { dimension: 'decision', key: 'decision_stable', label: 'Stable / Waiting' },
+  { dimension: 'decision', key: 'decision_action', label: 'Action Now' },
+  { dimension: 'decision', key: 'decision_watching', label: 'Improving / Weakening' },
+  { dimension: 'decision', key: 'decision_stable', label: 'Monitor' },
   { dimension: 'setup', key: 'setup_strong', label: 'Strong Setup' },
   { dimension: 'setup', key: 'setup_confirmation', label: 'Needs Confirmation' },
   { dimension: 'setup', key: 'setup_weak', label: 'Weak / Broken Setup' },
@@ -179,9 +179,9 @@ function stockMatchesFilter(item: ClassifiedWatchlistItem, filter: string) {
   const risk = (item.item.risk_flag ?? '').toLowerCase();
   const dataStatus = normalizeDataStatus(item.classification.dataStatus);
   switch (filter) {
-    case 'decision_action': return decision === 'action_required';
-    case 'decision_watching': return decision === 'watching_closely';
-    case 'decision_stable': return decision === 'stable_waiting';
+    case 'decision_action': return decision === 'action_now';
+    case 'decision_watching': return decision === 'improving' || decision === 'weakening';
+    case 'decision_stable': return decision === 'monitor';
     case 'setup_strong': return item.classification.group === 'high_priority' || item.classification.group === 'momentum' || /strong|bullish|breakout/.test(setup);
     case 'setup_confirmation': return signal === 'near_breakout' || /confirm|watching|waiting/.test(setup);
     case 'setup_weak': return item.classification.group === 'needs_attention' || /weak|broken|below support|bearish/.test(setup);
@@ -223,7 +223,7 @@ function stateMatches(classification: string | null | undefined, filter: string)
 function compareStocks(a: ClassifiedWatchlistItem, b: ClassifiedWatchlistItem, sort: StockListSort) {
   let comparison = 0;
   if (sort === 'priority') {
-    const order = { action_required: 0, watching_closely: 1, stable_waiting: 2 };
+    const order = { action_now: 0, improving: 1, weakening: 2, monitor: 3 };
     comparison = order[getWatchlistDecisionGroup(a)] - order[getWatchlistDecisionGroup(b)]
       || compareNumberDesc(a.classification.score, b.classification.score);
   } else if (sort === 'opportunity') {

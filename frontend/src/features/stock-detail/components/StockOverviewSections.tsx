@@ -2,15 +2,12 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { DecisionSummaryCard } from '@/components/ui/DecisionSummaryCard';
 import { DetailGrid, InfoTile } from '@/components/watchlist/WatchlistPrimitives';
 import { Spacing, Theme } from '@/constants/theme';
-import {
-  getRiskTone,
-  stockToneColor,
-  stockToneToBadgeTone,
-} from '@/features/stock-detail/stockDetailSemanticColors';
+import { stockToneColor } from '@/features/stock-detail/stockDetailSemanticColors';
 import type { StockDetailOverviewModel, StockDetailTone } from '@/features/stock-detail/stockDetailPresenter';
+import { decisionSummary } from '@/features/trust/decisionSummary';
 
 export function StockOverviewSections({ model }: { model: StockDetailOverviewModel }) {
   const [metricsOpen, setMetricsOpen] = useState(false);
@@ -18,32 +15,14 @@ export function StockOverviewSections({ model }: { model: StockDetailOverviewMod
 
   return (
     <View style={styles.sections}>
-      <SectionSurface accentColor={stockToneColor(model.assessmentTone)}>
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Decision Dashboard</Text>
-          <Text style={styles.sourceLabel}>{summarySourceLabel(model.executiveSummary.source)}</Text>
-        </View>
-        <View style={styles.assessmentTop}>
-          <View style={styles.assessmentStatusBlock}>
-            <Text style={styles.assessmentStage}>Overall rating</Text>
-            <Text style={[styles.assessmentStatus, { color: stockToneColor(model.assessmentTone) }]}>{model.rating}</Text>
-          </View>
-          <View style={styles.scoreBlock}>
-            <Text style={styles.scoreValue}>{formatScore(model.overallScore)}</Text>
-            <Text style={styles.scoreLabel}>/ 100</Text>
-          </View>
-        </View>
-        <ScoreMeter score={model.overallScore} tone={model.assessmentTone} />
-        <View style={styles.badgeRow}>
-          <StatusBadge label={model.assessmentLabel} tone={stockToneToBadgeTone(model.assessmentTone)} />
-          <StatusBadge label={`${model.riskLevel} risk`} tone={stockToneToBadgeTone(getRiskTone(model.riskLevel))} />
-        </View>
-        <Text style={styles.summaryBody}>{shortenText(model.executiveSummary.body, 30)}</Text>
-        <View style={styles.takeawayGrid}>
-          <TakeawayColumn title="Strengths" items={model.strengths} tone="success" />
-          <TakeawayColumn title="Risks" items={model.risks} tone="warning" />
-        </View>
-      </SectionSurface>
+      <DecisionSummaryCard summary={decisionSummary({
+        id: `stock.${model.symbol}`, title: `${model.symbol} decision summary`, currentState: `${model.rating} · ${model.assessmentLabel}`,
+        whatChanged: shortenText(model.executiveSummary.body, 30), preferredAction: model.tradePlan.trend,
+        mainRisk: model.risks[0] ?? `${model.riskLevel} risk`, invalidation: model.tradePlan.stop === 'N/A' ? null : `Stop reference ${model.tradePlan.stop}`,
+        freshness: model.quote.timestamp ? `Updated ${model.quote.timestamp}` : model.sourceLabel, confidence: null, confidenceLabel: 'Signal confidence by evidence',
+        evidence: null, availability: model.overallScore === null ? 'partial' : 'available', contradiction: null,
+        whatWouldChange: model.watchItems[0]?.value ?? null, methodology: [model.methodology, ...model.strengths.slice(0, 3)],
+      })} />
 
       <SectionSurface>
         <Text style={styles.sectionTitle}>Trade Plan</Text>
@@ -141,49 +120,6 @@ function SectionSurface({
   );
 }
 
-function ScoreMeter({ score, tone }: { score: number | null; tone: StockDetailTone }) {
-  const clamped = Math.max(0, Math.min(score ?? 0, 100));
-  return (
-    <View accessibilityLabel={score == null ? 'Score unavailable' : `Score ${Math.round(score)} out of 100`} style={styles.scoreMeterTrack}>
-      {score == null ? null : (
-        <View
-          style={[
-            styles.scoreMeterFill,
-            {
-              backgroundColor: stockToneColor(tone),
-              width: `${clamped}%`,
-            },
-          ]}
-        />
-      )}
-    </View>
-  );
-}
-
-function TakeawayColumn({
-  items,
-  title,
-  tone,
-}: {
-  items: string[];
-  title: string;
-  tone: StockDetailTone;
-}) {
-  return (
-    <View style={styles.takeawayColumn}>
-      <Text style={[styles.takeawayTitle, { color: stockToneColor(tone) }]}>{title}</Text>
-      {items.slice(0, 4).map((item) => (
-        <View key={item} style={styles.takeawayRow}>
-          <Text style={[styles.takeawayIcon, { color: stockToneColor(tone) }]}>
-            {tone === 'success' ? '✓' : '⚠'}
-          </Text>
-          <Text style={styles.takeawayText}>{shortenText(item, 14)}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
-
 function AccordionRow({
   expanded,
   label,
@@ -204,16 +140,6 @@ function AccordionRow({
       <Text style={styles.accordionIcon}>{expanded ? '⌄' : '›'}</Text>
     </Pressable>
   );
-}
-
-function summarySourceLabel(source: StockDetailOverviewModel['executiveSummary']['source']): string {
-  if (source === 'backend') {
-    return 'Engine summary';
-  }
-  if (source === 'rule_based') {
-    return 'Rule-based';
-  }
-  return 'Unavailable';
 }
 
 function formatScore(value?: number | null): string {

@@ -23,7 +23,7 @@ export function CanonicalBreadthHistoryPanel({ entityId, entityType }: { entityI
 
   return (
     <View style={styles.stack}>
-      <DashboardCard title="Breadth History" subtitle="Published immutable snapshots only; missing measures remain N/A." accentColor={Theme.colors.accent}>
+      <DashboardCard title="Breadth History" subtitle="Published observations only; missing measures remain N/A." accentColor={Theme.colors.accent}>
         <View accessibilityLabel="Breadth history timeframe" style={styles.options}>
           {TIMEFRAMES.map((value) => (
             <Pressable
@@ -36,9 +36,7 @@ export function CanonicalBreadthHistoryPanel({ entityId, entityType }: { entityI
             </Pressable>
           ))}
         </View>
-        {history.loading && !history.data ? <Text style={styles.note}>Loading canonical history…</Text> : null}
-        {history.error ? <Text style={styles.note}>Breadth history failed: {history.error}</Text> : null}
-        {history.data ? (
+        {history.loading && !history.data ? <Text style={styles.note}>Loading breadth history…</Text> : history.data ? (
           <View style={styles.stack}>
             <View style={styles.badges}>
               <StatusBadge label={history.data.status} tone={history.data.status === "available" ? "success" : history.data.status === "partial" ? "warning" : "muted"} />
@@ -54,7 +52,7 @@ export function CanonicalBreadthHistoryPanel({ entityId, entityType }: { entityI
               </View>
             ) : <Text style={styles.note}>No published breadth observations exist for this entity and timeframe.</Text>}
             <View style={styles.interpretation}>
-              <Text style={styles.heading}>Authoritative interpretation</Text>
+              <Text style={styles.heading}>Current interpretation</Text>
               <Text style={styles.body}>{history.data.interpretation.conclusion}</Text>
               <ConfidenceIndicator
                 confidence={confidenceScore(history.data.interpretation.confidence)}
@@ -65,13 +63,11 @@ export function CanonicalBreadthHistoryPanel({ entityId, entityType }: { entityI
             </View>
             <Text style={styles.note}>{history.data.limitation}</Text>
           </View>
-        ) : null}
+        ) : history.error ? <Text style={styles.note}>Breadth history failed: {history.error}</Text> : null}
       </DashboardCard>
 
       <DashboardCard title="Divergence Alerts" subtitle="Deterministic price, breadth, rotation, and concentration rules." accentColor={Theme.colors.warning}>
-        {divergences.loading && !divergences.data ? <Text style={styles.note}>Evaluating canonical observations…</Text> : null}
-        {divergences.error ? <Text style={styles.note}>Divergence analysis failed: {divergences.error}</Text> : null}
-        {divergences.data?.items.length ? divergences.data.items.map((alert) => (
+        {divergences.loading && !divergences.data ? <Text style={styles.note}>Evaluating published observations…</Text> : divergences.data?.items.length ? divergences.data.items.map((alert) => (
           <View key={alert.id} style={styles.alert}>
             <View style={styles.badges}>
               <StatusBadge label={alert.direction} tone={alert.direction === "positive" ? "success" : alert.direction === "negative" ? "warning" : "info"} />
@@ -83,7 +79,7 @@ export function CanonicalBreadthHistoryPanel({ entityId, entityType }: { entityI
             <Text style={styles.note}>Confirm: {alert.confirmation}</Text>
             <Text style={styles.note}>Invalidate: {alert.invalidation}</Text>
           </View>
-        )) : divergences.data ? <Text style={styles.note}>No deterministic divergence threshold is currently met.</Text> : null}
+        )) : divergences.data ? <Text style={styles.note}>No deterministic divergence threshold is currently met.</Text> : divergences.error ? <Text style={styles.note}>Divergence analysis failed: {divergences.error}</Text> : null}
       </DashboardCard>
     </View>
   );

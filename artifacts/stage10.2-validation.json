@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "stage": "10.2",
+  "generated_at": "2026-07-23T13:17:48Z",
+  "baseline_commit": "6f35ed671157ae2a4ade64d5da4e6930dc408588",
+  "classification": "PASS",
+  "implementation": {
+    "backend_source_changed": false,
+    "routes_added_removed_or_renamed": false,
+    "financial_models_changed": false,
+    "report_content_or_selection_changed": false,
+    "commit_created": false,
+    "tag_created": false
+  },
+  "baseline": {
+    "backend": {"tests": 631, "passed": 631, "result": "PASS"},
+    "frontend": {"files": 54, "passed": 54, "result": "PASS"},
+    "typescript": "PASS",
+    "lint": "PASS",
+    "data_ui": {"screens": 28, "result": "PASS"},
+    "web_export": {"routes": 25, "result": "PASS"}
+  },
+  "final": {
+    "backend": {
+      "tests": 632,
+      "passed": 632,
+      "failed": 0,
+      "result": "PASS"
+    },
+    "stage8_75_focused": {"tests": 89, "passed": 89, "result": "PASS"},
+    "clock_determinism": {"isolated_tests": 2, "passed": 2, "boundary_seconds": 129600, "result": "PASS"},
+    "frontend": {"files": 59, "passed": 59, "result": "PASS"},
+    "focused_stage10_2": {"files": 5, "passed": 5, "result": "PASS"},
+    "typescript": "PASS",
+    "lint": "PASS",
+    "data_ui": {"screens": 28, "result": "PASS"},
+    "web_export": {"routes": 25, "files": 51, "result": "PASS"},
+    "route_validation": {"static_routes": 25, "result": "PASS"},
+    "stage9_2a_architecture": "PASS",
+    "stage9_2b_features": "PASS",
+    "browser": {"routes": 10, "console_errors": 0, "result": "PASS"},
+    "accessibility": {"nested_buttons": 0, "mobile_viewports": 3, "result": "PASS"},
+    "visual_acceptance": {"screenshots": 19, "failed_checks": 0, "freshness_validator": "PASS", "result": "PASS"},
+    "diff_integrity": "PASS"
+  },
+  "acceptance": {
+    "one_data_state_authority": "PASS",
+    "evidence_class_separation": "PASS",
+    "atomic_states": "PASS",
+    "watchlist_semantics": "PASS",
+    "decision_summary_layer": "PASS",
+    "duplicate_conclusions": "PASS",
+    "no_new_regressions_in_changed_frontend_scope": "PASS",
+    "all_required_validation_passing": "PASS"
+  },
+  "conditions": [],
+  "ready_to_freeze": true
+}

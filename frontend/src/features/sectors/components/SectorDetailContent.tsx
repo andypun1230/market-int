@@ -3,6 +3,7 @@ import { DashboardCard } from "@/components/cards/DashboardCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MetricTile } from "@/components/ui/MetricTile";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { DecisionSummaryCard } from "@/components/ui/DecisionSummaryCard";
 import { Spacing, Theme } from "@/constants/theme";
 import { AskCopilotButton } from "@/features/copilot/components/AskCopilotButton";
 import { createCopilotContext } from "@/features/copilot/context/buildScreenContext";
@@ -18,16 +19,17 @@ import {
 } from "@/features/sectors/sectorSnapshot";
 import { WatchlistBookmarkButton } from "@/features/watchlist/WatchlistBookmarkButton";
 import { rotationTrailMethodology } from "@/features/sectors/rotationCopy";
+import { decisionSummary } from "@/features/trust/decisionSummary";
 
 export function SectorDetailContent({ sectorId }: { sectorId: SectorId }) {
   const { detail, loading, error } = useSectorDetail(sectorId);
   if (loading)
-    return <Text style={styles.muted}>Loading durable sector snapshot.</Text>;
+    return <Text style={styles.muted}>Loading published sector data.</Text>;
   if (!detail?.sector)
     return (
       <EmptyState
         title="Sector unavailable"
-        message={error ?? "No durable sector snapshot is available."}
+        message={error ?? "No published sector data is available."}
       />
     );
   const row = detail.sector;
@@ -47,6 +49,14 @@ export function SectorDetailContent({ sectorId }: { sectorId: SectorId }) {
       contentContainerStyle={styles.stack}
       showsVerticalScrollIndicator={false}
     >
+      <DecisionSummaryCard summary={decisionSummary({
+        id: `sector.${row.sectorId}`, title: `${row.displayName} decision summary`, currentState: `${formatClassification(row.classification)} · rank #${row.rank}`,
+        whatChanged: detail.rotationMovement?.state === 'available' ? `Relative strength is ${rsTrend.toLowerCase()}.` : null,
+        preferredAction: conclusion.supportive[0] ?? null, mainRisk: conclusion.risks[0] ?? null, invalidation: conclusion.risks[1] ?? null,
+        freshness: `Updated ${detail.marketDate}`, confidence: null, confidenceLabel: row.signalConfidence.label ?? 'Confidence unavailable', evidence: null,
+        availability: row.compositeScore === null ? 'partial' : 'available', contradiction: null, whatWouldChange: conclusion.risks[0] ?? null,
+        methodology: [`Coverage: ${formatCoverage(detail.coverage.constituentCoverage)}`, `Data source: ${sourceLabel(detail)}`],
+      })} />
       <View style={styles.badges}>
         <StatusBadge label={`#${row.rank}`} tone="info" />
         <StatusBadge
@@ -266,18 +276,6 @@ export function SectorDetailContent({ sectorId }: { sectorId: SectorId }) {
             Rotation history is insufficient for this sector.
           </Text>
         )}
-      </DashboardCard>
-      <DashboardCard title="Breadth History" accentColor={Theme.colors.accent}>
-        <Text style={styles.muted}>No breadth history is available yet.</Text>
-      </DashboardCard>
-      <DashboardCard
-        title="Divergences & Alerts"
-        accentColor={Theme.colors.warning}
-      >
-        <Text style={styles.muted}>
-          No rule-based divergences or transition alerts are available for the
-          current snapshot history.
-        </Text>
       </DashboardCard>
     </ScrollView>
   );

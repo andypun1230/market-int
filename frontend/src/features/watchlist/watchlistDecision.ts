@@ -1,6 +1,7 @@
 import type { ClassifiedWatchlistItem, WatchlistClassification } from './types';
 
-export type WatchlistDecisionGroup = 'action_required' | 'watching_closely' | 'stable_waiting';
+export type WatchlistDecisionGroup = 'action_now' | 'improving' | 'weakening' | 'monitor';
+export type WatchlistMaintenanceState = 'current' | 'data_needs_refresh' | 'partial_data' | 'unavailable';
 
 export type WatchlistDecisionBrief = {
   deterioratingCount: number;
@@ -10,31 +11,27 @@ export type WatchlistDecisionBrief = {
   improvingCount: number;
   improvingSymbols: string[];
   staleCount: number;
+  partialCount: number;
+  unavailableCount: number;
 };
 
 export const WATCHLIST_DECISION_ORDER: WatchlistDecisionGroup[] = [
-  'action_required',
-  'watching_closely',
-  'stable_waiting',
+  'action_now',
+  'improving',
+  'weakening',
+  'monitor',
 ];
 
 export function getWatchlistDecisionGroup(item: ClassifiedWatchlistItem): WatchlistDecisionGroup {
   const { classification } = item;
   if (
-    classification.group === 'needs_attention'
-    || classification.group === 'high_priority'
-    || classification.group === 'data_unavailable'
+    classification.group === 'high_priority'
   ) {
-    return 'action_required';
+    return 'action_now';
   }
-  if (
-    classification.group === 'momentum'
-    || classification.primarySignal === 'partial'
-    || classification.primarySignal === 'pending'
-  ) {
-    return 'watching_closely';
-  }
-  return 'stable_waiting';
+  if (classification.group === 'momentum') return 'improving';
+  if (classification.group === 'needs_attention') return 'weakening';
+  return 'monitor';
 }
 
 export function groupWatchlistDecisionItems(items: ClassifiedWatchlistItem[]) {
@@ -44,15 +41,16 @@ export function groupWatchlistDecisionItems(items: ClassifiedWatchlistItem[]) {
       return groups;
     },
     {
-      action_required: [],
-      stable_waiting: [],
-      watching_closely: [],
+      action_now: [],
+      improving: [],
+      weakening: [],
+      monitor: [],
     },
   );
 }
 
 export function buildWatchlistDecisionBrief(items: ClassifiedWatchlistItem[]): WatchlistDecisionBrief {
-  const immediate = items.filter((item) => getWatchlistDecisionGroup(item) === 'action_required');
+  const immediate = items.filter((item) => getWatchlistDecisionGroup(item) === 'action_now');
   const improving = items.filter((item) => (
     item.classification.group === 'high_priority' || item.classification.group === 'momentum'
   ));
@@ -68,7 +66,16 @@ export function buildWatchlistDecisionBrief(items: ClassifiedWatchlistItem[]): W
     improvingCount: improving.length,
     improvingSymbols: symbols(improving),
     staleCount: items.filter((item) => item.classification.dataStatus === 'stale').length,
+    partialCount: items.filter((item) => item.classification.dataStatus === 'partial').length,
+    unavailableCount: items.filter((item) => item.classification.dataStatus === 'unavailable').length,
   };
+}
+
+export function getWatchlistMaintenanceState(classification: WatchlistClassification): WatchlistMaintenanceState {
+  if (classification.dataStatus === 'unavailable') return 'unavailable';
+  if (classification.dataStatus === 'partial' || classification.dataStatus === 'pending') return 'partial_data';
+  if (classification.dataStatus === 'stale') return 'data_needs_refresh';
+  return 'current';
 }
 
 export function getWatchlistDecisionStatus(classification: WatchlistClassification): string {
@@ -115,20 +122,13 @@ export function getWatchlistDecisionStatus(classification: WatchlistClassificati
 
 export function getWatchlistDecisionLabel(classification: WatchlistClassification): string {
   if (
-    classification.group === 'needs_attention'
-    || classification.group === 'high_priority'
-    || classification.group === 'data_unavailable'
+    classification.group === 'high_priority'
   ) {
-    return 'Action';
+    return 'Action Now';
   }
-  if (
-    classification.group === 'momentum'
-    || classification.primarySignal === 'partial'
-    || classification.primarySignal === 'pending'
-  ) {
-    return 'Watching';
-  }
-  return 'Stable';
+  if (classification.group === 'momentum') return 'Improving';
+  if (classification.group === 'needs_attention') return 'Weakening';
+  return 'Monitor';
 }
 
 function symbols(items: ClassifiedWatchlistItem[]) {

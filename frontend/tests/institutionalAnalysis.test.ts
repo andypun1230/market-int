@@ -110,7 +110,9 @@ function runTests() {
   if (!dashboard) {
     return;
   }
-  assert(dashboard.overview.bias === 'Bullish', 'raw institutional activity bias is preserved');
+  assert(dashboard.overview.bias === 'Partial institutional evidence', 'overall headline reflects evidence completeness instead of an unsupported direction');
+  assert(dashboard.decisionSummary.currentState === 'Partial institutional evidence', 'shared summary preserves the completeness conclusion');
+  assert(dashboard.evidence.classes.find((item) => item.id === 'price_volume')?.conclusion?.includes('Price-volume'), 'directional inference is explicitly owned by price-volume evidence');
   assert(dashboard.overview.subtitle === 'Current institutional activity', 'overview uses approved subtitle');
   assert(dashboard.overview.directionalBiasScore === 81, 'overview keeps directional bias score separate');
   assert(dashboard.overview.confidence === 'moderate', 'mixed/proxy-heavy inputs cap confidence below high');
@@ -151,7 +153,7 @@ function runTests() {
     }),
     activity({ bias: 'N/A' }),
   );
-  assert(moderateDirection?.overview.bias === 'Constructive', 'moderate directional score maps to constructive');
+  assert(moderateDirection?.overview.directionalBiasScore === 60, 'directional score remains available without becoming the overall headline');
 
   const distribution = buildInstitutionalDashboardViewModel(
     intelligence({ institutional: { ...intelligence().institutional, block_trade_candidates: [] } }),

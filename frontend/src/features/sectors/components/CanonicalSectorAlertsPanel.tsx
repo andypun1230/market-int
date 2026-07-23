@@ -18,13 +18,13 @@ export function CanonicalSectorAlertsPanel({ onOpenSector }: { onOpenSector: (se
   return (
     <>
       <View style={styles.stack}>
-        {loading && !data ? <DashboardCard title="Sector Alerts"><Text style={styles.note}>Loading typed canonical alerts…</Text></DashboardCard> : null}
+        {loading && !data ? <DashboardCard title="Sector Alerts"><Text style={styles.note}>Loading sector alerts…</Text></DashboardCard> : null}
         {error ? <DashboardCard title="Sector Alerts unavailable"><Text style={styles.note}>{error}</Text></DashboardCard> : null}
         {data ? GROUPS.map((group) => {
           const alerts = grouped.get(group) ?? [];
           if (!alerts.length) return null;
           return (
-            <DashboardCard key={group} title={`${humanize(group)} alerts`} subtitle="Prioritized by severity, then stable canonical identity." accentColor={group === "risk" ? Theme.colors.warning : Theme.colors.accent}>
+            <DashboardCard key={group} title={`${humanize(group)} alerts`} subtitle="Prioritized by severity." accentColor={group === "risk" ? Theme.colors.warning : Theme.colors.accent}>
               <AlertList
                 alerts={alerts.map((alert) => ({
                   id: alert.id,
@@ -40,7 +40,7 @@ export function CanonicalSectorAlertsPanel({ onOpenSector }: { onOpenSector: (se
         }) : null}
         {data && !data.items.length ? (
           <DashboardCard title="Sector Alerts" subtitle="Deterministic transition and divergence engine">
-            <Text style={styles.note}>No typed sector alert threshold is met. Additional immutable snapshots may be required.</Text>
+            <Text style={styles.note}>No sector alert threshold is met. More published observations may be required.</Text>
           </DashboardCard>
         ) : null}
       </View>
@@ -74,7 +74,7 @@ export function CanonicalSectorAlertsPanel({ onOpenSector }: { onOpenSector: (se
                 onOpenSector(id);
               }}
               style={({ pressed }) => [styles.openButton, pressed && styles.pressed]}>
-              <Text style={styles.openText}>Open canonical sector detail</Text>
+              <Text style={styles.openText}>Open sector detail</Text>
             </Pressable>
           </View>
         ) : null}

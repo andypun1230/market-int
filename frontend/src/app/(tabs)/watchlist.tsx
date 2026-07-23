@@ -46,6 +46,7 @@ import {
 } from '@/features/watchlist/watchlistListControls';
 import { useWatchlistUiPreferences } from '@/features/watchlist/watchlistUiPreferences';
 import type { ClassifiedWatchlistItem, WatchlistGroup } from '@/features/watchlist/types';
+import { buildWatchlistCountModel } from '@/features/watchlist/watchlistCounts';
 import { useWatchlistDashboard } from '@/hooks/useWatchlistDashboard';
 import { useSectorSnapshot } from '@/hooks/useSectorSnapshot';
 import { useThemeSnapshot } from '@/hooks/useThemeSnapshot';
@@ -60,9 +61,10 @@ const WATCHLIST_TABS = [
   { key: 'themes', label: 'Themes' },
 ];
 const DECISION_COLLAPSE_KEYS: Record<WatchlistDecisionGroup, WatchlistGroup> = {
-  action_required: 'needs_attention',
-  watching_closely: 'momentum',
-  stable_waiting: 'watching',
+  action_now: 'high_priority',
+  improving: 'momentum',
+  weakening: 'needs_attention',
+  monitor: 'watching',
 };
 
 export default function WatchlistScreen() {
@@ -145,6 +147,11 @@ export default function WatchlistScreen() {
     [savedItems],
   );
   const canAdd = query.length > 0 && !savedItems.some((item) => item.ticker === query);
+  const countModel = useMemo(() => buildWatchlistCountModel({
+    locallySavedSymbols: watchlistStore.stockItems.map((item) => item.ticker),
+    displayedItems: savedItems,
+    catalystSymbols: intelligenceSymbols,
+  }), [intelligenceSymbols, savedItems, watchlistStore.stockItems]);
 
   const savedSectors = useMemo(() => watchlistStore.groupItems
     .filter((item) => item.type === 'sector')
@@ -324,7 +331,7 @@ export default function WatchlistScreen() {
 
         {activeTab === 'stocks' ? (
           <>
-            {classifiedStockItems.length ? <WatchlistBrief items={classifiedStockItems} /> : null}
+            {classifiedStockItems.length ? <WatchlistBrief counts={countModel} items={classifiedStockItems} /> : null}
             <WatchlistCatalystsCard
               enabled={shouldRequestWatchlistCatalysts({
                 activeTab,
@@ -333,6 +340,7 @@ export default function WatchlistScreen() {
                 symbolCount: intelligenceSymbols.length,
               })}
               key={intelligenceSymbolKey}
+              scopeExplanation={countModel.catalystScopeExplanation}
               symbols={intelligenceSymbols}
             />
 
