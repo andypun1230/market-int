@@ -41,12 +41,8 @@ export function PerformanceHeatmap<T>({
         const favourite = Boolean(isFavourite?.(item));
 
         return (
-          <Pressable
-            accessibilityLabel={`${name}, ${formatPercent(value)}`}
-            accessibilityRole={onPressItem ? 'button' : undefined}
-            disabled={!onPressItem}
+          <View
             key={name}
-            onPress={() => onPressItem?.(item)}
             style={[
               styles.tile,
               {
@@ -54,34 +50,35 @@ export function PerformanceHeatmap<T>({
                 borderColor: palette.border,
               },
             ]}>
+            <Pressable
+              accessibilityLabel={`${name}, ${formatPercent(value)}`}
+              accessibilityRole={onPressItem ? 'button' : undefined}
+              disabled={!onPressItem}
+              onPress={() => onPressItem?.(item)}
+              style={styles.tileAction}>
+              <View style={styles.labelStack}>
+                <Text numberOfLines={2} style={styles.name}>
+                  {name}
+                </Text>
+                {subtitle ? (
+                  <Text numberOfLines={1} style={styles.subtitle}>
+                    {subtitle}
+                  </Text>
+                ) : null}
+              </View>
+              <Text style={[styles.value, { color: palette.text }]}>{formatPercent(value)}</Text>
+              {badgeLabel ? <Text style={styles.badgeLabel}>{badgeLabel}</Text> : null}
+            </Pressable>
             {onToggleFavourite ? (
               <Pressable
                 accessibilityLabel={`${favourite ? 'Remove' : 'Add'} ${name} watchlist`}
                 accessibilityRole="button"
-                hitSlop={8}
-                onPress={(event) => {
-                  event.stopPropagation();
-                  onToggleFavourite(item);
-                }}
+                onPress={() => onToggleFavourite(item)}
                 style={styles.favouriteButton}>
                 <AppIcon color={favourite ? Theme.colors.warning : Theme.colors.textMuted} name={favourite ? 'saved' : 'savedOutline'} size={17} />
               </Pressable>
             ) : null}
-            <View style={styles.labelStack}>
-              <Text numberOfLines={2} style={styles.name}>
-                {name}
-              </Text>
-              {subtitle ? (
-                <Text numberOfLines={1} style={styles.subtitle}>
-                  {subtitle}
-                </Text>
-              ) : null}
-            </View>
-            <Text style={[styles.value, { color: palette.text }]}>
-              {formatPercent(value)}
-            </Text>
-            {badgeLabel ? <Text style={styles.badgeLabel}>{badgeLabel}</Text> : null}
-          </Pressable>
+          </View>
         );
       })}
     </View>
@@ -144,12 +141,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(15, 23, 42, 0.42)',
     borderRadius: Theme.radii.pill,
-    height: 24,
+    height: 44,
     justifyContent: 'center',
     position: 'absolute',
-    right: Spacing.one,
-    top: Spacing.one,
-    width: 24,
+    right: 0,
+    top: 0,
+    width: 44,
     zIndex: 2,
   },
   favouriteText: {
@@ -178,9 +175,14 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.small,
     borderWidth: 1,
     flexBasis: '47%',
-    justifyContent: 'space-between',
     height: 72,
+    overflow: 'hidden',
+  },
+  tileAction: {
+    flex: 1,
+    justifyContent: 'space-between',
     padding: Spacing.two,
+    paddingRight: 44,
   },
   subtitle: {
     color: Theme.colors.textMuted,

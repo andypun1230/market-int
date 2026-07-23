@@ -276,6 +276,7 @@ export function ThemeRotationExperience({
           actionLabel="Show all themes"
           message={viewState.universe === 'saved' && !savedThemeIds.size ? 'Save a reviewed theme, or return to All Themes.' : 'No eligible themes match the active presentation filters.'}
           onAction={showAllThemes}
+          stateType={viewState.universe === 'saved' ? 'no_saved_entities' : 'no_qualifying_results'}
           title={viewState.universe === 'saved' ? 'No saved themes to plot' : 'No themes match'}
         />
       ) : (

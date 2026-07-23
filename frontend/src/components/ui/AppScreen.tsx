@@ -1,9 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
-import { AccessibilityInfo, Animated, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Animated, Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import type { RefreshControlProps, StyleProp, ViewStyle } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import {
+  horizontalGutter,
+  isPrimaryRoute,
+  maximumContentWidth,
+  pageBottomInset,
+  type LayoutWidthPolicy,
+  widthPolicyForRoute,
+} from '@/architecture/layoutPolicy';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppIcon } from '@/components/ui/AppIcon';
@@ -23,6 +32,7 @@ type AppScreenProps = {
   stickyHeader?: ReactNode;
   subtitle?: string;
   title?: string;
+  widthPolicy?: LayoutWidthPolicy;
 };
 
 export function AppScreen({
@@ -36,13 +46,24 @@ export function AppScreen({
   stickyHeader,
   subtitle,
   title,
+  widthPolicy,
 }: AppScreenProps) {
   const router = useRouter();
   const { preferences } = useAppPreferences();
   const pathname = usePathname();
+  const { width: viewportWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const { commandTarget } = useLocalSearchParams<{ commandTarget?: string | string[] }>();
   const target = Array.isArray(commandTarget) ? commandTarget[0] : commandTarget;
-  const isPrimaryTab = ['/', '/market', '/sectors', '/watchlist', '/more'].includes(pathname);
+  const isPrimaryTab = isPrimaryRoute(pathname);
+  const resolvedWidthPolicy = widthPolicy ?? widthPolicyForRoute(pathname);
+  const gutter = horizontalGutter(viewportWidth);
+  const bottomInset = pageBottomInset({ isPrimary: isPrimaryTab, platform: Platform.OS, safeAreaBottom: insets.bottom });
+  const responsiveContentStyle = {
+    maxWidth: maximumContentWidth(resolvedWidthPolicy),
+    paddingBottom: bottomInset,
+    paddingHorizontal: gutter,
+  } satisfies ViewStyle;
   const showsDataState = ['/', '/market', '/sectors', '/watchlist', '/more', '/report', '/ai', '/settings', '/about', '/data-sources'].includes(pathname);
   const diagnosticDataState = ['/settings', '/about', '/data-sources'].includes(pathname);
   const [collapsed, setCollapsed] = useState(!isPrimaryTab);
@@ -123,7 +144,7 @@ export function AppScreen({
   ) : <>{pageHeader}{showsDataState ? <DataStateSummary diagnostic={diagnosticDataState} /> : null}{children}</>;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
       <UniversalCommandHeader
         collapseProgress={collapseProgress}
         copilotContext={copilotContext}
@@ -134,7 +155,7 @@ export function AppScreen({
       />
       {scroll ? (
         <ScrollView
-          contentContainerStyle={[styles.content, contentStyle]}
+          contentContainerStyle={[styles.content, contentStyle, responsiveContentStyle]}
           onScroll={(event) => {
             if (!isPrimaryTab) return;
             const nextCollapsed = event.nativeEvent.contentOffset.y > 36;
@@ -144,11 +165,11 @@ export function AppScreen({
           refreshControl={refreshControl}
           scrollEventThrottle={16}
           stickyHeaderIndices={stickyHeader ? [0] : undefined}>
-          {stickyHeader ? <View style={styles.stickyHeader}>{stickyHeader}</View> : null}
+          {stickyHeader ? <View style={[styles.stickyHeader, { marginHorizontal: -gutter, paddingHorizontal: gutter }]}>{stickyHeader}</View> : null}
           {stickyHeader ? <View style={styles.stickyBody}>{content}</View> : content}
         </ScrollView>
       ) : (
-        <View style={[styles.content, styles.flexContent, contentStyle]}>{content}</View>
+        <View style={[styles.content, styles.flexContent, contentStyle, responsiveContentStyle]}>{content}</View>
       )}
     </SafeAreaView>
   );
@@ -160,9 +181,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    alignSelf: 'center',
     gap: Spacing.three,
-    padding: Spacing.three,
-    paddingBottom: Spacing.six,
+    paddingVertical: Spacing.three,
+    width: '100%',
   },
   commandDestination: {
     borderRadius: Theme.radii.card,
@@ -184,8 +206,6 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.colors.border,
     borderBottomWidth: 1,
     elevation: 6,
-    marginHorizontal: -Spacing.three,
-    paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },

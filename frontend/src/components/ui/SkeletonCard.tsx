@@ -6,12 +6,13 @@ import { Spacing, Theme } from '@/constants/theme';
 type SkeletonCardProps = {
   compact?: boolean;
   rows?: number;
+  structure?: 'summary' | 'chart' | 'list' | 'detail';
   title?: boolean;
 };
 
-export function SkeletonCard({ compact = false, rows = 3, title = true }: SkeletonCardProps) {
+export function SkeletonCard({ compact = false, rows = 3, structure = 'summary', title = true }: SkeletonCardProps) {
   return (
-    <View style={[styles.card, compact && styles.compactCard]}>
+    <View style={[styles.card, styles[structure], compact && styles.compactCard]}>
       {title ? (
         <View style={styles.titleBlock}>
           <View style={styles.titleLine} />
@@ -40,9 +41,18 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
     padding: Spacing.three,
   },
+  chart: {
+    minHeight: 320,
+  },
   compactCard: {
     gap: Spacing.two,
     padding: Spacing.twoAndHalf,
+  },
+  detail: {
+    minHeight: 260,
+  },
+  list: {
+    minHeight: 180,
   },
   titleBlock: {
     gap: Spacing.two,
@@ -73,5 +83,8 @@ const styles = StyleSheet.create({
   },
   shortRow: {
     width: '58%',
+  },
+  summary: {
+    minHeight: 180,
   },
 });

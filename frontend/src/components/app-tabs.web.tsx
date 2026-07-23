@@ -8,8 +8,10 @@ import {
 } from 'expo-router/ui';
 import { SymbolView } from 'expo-symbols';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { MaxContentWidth, Spacing, Theme, Typography } from '@/constants/theme';
+import { LAYOUT_POLICY } from '@/architecture/layoutPolicy';
+import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type TabIcon = {
   ios: string;
@@ -54,9 +56,14 @@ export function TabButton({
   const tintColor = isFocused ? Theme.colors.textInverse : Theme.colors.tabInactive;
 
   return (
-    <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
+    <Pressable
+      {...props}
+      accessibilityLabel={typeof children === 'string' ? children : undefined}
+      style={({ pressed }) => pressed && styles.pressed}>
       <View style={[styles.tabButtonView, isFocused && styles.activeTab]}>
-        <SymbolView tintColor={tintColor} name={{ web: icon.web, ios: icon.ios } as never} size={18} />
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <SymbolView tintColor={tintColor} name={{ web: icon.web, ios: icon.ios } as never} size={18} />
+        </View>
         <Text style={[styles.tabLabel, isFocused && styles.activeTabLabel]}>{children}</Text>
       </View>
     </Pressable>
@@ -64,8 +71,11 @@ export function TabButton({
 }
 
 export function CustomTabList(props: TabListProps) {
+  const insets = useSafeAreaInsets();
   return (
-    <View {...props} style={styles.tabListContainer}>
+    <View
+      {...props}
+      style={[styles.tabListContainer, { paddingBottom: Math.max(Spacing.two, insets.bottom) }]}>
       <View style={styles.innerContainer}>{props.children}</View>
     </View>
   );
@@ -76,7 +86,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     position: 'absolute',
     width: '100%',
-    padding: Spacing.two,
+    paddingHorizontal: Spacing.two,
+    paddingTop: Spacing.two,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
@@ -91,7 +102,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: Spacing.one,
     justifyContent: 'space-between',
-    maxWidth: MaxContentWidth,
+    maxWidth: LAYOUT_POLICY.widths.constrained_settings,
   },
   pressed: {
     opacity: 0.7,

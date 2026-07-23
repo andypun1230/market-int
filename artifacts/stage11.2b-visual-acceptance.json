@@ -1,0 +1,851 @@
+{
+  "captured_at": "2026-07-23T16:12:24.039Z",
+  "checks": [
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "01-mobile-home-bottom",
+      "path": "artifacts/stage11.2b-screenshots/01-mobile-home-bottom.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "2e5a0120390a29a5ad48df6efeee0be8e9aaaf0dd8cbaa8f20fcf151f2c8e7b9",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "full_width_analytical",
+      "failed_checks": [],
+      "name": "02-mobile-market-bottom",
+      "path": "artifacts/stage11.2b-screenshots/02-mobile-market-bottom.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "overview",
+      "sha256": "5411a1d97305db3dfe93a275190d0b6873150861686c361d0bdf7b00f5d8a359",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "full_width_analytical",
+      "failed_checks": [],
+      "name": "03-mobile-market-last-tab",
+      "path": "artifacts/stage11.2b-screenshots/03-mobile-market-last-tab.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "macro",
+      "sha256": "b0bc56cccd979585d81ecc2f81f33d6eaab8f1538bd07ab26d4ec2ccb32efe13",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "full_width_analytical",
+      "failed_checks": [],
+      "name": "04-mobile-sector-rotation",
+      "path": "artifacts/stage11.2b-screenshots/04-mobile-sector-rotation.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "rotation",
+      "sha256": "e881ea0277bb1fe36de16fb328582cf232f8b5ee393f6a45f9be52ec5a4cb852",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "full_width_analytical",
+      "failed_checks": [],
+      "name": "05-mobile-theme-rotation",
+      "path": "artifacts/stage11.2b-screenshots/05-mobile-theme-rotation.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "rotation",
+      "sha256": "8fc20e0f184ad6de6fade42ab06aa178f6ec958dd4d3e9979dfa033c84a08fc4",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "06-mobile-watchlist-bottom",
+      "path": "artifacts/stage11.2b-screenshots/06-mobile-watchlist-bottom.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "stocks",
+      "sha256": "4c09ae8887b28ba7dd42fe82c7a41e32f76e52cedbd80c6342934f1747fd62f7",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "07-mobile-report",
+      "path": "artifacts/stage11.2b-screenshots/07-mobile-report.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "9a0c49babc01afb72f5e2cc01408aefede2aaf2edbfc4907644cd0b76a660efd",
+      "state_type": "not_generated",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "08-mobile-copilot",
+      "path": "artifacts/stage11.2b-screenshots/08-mobile-copilot.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "08c3490b8fe81d5448d6a5e14016f846b9a01bb36b1f7a17215f502674d20401",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "modal_content",
+      "failed_checks": [],
+      "name": "09-mobile-stock-detail-modal",
+      "path": "artifacts/stage11.2b-screenshots/09-mobile-stock-detail-modal.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "overview",
+      "sha256": "f94010cb98e5c522c306874733eaac853cb0171977f073880833dff1c2fa48ea",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "modal_content",
+      "failed_checks": [],
+      "name": "10-mobile-compare-modal",
+      "path": "artifacts/stage11.2b-screenshots/10-mobile-compare-modal.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "0902609d29e5fd88b1f28dc3d11b09bcad22f0c444b558f66874a23647052c75",
+      "state_type": "available_test_scenario",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "modal_content",
+      "failed_checks": [],
+      "name": "11-mobile-search-modal",
+      "path": "artifacts/stage11.2b-screenshots/11-mobile-search-modal.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "8efe950baac12622b8b133a5dde48c63f3e9a4dcee3e4a0130c7aa2841e652ee",
+      "state_type": "empty",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "constrained_settings",
+      "failed_checks": [],
+      "name": "12-mobile-settings",
+      "path": "artifacts/stage11.2b-screenshots/12-mobile-settings.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "892a9906fe9cda24b7bb5f7f8c58a921b0896ff2e7bfb371a3ac9061eb854938",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "13-empty-saved-sector-state",
+      "path": "artifacts/stage11.2b-screenshots/13-empty-saved-sector-state.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "sectors",
+      "sha256": "076438c2326fed846aaeaee2e14ca50425f317350b810a0fe5eb05212aa2ef10",
+      "state_type": "no_saved_entities",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "modal_content",
+      "failed_checks": [],
+      "name": "14-empty-search-result",
+      "path": "artifacts/stage11.2b-screenshots/14-empty-search-result.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "2bf32a4cc0179388d67230c654aa6d7c671dd56dfe328603c714f8b6fdd86e03",
+      "state_type": "no_search_results",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "15-error-state",
+      "path": "artifacts/stage11.2b-screenshots/15-error-state.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "637634b5c5fb7228f0490697d41f1c9aab019b272fef2946117d504ddccc5e4b",
+      "state_type": "failed_validation_scenario",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "full_width_analytical",
+      "failed_checks": [],
+      "name": "16-loading-skeleton",
+      "path": "artifacts/stage11.2b-screenshots/16-loading-skeleton.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "0a4a42be9150f78d0c7d9fc4ec6da552970de834a5d483fa8d5a56c0d6734366",
+      "state_type": "loading",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "modal_content",
+      "failed_checks": [],
+      "name": "17-sector-detail-loading",
+      "path": "artifacts/stage11.2b-screenshots/17-sector-detail-loading.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "72c7c12faec818ca8f643f16e5d5af8136f7f74a60f963b501540bc284427094",
+      "state_type": "loading",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "modal_content",
+      "failed_checks": [],
+      "name": "18-sector-detail-available",
+      "path": "artifacts/stage11.2b-screenshots/18-sector-detail-available.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "b3b501037f342165f161ae6e5397db536554e4a740dcf685d637a73b6d0ecf60",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "19-tablet-portrait",
+      "path": "artifacts/stage11.2b-screenshots/19-tablet-portrait.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "2d205b9d720e0730d6af57a49dc5d18d62681e3d2b53462af1eb712387418e9b",
+      "state_type": "available",
+      "viewport": {
+        "height": 861,
+        "width": 768
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "full_width_analytical",
+      "failed_checks": [],
+      "name": "20-tablet-landscape",
+      "path": "artifacts/stage11.2b-screenshots/20-tablet-landscape.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "overview",
+      "sha256": "21a70cc4166645aefbc3417b0d226ee02c3eff30dedfcf399c724237fbfd49e2",
+      "state_type": "available",
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "21-tablet-split-screen",
+      "path": "artifacts/stage11.2b-screenshots/21-tablet-split-screen.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "stocks",
+      "sha256": "4bfddebe0a36553aa9e8d83beba9f2182d6247423667124bcf50ef1dce604793",
+      "state_type": "available",
+      "viewport": {
+        "height": 861,
+        "width": 640
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "22-desktop-narrow",
+      "path": "artifacts/stage11.2b-screenshots/22-desktop-narrow.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "f88232254a6e059fa95de19e192bf9b94405575de0bc79a77360a1df3533ad4f",
+      "state_type": "available",
+      "viewport": {
+        "height": 861,
+        "width": 720
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "23-desktop-medium",
+      "path": "artifacts/stage11.2b-screenshots/23-desktop-medium.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "337570ab411c3cac992b2f974dd48ad760d71093e3293687e820efac1b90a951",
+      "state_type": "not_generated",
+      "viewport": {
+        "height": 861,
+        "width": 1024
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "24-desktop-wide",
+      "path": "artifacts/stage11.2b-screenshots/24-desktop-wide.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "85d0d9a4c1f1e0cd8def75916a2e399282f56d11df9916d00bf57e28232909b3",
+      "state_type": "available",
+      "viewport": {
+        "height": 900,
+        "width": 1476
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "full_width_analytical",
+      "failed_checks": [],
+      "name": "25-wide-analytical-screen",
+      "path": "artifacts/stage11.2b-screenshots/25-wide-analytical-screen.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "overview",
+      "sha256": "369522415f08c607e7a669ee27546dcd68eccd95e84905b71d75023b909408ce",
+      "state_type": "available",
+      "viewport": {
+        "height": 900,
+        "width": 1476
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "26-constrained-narrative-screen",
+      "path": "artifacts/stage11.2b-screenshots/26-constrained-narrative-screen.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "8bcb5ec36e8cfcb719408369868f6efc2ccb91289f4bd2483fe5d55a43d2b4cf",
+      "state_type": "not_generated",
+      "viewport": {
+        "height": 900,
+        "width": 1476
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "constrained_settings",
+      "failed_checks": [],
+      "name": "27-unmatched-route",
+      "path": "artifacts/stage11.2b-screenshots/27-unmatched-route.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "4b2e7b7dda03a34fb295d4d91fc36e8eda8f3191cf3b49e0eba346c8d5b0b1bf",
+      "state_type": "unavailable",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 16,
+      "expected_width_policy": "modal_content",
+      "failed_checks": [],
+      "name": "28-modal-long-content-bottom",
+      "path": "artifacts/stage11.2b-screenshots/28-modal-long-content-bottom.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "1babd0616a87cb192b58a4188059389d8497af587d8e24fe0b5b3c0f888cb7e9",
+      "state_type": "available",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "full_width_analytical",
+      "failed_checks": [],
+      "name": "29-active-horizontal-tab-after-resize",
+      "path": "artifacts/stage11.2b-screenshots/29-active-horizontal-tab-after-resize.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": "macro",
+      "sha256": "e6ccfb1d06424e7690c04d3c1dd5bb22583aa0fc2bfffffa8d5612c9bb16828b",
+      "state_type": "available",
+      "viewport": {
+        "height": 600,
+        "width": 768
+      }
+    },
+    {
+      "expected_bottom_inset": 86,
+      "expected_width_policy": "constrained_analytical",
+      "failed_checks": [],
+      "name": "30-cached-background-refresh",
+      "path": "artifacts/stage11.2b-screenshots/30-cached-background-refresh.jpg",
+      "required_checks": [
+        "no_bottom_tab_overlap",
+        "no_double_bottom_padding",
+        "selected_secondary_tab_visible",
+        "no_horizontal_body_overflow",
+        "no_clipped_action",
+        "semantic_width_matches",
+        "modal_safe_area_respected",
+        "no_nul_accessible_name",
+        "no_nested_controls",
+        "no_console_error"
+      ],
+      "result": "PASS",
+      "selected_secondary_tab": null,
+      "sha256": "8112e58f4af24d083b2d2b8b589107cbe18636a80159f96f8e0fc2fb9ed51211",
+      "state_type": "available_cached",
+      "viewport": {
+        "height": 600,
+        "width": 768
+      }
+    }
+  ],
+  "failed_checks": [],
+  "historical_artifacts_preserved": {
+    "stage10_2_visual_sha256": "fce55b089657a58397efba729f49c66359cc7eaf8873b33633678ededcba363b",
+    "stage11_2a_report_sha256": "e88d1f475beb47f54921b786dafb1e81b95bd6549736178a903ce5babb6f6d8d"
+  },
+  "result": "PASS",
+  "source_files": [
+    "frontend/package.json",
+    "frontend/src/architecture/layoutPolicy.ts",
+    "frontend/src/architecture/statePresentationRegistry.ts",
+    "frontend/src/app/+not-found.tsx",
+    "frontend/src/app/(tabs)/index.tsx",
+    "frontend/src/app/(tabs)/market.tsx",
+    "frontend/src/app/(tabs)/sectors.tsx",
+    "frontend/src/app/(tabs)/watchlist.tsx",
+    "frontend/src/app/report.tsx",
+    "frontend/src/components/app-tabs.web.tsx",
+    "frontend/src/components/charts/PerformanceHeatmap.tsx",
+    "frontend/src/components/ui/AppIcon.tsx",
+    "frontend/src/components/ui/AppScreen.tsx",
+    "frontend/src/components/ui/DetailModal.tsx",
+    "frontend/src/components/ui/EmptyState.tsx",
+    "frontend/src/components/ui/ErrorState.tsx",
+    "frontend/src/components/ui/HorizontalSelectionBar.tsx",
+    "frontend/src/components/ui/SegmentedControl.tsx",
+    "frontend/src/components/ui/SkeletonCard.tsx",
+    "frontend/src/features/command/components/UniversalCommandHeader.tsx",
+    "frontend/src/features/sectors/components/SectorThemeComparisonView.tsx",
+    "frontend/src/features/sectors/components/SectorThemeSearchModal.tsx",
+    "frontend/src/features/sectors/components/SectionState.tsx",
+    "frontend/src/features/themes/components/ThemeRotationExperience.tsx",
+    "frontend/tests/stage11NavigationLayout.test.ts",
+    "frontend/scripts/validate-stage11-navigation-layout.js"
+  ],
+  "source_fingerprint": "e00445bcfe2cd455b063e90d8d0bbee93557a2079bb760692d9230b34bee10d6",
+  "stage": "11.2B"
+}

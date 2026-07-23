@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
@@ -8,6 +8,7 @@ import { AppScreen } from '@/components/ui/AppScreen';
 import { DecisionSummaryCard } from '@/components/ui/DecisionSummaryCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { ExpandableSection } from '@/components/ui/ExpandableSection';
+import { HorizontalSelectionBar } from '@/components/ui/HorizontalSelectionBar';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
@@ -269,8 +270,16 @@ function firstMarketSection(value: string | string[] | undefined): MarketSection
 function MarketSkeleton() {
   return (
     <View style={styles.skeletonStack}>
-      <SkeletonCard rows={5} />
-      <SkeletonCard rows={4} />
+      <SkeletonCard rows={5} structure="summary" />
+      <SkeletonCard rows={4} structure="chart" />
+      <SkeletonCard rows={4} structure="detail" />
+      <SkeletonCard rows={4} structure="chart" />
+      <SkeletonCard rows={3} structure="detail" />
+      <SkeletonCard rows={3} structure="summary" />
+      <SkeletonCard rows={4} structure="chart" />
+      <SkeletonCard rows={3} structure="detail" />
+      <SkeletonCard rows={3} structure="summary" />
+      <SkeletonCard rows={3} structure="detail" />
     </View>
   );
 }
@@ -282,46 +291,24 @@ function MarketSectionTabs({
   onChange: (section: MarketSection) => void;
   selected: MarketSection;
 }) {
-  const tabsRef = useRef<ScrollView | null>(null);
-  useEffect(() => {
-    if (selected === 'macro') {
-      tabsRef.current?.scrollToEnd({ animated: true });
-    } else if (selected === 'overview') {
-      tabsRef.current?.scrollTo({ animated: true, x: 0 });
-    }
-  }, [selected]);
   return (
-    <ScrollView
-      horizontal
-      ref={tabsRef}
-      contentContainerStyle={styles.marketTabs}
-      showsHorizontalScrollIndicator={false}>
-      {MARKET_SECTIONS.map((section) => {
-        const active = selected === section.key;
-        return (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ selected: active }}
-            key={section.key}
-            onPress={() => onChange(section.key)}
-            style={({ pressed }) => [
-              styles.marketTab,
-              active && styles.marketTabActive,
-              pressed && styles.marketTabPressed,
-            ]}>
-            <SymbolView
-              name={section.icon as never}
-              size={15}
-              tintColor={active ? Theme.colors.accent : Theme.colors.textMuted}
-              weight="bold"
-            />
-            <Text style={[styles.marketTabText, active && styles.marketTabTextActive]}>
-              {section.label}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </ScrollView>
+    <HorizontalSelectionBar
+      accessibilityLabel="Market sections"
+      items={MARKET_SECTIONS.map((section) => ({
+        icon: (
+          <SymbolView
+            name={section.icon as never}
+            size={15}
+            tintColor={selected === section.key ? Theme.colors.accent : Theme.colors.textMuted}
+            weight="bold"
+          />
+        ),
+        key: section.key,
+        label: section.label,
+      }))}
+      onChange={onChange}
+      selectedKey={selected}
+    />
   );
 }
 

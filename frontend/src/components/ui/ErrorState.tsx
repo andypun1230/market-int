@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { CARD_SURFACE } from '@/components/cards/DashboardCard';
+import { STATE_PRESENTATION_REGISTRY } from '@/architecture/statePresentationRegistry';
 import { AppButton } from '@/components/ui/AppButton';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 
@@ -17,11 +18,12 @@ export function ErrorState({
   retryLabel = 'Retry',
   title = 'Something went wrong',
 }: ErrorStateProps) {
+  const presentation = STATE_PRESENTATION_REGISTRY.failed;
   return (
     <View style={styles.container}>
       <View style={styles.accentRow}>
         <View style={styles.accentDot} />
-        <Text style={styles.title}>{title}</Text>
+        <Text accessibilityLabel={`${presentation.accessibilityPrefix}: ${title}`} accessibilityRole="header" style={styles.title}>{title}</Text>
       </View>
       <Text style={styles.message}>{message}</Text>
       {onRetry ? (

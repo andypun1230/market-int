@@ -57,7 +57,11 @@ export function SectorThemeSearchModal({
       </DashboardCard>
 
       {query.trim() && !results.length ? (
-        <EmptyState title="No sectors or themes found" message="Try another sector, theme, or ticker keyword." />
+        <EmptyState
+          title={`No results for “${query.trim()}”`}
+          message="Try another sector, theme, or ticker keyword."
+          stateType="no_search_results"
+        />
       ) : null}
 
       {sectors.length ? (
@@ -106,13 +110,13 @@ function ResultGroup({
         {items.map((item) => {
           const saved = watchlistKeys.has(buildWatchlistKey(item.type, item.id));
           return (
-            <Pressable
-              accessibilityLabel={`Open ${item.name}`}
-              accessibilityRole="button"
-              key={`${item.type}-${item.id}`}
-              onPress={() => onOpenItem(item)}
-              style={({ pressed }) => [styles.resultRow, pressed && styles.pressed]}>
-              <View style={styles.resultMain}>
+            <View key={`${item.type}-${item.id}`} style={styles.resultRow}>
+              <Pressable
+                accessibilityLabel={`Open ${item.name}`}
+                accessibilityRole="button"
+                onPress={() => onOpenItem(item)}
+                style={({ pressed }) => [styles.resultAction, pressed && styles.pressed]}>
+                <View style={styles.resultMain}>
                 <View style={styles.resultHeader}>
                   <Text style={styles.resultName}>{item.name}</Text>
                   <StatusBadge label={item.type === 'sector' ? 'Sector' : 'Theme'} tone={item.type === 'sector' ? 'info' : 'purple'} />
@@ -121,19 +125,16 @@ function ResultGroup({
                   {item.status} · {formatPercent(item.values[interval])}
                 </Text>
                 {item.sourceState === 'test' ? <TestDataBadge /> : null}
-              </View>
+                </View>
+              </Pressable>
               <Pressable
                 accessibilityLabel={`${saved ? 'Remove' : 'Add'} ${item.name} Watchlist`}
                 accessibilityRole="button"
-                hitSlop={8}
-                onPress={(event) => {
-                  event.stopPropagation();
-                  onToggleWatchlist(item);
-                }}
+                onPress={() => onToggleWatchlist(item)}
                 style={styles.saveButton}>
                 <Text style={[styles.saveText, saved && styles.saveTextActive]}>{saved ? 'Saved' : 'Add'}</Text>
               </Pressable>
-            </Pressable>
+            </View>
           );
         })}
       </View>
@@ -165,6 +166,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.two,
   },
+  resultAction: {
+    flex: 1,
+    minHeight: 60,
+    padding: Spacing.two,
+  },
   resultMain: {
     flex: 1,
     gap: Spacing.one,
@@ -187,8 +193,8 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.small,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: Spacing.two,
-    padding: Spacing.two,
+    gap: Spacing.one,
+    overflow: 'hidden',
   },
   results: {
     gap: Spacing.two,
@@ -202,6 +208,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
     minWidth: 64,
     justifyContent: 'center',
+    marginRight: Spacing.two,
   },
   saveText: {
     color: Theme.colors.textMuted,

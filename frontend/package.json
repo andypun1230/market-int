@@ -44,6 +44,8 @@
     "lint": "expo lint",
     "validate:data-ui": "node ./scripts/validate-data-ui.js",
     "validate:stage11-visual-system": "node ./scripts/validate-stage11-visual-system.js",
+    "validate:stage11-navigation-layout": "node ./scripts/validate-stage11-navigation-layout.js",
+    "validate:stage11-navigation-artifacts": "node ./scripts/validate-stage11-navigation-artifacts.js",
     "validate:stage10-visual": "node ./scripts/validate-stage10-visual.js"
   },
   "private": true

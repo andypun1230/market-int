@@ -419,6 +419,7 @@ export default function WatchlistScreen() {
 
                 {!error && savedItems.length === 0 ? (
                   <EmptyState
+                    stateType="no_saved_entities"
                     title="No stock watchlist items"
                     message="Use the add and sort control, or save a stock from sector and theme detail views."
                   />
@@ -432,6 +433,7 @@ export default function WatchlistScreen() {
                     onAction={() => updateWatchlistPreferences({
                       listControls: { stocks: { ...stockPreferences, filters: [] } },
                     })}
+                    stateType="no_qualifying_results"
                   />
                 ) : null}
 
@@ -463,8 +465,11 @@ export default function WatchlistScreen() {
 
             {watchlistStore.hydrated && !watchlistStore.groupItems.some((item) => item.type === 'sector') ? (
               <EmptyState
+                actionLabel="Browse sectors"
                 title="No saved sectors"
                 message="Open the Sectors tab and save a sector to track it here."
+                onAction={() => router.push('/sectors')}
+                stateType="no_saved_entities"
               />
             ) : null}
             {watchlistStore.hydrated && savedSectors.length > 0 && sortedSectors.length === 0 ? (
@@ -475,6 +480,7 @@ export default function WatchlistScreen() {
                 onAction={() => updateWatchlistPreferences({
                   listControls: { sectors: { ...sectorPreferences, filters: [] } },
                 })}
+                stateType="no_qualifying_results"
               />
             ) : null}
           </View>
@@ -503,8 +509,11 @@ export default function WatchlistScreen() {
             )}
             {watchlistStore.hydrated && !watchlistStore.groupItems.some((item) => item.type === 'theme') ? (
               <EmptyState
+                actionLabel="Browse themes"
                 title="No saved themes"
                 message="Open the Themes view and save a reviewed theme to track it here."
+                onAction={() => router.push('/sectors')}
+                stateType="no_saved_entities"
               />
             ) : null}
             {watchlistStore.hydrated && savedThemes.length > 0 && sortedThemes.length === 0 ? (
@@ -515,6 +524,7 @@ export default function WatchlistScreen() {
                 onAction={() => updateWatchlistPreferences({
                   listControls: { themes: { ...themePreferences, filters: [] } },
                 })}
+                stateType="no_qualifying_results"
               />
             ) : null}
           </View>
@@ -600,7 +610,7 @@ function GroupAddPicker({
   onAdd: (id: string, name: string) => void;
 }) {
   if (!items.length) {
-    return <EmptyState title="Everything is saved" message={emptyMessage} />;
+    return <EmptyState stateType="empty" title="Everything is saved" message={emptyMessage} />;
   }
   return (
     <View style={styles.addPickerList}>

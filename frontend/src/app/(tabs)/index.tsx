@@ -472,13 +472,15 @@ function HeaderLink({ label, onPress }: { label: string; onPress: () => void }) 
 function HomeSkeleton() {
   return (
     <View style={styles.stack}>
-      <SkeletonCard rows={3} />
-      <SkeletonCard compact rows={3} />
+      <SkeletonCard rows={3} structure="summary" />
+      <SkeletonCard compact rows={3} structure="detail" />
       <View style={styles.skeletonGrid}>
-        <SkeletonCard compact rows={2} />
-        <SkeletonCard compact rows={2} />
+        <SkeletonCard compact rows={2} structure="summary" />
+        <SkeletonCard compact rows={2} structure="summary" />
       </View>
-      <SkeletonCard compact rows={3} />
+      <SkeletonCard compact rows={3} structure="chart" />
+      <SkeletonCard compact rows={3} structure="detail" />
+      <SkeletonCard compact rows={3} structure="list" />
     </View>
   );
 }
@@ -603,7 +605,7 @@ const styles = StyleSheet.create({
   sectionHeader: { alignItems: 'center', flexDirection: 'row', gap: 10, justifyContent: 'space-between' },
   sectionIcon: { alignItems: 'center', borderRadius: 6, height: 26, justifyContent: 'center', width: 26 },
   sectionTitle: { color: Theme.colors.text, fontSize: Typography.bodyLarge.fontSize, fontWeight: Typography.weights.strong },
-  screenContent: { alignSelf: 'center', gap: 10, maxWidth: 1100, width: '100%' },
+  screenContent: { gap: 10 },
   skeletonGrid: { flexDirection: 'row', gap: HOME_LAYOUT.gridGap },
   sparklinePlaceholder: { alignItems: 'center', borderBottomColor: Theme.colors.border, borderBottomWidth: 1, height: 26, justifyContent: 'center', minWidth: 72, width: '58%' },
   sparklineNarrow: { minWidth: 0, width: '100%' },

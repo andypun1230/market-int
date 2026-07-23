@@ -99,31 +99,32 @@ export function SectorThemeComparisonView({
             const selected = selectedItems.some((current) => current.type === item.type && current.id === item.id);
             const disabled = !selected && selectedItems.length >= 3;
             return (
-              <Pressable
-                accessibilityRole="button"
-                disabled={disabled}
+              <View
                 key={`${item.type}-${item.id}`}
-                onPress={() => setSelectedItems(selected ? removeComparisonItem(selectedItems, item) : addComparisonItem(selectedItems, item))}
                 style={[styles.candidateRow, selected && styles.candidateRowActive, disabled && styles.disabled]}>
-                <View style={styles.candidateMain}>
-                  <Text style={styles.candidateName}>{item.name}</Text>
-                  <Text style={styles.candidateMeta}>{item.type === 'sector' ? 'Sector' : 'Theme'} · {item.quadrant}</Text>
-                </View>
+                <Pressable
+                  accessibilityLabel={`${selected ? 'Remove' : 'Add'} ${item.name} comparison`}
+                  accessibilityRole="button"
+                  disabled={disabled}
+                  onPress={() => setSelectedItems(selected ? removeComparisonItem(selectedItems, item) : addComparisonItem(selectedItems, item))}
+                  style={styles.candidateSelect}>
+                  <View style={styles.candidateMain}>
+                    <Text style={styles.candidateName}>{item.name}</Text>
+                    <Text style={styles.candidateMeta}>{item.type === 'sector' ? 'Sector' : 'Theme'} · {item.quadrant}</Text>
+                  </View>
+                </Pressable>
                 <Pressable
                   accessibilityLabel={`${favourites.has(buildWatchlistKey(item.type, item.id)) ? 'Remove' : 'Add'} ${item.name} watchlist`}
                   accessibilityRole="button"
-                  hitSlop={8}
-                  onPress={(event) => {
-                    event.stopPropagation();
-                    onToggleFavourite(item);
-                  }}>
+                  onPress={() => onToggleFavourite(item)}
+                  style={styles.favouriteButton}>
                   <AppIcon
                     color={favourites.has(buildWatchlistKey(item.type, item.id)) ? Theme.colors.warning : Theme.colors.textMuted}
                     name={favourites.has(buildWatchlistKey(item.type, item.id)) ? 'saved' : 'savedOutline'}
                     size={20}
                   />
                 </Pressable>
-              </Pressable>
+              </View>
             );
           })}
         </ScrollView>
@@ -204,11 +205,17 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.colors.border,
     borderBottomWidth: 1,
     flexDirection: 'row',
-    gap: Spacing.two,
-    paddingVertical: Spacing.two,
+    minHeight: 52,
   },
   candidateRowActive: {
     backgroundColor: Theme.colors.accentSoft,
+  },
+  candidateSelect: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    minHeight: 52,
+    paddingVertical: Spacing.two,
   },
   disabled: {
     opacity: 0.45,
@@ -217,6 +224,12 @@ const styles = StyleSheet.create({
     color: Theme.colors.textMuted,
     fontSize: Typography.control.fontSize,
     fontWeight: Typography.weights.strong,
+  },
+  favouriteButton: {
+    alignItems: 'center',
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
   },
   filterRow: {
     flexDirection: 'row',

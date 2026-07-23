@@ -3,9 +3,10 @@ import { usePathname, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import {
   Animated,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,7 +14,9 @@ import {
   View,
 } from 'react-native';
 import type { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { maximumContentWidth, modalBottomInset } from '@/architecture/layoutPolicy';
 import { MaxContentWidth, Spacing, Theme, Typography } from '@/constants/theme';
 import { AppButton } from '@/components/ui/AppButton';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
@@ -156,6 +159,7 @@ function GlobalSearchOverlay({ context, onClose, visible }: {
   visible: boolean;
 }) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { homeDashboard } = useHomeDashboard(visible);
@@ -225,7 +229,8 @@ function GlobalSearchOverlay({ context, onClose, visible }: {
 
   return (
     <Modal animationType="fade" onRequestClose={close} presentationStyle="fullScreen" visible={visible}>
-      <SafeAreaView style={styles.overlay}>
+      <SafeAreaView edges={['top', 'left', 'right']} style={styles.overlay}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.overlayKeyboard}>
         <View style={styles.overlayInner}>
           <View style={styles.overlaySearchRow}>
             <Pressable accessibilityLabel="Close search" accessibilityRole="button" onPress={close} style={({ pressed }) => [styles.overlayBack, pressed && styles.pressed]}>
@@ -257,7 +262,7 @@ function GlobalSearchOverlay({ context, onClose, visible }: {
             </View>
           </View>
 
-          <ScrollView contentContainerStyle={styles.resultsContent} keyboardShouldPersistTaps="handled">
+          <ScrollView contentContainerStyle={[styles.resultsContent, { paddingBottom: modalBottomInset(insets.bottom) }]} keyboardShouldPersistTaps="handled">
             {query.trim() ? (
               groups.length ? groups.map((group) => (
                 <CommandSection
@@ -296,6 +301,7 @@ function GlobalSearchOverlay({ context, onClose, visible }: {
             )}
           </ScrollView>
         </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </Modal>
   );
@@ -375,7 +381,8 @@ const styles = StyleSheet.create({
   headerInner: { alignSelf: 'center', maxWidth: MaxContentWidth + Spacing.six, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two, width: '100%' },
   overlay: { backgroundColor: Theme.colors.background, flex: 1 },
   overlayBack: { alignItems: 'center', backgroundColor: Theme.colors.cardMuted, borderColor: Theme.colors.border, borderRadius: Theme.radii.small, borderWidth: 1, height: 46, justifyContent: 'center', width: 46 },
-  overlayInner: { alignSelf: 'center', flex: 1, maxWidth: 760, width: '100%' },
+  overlayInner: { alignSelf: 'center', flex: 1, maxWidth: maximumContentWidth('modal_content'), width: '100%' },
+  overlayKeyboard: { flex: 1 },
   overlayInput: { color: Theme.colors.text, flex: 1, fontSize: Typography.control.fontSize, fontWeight: Typography.weights.emphasis, minWidth: 0, outlineStyle: 'none' } as never,
   overlayInputWrap: { alignItems: 'center', backgroundColor: Theme.colors.card, borderColor: Theme.colors.accent, borderRadius: Theme.radii.card, borderWidth: 1, flex: 1, flexDirection: 'row', gap: Spacing.two, minHeight: 46, paddingHorizontal: Spacing.three },
   overlaySearchRow: { alignItems: 'center', borderBottomColor: Theme.colors.border, borderBottomWidth: 1, flexDirection: 'row', gap: Spacing.two, padding: Spacing.three },

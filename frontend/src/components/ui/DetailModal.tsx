@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
-import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Modal, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { horizontalGutter, maximumContentWidth, modalBottomInset } from '@/architecture/layoutPolicy';
 import { AppButton } from '@/components/ui/AppButton';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 
@@ -26,6 +28,9 @@ export function DetailModal({
 }: DetailModalProps) {
   const hasStickyHeader = stickyHeader != null;
   const [reduceMotion, setReduceMotion] = useState(false);
+  const insets = useSafeAreaInsets();
+  const { width: viewportWidth } = useWindowDimensions();
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
@@ -33,11 +38,29 @@ export function DetailModal({
     return () => subscription.remove();
   }, []);
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (visible) {
+      returnFocusRef.current = document.activeElement as HTMLElement | null;
+      const focusTimer = window.setTimeout(() => {
+        const closeControl = [...document.querySelectorAll<HTMLElement>('[aria-label]')]
+          .find((element) => element.getAttribute('aria-label') === `Close ${title}`);
+        closeControl?.focus();
+      }, 50);
+      return () => window.clearTimeout(focusTimer);
+    }
+    returnFocusRef.current?.focus?.();
+  }, [title, visible]);
+
+  const contentBottom = modalBottomInset(insets.bottom);
+  const sideGutter = horizontalGutter(viewportWidth);
+
   return (
     <Modal animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onClose} transparent visible={visible}>
       <View style={styles.backdrop}>
-        <SafeAreaView style={styles.safeArea}>
-          <View style={styles.sheet}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
+          <SafeAreaView edges={['left', 'right']} style={[styles.safeArea, { paddingHorizontal: sideGutter }]}>
+          <View accessibilityViewIsModal style={styles.sheet}>
             <View style={styles.handle} />
             <View style={styles.header}>
               <View style={styles.titleBlock}>
@@ -54,7 +77,9 @@ export function DetailModal({
             </View>
 
             <ScrollView
-              contentContainerStyle={hasStickyHeader ? styles.stickyContent : styles.content}
+              contentContainerStyle={hasStickyHeader
+                ? [styles.stickyContent, { paddingBottom: contentBottom }]
+                : [styles.content, { paddingBottom: contentBottom }]}
               showsVerticalScrollIndicator={false}
               stickyHeaderIndices={hasStickyHeader ? [1] : undefined}>
               {hasStickyHeader ? <View style={styles.scrollHeader}>{scrollHeader}</View> : null}
@@ -62,7 +87,14 @@ export function DetailModal({
               {hasStickyHeader ? <View style={styles.scrollBody}>{children}</View> : children}
             </ScrollView>
           </View>
-        </SafeAreaView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+        <Pressable
+          accessibilityLabel={`Dismiss ${title}`}
+          accessibilityRole="button"
+          onPress={onClose}
+          style={[StyleSheet.absoluteFill, styles.backdropDismissal]}
+        />
       </View>
     </Modal>
   );
@@ -74,10 +106,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
   },
+  backdropDismissal: {
+    zIndex: 0,
+  },
   safeArea: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'flex-end',
-    paddingHorizontal: Spacing.one,
+    pointerEvents: 'box-none',
+    width: '100%',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    pointerEvents: 'box-none',
+    zIndex: 1,
   },
   sheet: {
     backgroundColor: Theme.colors.background,
@@ -85,8 +128,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: Theme.radii.card,
     borderTopRightRadius: Theme.radii.card,
     borderWidth: 1,
+    maxWidth: maximumContentWidth('modal_content'),
     maxHeight: '88%',
+    minHeight: 280,
     overflow: 'hidden',
+    width: '100%',
   },
   handle: {
     alignSelf: 'center',

@@ -96,7 +96,7 @@ export default function ReportScreen() {
       />
 
       {error ? <View style={styles.errorBanner}><Text style={styles.errorText}>{error}</Text></View> : null}
-      {loading ? <View style={styles.skeletonStack}><SkeletonCard rows={5} /><SkeletonCard compact rows={2} /></View> : null}
+      {loading ? <View style={styles.skeletonStack}><SkeletonCard rows={5} structure="detail" /><SkeletonCard compact rows={2} structure="list" /></View> : null}
 
       {!loading ? (
         <View style={styles.historyStack}>
@@ -116,6 +116,9 @@ export default function ReportScreen() {
 
       {!loading && records.length === 0 ? (
         <EmptyState
+          actionLabel="Generate today's report"
+          onAction={() => void generateTodayReport()}
+          stateType="not_generated"
           title="Your first briefing is ready to be built"
           message="Generate today's report to establish the baseline for future change analysis."
         />

@@ -26,6 +26,7 @@ export function SectionErrorState({ developmentDetails, message, onRetry }: Sect
       actionLabel={onRetry ? 'Retry' : undefined}
       message={__DEV__ && developmentDetails ? `${message}\n${developmentDetails}` : message}
       onAction={onRetry}
+      stateType="failed"
       title="Unable to load this section"
     />
   );

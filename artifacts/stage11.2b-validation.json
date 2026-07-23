@@ -1,0 +1,85 @@
+{
+  "baseline_commit": "0f088333482d808c891619ca9e6582f5dbf66339",
+  "captured_at": "2026-07-23T16:12:24.039Z",
+  "classification": "PASS",
+  "gates": {
+    "accessibility_matrix": {
+      "checks": 35,
+      "result": "PASS"
+    },
+    "browser_interactions": {
+      "result": "PASS"
+    },
+    "console_errors": {
+      "count": 0,
+      "result": "PASS"
+    },
+    "data_ui_contracts": {
+      "screens": 28,
+      "result": "PASS"
+    },
+    "expo_lint": {
+      "errors": 0,
+      "result": "PASS",
+      "warnings": 0
+    },
+    "frontend_regression": {
+      "passed": 61,
+      "result": "PASS",
+      "total": 61
+    },
+    "git_diff_check": {
+      "result": "PASS"
+    },
+    "nested_controls": {
+      "count": 0,
+      "result": "PASS"
+    },
+    "overflow": {
+      "failures": 0,
+      "result": "PASS"
+    },
+    "primary_bottom_containment": {
+      "passed": 5,
+      "result": "PASS",
+      "total": 5
+    },
+    "responsive_matrix": {
+      "checks": 35,
+      "result": "PASS"
+    },
+    "route_export": {
+      "files": 51,
+      "result": "PASS",
+      "static_routes": 25
+    },
+    "stage10_2_focused": {
+      "passed": 5,
+      "result": "PASS",
+      "total": 5
+    },
+    "stage10_2_historical_visual": {
+      "result": "PRESERVED_FROZEN",
+      "source_fingerprint_expected_to_differ": true
+    },
+    "stage11_2a_source": {
+      "result": "PASS",
+      "tsx_files": 136
+    },
+    "stage11_2b_focused": {
+      "result": "PASS"
+    },
+    "typescript": {
+      "result": "PASS"
+    },
+    "visual_acceptance": {
+      "passed": 30,
+      "result": "PASS",
+      "total": 30
+    }
+  },
+  "historical_artifacts_modified": false,
+  "result": "PASS",
+  "source_fingerprint": "e00445bcfe2cd455b063e90d8d0bbee93557a2079bb760692d9230b34bee10d6",
+  "stage": "11.2B"
+}

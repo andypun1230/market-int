@@ -1,4 +1,5 @@
 import { SymbolView } from 'expo-symbols';
+import { View } from 'react-native';
 import type { ColorValue } from 'react-native';
 
 import { Theme } from '@/constants/theme';
@@ -49,5 +50,9 @@ const ICONS: Record<AppIconName, { android: string; ios: string; web: string }> 
 };
 
 export function AppIcon({ color = Theme.colors.textMuted, name, size = 16 }: { color?: ColorValue; name: AppIconName; size?: number }) {
-  return <SymbolView name={ICONS[name] as never} size={size} tintColor={color} weight="bold" />;
+  return (
+    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <SymbolView name={ICONS[name] as never} size={size} tintColor={color} weight="bold" />
+    </View>
+  );
 }

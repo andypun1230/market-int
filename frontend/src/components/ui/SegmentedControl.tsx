@@ -1,5 +1,7 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { selectedItemScrollOffset } from '@/architecture/layoutPolicy';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 
 type SegmentedOption = {
@@ -31,14 +33,39 @@ export function SegmentedControl({
   wrap = false,
 }: SegmentedControlProps) {
   const isSwitch = variant === 'switch';
+  const scrollRef = useRef<ScrollView | null>(null);
+  const itemLayouts = useRef(new Map<string, { width: number; x: number }>());
+  const [contentWidth, setContentWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const revealSelected = useCallback((animated: boolean) => {
+    const item = itemLayouts.current.get(selectedKey);
+    if (!item || !contentWidth || !viewportWidth || fullWidth || wrap) return;
+    scrollRef.current?.scrollTo({
+      animated,
+      x: selectedItemScrollOffset({ contentWidth, itemWidth: item.width, itemX: item.x, viewportWidth }),
+    });
+  }, [contentWidth, fullWidth, selectedKey, viewportWidth, wrap]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => revealSelected(false));
+    return () => cancelAnimationFrame(frame);
+  }, [revealSelected]);
+
   const content = options.map((option) => {
     const selected = option.key === selectedKey;
 
     return (
       <Pressable
-        accessibilityRole="button"
+        accessibilityLabel={option.label}
+        accessibilityRole="tab"
         accessibilityState={{ selected }}
+        aria-selected={selected}
         key={option.key}
+        onLayout={(event) => {
+          const { width, x } = event.nativeEvent.layout;
+          itemLayouts.current.set(option.key, { width, x });
+          if (selected) requestAnimationFrame(() => revealSelected(false));
+        }}
         onPress={() => onChange(option.key)}
         style={({ pressed }) => [
           styles.chip,
@@ -69,11 +96,16 @@ export function SegmentedControl({
         </View>
       ) : (
         <ScrollView
+          accessibilityLabel={label ?? 'Options'}
+          accessibilityRole="tablist"
           horizontal
           contentContainerStyle={[
             styles.content,
             isSwitch && styles.switchContent,
           ]}
+          onContentSizeChange={(width) => setContentWidth(width)}
+          onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
+          ref={scrollRef}
           showsHorizontalScrollIndicator={false}>
           {content}
         </ScrollView>

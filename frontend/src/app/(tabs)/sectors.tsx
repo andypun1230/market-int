@@ -618,7 +618,7 @@ export default function SectorsScreen() {
               />
             </DashboardCard>
           ) : themeSnapshotLoading || themeStatusLoading ? (
-            <SkeletonCard compact rows={3} title />
+            <SkeletonCard compact rows={3} structure="chart" title />
           ) : liveThemes.length ? (
             <DashboardCard
               title="Theme Directory"
@@ -706,7 +706,7 @@ export default function SectorsScreen() {
               />
             </DashboardCard>
           ) : themeSnapshotLoading || themeStatusLoading ? (
-            <SkeletonCard compact rows={3} title />
+            <SkeletonCard compact rows={3} structure="chart" title />
           ) : themeSnapshot ? (
             <DashboardCard
               title="Theme Rotation Map"
@@ -808,7 +808,7 @@ export default function SectorsScreen() {
               )}
             </DashboardCard>
           ) : themeSnapshotLoading || themeStatusLoading ? (
-            <SkeletonCard compact rows={3} title />
+            <SkeletonCard compact rows={3} structure="list" title />
           ) : liveThemes.length ? (
             <DashboardCard
               title="Theme Rotation Alerts"
