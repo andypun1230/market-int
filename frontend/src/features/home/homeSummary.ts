@@ -1,8 +1,13 @@
 import type { HistoryData, HomeDashboardResponse, IndexSnapshot } from '@/types/market';
+import {
+  buildMarketPostureProjection,
+  type MarketPostureLabel,
+  type MarketPostureProjection,
+} from '@/features/market/marketPostureProjection';
 
 export type HomeSourceState = 'live' | 'cached' | 'mock' | 'unavailable';
 export type HomeTone = 'positive' | 'warning' | 'negative' | 'neutral';
-export type MarketPulseLabel = 'Risk On' | 'Selective Risk' | 'Risk Off';
+export type MarketPulseLabel = MarketPostureLabel;
 
 export type HomeIndexSnapshot = {
   changePercent: number | null;
@@ -40,11 +45,7 @@ export type HomeDailyInsight = {
   summary: string;
 };
 
-export type HomeMarketPulse = {
-  factors: HomeMetric[];
-  label: MarketPulseLabel;
-  tone: HomeTone;
-};
+export type HomeMarketPulse = MarketPostureProjection;
 
 export type HomeSummary = {
   breadth: HomeMetric | null;
@@ -101,7 +102,7 @@ export function buildHomeSummary(
     changePercent: validNumber(item.change_percent),
     symbol: item.symbol,
   }));
-  const marketPulse = buildMarketPulse({ breadth, healthScore, leadership, riskScore, volatility });
+  const marketPulse = buildMarketPostureProjection({ breadth, healthScore, leadership, riskScore, volatility });
   const marketEvents = buildMarketEvents({
     breadth,
     healthLabel: health?.status ?? scoreLabel(healthScore, 'Health'),
@@ -224,48 +225,6 @@ function buildLeadership(core: HomeDashboardResponse['core'] | null): HomeLeader
 
   return [leadingSector, leadingTheme, laggingSector]
     .filter((item): item is HomeLeadershipItem => item !== null);
-}
-
-function buildMarketPulse({
-  breadth,
-  healthScore,
-  leadership,
-  riskScore,
-  volatility,
-}: {
-  breadth: HomeMetric | null;
-  healthScore: number | null;
-  leadership: HomeLeadershipItem[];
-  riskScore: number | null;
-  volatility: HomeMetric | null;
-}): HomeMarketPulse {
-  const riskOff = (riskScore !== null && riskScore >= 65)
-    || (healthScore !== null && healthScore < 45)
-    || (volatility?.score !== null && volatility?.score !== undefined && volatility.score < 40);
-  const riskOn = !riskOff
-    && (healthScore ?? 0) >= 70
-    && (breadth?.score ?? 0) >= 60
-    && (riskScore === null || riskScore <= 35)
-    && (volatility?.score ?? 0) >= 60;
-  const label: MarketPulseLabel = riskOff ? 'Risk Off' : riskOn ? 'Risk On' : 'Selective Risk';
-  const leading = leadership.find((item) => item.role === 'Leading Sector');
-  const factors = [
-    leading ? {
-      direction: leading.direction,
-      label: 'Leadership',
-      score: null,
-      tone: leading.tone,
-      value: leading.label,
-    } satisfies HomeMetric : null,
-    breadth,
-    volatility,
-  ].filter((item): item is HomeMetric => item !== null).slice(0, 3);
-
-  return {
-    factors,
-    label,
-    tone: label === 'Risk On' ? 'positive' : label === 'Risk Off' ? 'negative' : 'warning',
-  };
 }
 
 function buildMarketEvents({

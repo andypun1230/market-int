@@ -1,8 +1,8 @@
 import {
-  buildCopilotDestination,
-  type CopilotDestinationId,
-  type CopilotDestinationInput,
-} from '@/features/copilot/navigation/copilotDestinations';
+  buildNavigationDestination,
+  type DestinationId,
+  type DestinationInput,
+} from '@/architecture/navigationRegistry';
 
 export type CommandCategory =
   | 'Stocks'
@@ -170,11 +170,11 @@ function destinationItem(
   id: string,
   title: string,
   metadata: string,
-  destinationId: CopilotDestinationId,
-  input: CopilotDestinationInput = {},
+  destinationId: DestinationId,
+  input: DestinationInput = {},
   keywords: string[] = [title, metadata],
 ): CommandItem {
-  const destination = buildCopilotDestination(destinationId, input);
+  const destination = buildNavigationDestination(destinationId, input);
   return {
     category,
     id,

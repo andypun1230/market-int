@@ -7,13 +7,6 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
 import { useAppPreferences, type AppearancePreferences } from '@/features/preferences/appPreferences';
 
-const ACCENTS: { label: string; value: AppearancePreferences['accentColor'] }[] = [
-  { label: 'Market Blue', value: 'blue' },
-  { label: 'Growth Green', value: 'green' },
-  { label: 'Insight Purple', value: 'purple' },
-  { label: 'Alert Orange', value: 'orange' },
-];
-
 export default function AppearanceScreen() {
   const { preferences, updatePreferences } = useAppPreferences();
   const appearance = preferences.appearance;
@@ -21,7 +14,7 @@ export default function AppearanceScreen() {
     updatePreferences({ appearance: { ...appearance, ...patch } });
 
   return (
-    <AppScreen showBackButton title="Appearance" subtitle="Theme, text size, accent color, and motion.">
+    <AppScreen showBackButton title="Appearance" subtitle="Theme and motion preferences applied across the app.">
       <View style={styles.stack}>
         <DashboardCard title="Theme" accentColor={Theme.colors.accent}>
           <View style={styles.stack}>
@@ -37,33 +30,6 @@ export default function AppearanceScreen() {
               onPress={() => update({ theme: 'system' })}
               title="System"
             />
-          </View>
-        </DashboardCard>
-
-        <DashboardCard title="Text Size" accentColor={Theme.colors.accent}>
-          <View style={styles.stack}>
-            {(['small', 'default', 'large'] as const).map((value) => (
-              <SettingsRow
-                badge={appearance.textSize === value ? <StatusBadge label="Selected" showDot={false} tone="info" /> : undefined}
-                key={value}
-                onPress={() => update({ textSize: value })}
-                title={value === 'default' ? 'Default' : value === 'small' ? 'Small' : 'Large'}
-              />
-            ))}
-          </View>
-        </DashboardCard>
-
-        <DashboardCard title="Accent Color" accentColor={Theme.colors.accent}>
-          <View style={styles.stack}>
-            {ACCENTS.map((accent) => (
-              <SettingsRow
-                badge={appearance.accentColor === accent.value ? <StatusBadge label="Selected" showDot={false} tone="info" /> : undefined}
-                description="Affects selection and branding accents, not financial green/red meaning."
-                key={accent.value}
-                onPress={() => update({ accentColor: accent.value })}
-                title={accent.label}
-              />
-            ))}
           </View>
         </DashboardCard>
 

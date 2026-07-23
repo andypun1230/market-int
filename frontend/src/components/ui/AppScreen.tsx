@@ -8,6 +8,7 @@ import type { RefreshControlProps, StyleProp, ViewStyle } from 'react-native';
 import { Spacing, Theme } from '@/constants/theme';
 import { UniversalCommandHeader } from '@/features/command/components/UniversalCommandHeader';
 import type { CopilotContext } from '@/features/copilot/types';
+import { useAppPreferences } from '@/features/preferences/appPreferences';
 
 type AppScreenProps = {
   children: ReactNode;
@@ -35,19 +36,21 @@ export function AppScreen({
   title,
 }: AppScreenProps) {
   const router = useRouter();
+  const { preferences } = useAppPreferences();
   const pathname = usePathname();
   const { commandTarget } = useLocalSearchParams<{ commandTarget?: string | string[] }>();
   const target = Array.isArray(commandTarget) ? commandTarget[0] : commandTarget;
   const isPrimaryTab = ['/', '/market', '/sectors', '/watchlist', '/more'].includes(pathname);
   const [collapsed, setCollapsed] = useState(!isPrimaryTab);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [systemReduceMotion, setSystemReduceMotion] = useState(false);
+  const reduceMotion = systemReduceMotion || preferences.appearance.reduceMotion;
   const [collapseProgress] = useState(() => new Animated.Value(isPrimaryTab ? 0 : 1));
   const [highlightProgress] = useState(() => new Animated.Value(0));
   const scrollRef = useRef<ScrollView | null>(null);
 
   useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    AccessibilityInfo.isReduceMotionEnabled().then(setSystemReduceMotion);
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setSystemReduceMotion);
     return () => subscription.remove();
   }, []);
 

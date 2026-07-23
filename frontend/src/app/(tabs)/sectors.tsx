@@ -11,6 +11,7 @@ import { DetailModal } from "@/components/ui/DetailModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MetricTile } from "@/components/ui/MetricTile";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { AlertList } from "@/components/ui/AlertList";
 import { Spacing, Theme } from "@/constants/theme";
 import { AskCopilotButton } from "@/features/copilot/components/AskCopilotButton";
 import { createCopilotContext } from "@/features/copilot/context/buildScreenContext";
@@ -45,6 +46,12 @@ import {
   type SectorRow,
 } from "@/features/sectors/sectorSnapshot";
 import { buildRotationChartSectors } from "@/features/sectors/rotationAvailability";
+import { presentSnapshotAlerts } from "@/features/sectors/sectorAlertPresenter";
+import { buildSectorThemeSearchItems } from "@/features/sectors/sectorThemeSearchModel";
+import {
+  selectCanonicalAtRiskSectors,
+  selectCanonicalEmergingSectors,
+} from "@/features/sectors/analysis/scanners";
 import {
   formatThemeRole,
   formatThemeTaxonomyLabel,
@@ -210,16 +217,22 @@ export default function SectorsScreen() {
       ),
     [preferences.sectorRotationInterval, rotation, rows],
   );
-  const emerging = rows.filter((row) => row.classification === "Improving");
-  const risk = rows.filter(
-    (row) =>
-      row.classification === "Leading" && (row.scores.momentum ?? 100) < 50,
-  );
+  const emerging = useMemo(() => selectCanonicalEmergingSectors(rows), [rows]);
+  const risk = useMemo(() => selectCanonicalAtRiskSectors(rows), [rows]);
   const themeAlerts = useMemo(
     () => buildRotationAlerts(themes, preferences.themeRotationInterval),
     [preferences.themeRotationInterval, themes],
   );
   const liveThemes = useMemo(() => themeSnapshot?.items ?? [], [themeSnapshot]);
+  const searchItems = useMemo(
+    () =>
+      buildSectorThemeSearchItems({
+        sectors: rows,
+        testItems: modelItems,
+        themes: liveThemes,
+      }),
+    [liveThemes, modelItems, rows],
+  );
   const themeRotationPoints = useMemo(
     () => themeRotation?.points ?? [],
     [themeRotation],
@@ -340,6 +353,8 @@ export default function SectorsScreen() {
           activeCategory={activeCategory}
           activeSection={activeSection}
           activeFilterCount={countActiveFilters(activeFilters)}
+          comparisonEnabled={testScenariosEnabled}
+          filterEnabled={testScenariosEnabled}
           onCategoryChange={(category) => {
             router.setParams({ commandTarget: undefined, section: undefined });
             updatePreferences({
@@ -505,15 +520,10 @@ export default function SectorsScreen() {
             title="Rotation Alerts"
             accentColor={Theme.colors.warning}
           >
-            {snapshot.alerts.length ? (
-              snapshot.alerts.map((alert, index) => (
-                <Text key={index} style={styles.body}>
-                  {JSON.stringify(alert)}
-                </Text>
-              ))
-            ) : (
-              <Text style={styles.note}>No transition alerts yet.</Text>
-            )}
+            <AlertList
+              alerts={presentSnapshotAlerts(snapshot.alerts, "Sector")}
+              emptyMessage="No transition alerts yet."
+            />
           </DashboardCard>
         ) : null}
 
@@ -739,25 +749,10 @@ export default function SectorsScreen() {
               subtitle="Changes between immutable ThemeSnapshots."
               accentColor={Theme.colors.warning}
             >
-              {themeSnapshot?.alerts.length ? (
-                themeSnapshot.alerts.map((alert, index) => (
-                  <View key={String(alert.id ?? index)} style={styles.alert}>
-                    <Text style={styles.name}>
-                      {String(alert.theme_id ?? "Theme")}
-                    </Text>
-                    <Text style={styles.note}>
-                      {String(
-                        alert.message ?? alert.type ?? "Theme snapshot update",
-                      )}
-                    </Text>
-                  </View>
-                ))
-              ) : (
-                <Text style={styles.note}>
-                  No theme transition alerts yet. Further immutable snapshots
-                  are needed for change detection.
-                </Text>
-              )}
+              <AlertList
+                alerts={presentSnapshotAlerts(themeSnapshot?.alerts ?? [], "Theme")}
+                emptyMessage="No theme transition alerts yet. Further immutable snapshots are needed for change detection."
+              />
             </DashboardCard>
           ) : (
             <ThemeReviewGate status={themeStatus} />
@@ -826,13 +821,17 @@ export default function SectorsScreen() {
             : preferences.sectorHeatmapInterval
         }
         isVisible={searchVisible}
-        items={modelItems}
+        items={searchItems}
         onClose={() => setSearchVisible(false)}
         onOpenItem={(item) => {
           setSearchVisible(false);
-          if (item.type === "theme") setSelected({ item, kind: "theme" });
-          else {
-            const sectorId = normalizeSectorId(item.name);
+          if (item.type === "theme") {
+            const theme = testScenariosEnabled
+              ? themes.find((candidate) => candidate.id === item.id)
+              : liveThemes.find((candidate) => candidate.id === item.id);
+            if (theme) setSelected({ item: theme, kind: "theme" });
+          } else {
+            const sectorId = normalizeSectorId(item.id) ?? normalizeSectorId(item.name);
             if (sectorId) setSelected({ kind: "sector", sectorId });
           }
         }}
@@ -873,6 +872,8 @@ function SectorNavigation({
   activeCategory,
   activeFilterCount,
   activeSection,
+  comparisonEnabled,
+  filterEnabled,
   onCategoryChange,
   onCompare,
   onFilter,
@@ -882,6 +883,8 @@ function SectorNavigation({
   activeCategory: ActiveCategory;
   activeFilterCount: number;
   activeSection: ActiveSection;
+  comparisonEnabled: boolean;
+  filterEnabled: boolean;
   onCategoryChange: (category: ActiveCategory) => void;
   onCompare: () => void;
   onFilter: () => void;
@@ -921,6 +924,7 @@ function SectorNavigation({
             onPress={onSearch}
           />
           <UtilityButton
+            disabled={!comparisonEnabled}
             icon={{
               android: "compare_arrows",
               ios: "rectangle.2.swap",
@@ -931,6 +935,7 @@ function SectorNavigation({
           />
           <UtilityButton
             badge={activeFilterCount}
+            disabled={!filterEnabled}
             icon={{ android: "tune", ios: "slider.horizontal.3", web: "tune" }}
             label="Filter and sort"
             onPress={onFilter}
@@ -966,11 +971,13 @@ function SectorNavigation({
 
 function UtilityButton({
   badge,
+  disabled = false,
   icon,
   label,
   onPress,
 }: {
   badge?: number;
+  disabled?: boolean;
   icon: { android: string; ios: string; web: string };
   label: string;
   onPress: () => void;
@@ -979,8 +986,10 @@ function UtilityButton({
     <Pressable
       accessibilityLabel={badge ? `${label}, ${badge} active filters` : label}
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.utilityButton, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.utilityButton, disabled && styles.utilityButtonDisabled, pressed && styles.pressed]}
     >
       <SymbolView
         name={icon as never}
@@ -1642,6 +1651,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 40,
   },
+  utilityButtonDisabled: { opacity: 0.45 },
   utilityToolbar: {
     alignItems: "center",
     alignSelf: "flex-end",

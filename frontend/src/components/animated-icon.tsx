@@ -8,7 +8,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
 
-export function AnimatedSplashOverlay() {
+export function AnimatedSplashOverlay({ reduceMotion = false }: { reduceMotion?: boolean }) {
   const [animate, setAnimate] = useState(false);
   const [visible, setVisible] = useState(true);
 
@@ -34,6 +34,10 @@ export function AnimatedSplashOverlay() {
   });
 
   const image = <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />;
+
+  if (animate && reduceMotion) {
+    return null;
+  }
 
   return animate ? (
     <Animated.View

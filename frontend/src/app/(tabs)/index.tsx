@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import Svg, { Polyline } from 'react-native-svg';
 
+import { buildEntityDestination } from '@/architecture/entityRoutingRegistry';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
@@ -107,14 +108,10 @@ export default function HomeScreen() {
   };
 
   const openLeadership = (item: HomeLeadershipItem) => {
-    router.push({
-      pathname: '/sectors',
-      params: {
-        entityId: item.id ?? '',
-        entityKind: item.kind,
-        entityName: item.label,
-      },
-    });
+    router.push(buildEntityDestination(item.kind, {
+      entityId: item.id,
+      entityName: item.label,
+    }) as never);
   };
 
   return (
@@ -152,7 +149,7 @@ export default function HomeScreen() {
           <LeadershipCard onPressItem={openLeadership} summary={summary} />
           <RiskDashboardCard onPress={() => router.push('/market')} stacked={viewportWidth < 360} summary={summary} />
           <TopStockIdeasCard
-            onPressTicker={(symbol) => router.push({ pathname: '/watchlist', params: { symbol } })}
+            onPressTicker={(symbol) => router.push(buildEntityDestination('stock', { symbol }) as never)}
             onPressView={() => router.push('/watchlist')}
             summary={summary}
           />

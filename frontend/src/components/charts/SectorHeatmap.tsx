@@ -27,8 +27,9 @@ export function SectorHeatmap({
 
         return (
           <Pressable
-            accessibilityLabel={`Open ${sector.name} sector details, ${returnLabel} ${formatPercent(getReturnValue(sector))}`}
-            accessibilityRole="button"
+            accessibilityLabel={onSectorPress ? `Open ${sector.name} sector details, ${returnLabel} ${formatPercent(getReturnValue(sector))}` : `${sector.name}, ${returnLabel} ${formatPercent(getReturnValue(sector))}`}
+            accessibilityRole={onSectorPress ? 'button' : undefined}
+            disabled={!onSectorPress}
             key={sector.name}
             onPress={() => onSectorPress?.(sector)}
             style={[

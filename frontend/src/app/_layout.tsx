@@ -4,15 +4,18 @@ import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { WatchlistProvider } from '@/features/watchlist/store';
+import { useAppPreferences } from '@/features/preferences/appPreferences';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { preferences } = useAppPreferences();
+  const effectiveColorScheme = preferences.appearance.theme === 'system' ? colorScheme : 'dark';
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={effectiveColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <WatchlistProvider>
-        <AnimatedSplashOverlay />
+        <AnimatedSplashOverlay reduceMotion={preferences.appearance.reduceMotion} />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="report" />

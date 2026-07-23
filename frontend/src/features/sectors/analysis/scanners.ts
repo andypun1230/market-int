@@ -1,4 +1,5 @@
 import type { SectorThemeTestItem } from '@/data/sectorTabTestData';
+import type { SectorRow } from '@/features/sectors/sectorSnapshot';
 
 import { calculateLeadershipConcentration } from './concentration';
 import { detectDivergences } from './divergence';
@@ -10,6 +11,14 @@ export type ScannerResult = {
   reasons: string[];
   source: 'test';
 };
+
+export function selectCanonicalEmergingSectors(rows: SectorRow[]) {
+  return rows.filter((row) => row.classification === 'Improving');
+}
+
+export function selectCanonicalAtRiskSectors(rows: SectorRow[]) {
+  return rows.filter((row) => row.classification === 'Leading' && (row.scores.momentum ?? 100) < 50);
+}
 
 export function buildEmergingLeadershipScanner(items: SectorThemeTestItem[], maxItems = 5): ScannerResult[] {
   return items

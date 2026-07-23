@@ -42,7 +42,7 @@ export function PerformanceHeatmap<T>({
         return (
           <Pressable
             accessibilityLabel={`${name}, ${formatPercent(value)}`}
-            accessibilityRole="button"
+            accessibilityRole={onPressItem ? 'button' : undefined}
             disabled={!onPressItem}
             key={name}
             onPress={() => onPressItem?.(item)}

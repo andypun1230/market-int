@@ -7,17 +7,18 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TestDataBadge } from '@/components/ui/TestDataBadge';
 import { Spacing, Theme } from '@/constants/theme';
-import type { SectorThemeTestItem, TestHeatmapInterval } from '@/data/sectorTabTestData';
+import type { TestHeatmapInterval } from '@/data/sectorTabTestData';
 import { searchSectorThemeItems } from '@/features/sectors/analysis/search';
+import type { SectorThemeSearchItem } from '@/features/sectors/sectorThemeSearchModel';
 import { buildWatchlistKey } from '@/features/watchlist/store';
 
 type SectorThemeSearchModalProps = {
   interval: TestHeatmapInterval;
   isVisible: boolean;
-  items: SectorThemeTestItem[];
+  items: SectorThemeSearchItem[];
   onClose: () => void;
-  onOpenItem: (item: SectorThemeTestItem) => void;
-  onToggleWatchlist: (item: SectorThemeTestItem) => void;
+  onOpenItem: (item: SectorThemeSearchItem) => void;
+  onToggleWatchlist: (item: SectorThemeSearchItem) => void;
   watchlistKeys: Set<string>;
 };
 
@@ -36,7 +37,7 @@ export function SectorThemeSearchModal({
   const themes = results.filter((item) => item.type === 'theme');
 
   return (
-    <DetailModal visible={isVisible} title="Search Sectors & Themes" subtitle="Search test sectors, themes, and associated tickers." onClose={onClose}>
+    <DetailModal visible={isVisible} title="Search Sectors & Themes" subtitle="Search canonical sectors, themes, and associated tickers." onClose={onClose}>
       <DashboardCard>
         <TextInput
           accessibilityLabel="Search sectors and themes"
@@ -93,9 +94,9 @@ function ResultGroup({
   watchlistKeys,
 }: {
   interval: TestHeatmapInterval;
-  items: SectorThemeTestItem[];
-  onOpenItem: (item: SectorThemeTestItem) => void;
-  onToggleWatchlist: (item: SectorThemeTestItem) => void;
+  items: SectorThemeSearchItem[];
+  onOpenItem: (item: SectorThemeSearchItem) => void;
+  onToggleWatchlist: (item: SectorThemeSearchItem) => void;
   title: string;
   watchlistKeys: Set<string>;
 }) {
@@ -117,9 +118,9 @@ function ResultGroup({
                   <StatusBadge label={item.type === 'sector' ? 'Sector' : 'Theme'} tone={item.type === 'sector' ? 'info' : 'purple'} />
                 </View>
                 <Text style={styles.resultMeta}>
-                  {capitalize(item.quadrant)} · {formatPercent(item.returns[interval])}
+                  {item.status} · {formatPercent(item.values[interval])}
                 </Text>
-                <TestDataBadge />
+                {item.sourceState === 'test' ? <TestDataBadge /> : null}
               </View>
               <Pressable
                 accessibilityLabel={`${saved ? 'Remove' : 'Add'} ${item.name} Watchlist`}
@@ -140,11 +141,8 @@ function ResultGroup({
   );
 }
 
-function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function formatPercent(value: number) {
+function formatPercent(value: number | null) {
+  if (value === null || !Number.isFinite(value)) return 'N/A';
   const prefix = value > 0 ? '+' : '';
   return `${prefix}${value.toFixed(2)}%`;
 }

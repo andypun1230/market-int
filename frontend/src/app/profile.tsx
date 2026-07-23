@@ -2,14 +2,9 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
-import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
 import { useAppPreferences, type LocalProfilePreferences } from '@/features/preferences/appPreferences';
-
-const INVESTOR_STYLES: LocalProfilePreferences['investorStyle'][] = ['Conservative', 'Balanced', 'Aggressive'];
-const EXPERIENCE_LEVELS: LocalProfilePreferences['experienceLevel'][] = ['Beginner', 'Intermediate', 'Advanced'];
-const REPORT_FOCUS: LocalProfilePreferences['preferredReportFocus'][] = ['Market Overview', 'Watchlist', 'Risk', 'Sectors'];
 
 export default function ProfileScreen() {
   const { preferences, updatePreferences } = useAppPreferences();
@@ -18,7 +13,7 @@ export default function ProfileScreen() {
     updatePreferences({ profile: { ...profile, ...patch } });
 
   return (
-    <AppScreen showBackButton title="Profile" subtitle="Local-only profile and market preferences.">
+    <AppScreen showBackButton title="Profile" subtitle="Local display identity.">
       <View style={styles.stack}>
         <DashboardCard title="Local Profile" accentColor={Theme.colors.purple}>
           <View style={styles.stack}>
@@ -35,65 +30,10 @@ export default function ProfileScreen() {
                 value={profile.displayName}
               />
             </View>
-            <SettingsRow title="Default Market" value={profile.defaultMarket} />
-            <SettingsRow title="Preferred Watchlist" value={profile.preferredWatchlist} />
-          </View>
-        </DashboardCard>
-
-        <ChoiceCard
-          current={profile.investorStyle}
-          options={INVESTOR_STYLES}
-          onSelect={(investorStyle) => update({ investorStyle })}
-          title="Investor Style"
-        />
-        <ChoiceCard
-          current={profile.experienceLevel}
-          options={EXPERIENCE_LEVELS}
-          onSelect={(experienceLevel) => update({ experienceLevel })}
-          title="Experience Level"
-        />
-        <ChoiceCard
-          current={profile.preferredReportFocus}
-          options={REPORT_FOCUS}
-          onSelect={(preferredReportFocus) => update({ preferredReportFocus })}
-          title="Preferred Report Focus"
-        />
-
-        <DashboardCard title="Account Actions" accentColor={Theme.colors.warning}>
-          <View style={styles.stack}>
-            <SettingsRow disabled title="Sign In" value="Planned" />
-            <SettingsRow disabled title="Manage Subscription" value="Later" />
           </View>
         </DashboardCard>
       </View>
     </AppScreen>
-  );
-}
-
-function ChoiceCard<T extends string>({
-  current,
-  onSelect,
-  options,
-  title,
-}: {
-  current: T;
-  onSelect: (value: T) => void;
-  options: T[];
-  title: string;
-}) {
-  return (
-    <DashboardCard title={title} accentColor={Theme.colors.accent}>
-      <View style={styles.stack}>
-        {options.map((option) => (
-          <SettingsRow
-            badge={current === option ? <StatusBadge label="Selected" showDot={false} tone="info" /> : undefined}
-            key={option}
-            onPress={() => onSelect(option)}
-            title={option}
-          />
-        ))}
-      </View>
-    </DashboardCard>
   );
 }
 

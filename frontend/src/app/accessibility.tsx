@@ -13,7 +13,6 @@ export default function AccessibilityScreen() {
     <AppScreen showBackButton title="Accessibility" subtitle="Readable display preferences.">
       <DashboardCard title="Display" accentColor={Theme.colors.accent}>
         <View style={styles.stack}>
-          <SettingsRow title="Text Size" value={appearance.textSize === 'default' ? 'Default' : appearance.textSize} />
           <SettingsRow
             description="Reduce decorative transitions where supported."
             onValueChange={(reduceMotion) => updatePreferences({ appearance: { ...appearance, reduceMotion } })}

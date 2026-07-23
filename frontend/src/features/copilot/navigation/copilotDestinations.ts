@@ -1,4 +1,5 @@
 import type { CopilotActionV1 } from '@/features/copilot/types';
+import { buildEntityDestination, type CanonicalEntityKind } from '@/architecture/entityRoutingRegistry';
 
 export type CopilotDestinationId =
   | 'home'
@@ -64,45 +65,33 @@ export const COPILOT_DESTINATIONS: Record<CopilotDestinationId, DestinationDefin
   sector_detail: {
     label: 'Sector Detail',
     pathname: '/sectors',
-    params: (input) => compactParams({
-      commandTarget: 'sectorDetail',
-      section: 'sectorHeatmap',
-      entityKind: 'sector',
-      entityId: input.entityId,
-      entityName: input.entityName,
-    }),
+    params: (input) => entityParams('sector', input),
   },
   theme_detail: {
     label: 'Theme Detail',
     pathname: '/sectors',
-    params: (input) => compactParams({
-      commandTarget: 'themeDetail',
-      section: 'themesHeatmap',
-      entityKind: 'theme',
-      entityId: input.entityId,
-      entityName: input.entityName,
-    }),
+    params: (input) => entityParams('theme', input),
   },
   leadership_scanner: { label: 'Leadership Scanner', pathname: '/sectors', params: SECTOR_SECTION('emergingLeadership') },
   stock_detail: {
     label: 'Stock Detail',
     pathname: '/watchlist',
-    params: (input) => compactParams({ commandTarget: 'stockDetail', section: 'stocks', symbol: input.symbol, detailTab: 'overview' }),
+    params: (input) => entityParams('stock', input, 'overview'),
   },
   stock_technical: {
     label: 'Stock Technical',
     pathname: '/watchlist',
-    params: (input) => compactParams({ commandTarget: 'stockTechnical', section: 'stocks', symbol: input.symbol, detailTab: 'technical' }),
+    params: (input) => entityParams('stock', input, 'technical'),
   },
   stock_signals: {
     label: 'Stock Signals',
     pathname: '/watchlist',
-    params: (input) => compactParams({ commandTarget: 'stockSignals', section: 'stocks', symbol: input.symbol, detailTab: 'signals' }),
+    params: (input) => entityParams('stock', input, 'signals'),
   },
   stock_risk: {
     label: 'Stock Risk',
     pathname: '/watchlist',
-    params: (input) => compactParams({ commandTarget: 'stockRisk', section: 'stocks', symbol: input.symbol, detailTab: 'risk' }),
+    params: (input) => entityParams('stock', input, 'risk'),
   },
   watchlist: { label: 'Watchlist', pathname: '/watchlist', params: WATCHLIST_SECTION('stocks') },
   watchlist_sectors: { label: 'Saved Sectors', pathname: '/watchlist', params: WATCHLIST_SECTION('sectors') },
@@ -110,7 +99,7 @@ export const COPILOT_DESTINATIONS: Record<CopilotDestinationId, DestinationDefin
   report: {
     label: 'Daily Report',
     pathname: '/report',
-    params: (input) => compactParams({ commandTarget: 'report', reportId: input.reportId }),
+    params: (input) => buildEntityDestination('report', { reportId: input.reportId }).params,
   },
   report_research_focus: {
     label: 'Report Research Focus',
@@ -253,4 +242,17 @@ function compactParams(input: Record<string, string | null | undefined>): Record
     const normalized = value?.trim();
     return normalized ? [[key, normalized]] : [];
   }));
+}
+
+function entityParams(
+  kind: Exclude<CanonicalEntityKind, 'report'>,
+  input: CopilotDestinationInput,
+  stockTab?: 'overview' | 'technical' | 'signals' | 'risk',
+) {
+  return buildEntityDestination(kind, {
+    entityId: input.entityId,
+    entityName: input.entityName,
+    stockTab,
+    symbol: input.symbol,
+  }).params;
 }

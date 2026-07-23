@@ -6,6 +6,7 @@ import { AppScreen } from '@/components/ui/AppScreen';
 import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
+import { useAppPreferences } from '@/features/preferences/appPreferences';
 
 type RoutePath =
   | '/about'
@@ -38,12 +39,12 @@ const TOOLS: MoreRow[] = [
   },
   {
     badge: { label: 'Saved', tone: 'muted' },
-    description: 'Daily report, market regime, risk, watchlist, and macro alert preferences.',
+    description: 'Notification delivery availability and connection status.',
     href: '/notifications',
     title: 'Notifications',
   },
   {
-    description: 'Local display name, investor style, experience level, and report focus.',
+    description: 'Local display identity used by this device.',
     href: '/profile',
     title: 'Profile',
     value: 'Local',
@@ -51,9 +52,9 @@ const TOOLS: MoreRow[] = [
 ];
 
 const PREFERENCES: MoreRow[] = [
-  { description: 'Theme, text size, accent color, and motion settings.', href: '/appearance', title: 'Appearance', value: 'Dark' },
-  { description: 'English, region, market time display, and number format.', href: '/language-region', title: 'Language', value: 'English' },
-  { description: 'Refresh cadence, Wi-Fi only mode, and automatic report downloads.', href: '/data-usage', title: 'Data Usage', value: 'Manual' },
+  { description: 'Theme and reduced-motion settings.', href: '/appearance', title: 'Appearance', value: 'Dark' },
+  { description: 'Currently supported display language.', href: '/language-region', title: 'Language', value: 'English' },
+  { description: 'Operational market-data cache controls.', href: '/data-usage', title: 'Data Usage', value: 'Cache' },
   { description: 'All settings and diagnostics in one place.', href: '/settings', title: 'Settings', value: 'Manage' },
 ];
 
@@ -73,6 +74,10 @@ const COMING_NEXT = [
 
 export default function MoreScreen() {
   const router = useRouter();
+  const { preferences } = useAppPreferences();
+  const tools = TOOLS.map((item) => item.href === '/profile'
+    ? { ...item, value: preferences.profile.displayName.trim() || 'Guest User' }
+    : item);
 
   return (
     <AppScreen title="More" subtitle="Secondary tools and account controls.">
@@ -86,7 +91,7 @@ export default function MoreScreen() {
           />
         </DashboardCard>
 
-        <UtilitySection items={TOOLS} title="Tools" />
+        <UtilitySection items={tools} title="Tools" />
         <UtilitySection items={PREFERENCES} title="Preferences" />
         <UtilitySection items={ABOUT} title="About & Legal" />
 

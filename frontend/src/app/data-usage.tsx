@@ -6,24 +6,12 @@ import { AppScreen } from '@/components/ui/AppScreen';
 import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
-import { useAppPreferences, type DataUsagePreferences } from '@/features/preferences/appPreferences';
 import { clearMarketDataCache, getMarketDataCacheStatus } from '@/services/api';
 import type { ProviderCacheStatus } from '@/types/market';
 
-const REFRESH_MODES: { label: string; value: DataUsagePreferences['refreshMode'] }[] = [
-  { label: 'Manual', value: 'manual' },
-  { label: 'Every 15 minutes', value: '15m' },
-  { label: 'Every 30 minutes', value: '30m' },
-  { label: 'Every hour', value: '60m' },
-];
-
 export default function DataUsageScreen() {
-  const { preferences, updatePreferences } = useAppPreferences();
   const [cacheStatus, setCacheStatus] = useState<ProviderCacheStatus | null>(null);
   const [cacheMessage, setCacheMessage] = useState<string | null>(null);
-  const dataUsage = preferences.dataUsage;
-  const update = (patch: Partial<DataUsagePreferences>) =>
-    updatePreferences({ dataUsage: { ...dataUsage, ...patch } });
 
   useEffect(() => {
     let mounted = true;
@@ -55,43 +43,8 @@ export default function DataUsageScreen() {
   };
 
   return (
-    <AppScreen showBackButton title="Data Usage" subtitle="Refresh, downloads, and future cache controls.">
+    <AppScreen showBackButton title="Data Usage" subtitle="Operational market-data cache controls.">
       <View style={styles.stack}>
-        <DashboardCard title="Refresh Mode" accentColor={Theme.colors.accent}>
-          <View style={styles.stack}>
-            {REFRESH_MODES.map((mode) => (
-              <SettingsRow
-                badge={dataUsage.refreshMode === mode.value ? <StatusBadge label="Selected" showDot={false} tone="info" /> : undefined}
-                key={mode.value}
-                onPress={() => update({ refreshMode: mode.value })}
-                title={mode.label}
-              />
-            ))}
-          </View>
-        </DashboardCard>
-
-        <DashboardCard title="Network Controls" accentColor={Theme.colors.purple}>
-          <View style={styles.stack}>
-            <SettingsRow title="Low Data Mode" description="Reduces automatic refreshes, chart history requests, and report downloads." switchValue={dataUsage.lowDataMode} onValueChange={(lowDataMode) => update({ lowDataMode })} />
-            <SettingsRow title="Wi-Fi Only" description="Future downloads and background refreshes will respect this setting." switchValue={dataUsage.wifiOnly} onValueChange={(wifiOnly) => update({ wifiOnly })} />
-            <SettingsRow title="Background Refresh" switchValue={dataUsage.backgroundRefresh} onValueChange={(backgroundRefresh) => update({ backgroundRefresh })} />
-            <SettingsRow title="Download Charts Automatically" switchValue={dataUsage.autoLoadCharts} onValueChange={(autoLoadCharts) => update({ autoLoadCharts })} />
-          </View>
-        </DashboardCard>
-
-        <DashboardCard title="Reports" accentColor={Theme.colors.warning}>
-          <View style={styles.stack}>
-            {(['off', 'wifi', 'always'] as const).map((value) => (
-              <SettingsRow
-                badge={dataUsage.autoDownloadReports === value ? <StatusBadge label="Selected" showDot={false} tone="info" /> : undefined}
-                key={value}
-                onPress={() => update({ autoDownloadReports: value })}
-                title={value === 'off' ? 'Do Not Auto-Download' : value === 'wifi' ? 'Wi-Fi Only' : 'Always'}
-              />
-            ))}
-          </View>
-        </DashboardCard>
-
         <DashboardCard title="Market Data Cache" accentColor={Theme.colors.accent}>
           <View style={styles.stack}>
             <SettingsRow
@@ -103,12 +56,6 @@ export default function DataUsageScreen() {
               title="Cache Size"
               value={formatCacheSize(cacheStatus)}
               description={`${cacheStatus?.repository?.persistent?.entries ?? 0} persisted entries · ${cacheStatus?.repository?.persistent?.stale_entries ?? 0} stale`}
-            />
-            <SettingsRow
-              title="Use Stale Data When Offline"
-              description="The backend may show clearly labelled stale market data when providers are unavailable."
-              switchValue={dataUsage.backgroundRefresh}
-              onValueChange={(backgroundRefresh) => update({ backgroundRefresh })}
             />
             <SettingsRow
               title="Clear Cached Market Data"

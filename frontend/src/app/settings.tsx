@@ -124,20 +124,20 @@ export default function SettingsScreen() {
     <AppScreen showBackButton title="Settings" subtitle="Application details and local backend configuration.">
       <DashboardCard title="Appearance" accentColor={Theme.colors.accent}>
         <View style={styles.rowStack}>
-          <SettingsRow title="Appearance" description="Theme, text size, accent color, and motion." value="Dark" onPress={() => router.push('/appearance')} />
+          <SettingsRow title="Appearance" description="Theme and reduced-motion behavior." value="Dark" onPress={() => router.push('/appearance')} />
           <SettingsRow title="Accessibility" description="Readable display preferences." value="Manage" onPress={() => router.push('/accessibility')} />
         </View>
       </DashboardCard>
 
       <DashboardCard title="Language & Region" accentColor={Theme.colors.purple}>
         <View style={styles.rowStack}>
-          <SettingsRow title="Language & Region" description="Language, region, time display, and number format." value="English" onPress={() => router.push('/language-region')} />
+          <SettingsRow title="Language & Region" description="Currently supported display locale." value="English" onPress={() => router.push('/language-region')} />
         </View>
       </DashboardCard>
 
       <DashboardCard title="Data Usage" accentColor={Theme.colors.warning}>
         <View style={styles.rowStack}>
-          <SettingsRow title="Data Usage" description="Refresh cadence, Wi-Fi only mode, and report downloads." value="Manual" onPress={() => router.push('/data-usage')} />
+          <SettingsRow title="Data Usage" description="Operational market-data cache controls." value="Cache" onPress={() => router.push('/data-usage')} />
         </View>
       </DashboardCard>
 

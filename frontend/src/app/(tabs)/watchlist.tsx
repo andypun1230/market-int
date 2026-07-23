@@ -3,6 +3,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { buildEntityDestination } from '@/architecture/entityRoutingRegistry';
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { DetailModal } from '@/components/ui/DetailModal';
@@ -15,7 +16,6 @@ import { Spacing, Theme } from '@/constants/theme';
 import { createCopilotContext } from '@/features/copilot/context/buildScreenContext';
 import { WatchlistCatalystsCard } from '@/features/context-intelligence/components/ContextIntelligenceCards';
 import { shouldRequestWatchlistCatalysts } from '@/features/context-intelligence/consumerPolicy';
-import { SectorDetailContent } from '@/features/sectors/components/SectorDetailContent';
 import { normalizeSectorId, type SectorId } from '@/features/sectors/sectorSnapshot';
 import { WatchlistSection } from '@/features/watchlist/components/WatchlistSection';
 import { WatchlistBrief } from '@/features/watchlist/components/WatchlistSummary';
@@ -89,7 +89,6 @@ export default function WatchlistScreen() {
   const [addPanelOpen, setAddPanelOpen] = useState(false);
   const [removedSymbols, setRemovedSymbols] = useState<string[]>([]);
   const [inputError, setInputError] = useState<string | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<SectorId | null>(null);
   const watchlistStore = useWatchlist();
   const [watchlistPreferences, updateWatchlistPreferences] = useWatchlistUiPreferences();
   const {
@@ -439,7 +438,10 @@ export default function WatchlistScreen() {
                 {sortedSectors.map(({ stored, sectorId, row }) => (
                   <SavedGroupCard
                     key={buildWatchlistKey('sector', sectorId)}
-                    onOpen={() => setSelectedGroup(sectorId)}
+                    onOpen={() => router.push(buildEntityDestination('sector', {
+                      entityId: sectorId,
+                      entityName: row?.displayName ?? stored.name,
+                    }) as never)}
                     onRemove={() => removeGroup(stored)}
                     subtitle={row ? `#${row.rank} · ${row.etfSymbol} · ${row.classification}` : 'Sector snapshot unavailable'}
                     title={row?.displayName ?? stored.name}
@@ -477,15 +479,10 @@ export default function WatchlistScreen() {
                 {sortedThemes.map(({ stored, row }) => (
                   <SavedGroupCard
                     key={buildWatchlistKey('theme', stored.id)}
-                    onOpen={() => router.push({
-                      pathname: '/sectors',
-                      params: {
-                        entityId: row?.id ?? stored.id,
-                        entityKind: 'theme',
-                        entityName: row?.name ?? stored.name,
-                        section: 'themesRotation',
-                      },
-                    })}
+                    onOpen={() => router.push(buildEntityDestination('theme', {
+                      entityId: row?.id ?? stored.id,
+                      entityName: row?.name ?? stored.name,
+                    }) as never)}
                     onRemove={() => removeGroup(stored)}
                     subtitle={row ? `${row.parentSector} · ${row.classification} · ${formatThemeReturn(row)}` : 'Theme snapshot unavailable'}
                     title={row?.name ?? stored.name}
@@ -514,14 +511,6 @@ export default function WatchlistScreen() {
           </View>
         )}
       </View>
-
-      <DetailModal
-        onClose={() => setSelectedGroup(null)}
-        subtitle={sectorSnapshot ? `${sectorSnapshot.marketDate} · ${sectorSnapshot.sourceState === 'live' ? 'Live Polygon history' : 'Snapshot data'}` : undefined}
-        title={selectedGroup ? sectorSnapshot?.sectors.find((row) => row.sectorId === selectedGroup)?.displayName ?? 'Sector detail' : 'Sector detail'}
-        visible={Boolean(selectedGroup)}>
-        {selectedGroup ? <SectorDetailContent sectorId={selectedGroup} /> : null}
-      </DetailModal>
 
       <DetailModal
         onClose={() => setAddPanelOpen(false)}

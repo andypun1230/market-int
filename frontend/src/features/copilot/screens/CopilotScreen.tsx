@@ -19,7 +19,7 @@ import { CopilotSourceBadge } from '@/features/copilot/components/CopilotSourceB
 import { CopilotStructuredResponse } from '@/features/copilot/components/CopilotStructuredResponse';
 import { buildStarterPrompts } from '@/features/copilot/context/contextRegistry';
 import { CopilotTransportError, streamCopilotChat } from '@/features/copilot/api/copilotApi';
-import { resolveCopilotAction } from '@/features/copilot/navigation/copilotDestinations';
+import { resolveNavigationAction } from '@/architecture/navigationRegistry';
 import {
   copilotConversationReducer,
   createInitialCopilotState,
@@ -175,7 +175,7 @@ export function CopilotScreen() {
   }
 
   function openAction(action: CopilotActionV1) {
-    const destination = resolveCopilotAction(action);
+    const destination = resolveNavigationAction(action);
     if (!destination) return;
     router.push({
       pathname: destination.pathname,

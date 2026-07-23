@@ -7,19 +7,13 @@ import {
   migratePreferences,
   type AppPreferences,
   type AppearancePreferences,
-  type DataUsagePreferences,
-  type LanguagePreferences,
   type LocalProfilePreferences,
-  type NotificationPreferences,
 } from './appPreferencesModel';
 
 export type {
   AppPreferences,
   AppearancePreferences,
-  DataUsagePreferences,
-  LanguagePreferences,
   LocalProfilePreferences,
-  NotificationPreferences,
 };
 
 const STORAGE_KEY = 'market-intelligence-app-preferences-v1';
