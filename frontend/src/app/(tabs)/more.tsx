@@ -7,6 +7,7 @@ import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge';
 import { Spacing, Theme } from '@/constants/theme';
 import { useAppPreferences } from '@/features/preferences/appPreferences';
+import { useUserFacingDataState } from '@/features/trust/UserFacingDataStateProvider';
 
 type RoutePath =
   | '/about'
@@ -38,10 +39,11 @@ const TOOLS: MoreRow[] = [
     value: 'Open',
   },
   {
-    badge: { label: 'Saved', tone: 'muted' },
-    description: 'Notification delivery availability and connection status.',
+    badge: { label: 'Not available in beta', tone: 'muted' },
+    description: 'Push delivery is unavailable; no notification preference is saved.',
     href: '/notifications',
     title: 'Notifications',
+    value: 'Unavailable',
   },
   {
     description: 'Local display identity used by this device.',
@@ -74,8 +76,12 @@ const COMING_NEXT = [
 export default function MoreScreen() {
   const router = useRouter();
   const { preferences } = useAppPreferences();
+  const { dataState } = useUserFacingDataState();
   const tools = TOOLS.map((item) => item.href === '/profile'
     ? { ...item, value: preferences.profile.displayName.trim() || 'Guest User' }
+    : item);
+  const about = ABOUT.map((item) => item.href === '/data-sources'
+    ? { ...item, description: dataState.explanation, value: dataState.headline }
     : item);
 
   return (
@@ -92,13 +98,13 @@ export default function MoreScreen() {
 
         <UtilitySection items={tools} title="Tools" />
         <UtilitySection items={PREFERENCES} title="Preferences" />
-        <UtilitySection items={ABOUT} title="About & Legal" />
+        <UtilitySection items={about} title="About & Legal" />
 
         <DashboardCard title="Coming Next" accentColor={Theme.colors.purple}>
           <View style={styles.rowStack}>
             {COMING_NEXT.map((item) => (
               <SettingsRow
-                badge={<StatusBadge label={item.status} showDot={false} tone={item.tone} />}
+                badge={<StatusBadge label="Not available in beta" showDot={false} tone={item.tone} />}
                 description="Prepared for a future release."
                 disabled
                 key={item.title}

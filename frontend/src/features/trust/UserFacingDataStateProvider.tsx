@@ -13,19 +13,23 @@ type ContextValue = { dataState: UserFacingDataState; diagnostics: Diagnostics; 
 const UserFacingDataStateContext = createContext<ContextValue | null>(null);
 
 export function UserFacingDataStateProvider({ children }: { children: ReactNode }) {
+  const testScenariosEnabled = areTestScenariosEnabled();
   const [diagnostics, setDiagnostics] = useState<Diagnostics>({ provider: null, testData: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    const [providerResult, testResult] = await Promise.allSettled([getProviderStatus(), getTestDataStatus()]);
+    const requests = testScenariosEnabled
+      ? Promise.allSettled([getProviderStatus(), getTestDataStatus()])
+      : Promise.allSettled([getProviderStatus()]);
+    const [providerResult, testResult] = await requests;
     const provider = providerResult.status === 'fulfilled' ? providerResult.value : null;
-    const testData = testResult.status === 'fulfilled' ? testResult.value : null;
+    const testData = testResult?.status === 'fulfilled' ? testResult.value : null;
     setDiagnostics({ provider, testData });
     setError(providerResult.status === 'rejected' ? message(providerResult.reason) : null);
     setLoading(false);
-  }, []);
+  }, [testScenariosEnabled]);
 
   useEffect(() => {
     const timeout = setTimeout(() => void refresh(), 0);
@@ -37,8 +41,8 @@ export function UserFacingDataStateProvider({ children }: { children: ReactNode 
     testData: diagnostics.testData,
     loading,
     error,
-    scenarioActive: areTestScenariosEnabled() && isTestMode(diagnostics.provider),
-  }), [diagnostics, error, loading]);
+    scenarioActive: testScenariosEnabled && isTestMode(diagnostics.provider),
+  }), [diagnostics, error, loading, testScenariosEnabled]);
 
   return (
     <UserFacingDataStateContext.Provider value={{ dataState, diagnostics, refresh }}>

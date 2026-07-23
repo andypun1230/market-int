@@ -7,11 +7,13 @@ import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 import { clearMarketDataCache, getMarketDataCacheStatus } from '@/services/api';
+import { clearRequestCache } from '@/services/requestCache';
 import type { ProviderCacheStatus } from '@/types/market';
 
 export default function DataUsageScreen() {
   const [cacheStatus, setCacheStatus] = useState<ProviderCacheStatus | null>(null);
   const [cacheMessage, setCacheMessage] = useState<string | null>(null);
+  const [clearingCache, setClearingCache] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -32,13 +34,17 @@ export default function DataUsageScreen() {
   }, []);
 
   const clearCache = async () => {
+    setClearingCache(true);
     setCacheMessage('Clearing cached market data...');
     try {
       const nextStatus = await clearMarketDataCache();
+      clearRequestCache();
       setCacheStatus(nextStatus);
-      setCacheMessage('Cached market data cleared.');
+      setCacheMessage('Cached market data cleared. The next market-data request may take longer while fresh data is fetched.');
     } catch {
       setCacheMessage('Unable to clear cached market data.');
+    } finally {
+      setClearingCache(false);
     }
   };
 
@@ -59,9 +65,10 @@ export default function DataUsageScreen() {
             />
             <SettingsRow
               title="Clear Cached Market Data"
-              description="Removes memory and persistent market-data cache entries. API keys and preferences are not stored here."
+              description="Removes frontend request data plus backend memory and persistent market-data entries. Preferences are kept; the next request may take longer."
+              disabled={clearingCache}
               onPress={clearCache}
-              value="Clear"
+              value={clearingCache ? 'Clearing…' : 'Clear'}
             />
             {cacheMessage ? <Text style={styles.note}>{cacheMessage}</Text> : null}
           </View>

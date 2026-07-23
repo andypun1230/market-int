@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { DashboardCard } from '@/components/cards/DashboardCard';
 import { AppScreen } from '@/components/ui/AppScreen';
 import { SettingsRow } from '@/components/ui/SettingsRow';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Spacing, Theme, Typography } from '@/constants/theme';
+import { Spacing, Theme } from '@/constants/theme';
 export default function LanguageRegionScreen() {
   return (
     <AppScreen showBackButton title="Language & Region" subtitle="Supported display locale.">
@@ -15,7 +15,12 @@ export default function LanguageRegionScreen() {
             description="English is currently supported across the app."
             title="English"
           />
-          <Text style={styles.note}>Traditional Chinese support is planned after the main screens are localized.</Text>
+          <SettingsRow
+            badge={<StatusBadge label="Not available in beta" showDot={false} tone="muted" />}
+            description="This language will remain unavailable until the application is fully translated."
+            disabled
+            title="Traditional Chinese"
+          />
         </DashboardCard>
 
       </View>
@@ -24,12 +29,6 @@ export default function LanguageRegionScreen() {
 }
 
 const styles = StyleSheet.create({
-  note: {
-    color: Theme.colors.textMuted,
-    fontSize: Typography.control.fontSize,
-    lineHeight: 19,
-    marginTop: Spacing.two,
-  },
   stack: {
     gap: Spacing.two,
   },

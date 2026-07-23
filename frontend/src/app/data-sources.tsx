@@ -20,21 +20,24 @@ export default function DataSourcesScreen() {
 
   useEffect(() => {
     let mounted = true;
-    Promise.allSettled([getProviderStatus(), getTestDataStatus()]).then(([providerResult, testDataResult]) => {
+    const requests = testScenariosEnabled
+      ? Promise.allSettled([getProviderStatus(), getTestDataStatus()])
+      : Promise.allSettled([getProviderStatus()]);
+    requests.then(([providerResult, testDataResult]) => {
       if (!mounted) {
         return;
       }
       if (providerResult.status === 'fulfilled') {
         setProvider(providerResult.value);
       }
-      if (testDataResult.status === 'fulfilled') {
+      if (testDataResult?.status === 'fulfilled') {
         setTestData(testDataResult.value);
       }
     });
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [testScenariosEnabled]);
 
   return (
     <AppScreen showBackButton title="Data Sources" subtitle="Current data mode and calculation limits.">

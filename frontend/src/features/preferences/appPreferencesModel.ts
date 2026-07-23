@@ -38,9 +38,9 @@ export function mergePreferences(base: AppPreferences, patch: Partial<AppPrefere
       reduceMotion: typeof patch.appearance?.reduceMotion === 'boolean'
         ? patch.appearance.reduceMotion
         : base.appearance.reduceMotion,
-      theme: patch.appearance?.theme === 'system' || patch.appearance?.theme === 'dark'
-        ? patch.appearance.theme
-        : base.appearance.theme,
+      // System/light presentation is not complete in beta. Normalize legacy
+      // selections so an unavailable setting cannot continue affecting the UI.
+      theme: 'dark',
     },
     profile: {
       displayName: typeof patch.profile?.displayName === 'string'

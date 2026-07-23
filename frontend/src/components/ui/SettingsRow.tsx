@@ -26,8 +26,15 @@ export function SettingsRow({
   switchValue,
 }: SettingsRowProps) {
   const isSwitch = typeof switchValue === 'boolean' && onValueChange;
+  const accessibilityLabel = description ? `${title}. ${description}` : title;
   const row = (
-    <View style={[styles.row, disabled && styles.disabled]}>
+    <View
+      accessible={disabled || (!onPress && !isSwitch)}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={disabled ? 'button' : undefined}
+      accessibilityState={disabled ? { disabled: true } : undefined}
+      aria-disabled={disabled || undefined}
+      style={[styles.row, disabled && styles.disabled]}>
       <View style={styles.copy}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>{title}</Text>
@@ -63,7 +70,7 @@ export function SettingsRow({
 
   return (
     <Pressable
-      accessibilityLabel={description ? `${title}. ${description}` : title}
+      accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => pressed && styles.pressed}>

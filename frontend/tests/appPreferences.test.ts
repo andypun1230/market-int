@@ -18,7 +18,7 @@ function run() {
   });
 
   assert(migrated.appearance.reduceMotion === true, 'reduce motion preference is preserved');
-  assert(migrated.appearance.theme === 'system', 'system theme preference is preserved');
+  assert(migrated.appearance.theme === 'dark', 'unavailable legacy system theme is normalized to the supported beta theme');
   assert(migrated.profile.displayName === 'Andy', 'profile display name is preserved');
 
   const invalid = migratePreferences(null);

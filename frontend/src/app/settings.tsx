@@ -18,6 +18,7 @@ import {
   regenerateTestData,
 } from '@/services/api';
 import { clearRequestCache } from '@/services/requestCache';
+import { areTestScenariosEnabled } from '@/services/runtimeConfig';
 import { useUserFacingDataState } from '@/features/trust/UserFacingDataStateProvider';
 import {
   IntelligenceStatus,
@@ -37,6 +38,7 @@ const settings = [
 export default function SettingsScreen() {
   const router = useRouter();
   const { dataState, refresh: refreshSharedDataState } = useUserFacingDataState();
+  const testScenariosEnabled = areTestScenariosEnabled();
   const [providerStatus, setProviderStatus] = useState<ProviderStatus | null>(null);
   const [cacheStatus, setCacheStatus] = useState<ProviderCacheStatus | null>(null);
   const [universeStatus, setUniverseStatus] = useState<UniverseStatus | null>(null);
@@ -50,7 +52,7 @@ export default function SettingsScreen() {
   useEffect(() => {
     let isMounted = true;
 
-    refreshProviderDiagnostics()
+    refreshProviderDiagnostics(testScenariosEnabled)
       .then(({ cache, intelligence, scenarios, status, testData, universe }) => {
         if (isMounted) {
           setProviderStatus(status);
@@ -59,7 +61,9 @@ export default function SettingsScreen() {
           setIntelligenceStatus(intelligence);
           setTestDataStatus(testData);
           setTestDataScenarios(scenarios);
-          setSelectedScenario(testData.scenario);
+          if (testData) {
+            setSelectedScenario(testData.scenario);
+          }
           setProviderError(null);
         }
       })
@@ -78,21 +82,23 @@ export default function SettingsScreen() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [testScenariosEnabled]);
 
   const visibleCacheStatus = cacheStatus ?? providerStatus?.cache_status ?? null;
 
   const handleRefreshProvider = async () => {
     setRefreshingProvider(true);
     try {
-      const diagnostics = await refreshProviderDiagnostics();
+      const diagnostics = await refreshProviderDiagnostics(testScenariosEnabled);
       setProviderStatus(diagnostics.status);
       setCacheStatus(diagnostics.cache);
       setUniverseStatus(diagnostics.universe);
       setIntelligenceStatus(diagnostics.intelligence);
       setTestDataStatus(diagnostics.testData);
       setTestDataScenarios(diagnostics.scenarios);
-      setSelectedScenario(diagnostics.testData.scenario);
+      if (diagnostics.testData) {
+        setSelectedScenario(diagnostics.testData.scenario);
+      }
       setProviderError(null);
       await refreshSharedDataState();
     } catch (error) {
@@ -103,11 +109,14 @@ export default function SettingsScreen() {
   };
 
   const handleRegenerateTestData = async () => {
+    if (!testScenariosEnabled) {
+      return;
+    }
     setRefreshingProvider(true);
     try {
       const result = await regenerateTestData({ scenario: selectedScenario });
       clearRequestCache();
-      const diagnostics = await refreshProviderDiagnostics();
+      const diagnostics = await refreshProviderDiagnostics(true);
       setTestDataStatus(result.test_data ?? diagnostics.testData);
       setProviderStatus(diagnostics.status);
       setCacheStatus(diagnostics.cache);
@@ -147,7 +156,7 @@ export default function SettingsScreen() {
       <DashboardCard title="About" accentColor={Theme.colors.accent}>
         <View style={styles.rowStack}>
           <SettingsRow title="About" description="Version, build, environment, and backend status." onPress={() => router.push('/about')} />
-          <SettingsRow title="Data Sources" description="Current data mode, providers, and calculation limits." onPress={() => router.push('/data-sources')} />
+          <SettingsRow title="Data Sources" description={dataState.explanation} value={dataState.headline} onPress={() => router.push('/data-sources')} />
           <SettingsRow title="Financial Disclaimer" description="Important educational-use limitations." onPress={() => router.push('/disclaimer')} />
           <SettingsRow title="Privacy" description="Local storage, AI chat, report downloads, and future accounts." onPress={() => router.push('/privacy')} />
         </View>
@@ -182,9 +191,9 @@ export default function SettingsScreen() {
         </Text>
       </DashboardCard>
 
-      <DashboardCard
-        title="Scenario Controls"
-        subtitle="Development scenarios are separate from the current provider state"
+      {testScenariosEnabled ? <DashboardCard
+        title="Scenario Controls (Development only)"
+        subtitle="Test fixtures are separate from the current provider state"
         accentColor={Theme.colors.accent}
       >
         <View style={styles.settingGrid}>
@@ -246,7 +255,7 @@ export default function SettingsScreen() {
           Regenerating a scenario updates deterministic development fixtures. It does not change a configured live provider unless the provider mode itself is set to test.
         </Text>
         {providerError ? <Text style={styles.errorText}>{truncateText(providerError, 120)}</Text> : null}
-      </DashboardCard>
+      </DashboardCard> : null}
 
       <DashboardCard
         title="Intelligence Data Diagnostics"
@@ -302,15 +311,17 @@ function formatProviderName(provider?: string) {
     .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
-async function refreshProviderDiagnostics() {
-  const [status, cache, universe, intelligence, testData, scenariosResponse] = await Promise.all([
+async function refreshProviderDiagnostics(includeTestScenarios: boolean) {
+  const [status, cache, universe, intelligence] = await Promise.all([
     getProviderStatus(),
     getProviderCacheStatus(),
     getUniverseStatus(),
     getIntelligenceStatus(),
-    getTestDataStatus(),
-    getTestDataScenarios(),
   ]);
+  if (!includeTestScenarios) {
+    return { cache, intelligence, scenarios: [] as TestDataScenario[], status, testData: null, universe };
+  }
+  const [testData, scenariosResponse] = await Promise.all([getTestDataStatus(), getTestDataScenarios()]);
   return { cache, intelligence, scenarios: scenariosResponse.items, status, testData, universe };
 }
 

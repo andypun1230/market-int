@@ -1,0 +1,52 @@
+{
+  "stage": "11.3",
+  "title": "Settings Beta Readiness",
+  "baseline_commit": "4a30ae9453baaf13b62811f464950f977b7f02a2",
+  "branch": "main",
+  "classification": "PASS",
+  "source_fingerprint": "7ee866ea349ee4f6e98e0220028a2352ff6f4065015e7c9efb3bd8f27bae5948",
+  "generated_at": "2026-07-24T02:48:01+08:00",
+  "inventory": {
+    "registered_entries": 15,
+    "enabled_no_op_controls": 0,
+    "enabled_settings_without_consumers": 0,
+    "enabled_planned_settings": 0,
+    "visible_obsolete_settings": 0,
+    "unfinished_enabled_trust_sensitive_settings": 0
+  },
+  "checks": [
+    { "name": "frontend standalone suite", "result": "PASS", "evidence": "63/63 test files" },
+    { "name": "focused settings tests", "result": "PASS", "evidence": "appPreferences, architectureRegistries, stage11SettingsBetaReadiness" },
+    { "name": "settings source contract", "result": "PASS", "evidence": "validate:stage11-settings" },
+    { "name": "artifact freshness", "result": "PASS", "evidence": "18-file source fingerprint and four required documents" },
+    { "name": "TypeScript", "result": "PASS", "evidence": "npx tsc --noEmit" },
+    { "name": "Expo lint", "result": "PASS", "evidence": "expo lint" },
+    { "name": "data/UI contracts", "result": "PASS", "evidence": "28 screens represented" },
+    { "name": "route validation", "result": "PASS", "evidence": "architecture registry and 25 static-route web export" },
+    { "name": "Stage 11 accessibility source validation", "result": "PASS", "evidence": "273 source files" },
+    { "name": "Stage 11 visual-system validation", "result": "PASS", "evidence": "136 TSX files" },
+    { "name": "Stage 11 navigation/layout validation", "result": "PASS", "evidence": "registered layout, state and route policies" },
+    { "name": "browser interaction", "result": "PASS", "evidence": "10 settings-related routes" },
+    { "name": "persistence/restart", "result": "PASS", "evidence": "Reduce Motion and Display Name survived reload" },
+    { "name": "downstream consumption", "result": "PASS", "evidence": "Display Name updated More; four trust surfaces used shared data state" },
+    { "name": "cache clearing", "result": "PASS", "evidence": "frontend/backend invalidation completed with consequence message" },
+    { "name": "disabled accessibility semantics", "result": "PASS", "evidence": "named role, disabled state and 64px row" },
+    { "name": "browser touch targets", "result": "PASS", "evidence": "zero audited visible controls below 44x44" },
+    { "name": "browser accessible names", "result": "PASS", "evidence": "zero audited visible controls without names" },
+    { "name": "browser console", "result": "PASS", "evidence": "zero errors" },
+    { "name": "git diff", "result": "PASS", "evidence": "git diff --check" }
+  ],
+  "acceptance": {
+    "zero_enabled_no_op_controls": true,
+    "every_enabled_setting_has_verified_consumer": true,
+    "unfinished_settings_disabled_or_absent": true,
+    "trust_sensitive_settings_fully_functional": true,
+    "wording_honest_and_consistent": true,
+    "validation_passes": true
+  },
+  "failed_checks": [],
+  "remaining_conditions": [],
+  "stage_11_3_ready_to_freeze": true,
+  "commit_created": false,
+  "tag_created": false
+}

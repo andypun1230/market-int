@@ -6,7 +6,7 @@ import { Spacing, Theme, Typography } from '@/constants/theme';
 
 const PRIVACY_ITEMS = [
   {
-    body: 'Appearance, notification, profile, language, and data-usage preferences are stored locally on this device where supported.',
+    body: 'Reduced-motion and local profile preferences are stored on this device. Unavailable notification, language, and system-theme options do not save preferences.',
     title: 'Local Preferences',
   },
   {

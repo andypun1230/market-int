@@ -19,15 +19,14 @@ export default function AppearanceScreen() {
         <DashboardCard title="Theme" accentColor={Theme.colors.accent}>
           <View style={styles.stack}>
             <SettingsRow
-              badge={appearance.theme === 'dark' ? <StatusBadge label="Selected" showDot={false} tone="info" /> : undefined}
-              description="Current dark premium theme."
-              onPress={() => update({ theme: 'dark' })}
+              badge={<StatusBadge label="Selected" showDot={false} tone="info" />}
+              description="Current beta theme."
               title="Dark"
             />
             <SettingsRow
-              badge={appearance.theme === 'system' ? <StatusBadge label="Selected" showDot={false} tone="info" /> : undefined}
-              description="Follow system theme where supported. Light mode is not enabled yet."
-              onPress={() => update({ theme: 'system' })}
+              badge={<StatusBadge label="Not available in beta" showDot={false} tone="muted" />}
+              description="System theme requires complete light-mode support."
+              disabled
               title="System"
             />
           </View>
