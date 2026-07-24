@@ -7,6 +7,45 @@ from app.themes.analytics import ThemeAnalyticsEngine
 from app.themes.launch import TAXONOMY_VERSION, ThemeRegistry, get_launch_theme_registry
 
 
+THEME_SUMMARY_FIELDS = (
+    "theme_id",
+    "display_name",
+    "taxonomy_version",
+    "status",
+    "source_state",
+    "freshness",
+    "confidence",
+    "missing_data",
+    "rank",
+    "leadership_state",
+    "classification",
+    "composite_score",
+    "coverage_ratio",
+    "member_count",
+    "performance",
+    "participation",
+    "concentration",
+    "score_semantics",
+    "pilot_scope",
+    "basket_methodology",
+    "warnings",
+    "aliases",
+    "test_or_mock_label",
+)
+
+THEME_SUMMARY_DEFINITION_FIELDS = (
+    "id",
+    "name",
+    "aliases",
+    "parent_sector_ids",
+    "parent_sector_labels",
+    "status",
+    "weighting_policy",
+    "historical_disclosure",
+    "taxonomy_version",
+)
+
+
 class ThemeIntelligenceService:
     """Canonical read seam shared by API, screens, Reports and Copilot."""
 
@@ -38,11 +77,15 @@ class ThemeIntelligenceService:
 
     def list_themes(self, *, offset: int = 0, limit: int = 100) -> dict[str, Any]:
         rows = self._merged_rows()
-        selected = rows[max(0, offset):max(0, offset) + max(1, min(limit, 100))]
+        selected = [
+            self._summary_row(row)
+            for row in rows[max(0, offset):max(0, offset) + max(1, min(limit, 100))]
+        ]
         snapshot = self.snapshots.latest()
         statuses = {row.get("status") for row in rows}
         overall = "available" if statuses == {"available"} else "partial" if statuses.intersection({"available", "partial"}) else "unavailable"
         return {
+            "contract": "theme_summary_v1",
             "snapshot_id": snapshot.snapshot_id if snapshot else f"theme-taxonomy-{TAXONOMY_VERSION}",
             "taxonomy_version": TAXONOMY_VERSION,
             "as_of": snapshot.generated_at if snapshot else None,
@@ -53,12 +96,9 @@ class ThemeIntelligenceService:
             "confidence": "limited" if overall != "available" else "moderate",
             "missing_data": [row["theme_id"] for row in rows if row.get("status") != "available"],
             "items": selected,
-            "rows": selected,
             "rankings": [row["theme_id"] for row in rows if row.get("rank") is not None],
             "pagination": {"offset": max(0, offset), "limit": max(1, min(limit, 100)), "total": len(rows)},
             "warnings": ["Themes without a governed market snapshot remain explicitly unavailable; taxonomy membership is not market evidence."],
-            "coverage_audit": list(snapshot.coverage_audit) if snapshot else [],
-            "repository_stats": dict(snapshot.repository_stats) if snapshot else {},
             "test_or_mock_label": "HERMETIC TEST DATA — NOT LIVE" if snapshot and snapshot.source_state == "test" else None,
         }
 
@@ -69,7 +109,6 @@ class ThemeIntelligenceService:
             rows = [item for item in rows if item.get("leadership_state", "").casefold() == status.casefold()]
         rows.sort(key=lambda item: (int(item.get("rank") or 10_000), item["theme_id"]))
         payload["items"] = rows[:max(1, min(limit, 100))]
-        payload["rows"] = payload["items"]
         payload["pagination"] = {"offset": 0, "limit": max(1, min(limit, 100)), "total": len(rows)}
         return payload
 
@@ -86,18 +125,41 @@ class ThemeIntelligenceService:
         row = next((item for item in self._merged_rows() if item["theme_id"] == definition.id), None)
         if row is None:
             return self._unavailable(definition.id, "theme_snapshot_unavailable")
+        snapshot = self.snapshots.latest()
+        related_overlap = [
+            item
+            for item in (snapshot.overlap_matrix if snapshot else ())
+            if item.get("left_theme_id") == definition.id or item.get("right_theme_id") == definition.id
+        ]
         return {
+            "contract": "theme_detail_v1",
+            "snapshot_id": snapshot.snapshot_id if snapshot else None,
             "taxonomy_version": TAXONOMY_VERSION,
+            "as_of": snapshot.generated_at if snapshot else None,
+            "market_date": snapshot.market_date if snapshot else None,
             "requested_theme_id": theme_id,
             "canonical_theme_id": definition.id,
             "status": row["status"],
             "source_state": row.get("source_state", "unavailable"),
             "theme": row,
             "definition": definition.model_dump(),
+            "overlap_matrix": related_overlap,
             "missing_data": row.get("missing_data", []),
             "confidence": row.get("confidence", "limited"),
             "test_or_mock_label": row.get("test_or_mock_label"),
         }
+
+    @staticmethod
+    def _summary_row(row: dict[str, Any]) -> dict[str, Any]:
+        """Project authoritative snapshot output for list and filter consumers."""
+        summary = {key: row.get(key) for key in THEME_SUMMARY_FIELDS if key in row}
+        definition = row.get("definition") if isinstance(row.get("definition"), dict) else {}
+        summary["definition"] = {
+            key: definition.get(key)
+            for key in THEME_SUMMARY_DEFINITION_FIELDS
+            if key in definition
+        }
+        return summary
 
     def constituents(self, theme_id: str, *, offset: int = 0, limit: int = 100) -> dict[str, Any]:
         definition = self.registry.definition(theme_id)

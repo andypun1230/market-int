@@ -8,12 +8,13 @@ type UseAsyncDataOptions = {
 };
 
 export function useAsyncData<T>(
-  asyncFunction: () => Promise<T>,
+  asyncFunction: (signal?: AbortSignal) => Promise<T>,
   options: UseAsyncDataOptions = {},
 ) {
   const { enabled = true } = options;
   const mountedRef = useRef(false);
   const requestSequenceRef = useRef(0);
+  const requestControllerRef = useRef<AbortController | null>(null);
   const [state, setState] = useState(() => initialAtomicScreenState<T>(enabled));
 
   const refetch = useCallback(async () => {
@@ -22,10 +23,13 @@ export function useAsyncData<T>(
     }
 
     const requestSequence = ++requestSequenceRef.current;
+    requestControllerRef.current?.abort();
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
     setState((current) => reduceAtomicScreenState(current, { type: 'request', requestId: requestSequence }));
 
     try {
-      const nextData = await asyncFunction();
+      const nextData = await asyncFunction(controller.signal);
 
       if (mountedRef.current && isLatestAsyncDataRequest(requestSequence, requestSequenceRef.current)) {
         setState((current) => reduceAtomicScreenState(current, { type: 'success', requestId: requestSequence, data: nextData }));
@@ -56,6 +60,8 @@ export function useAsyncData<T>(
 
     return () => {
       clearTimeout(timeout);
+      requestControllerRef.current?.abort();
+      requestControllerRef.current = null;
       mountedRef.current = false;
     };
   }, [enabled, refetch]);

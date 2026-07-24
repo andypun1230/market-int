@@ -38,6 +38,7 @@ export type LiveThemeItem = {
   taxonomyStatus: string;
 };
 export type ThemeSnapshotModel = { snapshotId: string; taxonomyVersion: string; marketDate: string; sourceState: string; status: string; items: LiveThemeItem[]; alerts: Record<string, unknown>[]; warnings: string[]; overlap: ThemeOverlap[]; pilotScope: string | null };
+export type ThemeDetailModel = { snapshotId: string; taxonomyVersion: string; marketDate: string; sourceState: string; status: string; item: LiveThemeItem; overlap: ThemeOverlap[] };
 
 type RecordValue = Record<string, unknown>;
 
@@ -55,6 +56,23 @@ export function adaptThemeSnapshot(value: unknown): ThemeSnapshotModel | null {
     warnings: list(value.warnings).filter((item): item is string => typeof item === 'string'),
     overlap: list(value.overlap_matrix).map(overlap).filter((item): item is ThemeOverlap => item !== null),
     pilotScope: text(isRecord(value.pilot_scope) ? value.pilot_scope.rank_scope : undefined) ?? items[0]?.pilotScope ?? null,
+  };
+}
+
+export function adaptThemeDetail(value: unknown): ThemeDetailModel | null {
+  if (!isRecord(value) || !isRecord(value.theme)) return null;
+  const item = adaptThemeItem(value.theme)[0];
+  const snapshotId = text(value.snapshot_id);
+  const taxonomyVersion = text(value.taxonomy_version);
+  if (!item || !snapshotId || !taxonomyVersion) return null;
+  return {
+    snapshotId,
+    taxonomyVersion,
+    marketDate: text(value.market_date) ?? '',
+    sourceState: text(value.source_state) ?? item.sourceState,
+    status: text(value.status) ?? item.status,
+    item,
+    overlap: list(value.overlap_matrix).map(overlap).filter((entry): entry is ThemeOverlap => entry !== null),
   };
 }
 

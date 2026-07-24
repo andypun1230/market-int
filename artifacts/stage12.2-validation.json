@@ -1,0 +1,73 @@
+{
+  "stage": "12.2",
+  "generated_date": "2026-07-24",
+  "classification": "PASS WITH CONDITIONS",
+  "required_checks": {
+    "stage12_2_focused_tests": "PASS",
+    "frontend_full_suite": "PASS",
+    "backend_full_suite": "PASS WITH PRE-EXISTING ARTIFACT CONDITION (635/636)",
+    "typescript": "PASS",
+    "expo_lint": "PASS",
+    "data_ui_contracts": "PASS",
+    "web_export": "PASS (25 static routes)",
+    "route_source_validation": "PASS",
+    "accessibility_source_validation": "PASS",
+    "browser_interactions": "PASS",
+    "visual_acceptance": "PASS (20 required cases; 23 screenshots)",
+    "cache_correctness": "PASS",
+    "request_cancellation": "PASS",
+    "request_deduplication": "PASS",
+    "performance_budgets": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "regression_counts": {
+    "backend_total": 636,
+    "backend_passed": 635,
+    "backend_failed": 0,
+    "backend_errors": 1,
+    "frontend_test_files": 64,
+    "frontend_failed": 0,
+    "stage12_2_backend_tests": 4,
+    "stage12_2_frontend_tests": 1
+  },
+  "historical_artifact_conditions": [
+    {
+      "validator": "Stage 8.75 Theme Rotation visual acceptance",
+      "result": "STALE",
+      "reason": "Historical visual snapshot ID does not equal the current immutable service snapshot ID.",
+      "artifact_modified": false
+    },
+    {
+      "validator": "Stage 10.2 visual artifact",
+      "result": "STALE",
+      "reason": "Historical source fingerprint predates authorized Stage 12.2 source changes.",
+      "artifact_modified": false
+    },
+    {
+      "validator": "Stage 11.2B navigation visual artifact",
+      "result": "STALE",
+      "reason": "Historical source fingerprint predates authorized Stage 12.2 source changes.",
+      "artifact_modified": false
+    },
+    {
+      "validator": "Stage 11.2C accessibility visual artifact",
+      "result": "STALE",
+      "reason": "Historical source fingerprint predates authorized Stage 12.2 source changes.",
+      "artifact_modified": false
+    }
+  ],
+  "source_validators": {
+    "stage11_2a_visual_system": "PASS",
+    "stage11_2b_navigation_layout": "PASS",
+    "stage11_2c_accessibility": "PASS",
+    "stage11_3_settings": "PASS",
+    "stage11_3_artifact": "PASS"
+  },
+  "accessibility_observation": {
+    "lighthouse_home": 96,
+    "lighthouse_theme_rotation": 86,
+    "lighthouse_stock_detail": 78,
+    "interpretation": "Absolute Lighthouse issues remain, but the Stage 11.2C source contract passes and no Stage 12.2 accessibility regression was observed."
+  },
+  "native_validation": "OUTSTANDING"
+}

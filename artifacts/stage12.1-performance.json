@@ -1,0 +1,369 @@
+{
+  "stage": "12.1",
+  "title": "Performance Profiling",
+  "generated_at": "2026-07-24T03:30:51+08:00",
+  "baseline": {
+    "branch": "main",
+    "commit": "e2de1f415260593541e641ee2c4cb3f2382a7634",
+    "platform": "Expo production web export",
+    "browser": "Chrome via Lighthouse 13.4.1",
+    "network": "local unthrottled",
+    "providers": {
+      "quotes": "Finnhub",
+      "daily_history": "Polygon",
+      "fallback_active": false
+    }
+  },
+  "classification": "PASS WITH CONDITIONS",
+  "source_modified": false,
+  "commit_created": false,
+  "tag_created": false,
+  "definitions": {
+    "cold_launch": "Clean Lighthouse navigation to an interactive production web shell",
+    "warm_launch": "Repeated same-origin production reload with initialized application and caches",
+    "js_initialization": "Lighthouse bootup time",
+    "decision_ready": "Last critical API completion plus final observed visual update",
+    "state_render_proxy": "Time from last critical API completion to final visual update"
+  },
+  "startup": {
+    "runs": [
+      {
+        "performance_score": 100,
+        "fcp_ms": 79.347,
+        "lcp_ms": 79.347,
+        "speed_index_ms": 997,
+        "tbt_ms": 41.265,
+        "tti_ms": 178.557,
+        "js_bootup_ms": 193.473,
+        "main_thread_ms": 257.909,
+        "transfer_bytes": 6305184
+      },
+      {
+        "performance_score": 100,
+        "fcp_ms": 71.259,
+        "lcp_ms": 71.259,
+        "speed_index_ms": 947,
+        "tbt_ms": 38.807,
+        "tti_ms": 172.517,
+        "js_bootup_ms": 186.11,
+        "main_thread_ms": 250.365,
+        "transfer_bytes": 6305188
+      },
+      {
+        "performance_score": 100,
+        "fcp_ms": 69.36,
+        "lcp_ms": 69.36,
+        "speed_index_ms": 949,
+        "tbt_ms": 37.542,
+        "tti_ms": 168.793,
+        "js_bootup_ms": 182.307,
+        "main_thread_ms": 242.495,
+        "transfer_bytes": 6305189
+      }
+    ],
+    "median": {
+      "performance_score": 100,
+      "fcp_ms": 71.259,
+      "lcp_ms": 71.259,
+      "speed_index_ms": 949,
+      "tbt_ms": 38.807,
+      "tti_ms": 172.517,
+      "js_bootup_ms": 186.11,
+      "main_thread_ms": 250.365,
+      "transfer_bytes": 6305188
+    },
+    "warm_reload_ms": [103, 81, 82, 79, 72],
+    "warm_reload_median_ms": 81
+  },
+  "screens": {
+    "home": {
+      "performance_score": 100,
+      "fcp_ms": 79,
+      "tti_ms": 179,
+      "api_count": 3,
+      "critical_api_ready_ms": 3989,
+      "final_visual_ms": 4020,
+      "post_api_render_ms": 31,
+      "transfer_bytes": 6305184,
+      "tbt_ms": 41,
+      "main_thread_ms": 258,
+      "dom_elements": 318,
+      "long_tasks": 1
+    },
+    "market": {
+      "performance_score": 88,
+      "fcp_ms": 74,
+      "lcp_ms": 3943,
+      "tti_ms": 307,
+      "api_count": 11,
+      "critical_api_ready_ms": 3926,
+      "final_visual_ms": 3972,
+      "post_api_render_ms": 46,
+      "transfer_bytes": 2651412,
+      "tbt_ms": 52,
+      "main_thread_ms": 292,
+      "dom_elements": 276,
+      "long_tasks": 2
+    },
+    "sectors_heatmap": {
+      "performance_score": 100,
+      "fcp_ms": 71,
+      "tti_ms": 208,
+      "api_count": 6,
+      "critical_api_ready_ms": 7079,
+      "final_visual_ms": 7113,
+      "post_api_render_ms": 34,
+      "transfer_bytes": 9252510,
+      "tbt_ms": 38,
+      "main_thread_ms": 267,
+      "dom_elements": 216,
+      "long_tasks": 1
+    },
+    "watchlist": {
+      "performance_score": 100,
+      "fcp_ms": 70,
+      "tti_ms": 208,
+      "api_count": 2,
+      "critical_api_ready_ms": 401,
+      "final_visual_ms": 420,
+      "post_api_render_ms": 19,
+      "transfer_bytes": 1361387,
+      "tbt_ms": 39,
+      "main_thread_ms": 241,
+      "dom_elements": 248,
+      "long_tasks": 1
+    },
+    "reports_library": {
+      "performance_score": 100,
+      "fcp_ms": 71,
+      "tti_ms": 208,
+      "api_count": 1,
+      "critical_api_ready_ms": 297,
+      "final_visual_ms": 327,
+      "post_api_render_ms": 30,
+      "transfer_bytes": 1340442,
+      "tbt_ms": 39,
+      "main_thread_ms": 211,
+      "dom_elements": 177,
+      "long_tasks": 1
+    },
+    "copilot_shell": {
+      "performance_score": 100,
+      "fcp_ms": 71,
+      "tti_ms": 210,
+      "api_count": 1,
+      "critical_api_ready_ms": 294,
+      "final_visual_ms": 428,
+      "post_api_render_ms": 134,
+      "transfer_bytes": 1340442,
+      "tbt_ms": 39,
+      "main_thread_ms": 211,
+      "dom_elements_clean": 177,
+      "dom_elements_saved_history": 1283,
+      "long_tasks": 1
+    },
+    "stock_detail_nvda": {
+      "performance_score": 100,
+      "fcp_ms": 72,
+      "tti_ms": 209,
+      "api_count": 9,
+      "critical_api_ready_ms": 3678,
+      "final_visual_ms": 3697,
+      "post_api_render_ms": 19,
+      "transfer_bytes": 2169423,
+      "tbt_ms": 39,
+      "main_thread_ms": 412,
+      "dom_elements": 627,
+      "long_tasks": 1,
+      "stock_analysis_request_count": 3
+    }
+  },
+  "rendering": {
+    "active_compositor_interval_median_ms": 8.33,
+    "host_refresh_rate_hz": 120,
+    "native_fps_certified": false,
+    "react_commit_count_available": false,
+    "profiles": {
+      "heatmap": {
+        "final_visual_ms": 6813,
+        "tbt_ms": 46,
+        "longest_task_ms": 96,
+        "dom_nodes": 521,
+        "event_listeners": 813,
+        "heap_peak_mb": 28.33,
+        "dropped_frame_events": 2
+      },
+      "sector_rotation": {
+        "lcp_ms": 7396,
+        "tbt_ms": 39,
+        "longest_task_ms": 89,
+        "dom_nodes": 980,
+        "event_listeners": 1037,
+        "heap_peak_mb": 32.3,
+        "dropped_frame_events": 0
+      },
+      "theme_rotation": {
+        "final_visual_ms": 10475,
+        "tbt_ms": 39,
+        "longest_task_ms": 89,
+        "dom_nodes": 585,
+        "event_listeners": 1109,
+        "heap_peak_mb": 37.57,
+        "dropped_frame_events": 0
+      },
+      "compare": {
+        "final_visual_ms": 6913,
+        "tbt_ms": 39,
+        "longest_task_ms": 89,
+        "dom_nodes": 769,
+        "event_listeners": 859,
+        "heap_peak_mb": 36.45,
+        "dropped_frame_events": 0
+      }
+    }
+  },
+  "network": {
+    "largest_response": {
+      "endpoint": "/market/themes",
+      "bytes": 6553506,
+      "cold_browser_ms": 6796,
+      "warm_direct_ms_range": [22.5, 25.2]
+    },
+    "cache": {
+      "items": 63,
+      "memory_hits": 641,
+      "memory_misses": 1156,
+      "persistent_hits": 401,
+      "stale_hits": 262,
+      "provider_calls": 408,
+      "memory_hit_rate": 0.357,
+      "effective_reuse_rate_derived": 0.58,
+      "provider_call_ratio": 0.227,
+      "stale_serving_ratio": 0.146
+    },
+    "history_coordinator": {
+      "started": 108,
+      "succeeded": 108,
+      "failed": 0,
+      "deduplicated": 0,
+      "retries": 0,
+      "queue_timeouts": 0,
+      "max_running": 2,
+      "max_queue_depth": 1
+    }
+  },
+  "memory": {
+    "leak_confirmed": false,
+    "renderer_rss_mb": {
+      "initial": 322.3,
+      "after_25_primary_transitions": 357.3,
+      "after_30_repeated_detail_views_and_idle": 302.8
+    },
+    "backend_rss_mb": {
+      "initial": 838.5,
+      "after_25_primary_transitions": 873.4,
+      "after_30_repeated_detail_views_and_idle": 365.6
+    },
+    "repeat_cycles": {
+      "primary_transitions": 25,
+      "reports": 10,
+      "copilot": 10,
+      "stock_detail": 10
+    },
+    "dom_growth_observed": false,
+    "risks": [
+      "Unbounded frontend request-cache Maps",
+      "Report library loads uncapped history into state",
+      "Long Copilot histories increase live DOM"
+    ]
+  },
+  "bundle": {
+    "export_bytes_approx": 5988352,
+    "javascript": {
+      "chunks": 1,
+      "raw_bytes": 3594300,
+      "gzip_bytes": 908888,
+      "home_unused_bytes": 2174355,
+      "home_unused_ratio": 0.6049,
+      "duplicate_modules_detected": false
+    },
+    "material_symbols_font": {
+      "raw_bytes": 956416,
+      "gzip_bytes": 425122
+    },
+    "static_assets": {
+      "files": 21,
+      "bytes": 1311618
+    },
+    "html": {
+      "files": 25,
+      "bytes": 937128,
+      "duplicate_alias_bytes": 230896
+    }
+  },
+  "budgets": {
+    "js_bootup_ms_max": 250,
+    "tbt_ms_max": 200,
+    "home_market_decision_ready_ms_p50_max": 2500,
+    "sector_family_decision_ready_ms_p50_max": 3000,
+    "stock_detail_decision_ready_ms_p50_max": 1500,
+    "route_api_payload_bytes_max": 2000000,
+    "individual_api_payload_bytes_max": 1000000,
+    "effective_cache_reuse_min": 0.7,
+    "js_gzip_bytes_max": 750000,
+    "icon_font_gzip_bytes_max": 150000,
+    "web_export_bytes_max": 5242880,
+    "unused_javascript_ratio_max": 0.35,
+    "heap_peak_mb_max": 40,
+    "dropped_frames_per_load_max": 1
+  },
+  "priority_findings": [
+    {
+      "rank": 1,
+      "severity": "high",
+      "finding": "Single eager JavaScript bundle",
+      "expected_gain": "450-600 KB gzip and 40-90 ms JS initialization"
+    },
+    {
+      "rank": 2,
+      "severity": "high",
+      "finding": "Full themes payload gates sector views",
+      "expected_gain": "More than 6 MB transfer reduction and sector readiness toward 2 seconds warm/local"
+    },
+    {
+      "rank": 3,
+      "severity": "high",
+      "finding": "Theme Rotation dependency is sequential",
+      "expected_gain": "Approximately 6 seconds on observed cold path"
+    },
+    {
+      "rank": 4,
+      "severity": "high",
+      "finding": "Cold Home and Market materialization",
+      "expected_gain": "At least 1.5 seconds decision-ready"
+    },
+    {
+      "rank": 5,
+      "severity": "medium",
+      "finding": "Stock Detail refresh sequence repeats analysis reads",
+      "expected_gain": "About 2.2 seconds and 520 KB repeated transfer"
+    }
+  ],
+  "conditions": [
+    "Native iOS and Android launch measurements remain required",
+    "Native sustained FPS and heap snapshots remain required",
+    "Exact React commit counts were not captured without instrumentation",
+    "Decision-ready and payload budgets fail on data-heavy screens"
+  ],
+  "deliverables": [
+    "docs/stage12.1-performance-profile.md",
+    "docs/stage12.1-memory-profile.md",
+    "docs/stage12.1-network-profile.md",
+    "docs/stage12.1-render-profile.md",
+    "docs/stage12.1-bundle-profile.md",
+    "docs/stage12.1-performance-dashboard.md",
+    "docs/stage12.1-optimization-priority.md",
+    "docs/validation/stage12.1-validation-report.md",
+    "artifacts/stage12.1-performance.json"
+  ]
+}

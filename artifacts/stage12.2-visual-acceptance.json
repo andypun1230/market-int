@@ -1,0 +1,41 @@
+{
+  "stage": "12.2",
+  "generated_date": "2026-07-24",
+  "result": "PASS",
+  "screenshot_directory": "artifacts/stage12.2-screenshots",
+  "screenshot_count": 23,
+  "cases": [
+    {"id": 1, "name": "Home critical content while secondary loads", "file": "01-home-critical.jpg", "result": "PASS"},
+    {"id": 2, "name": "Market decision-ready state", "file": "02-market-decision-ready.jpg", "result": "PASS"},
+    {"id": 3, "name": "Sectors ranked leaders", "file": "03-sectors-ranked-leaders.jpg", "result": "PASS"},
+    {"id": 4, "name": "Theme Rotation initial decision layer", "file": "04-theme-rotation-initial.jpg", "result": "PASS"},
+    {"id": 5, "name": "Theme Rotation fully loaded", "file": "05-theme-rotation-fully-loaded.jpg", "result": "PASS"},
+    {"id": 6, "name": "Theme Detail lazy-loaded", "file": "06-theme-detail-lazy-loading.jpg", "result": "PASS"},
+    {"id": 7, "name": "Stock Detail critical summary", "file": "07-stock-detail-critical-summary.jpg", "result": "PASS"},
+    {"id": 8, "name": "Stock Detail secondary evidence", "file": "08-stock-detail-secondary-evidence.jpg", "result": "PASS"},
+    {"id": 9, "name": "Cached route revisit", "file": "09-cached-route-revisit.jpg", "result": "PASS"},
+    {"id": 10, "name": "Failed secondary with critical content retained", "file": "10-secondary-failure-critical-retained.jpg", "result": "PASS"},
+    {"id": 11, "name": "Stale cache during refresh", "file": "11-stale-cache-during-refresh.jpg", "result": "PASS"},
+    {"id": 12, "name": "Mobile Home", "file": "12-mobile-home.jpg", "result": "PASS"},
+    {"id": 13, "name": "Mobile Theme Rotation", "file": "13-mobile-theme-rotation.jpg", "result": "PASS"},
+    {"id": 14, "name": "Desktop Theme Rotation", "file": "14-desktop-theme-rotation.jpg", "result": "PASS"},
+    {"id": 15, "name": "Reports lazy-load state", "file": "15-reports-lazy-load.jpg", "result": "PASS"},
+    {"id": 16, "name": "Copilot lazy-load state", "file": "16-copilot-lazy-load.jpg", "result": "PASS"},
+    {"id": 17, "name": "Theme Directory", "file": "17-theme-directory.jpg", "result": "PASS"},
+    {"id": 18, "name": "Theme Compare", "file": "18-theme-compare.jpg", "result": "PASS"},
+    {"id": 19, "name": "Network partial state", "file": "19-network-partial-state.jpg", "result": "PASS"},
+    {"id": 20, "name": "Error state without false empty state", "file": "20-error-without-false-empty.jpg", "result": "PASS"}
+  ],
+  "checks": {
+    "false_unavailable_flash": "PASS",
+    "contradictory_atomic_state": "PASS",
+    "authoritative_detail_fields": "PASS",
+    "layout_instability": "PASS",
+    "route_or_navigation_change": "PASS",
+    "accessibility_regression": "PASS",
+    "stale_presented_as_live": "PASS",
+    "critical_before_secondary": "PASS",
+    "detail_only_on_request": "PASS",
+    "stage11_visual_regression": "PASS"
+  }
+}

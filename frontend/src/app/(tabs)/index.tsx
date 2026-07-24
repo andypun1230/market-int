@@ -36,6 +36,7 @@ import { useHomeDashboard } from '@/hooks/useHomeDashboard';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { decisionSummary } from '@/features/trust/decisionSummary';
 import { dateFreshnessLabel } from '@/features/trust/dateFreshnessPresentation';
+import { useRoutePerformanceMarks } from '@/hooks/useRoutePerformanceMarks';
 
 type HomeIcon = { android: string; ios: string; web: string };
 
@@ -80,6 +81,11 @@ export default function HomeScreen() {
     () => buildHomeSummary(homeDashboard),
     [homeDashboard],
   );
+  useRoutePerformanceMarks('home', {
+    analytical: Boolean(homeDashboard),
+    decisionReady: Boolean(homeDashboard),
+    complete: Boolean(homeDashboard) && !loading,
+  });
   const updatedLabel = formatUpdatedLabel(
     summary.updatedAt,
     homeDashboard?.cache_age_seconds ?? homeDashboard?.snapshot_age_seconds ?? homeDashboard?.core.snapshot_age_seconds,

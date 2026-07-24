@@ -1,0 +1,122 @@
+{
+  "stage": "12.2",
+  "generated_date": "2026-07-24",
+  "baseline_commit": "e2de1f415260593541e641ee2c4cb3f2382a7634",
+  "classification": "PASS WITH CONDITIONS",
+  "environment": {
+    "build": "Expo production web export",
+    "browser": "Chrome/Lighthouse 13.4.1",
+    "desktop_profile": "desktop, provided/unthrottled local network and CPU",
+    "mobile_profile": "Lighthouse mobile simulated throttling",
+    "backend": "local Uvicorn, Finnhub quotes, Polygon daily history",
+    "desktop_run_count": 3,
+    "percentile_method": "p50=median; p95=maximum of three runs (conservative small-sample estimate)"
+  },
+  "contracts": {
+    "theme_summary": {
+      "path": "/market/themes",
+      "contract": "theme_summary_v1",
+      "baseline_raw_bytes": 6553498,
+      "raw_bytes": 86710,
+      "baseline_gzip_bytes": 639751,
+      "gzip_bytes": 8360,
+      "raw_reduction_percent": 98.68,
+      "gzip_reduction_percent": 98.69,
+      "parse_p50_ms": 0.182,
+      "parse_p95_ms": 0.339,
+      "normalization_p50_ms": 0.08,
+      "normalization_p95_ms": 0.337,
+      "detail_fields_omitted": ["members", "evidence", "provenance", "rotation_series"]
+    },
+    "theme_rotation": {
+      "path": "/market/themes/rotation/summary?profile=medium",
+      "contract": "theme_rotation_summary_v1",
+      "baseline_raw_bytes": 497499,
+      "raw_bytes": 114347,
+      "baseline_gzip_bytes": 47571,
+      "gzip_bytes": 15332,
+      "raw_reduction_percent": 77.02,
+      "gzip_reduction_percent": 67.77,
+      "point_count": 6,
+      "legacy_route_preserved": true
+    },
+    "theme_detail": {
+      "path": "/market/themes/{theme_id}",
+      "contract": "theme_detail_v1",
+      "raw_bytes": 122843,
+      "gzip_bytes": 13069,
+      "loaded_on_demand": true,
+      "authoritative_detail_preserved": true
+    }
+  },
+  "routes": {
+    "home": {"baseline_decision_ready_ms": 4020, "decision_ready_p50_ms": 498, "decision_ready_p95_ms": 563, "hard_budget_ms": 2000, "improvement_percent": 87.61, "transfer_bytes_p50": 2703387},
+    "market": {"baseline_decision_ready_ms": 3972, "decision_ready_p50_ms": 460, "decision_ready_p95_ms": 483, "hard_budget_ms": 2000, "improvement_percent": 88.42, "transfer_bytes_p50": 2436175},
+    "sectors": {"baseline_decision_ready_ms": 7113, "decision_ready_p50_ms": 2225, "decision_ready_p95_ms": 2232, "hard_budget_ms": 2500, "improvement_percent": 68.72, "transfer_bytes_p50": 2545916},
+    "theme_rotation": {"baseline_decision_ready_ms": 10480, "decision_ready_p50_ms": 354, "decision_ready_p95_ms": 356, "hard_budget_ms": 3000, "improvement_percent": 96.62, "transfer_bytes_p50": 2660870},
+    "stock_detail": {"baseline_decision_ready_ms": 3697, "decision_ready_p50_ms": 394, "decision_ready_p95_ms": 824, "hard_budget_ms": 2000, "improvement_percent": 89.34, "transfer_bytes_p50": 1413776, "stock_analysis_requests": 1},
+    "reports": {"baseline_decision_ready_ms": 327, "decision_ready_p50_ms": 339, "decision_ready_p95_ms": 348, "hard_budget_ms": null, "transfer_bytes_p50": 1066200},
+    "copilot": {"baseline_decision_ready_ms": 428, "decision_ready_p50_ms": 237, "decision_ready_p95_ms": 414, "hard_budget_ms": null, "transfer_bytes_p50": 1049177}
+  },
+  "bundle": {
+    "baseline_gzip_bytes": 908888,
+    "initial_raw_bytes": 2381527,
+    "initial_gzip_bytes": 587699,
+    "initial_gzip_reduction_percent": 35.34,
+    "all_route_raw_bytes": 3605105,
+    "all_route_gzip_bytes": 931780,
+    "chunk_count": 24,
+    "baseline_home_unused_percent": 60.49,
+    "home_unused_percent": 41.52,
+    "unused_improvement_percentage_points": 18.97
+  },
+  "cache": {
+    "frontend_max_entries": 128,
+    "inflight_deduplication": true,
+    "immutable_snapshot_keyed_reuse": true,
+    "rotation_warm_latency_ms": 2,
+    "rotation_cold_latency_ms": 1877,
+    "repository_memory_hit_rate_percent": 60.0,
+    "effective_memory_plus_persistent_reuse_percent": 66.7,
+    "baseline_effective_reuse_percent": 58.0,
+    "background_refresh_failures": 0
+  },
+  "request_counts": {
+    "theme_rotation_critical_before": 2,
+    "theme_rotation_critical_after": 1,
+    "theme_rotation_fully_loaded_before": 7,
+    "theme_rotation_fully_loaded_after": 7,
+    "stock_analysis_before": 3,
+    "stock_analysis_after": 1,
+    "theme_detail_requests_before_selection_after": 0,
+    "per_theme_rotation_requests_before": 0,
+    "per_theme_rotation_requests_after": 0
+  },
+  "rendering": {
+    "desktop_total_blocking_time_ms": 0,
+    "mobile_simulated_tbt_range_ms": [193, 238],
+    "confirmed_new_dropped_frames": 0,
+    "chart_system_rewritten": false
+  },
+  "memory": {
+    "navigation_cycles": 28,
+    "renderer_rss_before_kb": 84464,
+    "renderer_rss_after_kb": 84544,
+    "rss_delta_kb": 80,
+    "confirmed_leak": false,
+    "native_heap_profile_required": true
+  },
+  "mobile_throttled": {
+    "home": {"fcp_ms": 907, "lcp_ms": 4108, "tti_ms": 5785},
+    "market": {"fcp_ms": 905, "lcp_ms": 10458, "tti_ms": 10458},
+    "sectors": {"fcp_ms": 907, "lcp_ms": 8265, "tti_ms": 8265},
+    "theme_rotation": {"fcp_ms": 905, "lcp_ms": 9615, "tti_ms": 9615},
+    "stock_detail": {"fcp_ms": 909, "lcp_ms": 9042, "tti_ms": 9042},
+    "reports": {"fcp_ms": 904, "lcp_ms": 6754, "tti_ms": 6754},
+    "copilot": {"fcp_ms": 905, "lcp_ms": 4098, "tti_ms": 5986}
+  },
+  "conditions": [
+    "Native iOS and Android startup, frame pacing, and heap profiling remain outstanding.",
+    "Historical Stage 8.75, 10.2, 11.2B, and 11.2C visual artifacts were intentionally not overwritten and their snapshot/source-fingerprint gates report stale evidence after this authorized source change."
+  ]
+}

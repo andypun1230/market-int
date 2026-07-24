@@ -19,26 +19,33 @@ _lock = threading.RLock()
 class ThemeStorage:
     def __init__(self, db_path: str | Path | None = None) -> None:
         self.db_path = Path(db_path or os.getenv("BREADTH_DB_PATH") or DEFAULT_DB_PATH)
+        self._initialized = False
 
     def initialize(self) -> None:
-        with _lock, self._connect() as connection:
-            connection.execute("PRAGMA journal_mode=WAL")
-            connection.execute("""CREATE TABLE IF NOT EXISTS theme_definitions (
-                theme_id TEXT NOT NULL, version TEXT NOT NULL, status TEXT NOT NULL, effective_from TEXT NOT NULL,
-                payload_json TEXT NOT NULL, payload_hash TEXT NOT NULL, created_at TEXT NOT NULL,
-                PRIMARY KEY(theme_id, version))""")
-            connection.execute("CREATE INDEX IF NOT EXISTS theme_definitions_active ON theme_definitions(status, effective_from DESC)")
-            connection.execute("""CREATE TABLE IF NOT EXISTS theme_members (
-                theme_id TEXT NOT NULL, theme_version TEXT NOT NULL, ticker TEXT NOT NULL, active INTEGER NOT NULL,
-                payload_json TEXT NOT NULL, payload_hash TEXT NOT NULL,
-                PRIMARY KEY(theme_id, theme_version, ticker))""")
-            connection.execute("""CREATE TABLE IF NOT EXISTS theme_basket_bars (
-                theme_id TEXT NOT NULL, theme_version TEXT NOT NULL, session_date TEXT NOT NULL,
-                formula_version TEXT NOT NULL, payload_json TEXT NOT NULL, input_hash TEXT NOT NULL,
-                PRIMARY KEY(theme_id, theme_version, session_date, formula_version))""")
-            connection.execute("CREATE INDEX IF NOT EXISTS theme_basket_bars_history ON theme_basket_bars(theme_id, theme_version, session_date)")
-            self._migrate_legacy_ids(connection)
-            connection.commit()
+        if self._initialized:
+            return
+        with _lock:
+            if self._initialized:
+                return
+            with self._connect() as connection:
+                connection.execute("PRAGMA journal_mode=WAL")
+                connection.execute("""CREATE TABLE IF NOT EXISTS theme_definitions (
+                    theme_id TEXT NOT NULL, version TEXT NOT NULL, status TEXT NOT NULL, effective_from TEXT NOT NULL,
+                    payload_json TEXT NOT NULL, payload_hash TEXT NOT NULL, created_at TEXT NOT NULL,
+                    PRIMARY KEY(theme_id, version))""")
+                connection.execute("CREATE INDEX IF NOT EXISTS theme_definitions_active ON theme_definitions(status, effective_from DESC)")
+                connection.execute("""CREATE TABLE IF NOT EXISTS theme_members (
+                    theme_id TEXT NOT NULL, theme_version TEXT NOT NULL, ticker TEXT NOT NULL, active INTEGER NOT NULL,
+                    payload_json TEXT NOT NULL, payload_hash TEXT NOT NULL,
+                    PRIMARY KEY(theme_id, theme_version, ticker))""")
+                connection.execute("""CREATE TABLE IF NOT EXISTS theme_basket_bars (
+                    theme_id TEXT NOT NULL, theme_version TEXT NOT NULL, session_date TEXT NOT NULL,
+                    formula_version TEXT NOT NULL, payload_json TEXT NOT NULL, input_hash TEXT NOT NULL,
+                    PRIMARY KEY(theme_id, theme_version, session_date, formula_version))""")
+                connection.execute("CREATE INDEX IF NOT EXISTS theme_basket_bars_history ON theme_basket_bars(theme_id, theme_version, session_date)")
+                self._migrate_legacy_ids(connection)
+                connection.commit()
+            self._initialized = True
 
     def _migrate_legacy_ids(self, connection: sqlite3.Connection) -> None:
         """Rewrite known legacy kebab IDs once, rejecting divergent collisions."""

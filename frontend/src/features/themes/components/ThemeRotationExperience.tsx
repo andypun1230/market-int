@@ -18,7 +18,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Spacing, Theme, Typography } from '@/constants/theme';
 import type { RotationLabelMode } from '@/features/sectors/analysis/rotationLabels';
 import type { CanonicalThemeRotationPoint, ThemeRotationModel } from '@/features/themes/themeRotation';
-import type { LiveThemeItem, ThemeOverlap } from '@/features/themes/themeSnapshot';
+import type { ThemeOverlap } from '@/features/themes/themeSnapshot';
 import {
   DEFAULT_THEME_ROTATION_VIEW_STATE,
   THEME_ROTATION_UNIVERSE_OPTIONS,
@@ -58,7 +58,7 @@ type ThemeRotationExperienceProps = {
   }) => void;
   overlap: ThemeOverlap[];
   rotation: ThemeRotationModel;
-  themes: LiveThemeItem[];
+  themes: ThemeRotationThemeMetadata[];
 };
 
 const MODE_OPTIONS = [
@@ -136,15 +136,7 @@ export function ThemeRotationExperience({
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [selectorVisible, setSelectorVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const metadata = useMemo<ThemeRotationThemeMetadata[]>(() => themes.map((theme) => ({
-    aliases: theme.aliases,
-    id: theme.id,
-    name: theme.name,
-    parentSectorIds: theme.parentSectorIds,
-    rank: theme.rank,
-    status: theme.status,
-    taxonomyStatus: theme.taxonomyStatus,
-  })), [themes]);
+  const metadata = themes;
   const savedThemeIds = useMemo(() => new Set(
     watchlist.groupItems.filter((item) => item.type === 'theme').map((item) => item.id),
   ), [watchlist.groupItems]);

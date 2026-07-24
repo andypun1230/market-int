@@ -27,6 +27,7 @@ import { getWatchlistDecisionLabel, getWatchlistDecisionStatus } from '@/feature
 import type { WatchlistViewMode } from '@/features/watchlist/watchlistListControls';
 import type { WatchlistClassification } from '@/features/watchlist/types';
 import { useStockAnalysisDetails } from '@/hooks/useStockAnalysisDetails';
+import { useRoutePerformanceMarks } from '@/hooks/useRoutePerformanceMarks';
 import type {
   DetectedPattern,
   RelativeStrengthItem,
@@ -123,6 +124,11 @@ export function StockCard({
       currentPrice,
     ],
   );
+  useRoutePerformanceMarks(`stock-detail.${stock.ticker}`, {
+    analytical: showDetails && Boolean(detailState.data?.currentPrice),
+    decisionReady: showDetails && Boolean(detailState.data),
+    complete: showDetails && Boolean(detailState.data) && !detailState.loading && !detailState.data?.snapshotRefreshing,
+  });
   const technicalModel = useMemo(
     () => buildStockTechnicalViewModel({
       currentPrice,

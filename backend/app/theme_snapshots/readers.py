@@ -38,14 +38,19 @@ def snapshot_payload(snapshot: ThemeSnapshot | None) -> dict[str, Any]:
     return value
 
 
-def rotation_payload(snapshot: ThemeSnapshot | None, timeframe: str) -> dict[str, Any]:
+def rotation_payload(
+    snapshot: ThemeSnapshot | None,
+    timeframe: str,
+    *,
+    compact: bool = False,
+) -> dict[str, Any]:
     try:
         profile = theme_profile_for(timeframe)
     except ValueError as error:
         raise ValueError("unsupported_theme_rotation_interval") from error
     normalized = profile.interval_alias
     if snapshot is None:
-        return {
+        unavailable = {
             **unavailable_theme_payload(),
             "entity_type": "theme",
             "taxonomy_version": None,
@@ -73,6 +78,7 @@ def rotation_payload(snapshot: ThemeSnapshot | None, timeframe: str) -> dict[str
             "profile_definition": profile.model_dump(),
             "timeframe_definition": _timeframe_definition(profile),
         }
+        return {**unavailable, "contract": "theme_rotation_summary_v1"} if compact else unavailable
 
     points: list[dict[str, Any]] = []
     exclusions: list[dict[str, str]] = []
@@ -156,8 +162,11 @@ def rotation_payload(snapshot: ThemeSnapshot | None, timeframe: str) -> dict[str
             "normalization_version": series.get("normalization_version"),
             "normalization_metadata": series.get("normalization_metadata"),
         }
-        points.append(point)
-        eligible_series.append(series)
+        if compact:
+            points.append(_compact_rotation_point(point, row))
+        else:
+            points.append(point)
+            eligible_series.append(series)
 
     trail_count = sum(len(point["trail_points"]) for point in points)
     latest_dates = [str(point["as_of"]) for point in points if point.get("as_of")]
@@ -181,8 +190,8 @@ def rotation_payload(snapshot: ThemeSnapshot | None, timeframe: str) -> dict[str
             "evidence_references": point["evidence_references"],
         }
         for point in points
-    ]
-    return {
+    ] if not compact else []
+    result = {
         "snapshot_id": snapshot.snapshot_id,
         "taxonomy_version": snapshot.taxonomy_version,
         "market_date": snapshot.market_date,
@@ -202,9 +211,7 @@ def rotation_payload(snapshot: ThemeSnapshot | None, timeframe: str) -> dict[str
         "eligible_count": len(points),
         "excluded_count": len(exclusions),
         "points": points,
-        "tails": tails,
         "exclusions": exclusions,
-        "series": eligible_series,
         "current_positions_available": bool(points),
         "basket_trails_available": trail_count > len(points),
         "snapshot_transition_history_available": len(snapshot.alerts) > 0,
@@ -215,14 +222,46 @@ def rotation_payload(snapshot: ThemeSnapshot | None, timeframe: str) -> dict[str
         "quadrant_counts": quadrant_counts,
         "limited_history_reason": "Theme transition alerts require additional immutable ThemeSnapshots." if len(snapshot.alerts) == 0 else None,
         "timeframe_definition": _timeframe_definition(profile),
+        "label_priority_policy": "canonical rank, quadrant materiality, and same-theme trail movement; frontend watchlist priority remains additive",
+        "warnings": list(snapshot.warnings),
+    }
+    if compact:
+        return {**result, "contract": "theme_rotation_summary_v1"}
+    return {
+        **result,
+        "tails": tails,
+        "series": eligible_series,
         "normalization_metadata": eligible_series[0].get("normalization_metadata") if eligible_series else None,
         "evidence_metadata": {
             "required": True,
             "point_evidence_reference_count": sum(len(point["evidence_references"]) for point in points),
             "source": "canonical ThemeSnapshot rotation_series and row evidence",
         },
-        "label_priority_policy": "canonical rank, quadrant materiality, and same-theme trail movement; frontend watchlist priority remains additive",
-        "warnings": list(snapshot.warnings),
+    }
+
+
+def rotation_summary_payload(snapshot: ThemeSnapshot | None, timeframe: str) -> dict[str, Any]:
+    """Return the canonical rotation coordinates without detail-only series duplication."""
+    return rotation_payload(snapshot, timeframe, compact=True)
+
+
+def _compact_rotation_point(point: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
+    definition = row.get("definition") if isinstance(row.get("definition"), dict) else {}
+    fields = (
+        "theme_id", "display_name", "taxonomy_version", "snapshot_id", "as_of",
+        "timeframe", "profile", "status", "confidence", "relative_trend",
+        "relative_momentum", "previous_relative_trend", "previous_momentum_normalized",
+        "quadrant", "previous_quadrant", "latest_quadrant_transition", "trajectory",
+        "direction", "speed", "distance_travelled", "net_displacement",
+        "recent_acceleration", "quadrant_transitions", "coverage_ratio",
+        "evidence_references", "missing_data", "ranking_eligible", "rank",
+        "label_priority", "partial_coverage_disclosure", "trail_points", "model_version",
+    )
+    return {
+        **{key: point.get(key) for key in fields},
+        "aliases": list(definition.get("aliases") or row.get("aliases") or []),
+        "parent_sector_ids": list(definition.get("parent_sector_ids") or []),
+        "taxonomy_status": definition.get("status", "active"),
     }
 
 

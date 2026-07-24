@@ -51,7 +51,8 @@
     "validate:stage11-navigation-artifacts": "node ./scripts/validate-stage11-navigation-artifacts.js",
     "validate:stage11-accessibility": "node ./scripts/validate-stage11-accessibility.js",
     "validate:stage11-accessibility-artifacts": "node ./scripts/validate-stage11-accessibility-artifacts.js",
-    "validate:stage10-visual": "node ./scripts/validate-stage10-visual.js"
+    "validate:stage10-visual": "node ./scripts/validate-stage10-visual.js",
+    "validate:stage12-performance": "node ./scripts/validate-stage12-performance.js"
   },
   "private": true
 }

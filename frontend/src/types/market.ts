@@ -1429,6 +1429,21 @@ export type ThemeSnapshotResponse = {
 
 export type ThemeRotationResponse = Record<string, unknown>;
 
+export type ThemeDetailResponse = {
+  contract?: string;
+  snapshot_id?: string | null;
+  taxonomy_version?: string;
+  as_of?: string | null;
+  market_date?: string | null;
+  status?: string;
+  source_state?: string;
+  canonical_theme_id?: string;
+  theme?: Record<string, unknown> | null;
+  overlap_matrix?: Record<string, unknown>[];
+  missing_data?: string[];
+  confidence?: string | Record<string, unknown>;
+};
+
 export type SymbolThemeMapping = {
   theme_id: string;
   theme_name?: string;

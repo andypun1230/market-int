@@ -19,20 +19,27 @@ _lock = threading.RLock()
 class ThemeSnapshotStorage:
     def __init__(self, db_path: str | Path | None = None) -> None:
         self.db_path = Path(db_path or os.getenv("BREADTH_DB_PATH") or DEFAULT_DB_PATH)
+        self._initialized = False
 
     def initialize(self) -> None:
-        with _lock, self._connect() as connection:
-            connection.execute("PRAGMA journal_mode=WAL")
-            connection.execute("""CREATE TABLE IF NOT EXISTS theme_snapshots (
-                snapshot_id TEXT PRIMARY KEY, market_date TEXT NOT NULL, status TEXT NOT NULL,
-                source_state TEXT NOT NULL, generated_at TEXT NOT NULL, payload_json TEXT NOT NULL,
-                input_hash TEXT NOT NULL, payload_hash TEXT NOT NULL)""")
-            connection.execute("CREATE INDEX IF NOT EXISTS theme_snapshots_date ON theme_snapshots(market_date, generated_at DESC)")
-            connection.execute("""CREATE TABLE IF NOT EXISTS theme_snapshot_state (
-                namespace TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, updated_at TEXT NOT NULL,
-                PRIMARY KEY(namespace, key))""")
-            self._migrate_legacy_payloads(connection)
-            connection.commit()
+        if self._initialized:
+            return
+        with _lock:
+            if self._initialized:
+                return
+            with self._connect() as connection:
+                connection.execute("PRAGMA journal_mode=WAL")
+                connection.execute("""CREATE TABLE IF NOT EXISTS theme_snapshots (
+                    snapshot_id TEXT PRIMARY KEY, market_date TEXT NOT NULL, status TEXT NOT NULL,
+                    source_state TEXT NOT NULL, generated_at TEXT NOT NULL, payload_json TEXT NOT NULL,
+                    input_hash TEXT NOT NULL, payload_hash TEXT NOT NULL)""")
+                connection.execute("CREATE INDEX IF NOT EXISTS theme_snapshots_date ON theme_snapshots(market_date, generated_at DESC)")
+                connection.execute("""CREATE TABLE IF NOT EXISTS theme_snapshot_state (
+                    namespace TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, updated_at TEXT NOT NULL,
+                    PRIMARY KEY(namespace, key))""")
+                self._migrate_legacy_payloads(connection)
+                connection.commit()
+            self._initialized = True
 
     def _migrate_legacy_payloads(self, connection: sqlite3.Connection) -> None:
         for snapshot_id, payload in connection.execute("SELECT snapshot_id, payload_json FROM theme_snapshots").fetchall():

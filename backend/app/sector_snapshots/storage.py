@@ -17,19 +17,26 @@ _lock = threading.RLock()
 class SectorSnapshotStorage:
     def __init__(self, db_path: str | Path | None = None) -> None:
         self.db_path = Path(db_path or os.getenv("BREADTH_DB_PATH") or DEFAULT_DB_PATH)
+        self._initialized = False
 
     def initialize(self) -> None:
-        with _lock, self._connect() as connection:
-            connection.execute("PRAGMA journal_mode=WAL")
-            connection.execute("""CREATE TABLE IF NOT EXISTS sector_snapshots (
-                snapshot_id TEXT PRIMARY KEY, universe_id TEXT NOT NULL, universe_version TEXT NOT NULL,
-                market_date TEXT NOT NULL, status TEXT NOT NULL, payload_json TEXT NOT NULL,
-                generated_at TEXT NOT NULL, source_state TEXT NOT NULL, input_hash TEXT NOT NULL, payload_hash TEXT NOT NULL)""")
-            connection.execute("CREATE INDEX IF NOT EXISTS sector_snapshots_by_universe ON sector_snapshots(universe_id, generated_at DESC)")
-            connection.execute("""CREATE TABLE IF NOT EXISTS sector_snapshot_state (
-                namespace TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, updated_at TEXT NOT NULL,
-                PRIMARY KEY(namespace, key))""")
-            connection.commit()
+        if self._initialized:
+            return
+        with _lock:
+            if self._initialized:
+                return
+            with self._connect() as connection:
+                connection.execute("PRAGMA journal_mode=WAL")
+                connection.execute("""CREATE TABLE IF NOT EXISTS sector_snapshots (
+                    snapshot_id TEXT PRIMARY KEY, universe_id TEXT NOT NULL, universe_version TEXT NOT NULL,
+                    market_date TEXT NOT NULL, status TEXT NOT NULL, payload_json TEXT NOT NULL,
+                    generated_at TEXT NOT NULL, source_state TEXT NOT NULL, input_hash TEXT NOT NULL, payload_hash TEXT NOT NULL)""")
+                connection.execute("CREATE INDEX IF NOT EXISTS sector_snapshots_by_universe ON sector_snapshots(universe_id, generated_at DESC)")
+                connection.execute("""CREATE TABLE IF NOT EXISTS sector_snapshot_state (
+                    namespace TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, updated_at TEXT NOT NULL,
+                    PRIMARY KEY(namespace, key))""")
+                connection.commit()
+            self._initialized = True
 
     def publish(self, snapshot: SectorSnapshot, namespace: str) -> None:
         self.initialize()

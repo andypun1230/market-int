@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -37,6 +37,7 @@ import { CanonicalBreadthHistoryPanel } from "@/features/sectors/components/Cano
 import { CanonicalSectorAlertsPanel } from "@/features/sectors/components/CanonicalSectorAlertsPanel";
 import { SectorThemeSearchModal } from "@/features/sectors/components/SectorThemeSearchModal";
 import { ThemeRotationExperience } from "@/features/themes/components/ThemeRotationExperience";
+import type { ThemeRotationThemeMetadata } from "@/features/themes/themeRotationView";
 import {
   DEFAULT_SECTOR_THEME_FILTERS,
   countActiveFilters,
@@ -68,6 +69,7 @@ import { themeTabProvenance } from "@/features/themes/themeProvenance";
 import {
   type LiveThemeItem,
   type ThemeOverlap,
+  type ThemeSnapshotModel,
 } from "@/features/themes/themeSnapshot";
 import { themeGovernancePresentation } from "@/features/themes/themeStatus";
 import { useSectorUiPreferences } from "@/features/sectors/state/sectorUiPreferences";
@@ -80,8 +82,10 @@ import {
 } from "@/hooks/useSectorSnapshot";
 import { useThemeSnapshot } from "@/hooks/useThemeSnapshot";
 import { useThemeRotation } from "@/hooks/useThemeRotation";
+import { useThemeDetail } from "@/hooks/useThemeDetail";
 import { useThemeStatus } from "@/hooks/useThemeStatus";
 import { useCanonicalGroupRegistry } from "@/hooks/useGroupIntelligence";
+import { useRoutePerformanceMarks } from "@/hooks/useRoutePerformanceMarks";
 import { areTestScenariosEnabled } from "@/services/runtimeConfig";
 import { decisionSummary } from "@/features/trust/decisionSummary";
 import {
@@ -155,17 +159,39 @@ export default function SectorsScreen() {
     compareTimeframe?: string | string[];
     compareType?: string | string[];
   }>();
-  const { snapshot, loading, error, refetch } = useSectorSnapshot();
   const testScenariosEnabled = areTestScenariosEnabled();
-  const { status: themeStatus, loading: themeStatusLoading } = useThemeStatus(!testScenariosEnabled);
-  const { snapshot: themeSnapshot, loading: themeSnapshotLoading } = useThemeSnapshot(!testScenariosEnabled);
-  const sectorRegistry = useCanonicalGroupRegistry("sector", !testScenariosEnabled);
-  const themeRegistry = useCanonicalGroupRegistry("theme", !testScenariosEnabled);
   const [preferences, updatePreferences] = useSectorUiPreferences();
   const requestedSection = firstActiveSection(sectionParam);
   const activeSection =
     requestedSection ?? (preferences.activeSection as ActiveSection);
   const activeCategory = categoryForSection(activeSection);
+  const [deferredRotationDataReady, setDeferredRotationDataReady] = useState(false);
+  useEffect(() => {
+    if (activeSection !== "themesRotation" || deferredRotationDataReady) {
+      return;
+    }
+    const timeout = setTimeout(() => setDeferredRotationDataReady(true), 500);
+    return () => clearTimeout(timeout);
+  }, [activeSection, deferredRotationDataReady]);
+  const themeRotationCriticalPath = activeSection === "themesRotation";
+  const secondaryDataReady = !themeRotationCriticalPath || deferredRotationDataReady;
+  const { snapshot, loading, error, refetch } = useSectorSnapshot(
+    activeCategory !== "themes" || secondaryDataReady,
+  );
+  const { status: themeStatus, loading: themeStatusLoading } = useThemeStatus(
+    !testScenariosEnabled && (!themeRotationCriticalPath || secondaryDataReady),
+  );
+  const { snapshot: themeSnapshot, loading: themeSnapshotLoading } = useThemeSnapshot(
+    !testScenariosEnabled && (!themeRotationCriticalPath || secondaryDataReady),
+  );
+  const sectorRegistry = useCanonicalGroupRegistry(
+    "sector",
+    !testScenariosEnabled && (activeCategory !== "themes" || secondaryDataReady),
+  );
+  const themeRegistry = useCanonicalGroupRegistry(
+    "theme",
+    !testScenariosEnabled && (!themeRotationCriticalPath || secondaryDataReady),
+  );
   const {
     rotation,
     loading: sectorRotationLoading,
@@ -285,6 +311,28 @@ export default function SectorsScreen() {
     () => themeRotation?.points ?? [],
     [themeRotation],
   );
+  const themeRotationMetadata = useMemo<ThemeRotationThemeMetadata[]>(
+    () => liveThemes.length
+      ? liveThemes.map((theme) => ({
+          aliases: theme.aliases,
+          id: theme.id,
+          name: theme.name,
+          parentSectorIds: theme.parentSectorIds,
+          rank: theme.rank,
+          status: theme.status,
+          taxonomyStatus: theme.taxonomyStatus,
+        }))
+      : themeRotationPoints.map((point) => ({
+          aliases: point.aliases ?? [],
+          id: point.themeId,
+          name: point.displayName,
+          parentSectorIds: point.parentSectorIds ?? [],
+          rank: point.rank,
+          status: point.status,
+          taxonomyStatus: point.taxonomyStatus ?? "active",
+        })),
+    [liveThemes, themeRotationPoints],
+  );
   const themeProvenance = themeTabProvenance(themeSnapshot);
   const comparisonType: CanonicalGroupType =
     firstParam(compareTypeParam) === "theme" || activeCategory === "themes" ? "theme" : "sector";
@@ -301,6 +349,17 @@ export default function SectorsScreen() {
       : activeCategory === "signals"
         ? "Signals"
         : "Sectors";
+  const themeRotationActive = activeSection === "themesRotation";
+  const themeSectionActive = activeCategory === "themes";
+  useRoutePerformanceMarks(`sectors.${activeSection}`, {
+    analytical: themeRotationActive ? Boolean(themeRotation) : themeSectionActive ? Boolean(themeSnapshot) : Boolean(snapshot),
+    decisionReady: themeRotationActive ? Boolean(themeRotation?.points.length) : themeSectionActive ? Boolean(themeSnapshot?.items.length) : Boolean(snapshot?.sectors.length),
+    complete: themeRotationActive
+      ? Boolean(themeRotation) && !themeRotationLoading
+      : themeSectionActive
+        ? Boolean(themeSnapshot) && !themeSnapshotLoading
+        : Boolean(snapshot) && !loading,
+  });
   const subtitle =
     activeCategory === "themes"
       ? themeSnapshotLoading || themeStatusLoading
@@ -706,9 +765,9 @@ export default function SectorsScreen() {
                 trailLength={10}
               />
             </DashboardCard>
-          ) : themeSnapshotLoading || themeStatusLoading ? (
+          ) : themeRotationLoading && !themeRotation ? (
             <SkeletonCard compact rows={3} structure="chart" title />
-          ) : themeSnapshot ? (
+          ) : themeRotation ? (
             <DashboardCard
               title="Theme Rotation Map"
               subtitle="Original transparent benchmark-relative trend and momentum model. Unavailable themes are excluded."
@@ -772,9 +831,9 @@ export default function SectorsScreen() {
                           : {}),
                       })
                     }
-                    overlap={themeSnapshot.overlap}
+                    overlap={themeSnapshot?.overlap ?? []}
                     rotation={themeRotation}
-                    themes={liveThemes}
+                    themes={themeRotationMetadata}
                   />
                 ) : (
                   <Text style={styles.note}>
@@ -785,6 +844,8 @@ export default function SectorsScreen() {
                 )
               ) : null}
             </DashboardCard>
+          ) : themeSnapshotLoading || themeStatusLoading ? (
+            <SkeletonCard compact rows={3} structure="chart" title />
           ) : (
             <ThemeReviewGate status={themeStatus} />
           )
@@ -876,8 +937,11 @@ export default function SectorsScreen() {
         ) : null}
         {selected?.kind === "theme" ? (
           <View style={styles.detailStack}>
-            <ThemeDetailContent theme={selected.item} overlap={themeSnapshot?.overlap ?? []} />
-            {!testScenariosEnabled ? <CanonicalBreadthHistoryPanel entityId={selected.item.id} entityType="theme" /> : null}
+            {testScenariosEnabled ? (
+              <ThemeDetailContent theme={selected.item} overlap={themeSnapshot?.overlap ?? []} />
+            ) : (
+              <LiveThemeDetailContent summary={selected.item as LiveThemeItem} snapshot={themeSnapshot} />
+            )}
           </View>
         ) : null}
       </DetailModal>
@@ -1560,6 +1624,47 @@ function ThemeDetailContent({
           <MetricTile label="Quadrant" value={theme.quadrant} />
         </View>
       </DashboardCard>
+    </View>
+  );
+}
+
+function LiveThemeDetailContent({
+  snapshot,
+  summary,
+}: {
+  snapshot: ThemeSnapshotModel | null;
+  summary: LiveThemeItem;
+}) {
+  const { detail, error, loading } = useThemeDetail(summary.id, snapshot);
+  if (detail) {
+    return (
+      <View style={styles.detailStack}>
+        <ThemeDetailContent theme={detail.item} overlap={detail.overlap} />
+        <CanonicalBreadthHistoryPanel entityId={detail.item.id} entityType="theme" />
+      </View>
+    );
+  }
+  return (
+    <View style={styles.detailStack}>
+      <DecisionSummaryCard summary={decisionSummary({
+        id: `theme.${summary.id}.loading`,
+        title: `${summary.name} decision summary`,
+        currentState: `${summary.classification}${summary.rank ? ` · rank #${summary.rank}` : ''}`,
+        whatChanged: summary.returns['1M'] === null ? null : `One-month return ${formatNullablePercent(summary.returns['1M'])}`,
+        preferredAction: summary.participation.positiveReturnParticipationPct === null ? null : `Review ${summary.participation.positiveReturnParticipationPct.toFixed(1)}% positive-return participation.`,
+        mainRisk: summary.warnings[0] ?? summary.concentration.classification ?? null,
+        invalidation: null,
+        freshness: summary.sourceState,
+        confidence: summary.concentration.qualityScore,
+        confidenceLabel: summary.concentration.qualityScore === null ? 'Confidence unavailable' : `${Math.round(summary.concentration.qualityScore)}/100 evidence quality`,
+        evidence: null,
+        availability: summary.status === 'available' ? 'available' : summary.status === 'partial' ? 'partial' : 'unavailable',
+        contradiction: null,
+        whatWouldChange: summary.warnings[0] ?? null,
+        methodology: [],
+      })} />
+      {loading ? <SkeletonCard compact rows={4} structure="list" title /> : null}
+      {error ? <Text style={styles.note}>Theme detail failed: {error}. The published summary remains available.</Text> : null}
     </View>
   );
 }

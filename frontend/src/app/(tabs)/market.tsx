@@ -116,6 +116,7 @@ import {
   type WeightComparisonViewModel,
 } from '@/features/market/weightComparison';
 import { useMarketDashboard } from '@/hooks/useMarketDashboard';
+import { useRoutePerformanceMarks } from '@/hooks/useRoutePerformanceMarks';
 import { getLiveHistory, getMarketMacro } from '@/services/api';
 import { areTestScenariosEnabled } from '@/services/runtimeConfig';
 import { decisionSummary } from '@/features/trust/decisionSummary';
@@ -193,6 +194,11 @@ export default function MarketScreen() {
     regime,
   } =
     useMarketDashboard(isFocused);
+  useRoutePerformanceMarks('market', {
+    analytical: Boolean(core || regime || indexes.length),
+    decisionReady: Boolean(core),
+    complete: !loading && Boolean(core || regime),
+  });
   const copilotContext = useMemo(
     () => createCopilotContext({
       payload: {

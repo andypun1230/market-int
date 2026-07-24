@@ -12,14 +12,17 @@ export function useThemeRotation(
 ) {
   const snapshotId = snapshot?.snapshotId ?? '';
   const taxonomyVersion = snapshot?.taxonomyVersion ?? '';
-  const fetchRotation = useCallback(async () => {
-    if (!snapshotId || !taxonomyVersion) return null;
-    return adaptThemeRotation(await getThemeRotation(timeframe, { snapshotId, taxonomyVersion }));
+  const fetchRotation = useCallback(async (signal?: AbortSignal) => {
+    const identity = snapshotId && taxonomyVersion ? { snapshotId, taxonomyVersion } : undefined;
+    return adaptThemeRotation(await getThemeRotation(timeframe, identity, signal));
   }, [snapshotId, taxonomyVersion, timeframe]);
-  const result = useAsyncData(fetchRotation, { enabled: enabled && Boolean(snapshotId && taxonomyVersion) });
-  const current = result.data?.snapshotId === snapshotId && result.data?.taxonomyVersion === taxonomyVersion && result.data?.timeframe === timeframe && result.data?.modelVersion === THEME_ROTATION_MODEL_VERSION
+  const result = useAsyncData(fetchRotation, { enabled });
+  const identityMatches = !snapshotId || !taxonomyVersion || (
+    result.data?.snapshotId === snapshotId && result.data?.taxonomyVersion === taxonomyVersion
+  );
+  const current = identityMatches && result.data?.timeframe === timeframe && result.data?.modelVersion === THEME_ROTATION_MODEL_VERSION
     ? result.data as ThemeRotationModel
     : null;
-  const waitingForCurrentIdentity = enabled && Boolean(snapshotId && taxonomyVersion) && current === null && result.error === null;
+  const waitingForCurrentIdentity = enabled && current === null && result.error === null;
   return { ...result, data: current, loading: result.loading || waitingForCurrentIdentity, rotation: current };
 }

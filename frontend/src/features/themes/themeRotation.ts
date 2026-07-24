@@ -7,6 +7,7 @@ export type ThemeRotationProfile = 'short' | 'medium' | 'long';
 export const THEME_ROTATION_MODEL_VERSION = 'theme-relative-trend-momentum-v1';
 
 export type CanonicalThemeRotationPoint = {
+  aliases?: string[];
   themeId: string;
   displayName: string;
   taxonomyVersion: string;
@@ -39,10 +40,12 @@ export type CanonicalThemeRotationPoint = {
   coverageRatio: number | null;
   evidenceReferences: string[];
   missingData: unknown[];
+  parentSectorIds?: string[];
   rankingEligible: boolean;
   rank: number | null;
   labelPriority: number;
   partialCoverageDisclosure: string | null;
+  taxonomyStatus?: string;
   history: ThemeRotationPoint[];
 };
 
@@ -123,6 +126,7 @@ function adaptPoint(value: unknown): CanonicalThemeRotationPoint[] {
   const quadrant = rotationQuadrant(value.quadrant);
   if (!themeId || !displayName || !taxonomyVersion || !snapshotId || !timeframe || !profile || modelVersion !== THEME_ROTATION_MODEL_VERSION || relativeTrend === null || relativeMomentum === null || !quadrant) return [];
   return [{
+    aliases: list(value.aliases).filter((item): item is string => typeof item === 'string'),
     themeId,
     displayName,
     taxonomyVersion,
@@ -150,10 +154,12 @@ function adaptPoint(value: unknown): CanonicalThemeRotationPoint[] {
     coverageRatio: finite(value.coverage_ratio),
     evidenceReferences: list(value.evidence_references).filter((item): item is string => typeof item === 'string'),
     missingData: list(value.missing_data),
+    parentSectorIds: list(value.parent_sector_ids).filter((item): item is string => typeof item === 'string'),
     rankingEligible: value.ranking_eligible === true,
     rank: integer(value.rank),
     labelPriority: finite(value.label_priority) ?? 0,
     partialCoverageDisclosure: text(value.partial_coverage_disclosure),
+    taxonomyStatus: text(value.taxonomy_status) ?? 'active',
     history: list(value.trail_points).flatMap(adaptHistoryPoint),
   }];
 }

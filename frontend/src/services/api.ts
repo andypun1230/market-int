@@ -54,6 +54,7 @@ import {
   ServiceCacheStatus,
   TrendlineResponse,
   ThemeSnapshotResponse,
+  ThemeDetailResponse,
   ThemeRotationResponse,
   ThemeStatusResponse,
   TestDataScenariosResponse,
@@ -64,7 +65,7 @@ import {
   WatchlistResponse,
   WatchlistSummaryResponse,
 } from "@/types/market";
-import { cachedRequest } from "@/services/requestCache";
+import { cachedRequest, primeRequestCache } from "@/services/requestCache";
 import { API_URL } from "@/services/apiConfig";
 import { normalizeSectorId } from "@/features/sectors/sectorSnapshot";
 import type {
@@ -75,7 +76,7 @@ import type {
   NewsIntelligenceDto,
   SessionNarrativeDto,
 } from "@/features/context-intelligence/types";
-import { themeRotationCacheKey } from "@/features/themes/themeRotation";
+import { THEME_ROTATION_MODEL_VERSION, themeRotationCacheKey } from "@/features/themes/themeRotation";
 import type { ThemeRotationInterval } from "@/features/themes/themeSnapshot";
 import type {
   BreadthHistoryTimeframe,
@@ -89,6 +90,7 @@ import type {
 } from "@/features/sectors/groupIntelligence";
 
 type RequestOptions = {
+  signal?: AbortSignal;
   timeoutMs?: number;
 };
 
@@ -98,16 +100,17 @@ async function request<T>(
   path: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { timeoutMs = 10_000 } = options;
+  const { signal, timeoutMs = 10_000 } = options;
   const controller = new AbortController();
+  const abortFromCaller = () => controller.abort();
+  if (signal?.aborted) controller.abort();
+  else signal?.addEventListener('abort', abortFromCaller, { once: true });
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const started = Date.now();
 
   logRequest("GET", path);
   try {
-    const response = await fetch(`${API_URL}${path}`, {
-      signal: controller.signal,
-    }).finally(() => clearTimeout(timeout));
+    const response = await fetch(`${API_URL}${path}`, { signal: controller.signal });
 
     if (!response.ok) {
       throw await buildApiError("GET", path, response);
@@ -118,6 +121,9 @@ async function request<T>(
   } catch (error) {
     logError("GET", path, error, started);
     throw error;
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener('abort', abortFromCaller);
   }
 }
 
@@ -813,27 +819,54 @@ export function getDailyReportHistory() {
   return request<{ items: Record<string, unknown>[] }>("/report/daily/history");
 }
 
-export function getThemeSnapshot() {
+export function getThemeSnapshot(signal?: AbortSignal) {
   return cachedRequest(
-    "theme-intelligence:directory:v2",
-    () => request<ThemeSnapshotResponse>("/market/themes"),
-    60_000,
+    "theme-intelligence:summary:v3",
+    () => request<ThemeSnapshotResponse>("/market/themes", { signal }),
+    300_000,
   );
 }
 
 export function getThemeRotation(
   timeframe: ThemeRotationInterval,
-  identity: { snapshotId: string; taxonomyVersion: string },
+  identity?: { snapshotId: string; taxonomyVersion: string },
+  signal?: AbortSignal,
 ) {
   const profile =
     timeframe === "1W" ? "short" : timeframe === "1M" ? "medium" : "long";
+  const canonicalKey = identity ? themeRotationCacheKey(timeframe, identity) : null;
+  const requestKey = canonicalKey ?? `theme-rotation:latest:${THEME_ROTATION_MODEL_VERSION}:${timeframe}`;
   return cachedRequest(
-    themeRotationCacheKey(timeframe, identity),
-    () =>
-      request<ThemeRotationResponse>(
-        `/market/themes/rotation?profile=${profile}`,
-      ),
-    60_000,
+    requestKey,
+    async () => {
+      const response = await request<ThemeRotationResponse>(
+        `/market/themes/rotation/summary?profile=${profile}`,
+        { signal },
+      );
+      const snapshotId = typeof response.snapshot_id === 'string' ? response.snapshot_id : '';
+      const taxonomyVersion = typeof response.taxonomy_version === 'string' ? response.taxonomy_version : '';
+      if (snapshotId && taxonomyVersion) {
+        primeRequestCache(
+          themeRotationCacheKey(timeframe, { snapshotId, taxonomyVersion }),
+          response,
+          300_000,
+        );
+      }
+      return response;
+    },
+    canonicalKey ? 300_000 : 0,
+  );
+}
+
+export function getThemeDetail(
+  themeId: string,
+  identity: { snapshotId: string; taxonomyVersion: string },
+  signal?: AbortSignal,
+) {
+  return cachedRequest(
+    `theme-detail:${identity.taxonomyVersion}:${identity.snapshotId}:${themeId}:v1`,
+    () => request<ThemeDetailResponse>(`/market/themes/${encodeURIComponent(themeId)}`, { signal }),
+    300_000,
   );
 }
 

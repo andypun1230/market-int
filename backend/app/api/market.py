@@ -86,7 +86,11 @@ from app.services.sector_dashboard import build_sector_dashboard
 from app.services.sectors import build_market_sectors
 from app.services.sectors_summary import build_sectors_summary
 from app.sector_snapshots.service import get_sector_snapshot_service
-from app.theme_snapshots.readers import rotation_payload as theme_rotation_payload, snapshot_payload as theme_snapshot_payload
+from app.theme_snapshots.readers import (
+    rotation_payload as theme_rotation_payload,
+    rotation_summary_payload as theme_rotation_summary_payload,
+    snapshot_payload as theme_snapshot_payload,
+)
 from app.theme_snapshots.service import get_theme_snapshot_service
 from app.themes.intelligence import get_theme_intelligence_service
 from app.services.stock_rating import build_stock_ratings
@@ -317,6 +321,24 @@ async def get_theme_rotation(
     except ValueError:
         return {
             **theme_rotation_payload(None, "medium"),
+            "timeframe": selected.upper(),
+            "interval": selected.upper(),
+            "profile": selected.lower(),
+            "warnings": ["Unsupported Theme Rotation profile."],
+        }
+
+
+@router.get("/market/themes/rotation/summary")
+async def get_theme_rotation_summary(
+    profile: str | None = Query(default=None, description="Canonical short, medium, or long model profile."),
+    timeframe: str | None = Query(default=None, description="Compatibility alias: 1W, 1M, or 3M."),
+) -> dict:
+    selected = profile or timeframe or "medium"
+    try:
+        return theme_rotation_summary_payload(get_theme_snapshot_service().latest(), selected)
+    except ValueError:
+        return {
+            **theme_rotation_summary_payload(None, "medium"),
             "timeframe": selected.upper(),
             "interval": selected.upper(),
             "profile": selected.lower(),

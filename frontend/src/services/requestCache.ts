@@ -5,6 +5,7 @@ type CacheEntry<T> = {
 
 const cache = new Map<string, CacheEntry<unknown>>();
 const inflight = new Map<string, Promise<unknown>>();
+const MAX_CACHE_ENTRIES = 128;
 const NETWORK_DEBUG = process.env.EXPO_PUBLIC_NETWORK_DEBUG === 'true';
 
 export async function cachedRequest<T>(
@@ -13,8 +14,11 @@ export async function cachedRequest<T>(
   ttlMs: number,
 ): Promise<T> {
   const now = Date.now();
+  removeExpiredEntries(now);
   const cached = cache.get(key);
   if (cached && cached.expiresAt > now) {
+    cache.delete(key);
+    cache.set(key, cached);
     debugLog('cache hit', key);
     return cached.value as T;
   }
@@ -32,6 +36,7 @@ export async function cachedRequest<T>(
         value,
         expiresAt: Date.now() + ttlMs,
       });
+      enforceCacheLimit();
       debugLog('end', key);
       return value;
     })
@@ -47,6 +52,31 @@ export async function cachedRequest<T>(
 
   inflight.set(key, request);
   return request;
+}
+
+function removeExpiredEntries(now: number) {
+  for (const [key, entry] of cache.entries()) {
+    if (entry.expiresAt <= now) cache.delete(key);
+  }
+}
+
+function enforceCacheLimit() {
+  while (cache.size > MAX_CACHE_ENTRIES) {
+    const oldestKey = cache.keys().next().value;
+    if (typeof oldestKey !== 'string') return;
+    cache.delete(oldestKey);
+  }
+}
+
+export function primeRequestCache<T>(key: string, value: T, ttlMs: number) {
+  cache.delete(key);
+  cache.set(key, { value, expiresAt: Date.now() + ttlMs });
+  enforceCacheLimit();
+}
+
+export function requestCacheDiagnostics() {
+  removeExpiredEntries(Date.now());
+  return { cached: cache.size, inflight: inflight.size, maxEntries: MAX_CACHE_ENTRIES };
 }
 
 export function isRequestCancelled(error: unknown): boolean {
